@@ -3,132 +3,725 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Weverton Gomes da Costa - Pesquisador em Genética e Bioestatística, UFV">
+    <meta name="description" content="Weverton Gomes da Costa - Pesquisador em Genética e Bioestatística, CEO da Conecta GEM, especialista em Machine Learning aplicado ao agronegócio">
+    <meta name="keywords" content="genética, bioestatística, machine learning, agronegócio, UFV, seleção genômica">
     <meta name="author" content="Weverton Gomes da Costa">
-    <title>Weverton Gomes da Costa | Pesquisador em Genética & Bioestatística</title>
+    <title>Weverton Gomes da Costa | Pesquisador & Data Scientist em AgTech</title>
+    
     <style>
-        * { box-sizing: border-box; }
-        :root {
-            --primary-color: #2c5f2d;
-            --secondary-color: #97bc62;
-            --text-dark: #222;
-            --text-light: #666;
-            --bg-light: #f7f8f9;
-            --white: #ffffff;
-            --shadow: rgba(0,0,0,0.08);
-            --accent-dark: #2c3e50;
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
         }
+        
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #f59e0b;
+            --bg-card: rgba(30, 41, 59, 0.5);
+            --border: rgba(148, 163, 184, 0.1);
+            --glow: rgba(16, 185, 129, 0.5);
+        }
+        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: var(--text-dark);
-            background-color: var(--bg-light);
-            margin: 0;
-            -webkit-font-smoothing:antialiased;
-        }
-        header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--white);
-            padding: 3rem 1rem;
-            text-align: center;
-            box-shadow: 0 2px 12px var(--shadow);
+            color: var(--text);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
             position: relative;
         }
-        header h1 { font-size: 2rem; margin: 0.2rem 0 0.25rem; }
-        .subtitle { font-size: 1.03rem; opacity: 0.95; font-weight: 400; margin: 0; }
-        .location { margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.9; }
-        .wrapper { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-
-        /* New layout: main content + sidebar (projects) using CSS grid */
-        .layout { display: grid; grid-template-columns: 1fr 360px; gap: 1rem; align-items: start; }
-        @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
-
-        .card { background: var(--white); border-radius: 10px; padding: 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 6px 20px var(--shadow); }
-        h2 { color: var(--primary-color); font-size: 1.4rem; margin-bottom: 0.75rem; }
-        p { color: var(--text-light); }
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 0.9rem; }
-        .skill-item { background: #fff; padding: 0.9rem; border-radius: 8px; border-left: 4px solid var(--secondary-color); }
-        .skill-item h3{ margin: 0 0 6px; color: var(--primary-color); font-size: 1.02rem; }
-
-        /* Projects (sidebar) styling */
-        .sidebar { position: sticky; top: 100px; height: calc(100vh - 120px); overflow: auto; padding: 1rem; }
-        .projects { display: grid; grid-template-columns: 1fr; gap: 0.8rem; }
-        .project-card { background:#fff;border-radius:8px;padding:0.9rem;border:1px solid #eef0f2; }
-        .project-card h3{margin:0 0 6px;font-size:1rem}
-        .project-card p{margin:0 0 8px;color:var(--text-light)}
-        .btn { display:inline-block;padding:8px 10px;border-radius:8px;background:var(--accent-dark);color:#fff;text-decoration:none;font-weight:600 }
-        .btn:hover{opacity:0.95}
-        .contact-links{display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.6rem}
-        .contact-link{display:inline-flex;align-items:center;gap:0.6rem;padding:0.6rem 1rem;background:var(--accent-dark);color:#fff;text-decoration:none;border-radius:8px}
-        footer{text-align:center;padding:1.2rem 1rem;color:var(--text-light);margin-top:1rem}
-        .lang-btn{position:absolute;top:14px;right:14px;padding:6px 10px;background:#084c2b;color:#fff;border:none;border-radius:6px;cursor:pointer}
-        img.avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.08);display:block;margin:0.6rem auto}
-        @media (max-width:720px){ header h1{font-size:1.45rem} }
-
-        /* Improve accessibility for sidebar scroll area */
-        .sidebar::-webkit-scrollbar{width:8px}
-        .sidebar::-webkit-scrollbar-thumb{background:#d0d7d3;border-radius:4px}
-
+        
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            animation: drift 30s infinite;
+            z-index: -1;
+        }
+        
+        @keyframes drift {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            33% { transform: rotate(120deg) scale(1.1); }
+            66% { transform: rotate(240deg) scale(0.9); }
+        }
+        
+        /* Hero Section */
+        header {
+            position: relative;
+            padding: 100px 20px 60px;
+            text-align: center;
+            background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 40px var(--glow);
+            margin: 0 auto 30px;
+            display: block;
+            animation: glow 3s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px var(--glow); }
+            50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(16, 185, 129, 0.3); }
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .badge {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--primary);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+            border-color: var(--primary);
+        }
+        
+        /* Navigation */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 0 20px;
+        }
+        
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        .section {
+            margin-bottom: 80px;
+            animation: fadeInUp 0.8s ease backwards;
+        }
+        
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.6s; }
+        
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--primary);
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        h2::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+        
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        /* Skills */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .skill-tag {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .skill-tag:hover {
+            background: rgba(16, 185, 129, 0.2);
+            transform: scale(1.05);
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 70px;
+            margin-bottom: 40px;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 24px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--glow);
+        }
+        
+        .timeline-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .timeline-date {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        /* Projects */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.3);
+            border-color: var(--primary);
+        }
+        
+        .project-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .tech-tag {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        
+        /* Contact */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .contact-link:hover {
+            transform: translateX(5px);
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Conecta GEM Section */
+        .empresa-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .empresa-section::before {
+            content: '🚀';
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            font-size: 3rem;
+            opacity: 0.2;
+        }
+        
+        .empresa-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .empresa-logo {
+            font-size: 2.5rem;
+        }
+        
+        .empresa-info h3 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        
+        .empresa-info p {
+            color: var(--text-muted);
+            margin: 5px 0 0 0;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.5rem; }
+            .subtitle { font-size: 1.1rem; }
+            .nav-container { flex-wrap: wrap; gap: 15px; }
+            .timeline::before { left: 20px; }
+            .timeline-dot { left: 14px; }
+            .timeline-item { padding-left: 50px; }
+            .empresa-header { flex-direction: column; text-align: center; }
+        }
+        
+        /* Loading animation */
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .lang-switch:hover {
+            background: var(--primary);
+            color: var(--dark);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
+    <button class="lang-switch" onclick="toggleLanguage()">EN | PT</button>
+    
     <header>
-        <button class="lang-btn" onclick="toggleLang()" aria-label="Alternar idioma">EN/PT</button>
-        <div class="avatar-wrap">
-            <img src="https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io/blob/8b359dc98b9e32ad3bdad81b32d807504ef32764/weverton_Generated_Image.png" alt="Foto de Weverton" class="avatar" onerror="this.src='assets/avatar.svg'">
-        </div>
-        <h1>🌱 Weverton Gomes da Costa</h1>
-        <p class="subtitle">Pesquisador em Genética & Bioestatística</p>
-        <p class="location">📍 Viçosa, MG, Brasil | Universidade Federal de Viçosa</p>
-    </header>
-
-    <main class="wrapper">
-        <div class="layout">
-            <!-- Main content column -->
-            <div class="main-column">
-                <section class="card" id="sobre">
-                    <h2>Sobre</h2>
-                    <div class="about-content">
-                        <p id="about-text">💡 Transformo dados em descobertas: uso estatística, aprendizado de máquina e seleção genômica para decifrar padrões biológicos e otimizar cultivos agrícolas. Trabalho com pipelines reprodutíveis em R e Python, otimização computacional (CPU/GPU) e comunicação científica em LaTeX e RMarkdown.</p>
-                    </div>
-                </section>
-
-                <section class="card">
-                    <h2>Áreas de Especialização</h2>
-                    <div class="skills-grid">
-                        <div class="skill-item"><h3>🧬 Genética Quantitativa</h3><p>Análise de variabilidade genética e seleção genômica.</p></div>
-                        <div class="skill-item"><h3>📊 Bioestatística</h3><p>Modelagem estatística, validação e interpretação de experimentos.</p></div>
-                        <div class="skill-item"><h3>🤖 Machine Learning</h3><p>Random Forest, redes neurais, QRF, otimização e interpretação.</p></div>
-                        <div class="skill-item"><h3>🛠️ Pipelines & Reprodutibilidade</h3><p>R, Python, RMarkdown, LaTeX, versionamento e práticas reprodutíveis.</p></div>
-                    </div>
-                </section>
-
-                <section class="card" id="habilidades">
-                    <h2>Habilidades</h2>
-                    <ul>
-                        <li>Python (Pandas, Scikit-learn, TensorFlow)</li>
-                        <li>R (tidyverse, caret, Shiny)</li>
-                        <li>Machine Learning & Estatística</li>
-                        <li>Reprodutibilidade e versionamento (Git/GitHub)</li>
-                        <li>Visualização de dados</li>
-                    </ul>
-                </section>
-
-                <section class="card" id="contato">
-                    <h2>Contato</h2>
-                    <p>Entre em contato comigo para colaborações ou oportunidades:</p>
-                    <div class="contact-links">
-                        <a class="contact-link" href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
-                            <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                            GitHub
-                        </a>
-                        <a class="contact-link" href="mailto:wevertonufv@gmail.com" aria-label="Email">weverton@email.com</a>
-                        <a class="contact-link" href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener">LinkedIn</a>
-                        <a class="contact-link" href="https://orcid.org/0000-0003-0742-5936" target="_blank" rel="noopener">ORCID</a>
-                        <a class="contact-link" href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener">Lattes</a>
-                    </div>
-                </section>
+        <div class="hero-content">
+            <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar">
+            <h1 id="hero-name">Weverton Gomes da Costa</h1>
+            <p class="subtitle" id="hero-subtitle">Pesquisador em Genética & Bioestatística | Data Scientist em AgTech</p>
+            <div class="badges">
+                <span class="badge">🎓 Doutorando em Estatística - UFV</span>
+                <span class="badge">🚀 CEO & Cofundador - Conecta GEM</span>
+                <span class="badge">🔬 Pós-Doc FAPEMIG/CNPq</span>
+                <span class="badge">🤖 Machine Learning Expert</span>
             </div>
+        </div>
+        <div class="scroll-indicator">⬇</div>
+    </header>
+    
+    <nav>
+        <div class="nav-container">
+            <a href="#sobre" class="nav-link" data-pt="Sobre" data-en="About">Sobre</a>
+            <a href="#formacao" class="nav-link" data-pt="Formação" data-en="Education">Formação</a>
+            <a href="#experiencia" class="nav-link" data-pt="Experiência" data-en="Experience">Experiência</a>
+            <a href="#projetos" class="nav-link" data-pt="Projetos" data-en="Projects">Projetos</a>
+            <a href="#habilidades" class="nav-link" data-pt="Habilidades" data-en="Skills">Habilidades</a>
+            <a href="#conecta" class="nav-link">Conecta GEM</a>
+            <a href="#contato" class="nav-link" data-pt="Contato" data-en="Contact">Contato</a>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <section id="sobre" class="section">
+            <h2 data-pt="Sobre Mim" data-en="About Me">Sobre Mim</h2>
+            <div class="card">
+                <p style="font-size: 1.1rem; line-height: 1.8;" id="about-text">
+                    Sou <strong>Engenheiro Agrônomo</strong> com formação avançada em <strong>Genética e Melhoramento</strong> pela UFV, 
+                    atualmente cursando <strong>Doutorado em Estatística</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. 
+                    Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística, 
+                    ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.
+                </p>
+                <p style="margin-top: 20px; line-height: 1.8;" id="about-text2">
+                    Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> 
+                    até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para 
+                    resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis 
+                    em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.
+                </p>
+            </div>
+        </section>
+        
+        <section id="formacao" class="section">
+            <h2 data-pt="Formação Acadêmica" data-en="Education">Formação Acadêmica</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2023 - Presente</div>
+                        <h3>Doutorado em Estatística</h3>
+                        <p>Universidade Federal de Viçosa (UFV)</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2023 - 205</div>
+                        <h3>Pós-Doutorado</h3>
+                        <p>FAPEMIG/CNPq</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Análises de GWS, GWAS e modelos mistos para o melhoramento genético do cafeeiro.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2022 - 2022</div>
+                        <h3>Pós-Doutorado</h3>
+                        <p>EMBRAPA Mandioca e Fruticultura</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2018 - 2022</div>
+                        <h3>Doutorado em Genética e Melhoramento</h3>
+                        <p>Universidade Federal de Viçosa (UFV)</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Foco em predição e importância de marcadores via machine learning e redes neurais.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2016 - 2018</div>
+                        <h3>Mestrado em Genética e Melhoramento</h3>
+                        <p>Universidade Federal de Viçosa (UFV)</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Meta-análise e modelos mistos aplicados ao melhoramento vegetal.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2010 - 2015</div>
+                        <h3>Graduação em Agronomia</h3>
+                        <p>Universidade Federal de Viçosa (UFV)</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Estágio na EPAMIG com foco em planejamento experimental e análises estatísticas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="experiencia" class="section">
+            <h2 data-pt="Áreas de Especialização" data-en="Areas of Expertise">Áreas de Especialização</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="icon">🧬</span>
+                    <h3>Genética Quantitativa</h3>
+                    <p>Análise de variabilidade genética, seleção genômica ampla (GWS) e estudos de associação genômica (GWAS) para identificação de características de interesse agronômico.</p>
+                </div>
+                <div class="card">
+                    <span class="icon">📊</span>
+                    <h3>Bioestatística Avançada</h3>
+                    <p>Modelagem estatística complexa, validação cruzada, modelos mistos e interpretação de experimentos em larga escala para tomada de decisão baseada em dados.</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🤖</span>
+                    <h3>Machine Learning & IA</h3>
+                    <p>Random Forest, redes neurais profundas, QRF, otimização de hiperparâmetros e interpretação de modelos para predição fenotípica e seleção assistida.</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🛠️</span>
+                    <h3>Pipelines Reprodutíveis</h3>
+                    <p>Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub, documentação técnica em LaTeX e RMarkdown.</p>
+                </div>
+                <div class="card">
+                    <span class="icon">🌱</span>
+                    <h3>Melhoramento de Plantas</h3>
+                    <p>Aplicação de técnicas avançadas de seleção genômica, análise de diversidade genética e desenvolvimento de estratégias para otimização de cultivos.</p>
+                </div>
+                <div class="card">
+                    <span class="icon">📈</span>
+                    <h3>Data Science em AgTech</h3>
+                    <p>Integração de dados multi-ômicos, análise de big data agrícola, visualização interativa e desenvolvimento de dashboards para monitoramento de safras.</p>
+                </div>
+            </div>
+        </section>
+
             <!-- sidebar -->
             <aside class="card sidebar" aria-labelledby="projetos-title">
                 <h2 id="projetos-title">Projetos e Repositórios</h2>
@@ -181,88 +774,126 @@
 
                 </div>
             </aside>
+        
+        <div id="conecta" class="empresa-section">
+            <div class="empresa-header">
+                <div class="empresa-logo">🚀</div>
+                <div class="empresa-info">
+                    <h3>Conecta GEM</h3>
+                    <p>CEO & Cofundador | Empresa de Base Tecnológica em AgTech</p>
+                </div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" id="empresa-desc">
+                A <strong>Conecta GEM</strong> nasceu com o propósito de transformar dados em soluções inteligentes para o agronegócio, 
+                aproximando pesquisa científica e aplicações práticas. Lideramos iniciativas que conectam estatística avançada, 
+                ciência de dados e agricultura de precisão.
+            </p>
+            <div class="grid">
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>📊 Consultoria Especializada</h3>
+                    <p>Modelagem estatística e biometria aplicada ao agronegócio</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>🌱 Seleção Genômica</h3>
+                    <p>Implementação de programas de melhoramento assistido por marcadores</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>🤖 Soluções em IA</h3>
+                    <p>Desenvolvimento de modelos preditivos e sistemas inteligentes</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>💻 Capacitação</h3>
+                    <p>Treinamentos e workshops em R, Python e análise de dados aplicados ao agro</p>
+                </div>
+            </div>
         </div>
-    </main>
+
+        <section id="projetos" class="section">
+            <h2 data-pt="Projetos em Destaque" data-en="Featured Projects">Projetos em Destaque</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>Seleção Genômica em Milho</h3>
+                    <p>Pipeline em R para prever produtividade com base em dados genômicos.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">R</span>
+                        <span class="tech-tag">Machine Learning</span>
+                        <span class="tech-tag">Genômica</span>
+                    </div>
+                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Modelagem Preditiva de Safras</h3>
+                    <p>Modelos em Python para estimar rendimento agrícola usando dados climáticos.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">Python</span>
+                        <span class="tech-tag">Scikit-learn</span>
+                        <span class="tech-tag">AgTech</span>
+                    </div>
+                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
+                </div>
+                <div class="project-card">
+                    <h3>Dashboard Interativo</h3>
+                    <p>Visualização de dados agrícolas em Shiny (R) para tomada de decisão.</p>
+                    <div class="project-tech">
+                        <span class="tech-tag">R</span>
+                        <span class="tech-tag">Shiny</span>
+                        <span class="tech-tag">DataViz</span>
+                    </div>
+                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="habilidades" class="section">
+            <h2 data-pt="Habilidades Técnicas" data-en="Technical Skills">Habilidades Técnicas</h2>
+            <div class="skills-container">
+                <span class="skill-tag">Python (Pandas, Scikit-learn, TensorFlow)</span>
+                <span class="skill-tag">R (tidyverse, caret, Shiny)</span>
+                <span class="skill-tag">Machine Learning & Estatística</span>
+                <span class="skill-tag">Seleção Genômica & GWAS</span>
+                <span class="skill-tag">Modelos Mistos & Biometria</span>
+                <span class="skill-tag">Reprodutibilidade (Git/GitHub)</span>
+                <span class="skill-tag">Visualização de Dados</span>
+            </div>
+        </section>
+
+        <section id="contato" class="section">
+            <h2 data-pt="Contato" data-en="Contact">Contato</h2>
+            <div class="contact-grid">
+                <a href="mailto:weverton@email.com" class="contact-link">✉️ Email</a>
+                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link">💼 LinkedIn</a>
+                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="contact-link">🧾 ORCID</a>
+                <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" class="contact-link">📚 Lattes</a>
+                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link">🐙 GitHub</a>
+                <a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" class="contact-link">🔬 LICAE/UFV</a>
+                <a href="https://www.conectagem.com/sobre" target="_blank" class="contact-link">🚀 Conecta GEM</a>
+            </div>
+        </section>
+    </div>
 
     <footer>
-        <p id="footer-text">&copy; 2025 Weverton Gomes Costa</p>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="social-link">in</a>
+                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="social-link">GH</a>
+                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="social-link">OR</a>
+            </div>
+            <p>&copy; 2025 Weverton Gomes da Costa</p>
+        </div>
     </footer>
 
     <script>
-        const content = {
-            pt: {
-                name: "🌱 Weverton Gomes da Costa",
-                subtitle: "Pesquisador em Genética & Bioestatística",
-                location: "📍 Viçosa, MG, Brasil | Universidade Federal de Viçosa",
-                aboutText: "💡 Transformo dados em descobertas: uso estatística, aprendizado de máquina e seleção genômica para decifrar padrões biológicos e otimizar cultivos agrícolas. Trabalho com pipelines reprodutíveis em R e Python, otimização computacional (CPU/GPU) e comunicação científica em LaTeX e RMarkdown.",
-                expertiseTitle: "Áreas de Especialização",
-                skillsTitle: "Habilidades",
-                contactTitle: "Contato",
-                contactEmail: "wevertonufv@gmail.com",
-                suggestionsTitle: "Sugestões de melhoria de design",
-                projectsTitle: "Projetos e Repositórios",
-                footer: "&copy; 2025 Weverton Gomes Costa"
-            },
-            en: {
-                name: "🌱 Weverton Gomes da Costa",
-                subtitle: "Researcher in genetics and biostatistics",
-                location: "📍 Viçosa, MG, Brazil | Federal University of Viçosa",
-                aboutText: "💡 I turn data into discoveries: I use statistics, machine learning and genomic selection to decipher biological patterns and optimize crops. I work on reproducible pipelines in R and Python, computational optimization (CPU/GPU) and scientific communication in LaTeX and RMarkdown.",
-                expertiseTitle: "Areas of Expertise",
-                skillsTitle: "Skills",
-                contactTitle: "Contact",
-                contactEmail: "wevertonufv@gmail.com",
-                suggestionsTitle: "Design improvement suggestions",
-                projectsTitle: "Projects & Repositories",
-                footer: "&copy; 2025 Weverton Gomes Costa"
-            }
-        };
-
-        function setLang(lang){
-            document.getElementById('name').innerText = content[lang].name;
-            document.getElementById('subtitle').innerText = content[lang].subtitle;
-            document.getElementById('location').innerText = content[lang].location;
-            document.getElementById('about-text').innerText = content[lang].aboutText;
-            document.getElementById('expertise-title').innerText = content[lang].expertiseTitle;
-            document.getElementById('skills-title').innerText = content[lang].skillsTitle;
-            document.getElementById('sugestoes').querySelector('h2').innerText = content[lang].suggestionsTitle;
-            document.getElementById('projetos-title').innerText = content[lang].projectsTitle;
-            document.getElementById('footer-text').innerHTML = content[lang].footer;
-            // email
-            document.querySelectorAll('.contact-link[href^="mailto:"]').forEach(el => el.innerText = content[lang].contactEmail);
-            document.querySelectorAll('.contact-link[href^="mailto:"]').forEach(el => el.href = 'mailto:'+content[lang].contactEmail);
-
-            // translate project descriptions (use data attributes)
-            document.querySelectorAll('#projects-list .project-card p').forEach(p=>{
-                const en = p.getAttribute('data-en');
-                const pt = p.getAttribute('data-pt');
-                p.innerText = (lang === 'en') ? (en || p.innerText) : (pt || p.innerText);
+        let currentLang = "pt";
+        function toggleLanguage() {
+            currentLang = currentLang === "pt" ? "en" : "pt";
+            document.querySelectorAll("[data-pt]").forEach(el => {
+                el.textContent = el.getAttribute(`data-${currentLang}`);
             });
+            document.getElementById("hero-subtitle").textContent = 
+                currentLang === "pt" ? 
+                "Pesquisador em Genética & Bioestatística | Data Scientist em AgTech" : 
+                "Researcher in Genetics & Biostatistics | Data Scientist in AgTech";
         }
-
-        function toggleLang(){
-            const current = document.documentElement.getAttribute('lang') || 'pt-BR';
-            if(current.startsWith('pt')){
-                document.documentElement.setAttribute('lang','en');
-                setLang('en');
-            } else {
-                document.documentElement.setAttribute('lang','pt-BR');
-                setLang('pt');
-            }
-        }
-
-        // project search
-        document.getElementById('project-search').addEventListener('input', e=>{
-            const q = e.target.value.toLowerCase();
-            document.querySelectorAll('#projects-list .project-card').forEach(card=>{
-                const title = card.querySelector('h3').innerText.toLowerCase();
-                const desc = card.querySelector('p').innerText.toLowerCase();
-                card.style.display = (title.includes(q) || desc.includes(q)) ? '' : 'none';
-            });
-        });
-
-        // inicializar
-        setLang('pt');
     </script>
 </body>
 </html>
