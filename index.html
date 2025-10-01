@@ -379,6 +379,21 @@
             border-color: var(--primary);
         }
         
+        .project-actions .btn {
+          display: inline-block;
+          padding: 0.4rem 0.8rem;
+          background: #2c3e50;
+          color: #fff;
+          border-radius: 4px;
+          text-decoration: none;
+          font-size: 0.9rem;
+        }
+        
+        .project-actions .btn:hover {
+          background: #1a252f;
+        }
+
+        
         .project-tech {
             display: flex;
             flex-wrap: wrap;
@@ -572,7 +587,7 @@
         <div class="hero-content">
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar">
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
-            <p class="subtitle" id="hero-subtitle">Pesquisador em Genética & Bioestatística | Data Scientist em AgTech</p>
+            <p class="subtitle" id="hero-subtitle">Pesquisador em Genética & Estatística | Data Scientist</p>
             <div class="badges">
                 <span class="badge">🎓 Doutorando em Estatística - UFV</span>
                 <span class="badge">🚀 CEO & Cofundador - Conecta GEM</span>
@@ -600,8 +615,8 @@
             <h2 data-pt="Sobre Mim" data-en="About Me">Sobre Mim</h2>
             <div class="card">
                 <p style="font-size: 1.1rem; line-height: 1.8;" id="about-text">
-                    Sou <strong>Engenheiro Agrônomo</strong> com formação avançada em <strong>Genética e Melhoramento</strong> pela UFV, 
-                    atualmente cursando <strong>Doutorado em Estatística</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. 
+                    Sou <strong>Engenheiro Agrônomo</strong> com mestrado e doutorado em <strong>Genética e Melhoramento</strong> pela UFV, 
+                    atualmente cursando <strong>Doutorado em Estatística Aplicada e Biometria</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. 
                     Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística, 
                     ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.
                 </p>
@@ -610,6 +625,11 @@
                     até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para 
                     resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis 
                     em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.
+                </p>
+                <p style="margin-top: 20px; line-height: 1.8;" id="about-text3">
+                    Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, 
+                    onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, 
+                    além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.
                 </p>
             </div>
         </section>
@@ -621,7 +641,7 @@
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2023 - Presente</div>
-                        <h3>Doutorado em Estatística</h3>
+                        <h3>Doutorado em Estatística Aplicada e Biometria</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
                         <p style="color: var(--text-muted); margin-top: 10px;">
                             Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.
@@ -631,20 +651,31 @@
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2023 - 205</div>
+                        <div class="timeline-date">2023 - Presente</div>
                         <h3>Pós-Doutorado</h3>
-                        <p>FAPEMIG/CNPq</p>
+                        <p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p>
                         <p style="color: var(--text-muted); margin-top: 10px;">
-                            Análises de GWS, GWAS e modelos mistos para o melhoramento genético do cafeeiro.
+                            Desenvolvimento de análises estatísticas avançadas aplicadas ao melhoramento genético.
                         </p>
                     </div>
                 </div>
                 <div class="timeline-item">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2022 - 2022</div>
+                        <div class="timeline-date">2022 - 2023</div>
                         <h3>Pós-Doutorado</h3>
-                        <p>EMBRAPA Mandioca e Fruticultura</p>
+                        <p>Universidade Federal de Viçosa (UFV) — CNPq</p>
+                        <p style="color: var(--text-muted); margin-top: 10px;">
+                            Estudos em seleção genômica ampla e modelos mistos aplicados à agricultura.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">2022</div>
+                        <h3>Pós-Doutorado</h3>
+                        <p>EMBRAPA Mandioca e Fruticultura — CNPq</p>
                         <p style="color: var(--text-muted); margin-top: 10px;">
                             Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.
                         </p>
@@ -657,7 +688,7 @@
                         <h3>Doutorado em Genética e Melhoramento</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
                         <p style="color: var(--text-muted); margin-top: 10px;">
-                            Foco em predição e importância de marcadores via machine learning e redes neurais.
+                            Eficiência de técnicas de machine learning e redes neurais na predição genômica e identificação de marcadores.
                         </p>
                     </div>
                 </div>
@@ -668,7 +699,7 @@
                         <h3>Mestrado em Genética e Melhoramento</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
                         <p style="color: var(--text-muted); margin-top: 10px;">
-                            Meta-análise e modelos mistos aplicados ao melhoramento vegetal.
+                            Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais.
                         </p>
                     </div>
                 </div>
@@ -685,6 +716,7 @@
                 </div>
             </div>
         </section>
+
         
         <section id="experiencia" class="section">
             <h2 data-pt="Áreas de Especialização" data-en="Areas of Expertise">Áreas de Especialização</h2>
@@ -775,6 +807,42 @@
                 </div>
             </aside>
         
+         <!-- Seção LICAE -->
+        <div id="licae" class="empresa-section">
+            <div class="empresa-header">
+                <div class="empresa-logo">🧠</div>
+                <div class="empresa-info">
+                    <h3>LICAE - UFV</h3>
+                    <p>Laboratório de Inteligência Computacional e Aprendizado Estatístico</p>
+                </div>
+            </div>
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" id="licae-desc">
+                No <strong>LICAE – UFV</strong>, atuo no desenvolvimento e aplicação de métodos de 
+                <strong>aprendizado de máquina, redes neurais e estatística avançada</strong> voltados para o 
+                melhoramento genético e a agricultura digital. Minha pesquisa envolve desde a 
+                <em>avaliação de modelos preditivos</em> até a <em>identificação de marcadores genômicos relevantes</em>, 
+                sempre com foco em aumentar a eficiência da seleção genômica e apoiar decisões estratégicas no campo.
+            </p>
+            <div class="grid">
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>🔬 Pesquisa</h3>
+                    <p>Aplicação de machine learning e redes neurais em seleção genômica ampla</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>📊 Análises Avançadas</h3>
+                    <p>Modelos mistos, meta-análise e biometria aplicados ao melhoramento genético</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>🤝 Colaboração</h3>
+                    <p>Integração em projetos multidisciplinares envolvendo genética, estatística e ciência de dados</p>
+                </div>
+                <div class="card" style="background: rgba(15, 23, 42, 0.6);">
+                    <h3>📚 Formação</h3>
+                    <p>Participação em grupos de estudo, orientação de análises e apoio à formação de novos pesquisadores</p>
+                </div>
+            </div>
+        </div>
+
         <div id="conecta" class="empresa-section">
             <div class="empresa-header">
                 <div class="empresa-logo">🚀</div>
@@ -860,7 +928,7 @@
         <section id="contato" class="section">
             <h2 data-pt="Contato" data-en="Contact">Contato</h2>
             <div class="contact-grid">
-                <a href="mailto:weverton@email.com" class="contact-link">✉️ Email</a>
+                <a href="mailto:wevertonufv@gmail.com" class="contact-link">✉️ Email</a>
                 <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link">💼 LinkedIn</a>
                 <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="contact-link">🧾 ORCID</a>
                 <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" class="contact-link">📚 Lattes</a>
