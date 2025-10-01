@@ -578,6 +578,27 @@
             color: var(--dark);
             transform: scale(1.05);
         }
+        .sidebar{width:360px; max-width:100%; margin:0 auto; background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px; backdrop-filter:blur(8px);}
+        .sidebar h2{margin:0 0 12px;color:var(--primary);font-size:1.2rem}
+        .controls{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+        .controls input{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--glass);color:var(--text)}
+        .controls button{padding:8px 10px;border-radius:10px;border:none;background:var(--primary);color:#042017;cursor:pointer}
+        .meta{font-size:0.85rem;color:var(--muted);margin-bottom:10px}
+        .projects{display:flex;flex-direction:column;gap:12px;max-height:540px;overflow:auto;padding-right:6px}
+        .project-card{background:rgba(255,255,255,0.02);border-radius:10px;padding:12px;border:1px solid var(--border);display:flex;flex-direction:column;gap:6px}
+        .project-top{display:flex;justify-content:space-between;align-items:start;gap:8px}
+        .project-top h3{margin:0;font-size:1rem;color:#fff}
+        .project-desc{margin:0;color:var(--muted);font-size:0.9rem}
+        .project-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:0.85rem;color:var(--muted)}
+        .badge{background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:999px;border:1px solid var(--border)}
+        .actions{margin-top:8px;display:flex;gap:8px}
+        .link-btn{padding:6px 10px;background:var(--primary);color:#042017;border-radius:8px;text-decoration:none;font-weight:600}
+        .small-muted{font-size:0.82rem;color:var(--muted)}
+        .center{display:flex;justify-content:center}
+        .hidden{display:none}
+        /* scrollbar small */
+        .projects::-webkit-scrollbar{width:8px}
+        .projects::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.03);border-radius:6px}
     </style>
 </head>
 <body>
@@ -754,58 +775,27 @@
             </div>
         </section>
 
-            <!-- sidebar -->
-            <aside class="card sidebar" aria-labelledby="projetos-title">
-                <h2 id="projetos-title">Projetos e Repositórios</h2>
-
-                <div class="search"><input id="project-search" placeholder="Filtrar projetos..." aria-label="Filtrar projetos"></div>
-
-                <div class="projects" id="projects-list">
-                    <!-- Each project <p> has data-pt and data-en for translations -->
-                    <div class="project-card"><h3>Integrating-nir-genomic-kernel</h3><p data-pt="Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica." data-en="Fusion of spectral (NIR) and genomic kernel data to improve phenotypic prediction.">Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro</h3><p data-pt="Aplicações de ML e redes neurais no melhoramento do cafeeiro — exemplos." data-en="Applications of ML and neural networks in coffee breeding — examples.">Aplicações de ML e redes neurais no melhoramento do cafeeiro — exemplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Importance-of-markers-for-QTL-detection-by-machine-learning-methods</h3><p data-pt="Detecção de QTL por métodos de machine learning e importância de marcadores." data-en="QTL detection using machine learning methods and marker importance.">Detecção de QTL por métodos de machine learning e importância de marcadores.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava</h3><p data-pt="Seleção genômica para tolerância à seca em mandioca — scripts e análises em R." data-en="Genomic selection for drought tolerance in cassava — R scripts and analyses.">Seleção genômica para tolerância à seca em mandioca — scripts e análises em R.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis</h3><p data-pt="Predição genômica com ML e redes neurais para traços com epistasia." data-en="Genomic prediction using ML and neural networks for traits with epistasis.">Predição genômica com ML e redes neurais para traços com epistasia.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>GitHub-with-RStudio-LICAE</h3><p data-pt="Material didático integrando GitHub e RStudio — ótimo para workshops." data-en="Teaching material integrating GitHub and RStudio — great for workshops.">Material didático integrando GitHub e RStudio — ótimo para workshops.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GitHub-with-RStudio-LICAE" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Genomic-Selection_Course</h3><p data-pt="Minicurso sobre seleção genômica em ambientes múltiplos." data-en="Mini-course on genomic selection across multiple environments.">Minicurso sobre seleção genômica em ambientes múltiplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection_Course" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Diversidade-genética-e-identificação-de-regiões-genômicas-associadas-ao-tamanho-dos-grânulos-de-amido</h3><p data-pt="Estudo de diversidade genética da mandioca e regiões associadas ao tamanho do amido." data-en="Study of genetic diversity in cassava and regions associated with starch granule size.">Estudo de diversidade genética da mandioca e regiões associadas ao tamanho do amido.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Genomic-Prediction-using-Regularized-Artificial-Neural-Networks</h3><p data-pt="Regularização em redes neurais para predição genômica." data-en="Regularization in neural networks for genomic prediction.">Regularização em redes neurais para predição genômica.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Manipulacao-dados-e-Analise-Grafica-R</h3><p data-pt="Manipulação e visualização de dados em R — scripts e exemplos." data-en="Data manipulation and visualization in R — scripts and examples.">Manipulação e visualização de dados em R — scripts e exemplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p data-pt="Estimativa de peso de suínos usando Mask R-CNN (fork)." data-en="Pig weight estimation using Mask R-CNN (fork).">Estimativa de peso de suínos usando Mask R-CNN (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p data-pt="Estimativa de peso bovino usando Mask R-CNN." data-en="Bovine weight estimation using Mask R-CNN.">Estimativa de peso bovino usando Mask R-CNN.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>curso-git-github</h3><p data-pt="Guia prático sobre Git & GitHub com exemplos e exercícios." data-en="Practical guide on Git & GitHub with examples and exercises.">Guia prático sobre Git & GitHub com exemplos e exercícios.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/curso-git-github" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o</h3><p data-pt="Predição de traços com inteligência computacional e ML aplicados ao melhoramento." data-en="Trait prediction using computational intelligence and ML applied to breeding.">Predição de traços com inteligência computacional e ML aplicados ao melhoramento.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>AlphaSimR_Examples</h3><p data-pt="Exemplos e exercícios com AlphaSimR (fork)." data-en="Examples and exercises with AlphaSimR (fork).">Exemplos e exercícios com AlphaSimR (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/AlphaSimR_Examples" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Treinamento-GEFERT</h3><p data-pt="Material de treinamento e workshops." data-en="Training material and workshops.">Material de treinamento e workshops.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Treinamento-GEFERT" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>GS_Embrapa_2022</h3><p data-pt="Recursos e scripts para projeto de seleção genômica EMBRAPA 2022." data-en="Resources and scripts for EMBRAPA genomic selection project 2022.">Recursos e scripts para projeto de seleção genômica EMBRAPA 2022.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GS_Embrapa_2022" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>analisys-next-gen-2022</h3><p data-pt="Análises relacionadas a dados de sequência de nova geração (NGS)." data-en="Analyses related to next-generation sequencing (NGS) data.">Análises relacionadas a dados de sequência de nova geração (NGS).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/analisys-next-gen-2022" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self</h3><p data-pt="Scripts e material sobre diversidade genética em soja (com página de apoio)." data-en="Scripts and material on genetic diversity in soybean (with project page).">Scripts e material sobre diversidade genética em soja (com página de apoio).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>EMBRAPAImputation2022</h3><p data-pt="Recursos e scripts de imputação (fork)." data-en="Resources and imputation scripts (fork).">Recursos e scripts de imputação (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/EMBRAPAImputation2022" target="_blank" rel="noopener">Abrir</a></div></div>
-
-                    <div class="project-card"><h3>GenomicSelectionManual</h3><p data-pt="Manual de seleção genômica (fork) — material de apoio." data-en="Genomic selection manual (fork) — supporting material.">Manual de seleção genômica (fork) — material de apoio.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GenomicSelectionManual" target="_blank" rel="noopener">Abrir</a></div></div>
-
+        <aside class="sidebar" aria-labelledby="projetos-title">
+            <h2 id="projetos-title">Projetos & Repositórios</h2>
+    
+            <div class="controls">
+                <input id="project-search" placeholder="Buscar repositório (nome/descrição/língua)..." aria-label="Buscar repositório">
+                <button id="clear-btn" title="Limpar busca">Limpar</button>
+            </div>
+    
+            <div class="meta" id="projects-meta">Carregando repositórios...</div>
+    
+            <div class="projects" id="projects-list" role="list">
+                <!-- initial project cards rendered here -->
+            </div>
+    
+            <div style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center">
+                <div class="small-muted" id="shown-count">—</div>
+                <div class="center">
+                    <button id="toggle-more" class="link-btn">Mostrar mais</button>
                 </div>
-            </aside>
+            </div>
+        </aside>
         
          <!-- Seção LICAE -->
         <div id="licae" class="empresa-section">
@@ -963,5 +953,165 @@
                 "Researcher in Genetics & Biostatistics | Data Scientist in AgTech";
         }
     </script>
+    <script>
+(function(){
+    const GITHUB_USER = 'WevertonGomesCosta';
+    const CACHE_KEY = 'gh_repos_cache_v1';
+    const CACHE_TS_KEY = 'gh_repos_cache_ts_v1';
+    const CACHE_TTL = 1000 * 60 * 60; // 1h
+    const INITIAL_SHOW = 6; // how many repos to show initially
+
+    const projectsListEl = document.getElementById('projects-list');
+    const metaEl = document.getElementById('projects-meta');
+    const searchEl = document.getElementById('project-search');
+    const toggleBtn = document.getElementById('toggle-more');
+    const shownCountEl = document.getElementById('shown-count');
+    const clearBtn = document.getElementById('clear-btn');
+
+    let allRepos = [];
+    let showingAll = false;
+    let currentFilter = '';
+
+    // debounce helper
+    function debounce(fn, wait=250){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args),wait); }; }
+
+    function readCache(){
+        try{ const ts = Number(localStorage.getItem(CACHE_TS_KEY)||0); const now=Date.now(); if(now-ts < CACHE_TTL){ const data = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]'); return data; } }
+        catch(e){ console.warn('cache read failed',e); }
+        return null;
+    }
+    function writeCache(data){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch(e){ console.warn('cache write failed',e); } }
+
+    async function fetchRepos(){
+        metaEl.textContent = 'Buscando repositórios...';
+        // try cache first
+        const cache = readCache();
+        if(cache && cache.length){ allRepos = cache; metaEl.textContent = `Carregado ${cache.length} repositórios (cache).`; render(); }
+
+        try{
+            const per_page = 100;
+            const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=${per_page}&sort=updated`);
+            if(!res.ok){ throw new Error('GitHub API respondeu: '+res.status); }
+            const data = await res.json();
+            // map relevant fields
+            allRepos = data.map(r=>({
+                name: r.name,
+                html_url: r.html_url,
+                description: r.description || '',
+                language: r.language || '',
+                stargazers_count: r.stargazers_count || 0,
+                forks_count: r.forks_count || 0,
+                updated_at: r.updated_at
+            }));
+            writeCache(allRepos);
+            metaEl.textContent = `Encontrados ${allRepos.length} repositórios.`;
+            render();
+        }catch(err){
+            console.error(err);
+            if(!allRepos.length){
+                metaEl.textContent = 'Não foi possível buscar repositórios do GitHub. Mostrando exemplos locais.';
+                allRepos = [
+                    {name:'Integrating-nir-genomic-kernel', description:'Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.', html_url:'#', language:'R', stargazers_count:12, forks_count:3},
+                    {name:'Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro', description:'Aplicações de ML e redes neurais no melhoramento do cafeeiro.', html_url:'#', language:'Python', stargazers_count:8, forks_count:1},
+                    {name:'Importance-of-markers-for-QTL-detection-by-machine-learning-methods', description:'Detecção de QTL por métodos de machine learning.', html_url:'#', language:'R', stargazers_count:5, forks_count:0},
+                    {name:'Genomic-Selection_Course', description:'Minicurso sobre seleção genômica.', html_url:'#', language:'R', stargazers_count:4, forks_count:0}
+                ];
+                render();
+            }
+        }
+    }
+
+    function render(){
+        const filter = currentFilter.trim().toLowerCase();
+        // filter full list
+        const filtered = allRepos.filter(r=>{
+            if(!filter) return true;
+            return (r.name && r.name.toLowerCase().includes(filter)) ||
+                   (r.description && r.description.toLowerCase().includes(filter)) ||
+                   (r.language && r.language.toLowerCase().includes(filter));
+        });
+
+        // decide how many to show
+        const toShow = showingAll || filter ? filtered.length : Math.min(INITIAL_SHOW, filtered.length);
+
+        projectsListEl.innerHTML = '';
+
+        if(filtered.length === 0){
+            projectsListEl.innerHTML = '<div class="project-card"><p class="project-desc">Nenhum repositório encontrado.</p></div>';
+            shownCountEl.textContent = `0 / ${allRepos.length}`;
+            toggleBtn.classList.add('hidden');
+            return;
+        }
+
+        filtered.slice(0,toShow).forEach(repo=>{
+            const card = document.createElement('div'); card.className='project-card'; card.setAttribute('role','listitem');
+            card.innerHTML = `
+                <div class="project-top">
+                    <h3>${escapeHtml(repo.name)}</h3>
+                    <div class="project-meta">
+                        <span class="badge">⭐ ${repo.stargazers_count}</span>
+                        <span class="badge">🍴 ${repo.forks_count}</span>
+                    </div>
+                </div>
+                <p class="project-desc">${escapeHtml(repo.description || '')}</p>
+                <div class="project-meta">
+                    <span class="badge">${escapeHtml(repo.language || '—')}</span>
+                    <span class="small-muted">Atualizado: ${repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : '—'}</span>
+                </div>
+                <div class="actions">
+                    <a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">Abrir</a>
+                    <button class="link-btn" data-copy="${repo.html_url}">Copiar link</button>
+                </div>
+            `;
+            projectsListEl.appendChild(card);
+        });
+
+        shownCountEl.textContent = `${Math.min(toShow, filtered.length)} / ${allRepos.length}`;
+
+        // toggle visibility of 'mostrar mais' when appropriate
+        if(filter){
+            toggleBtn.classList.add('hidden');
+        } else if(allRepos.length <= INITIAL_SHOW){
+            toggleBtn.classList.add('hidden');
+        } else {
+            toggleBtn.classList.remove('hidden');
+            toggleBtn.textContent = showingAll ? 'Mostrar menos' : 'Mostrar mais';
+        }
+
+        // attach copy listeners
+        projectsListEl.querySelectorAll('button[data-copy]').forEach(btn=>{
+            btn.removeEventListener('click', onCopy);
+            btn.addEventListener('click', onCopy);
+        });
+    }
+
+    function onCopy(e){
+        const url = e.currentTarget.getAttribute('data-copy');
+        navigator.clipboard?.writeText(url).then(()=>{
+            const prev = e.currentTarget.textContent;
+            e.currentTarget.textContent = 'Copiado!';
+            setTimeout(()=> e.currentTarget.textContent = prev,1500);
+        }).catch(()=>alert('Não foi possível copiar.'));
+    }
+
+    function escapeHtml(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // handlers
+    const onSearch = debounce((e)=>{
+        currentFilter = e.target.value || '';
+        showingAll = false; // when searching, show full filtered list
+        render();
+    },250);
+
+    searchEl.addEventListener('input', onSearch);
+    clearBtn.addEventListener('click', ()=>{ searchEl.value=''; currentFilter=''; showingAll=false; render(); searchEl.focus(); });
+
+    toggleBtn.addEventListener('click', ()=>{ showingAll = !showingAll; render(); });
+
+    // init
+    fetchRepos();
+})();
+</script>
+
 </body>
 </html>
