@@ -11,189 +11,228 @@
         :root {
             --primary-color: #2c5f2d;
             --secondary-color: #97bc62;
-            --text-dark: #222;
-            --text-light: #666;
-            --bg-light: #f7f8f9;
-            --white: #ffffff;
-            --shadow: rgba(0,0,0,0.08);
-            --accent-dark: #2c3e50;
+            --muted:#6b7280;
+            --text-dark: #111827;
+            --text-light: #444;
+            --bg:#f7faf7;
+            --card:#ffffff;
+            --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+            --accent-dark: #0f1724;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
+            font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(180deg, #f7faf7 0%, #f1f5f9 100%);
             color: var(--text-dark);
-            background-color: var(--bg-light);
-            margin: 0;
-            -webkit-font-smoothing:antialiased;
+            margin: 0; -webkit-font-smoothing:antialiased;
         }
         header {
             background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--white);
-            padding: 3rem 1rem;
-            text-align: center;
-            box-shadow: 0 2px 12px var(--shadow);
-            position: relative;
+            color: #fff; padding: 2.4rem 1rem; text-align: center; position: relative;
+            box-shadow: var(--shadow);
         }
-        header h1 { font-size: 2rem; margin: 0.2rem 0 0.25rem; }
-        .subtitle { font-size: 1.03rem; opacity: 0.95; font-weight: 400; margin: 0; }
-        .location { margin-top: 0.5rem; font-size: 0.95rem; opacity: 0.9; }
-        .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-        .card { background: var(--white); border-radius: 10px; padding: 1.6rem; margin-bottom: 1.5rem; box-shadow: 0 6px 20px var(--shadow); }
-        h2 { color: var(--primary-color); font-size: 1.4rem; margin-bottom: 0.75rem; }
-        p { color: var(--text-light); }
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 0.9rem; }
-        .skill-item { background: #fff; padding: 0.9rem; border-radius: 8px; border-left: 4px solid var(--secondary-color); }
-        .skill-item h3{ margin: 0 0 6px; color: var(--primary-color); font-size: 1.02rem; }
-        .projects { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 1rem; }
-        /* Sidebar (float) behavior: when .card has class .sidebar, it becomes a floating sidebar */
-        .card.sidebar { float: right; width: 360px; margin-left: 1rem; }
-        .card.sidebar .projects { grid-template-columns: 1fr; gap: 0.6rem; }
-        /* Clear floats after the main container so footer and following content sit below */
-        .container::after { content: ""; display: block; clear: both; }
-        /* Responsive: disable float on small screens */
-        @media (max-width: 1000px) {
-            .card.sidebar { float: none; width: auto; margin-left: 0; }
-            .card.sidebar .projects { grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); }
-        }
-        .project-card { background:#fff;border-radius:8px;padding:1rem;border:1px solid #eef0f2; }
-        .project-card h3{margin:0 0 6px;font-size:1rem}
-        .project-card p{margin:0 0 10px;color:var(--text-light)}
-        .btn { display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent-dark);color:#fff;text-decoration:none;font-weight:600 }
-        .btn:hover{opacity:0.95}
-        .contact-links{display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:0.6rem}
-        .contact-link{display:inline-flex;align-items:center;gap:0.6rem;padding:0.6rem 1rem;background:var(--accent-dark);color:#fff;text-decoration:none;border-radius:8px}
-        footer{text-align:center;padding:1.2rem 1rem;color:var(--text-light);margin-top:1rem}
-        .lang-btn{position:absolute;top:14px;right:14px;padding:6px 10px;background:#084c2b;color:#fff;border:none;border-radius:6px;cursor:pointer}
-        img.avatar{width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.08);display:block;margin:0.6rem auto}
-        @media (max-width:720px){ header h1{font-size:1.45rem} }
+        .lang-btn{position:absolute;top:14px;right:14px;padding:8px 10px;background:rgba(0,0,0,0.12);color:#fff;border:none;border-radius:8px;cursor:pointer}
+        .avatar-wrap{display:flex;justify-content:center}
+        img.avatar{width:116px;height:116px;border-radius:12px;object-fit:cover;border:3px solid rgba(255,255,255,0.12);box-shadow:0 8px 30px rgba(2,6,23,0.12)}
+        header h1{font-size:1.4rem;margin:10px 0 6px}
+        .subtitle{opacity:0.95;margin:0}
+        .location{margin-top:6px;font-size:0.95rem;opacity:0.95}
+        .wrapper{max-width:1200px;margin:1.6rem auto;padding:0 1rem}
+
+        /* layout */
+        .layout{display:grid;grid-template-columns:1fr 360px;gap:1.25rem;align-items:start}
+        @media(max-width:1000px){.layout{grid-template-columns:1fr} .sidebar{position:static;height:auto}}
+
+        .card{background:var(--card);border-radius:12px;padding:1.2rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+        h2{color:var(--accent-dark);margin:0 0 0.75rem;font-size:1.05rem}
+        p{color:var(--text-light);margin:0}
+
+        /* skills */
+        .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem}
+        .skill-item{background:#fbfdfb;padding:0.85rem;border-radius:10px;border-left:4px solid var(--secondary-color)}
+        .skill-item h3{margin:0 0 6px;font-size:0.98rem;color:var(--primary-color)}
+
+        /* sidebar */
+        .sidebar{position:sticky;top:96px;height:calc(100vh - 120px);overflow:auto;padding:0.8rem}
+        .projects{display:grid;gap:0.6rem}
+        .project-card{display:flex;flex-direction:column;gap:6px;background:#fff;border-radius:8px;padding:0.8rem;border:1px solid #eef2e9}
+        .project-card h3{margin:0;font-size:0.95rem;color:var(--primary-color);word-break:break-word}
+        .project-card p{margin:0;font-size:0.9rem;color:var(--muted)}
+        .project-actions{margin-top:6px}
+        .btn{display:inline-block;padding:6px 10px;border-radius:8px;background:var(--accent-dark);color:#fff;text-decoration:none;font-weight:600;font-size:0.85rem}
+
+        /* search/filter for projects */
+        .search{display:flex;gap:8px;margin-bottom:10px}
+        .search input{flex:1;padding:8px;border-radius:8px;border:1px solid #e6eee2}
+
+        /* footer */
+        footer{text-align:center;padding:1rem;margin-top:12px;color:var(--muted)}
+
+        /* improvements: hover and focus */
+        a:focus, button:focus{outline:3px solid rgba(6,95,70,0.12);outline-offset:3px}
     </style>
 </head>
 <body>
     <header>
         <button class="lang-btn" onclick="toggleLang()" aria-label="Alternar idioma">EN/PT</button>
-        <img src="assets/avatar.svg" alt="Avatar Weverton" class="avatar" onerror="this.style.display='none'">
-        <h1>🌱 Weverton Gomes da Costa</h1>
-        <p class="subtitle">Pesquisador em Genética & Bioestatística</p>
-        <p class="location">📍 Viçosa, MG, Brasil | Universidade Federal de Viçosa</p>
+        <div class="avatar-wrap">
+            <img src="https://1drv.ms/i/c/d23904a132a03eb6/ETeG13la6HlPiNGNSQjcPOsB7W7xxiuJ0qGHtpIEq5GIbA?e=m8gx3f" alt="Foto de Weverton" class="avatar" onerror="this.src='assets/avatar.svg'">
+        </div>
+        <h1 id="name">🌱 Weverton Gomes da Costa</h1>
+        <p class="subtitle" id="subtitle">Pesquisador em Genética & Bioestatística</p>
+        <p class="location" id="location">📍 Viçosa, MG, Brasil | Universidade Federal de Viçosa</p>
     </header>
 
-    <main class="container">
-        <section class="card" id="sobre">
-            <h2>Sobre</h2>
-            <div class="about-content">
-                <p>💡 Transformo dados em descobertas: uso estatística, aprendizado de máquina e seleção genômica para decifrar padrões biológicos e otimizar cultivos agrícolas. Trabalho com pipelines reprodutíveis em R e Python, otimização computacional (CPU/GPU) e comunicação científica em LaTeX e RMarkdown.</p>
+    <main class="wrapper">
+        <div class="layout">
+            <!-- main column -->
+            <div>
+                <section class="card" id="sobre">
+                    <h2 id="about-title">Sobre</h2>
+                    <p id="about-text">💡 Transformo dados em descobertas: uso estatística, aprendizado de máquina e seleção genômica para decifrar padrões biológicos e otimizar cultivos agrícolas. Trabalho com pipelines reprodutíveis em R e Python, otimização computacional (CPU/GPU) e comunicação científica em LaTeX e RMarkdown.</p>
+                </section>
+
+                <section class="card" id="expertise">
+                    <h2 id="expertise-title">Áreas de Especialização</h2>
+                    <div class="skills-grid">
+                        <div class="skill-item"><h3>🧬 Genética Quantitativa</h3><p>Análise de variabilidade genética e seleção genômica.</p></div>
+                        <div class="skill-item"><h3>📊 Bioestatística</h3><p>Modelagem estatística, validação e interpretação de experimentos.</p></div>
+                        <div class="skill-item"><h3>🤖 Machine Learning</h3><p>Random Forest, redes neurais, QRF, otimização e interpretação.</p></div>
+                        <div class="skill-item"><h3>🛠️ Pipelines & Reprodutibilidade</h3><p>R, Python, RMarkdown, LaTeX, versionamento e práticas reprodutíveis.</p></div>
+                    </div>
+                </section>
+
+                <section class="card" id="habilidades">
+                    <h2 id="skills-title">Habilidades</h2>
+                    <ul>
+                        <li>Python (Pandas, Scikit-learn, TensorFlow)</li>
+                        <li>R (tidyverse, caret, Shiny)</li>
+                        <li>Machine Learning & Estatística</li>
+                        <li>Reprodutibilidade e versionamento (Git/GitHub)</li>
+                        <li>Visualização de dados</li>
+                    </ul>
+                </section>
+
+                <section class="card" id="sugestoes">
+                    <h2>Sugestões de melhoria de design</h2>
+                    <ul>
+                        <li>Adicionar uma seção de destaques com gráficos interativos (iframe ou imagens geradas) para projetos principais.</li>
+                        <li>Incluir um mini-portfolio com screenshots e badges para cada repositório.</li>
+                        <li>Usar um tema claro/escuro alternável e paleta consistente (Tailwind ou CSS custom properties).</li>
+                        <li>Adicionar links diretos para publicar artigos ou PDFs (RMarkdown/LaTeX exports).</li>
+                        <li>Adicionar feed de commits ou estatísticas do GitHub usando a API para mostrar atividade recente.</li>
+                    </ul>
+                </section>
             </div>
-        </section>
 
-        <section class="card">
-            <h2>Áreas de Especialização</h2>
-            <div class="skills-grid">
-                <div class="skill-item"><h3>🧬 Genética Quantitativa</h3><p>Análise de variabilidade genética e seleção genômica.</p></div>
-                <div class="skill-item"><h3>📊 Bioestatística</h3><p>Modelagem estatística, validação e interpretação de experimentos.</p></div>
-                <div class="skill-item"><h3>🤖 Machine Learning</h3><p>Random Forest, redes neurais, QRF, otimização e interpretação.</p></div>
-                <div class="skill-item"><h3>🛠️ Pipelines & Reprodutibilidade</h3><p>R, Python, RMarkdown, LaTeX, versionamento e práticas reprodutíveis.</p></div>
-            </div>
-        </section>
+            <!-- sidebar -->
+            <aside class="card sidebar" aria-labelledby="projetos-title">
+                <h2 id="projetos-title">Projetos e Repositórios</h2>
 
-        <section class="card sidebar" id="projetos">
-            <h2>Projetos e Repositórios</h2>
-            <div class="projects">
-                <div class="project-card"><h3>Integrating-nir-genomic-kernel</h3><p>Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel" target="_blank" rel="noopener">Abrir</a></div>
+                <div class="search"><input id="project-search" placeholder="Filtrar projetos..." aria-label="Filtrar projetos"></div>
 
-                <div class="project-card"><h3>Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro</h3><p>Aplicações de ML e redes neurais no melhoramento do cafeeiro — exemplos.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro" target="_blank" rel="noopener">Abrir</a></div>
+                <div class="projects" id="projects-list">
+                    <!-- Each project <p> has data-pt and data-en for translations -->
+                    <div class="project-card"><h3>Integrating-nir-genomic-kernel</h3><p data-pt="Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica." data-en="Fusion of spectral (NIR) and genomic kernel data to improve phenotypic prediction.">Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Importance-of-markers-for-QTL-detection-by-machine-learning-methods</h3><p>Detecção de QTL por métodos de machine learning e importância de marcadores.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro</h3><p data-pt="Aplicações de ML e redes neurais no melhoramento do cafeeiro — exemplos." data-en="Applications of ML and neural networks in coffee breeding — examples.">Aplicações de ML e redes neurais no melhoramento do cafeeiro — exemplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava</h3><p>Seleção genômica para tolerância à seca em mandioca — scripts e análises em R.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Importance-of-markers-for-QTL-detection-by-machine-learning-methods</h3><p data-pt="Detecção de QTL por métodos de machine learning e importância de marcadores." data-en="QTL detection using machine learning methods and marker importance.">Detecção de QTL por métodos de machine learning e importância de marcadores.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis</h3><p>Predição genômica com ML e redes neurais para traços com epistasia.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava</h3><p data-pt="Seleção genômica para tolerância à seca em mandioca — scripts e análises em R." data-en="Genomic selection for drought tolerance in cassava — R scripts and analyses.">Seleção genômica para tolerância à seca em mandioca — scripts e análises em R.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>GitHub-with-RStudio-LICAE</h3><p>Material didático integrando GitHub e RStudio — ótimo para workshops.</p><a class="btn" href="https://github.com/WevertonGomesCosta/GitHub-with-RStudio-LICAE" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis</h3><p data-pt="Predição genômica com ML e redes neurais para traços com epistasia." data-en="Genomic prediction using ML and neural networks for traits with epistasis.">Predição genômica com ML e redes neurais para traços com epistasia.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Genomic-Selection_Course</h3><p>Minicurso sobre seleção genômica em ambientes múltiplos.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection_Course" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>GitHub-with-RStudio-LICAE</h3><p data-pt="Material didático integrando GitHub e RStudio — ótimo para workshops." data-en="Teaching material integrating GitHub and RStudio — great for workshops.">Material didático integrando GitHub e RStudio — ótimo para workshops.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GitHub-with-RStudio-LICAE" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Diversidade-genética-e-identificação-de-regiões-genômicas-associadas-ao-tamanho-dos-grânulos-de-amido</h3><p>Estudo de diversidade genética da mandioca e regiões associadas ao tamanho do amido.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Genomic-Selection_Course</h3><p data-pt="Minicurso sobre seleção genômica em ambientes múltiplos." data-en="Mini-course on genomic selection across multiple environments.">Minicurso sobre seleção genômica em ambientes múltiplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Selection_Course" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Genomic-Prediction-using-Regularized-Artificial-Neural-Networks</h3><p>Regularização em redes neurais para predição genômica.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Diversidade-genética-e-identificação-de-regiões-genômicas-associadas-ao-tamanho-dos-grânulos-de-amido</h3><p data-pt="Estudo de diversidade genética da mandioca e regiões associadas ao tamanho do amido." data-en="Study of genetic diversity in cassava and regions associated with starch granule size.">Estudo de diversidade genética da mandioca e regiões associadas ao tamanho do amido.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Manipulacao-dados-e-Analise-Grafica-R</h3><p>Manipulação e visualização de dados em R — scripts e exemplos.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Genomic-Prediction-using-Regularized-Artificial-Neural-Networks</h3><p data-pt="Regularização em redes neurais para predição genômica." data-en="Regularization in neural networks for genomic prediction.">Regularização em redes neurais para predição genômica.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p>Estimativa de peso de suínos usando Mask R-CNN (fork).</p><a class="btn" href="https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Manipulacao-dados-e-Analise-Grafica-R</h3><p data-pt="Manipulação e visualização de dados em R — scripts e exemplos." data-en="Data manipulation and visualization in R — scripts and examples.">Manipulação e visualização de dados em R — scripts e exemplos.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p>Estimativa de peso bovino usando Mask R-CNN.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p data-pt="Estimativa de peso de suínos usando Mask R-CNN (fork)." data-en="Pig weight estimation using Mask R-CNN (fork).">Estimativa de peso de suínos usando Mask R-CNN (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>curso-git-github</h3><p>Guia prático sobre Git & GitHub com exemplos e exercícios.</p><a class="btn" href="https://github.com/WevertonGomesCosta/curso-git-github" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow</h3><p data-pt="Estimativa de peso bovino usando Mask R-CNN." data-en="Bovine weight estimation using Mask R-CNN.">Estimativa de peso bovino usando Mask R-CNN.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o</h3><p>Predição de traços com inteligência computacional e ML aplicados ao melhoramento.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>curso-git-github</h3><p data-pt="Guia prático sobre Git & GitHub com exemplos e exercícios." data-en="Practical guide on Git & GitHub with examples and exercises.">Guia prático sobre Git & GitHub com exemplos e exercícios.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/curso-git-github" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>AlphaSimR_Examples</h3><p>Exemplos e exercícios com AlphaSimR (fork).</p><a class="btn" href="https://github.com/WevertonGomesCosta/AlphaSimR_Examples" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o</h3><p data-pt="Predição de traços com inteligência computacional e ML aplicados ao melhoramento." data-en="Trait prediction using computational intelligence and ML applied to breeding.">Predição de traços com inteligência computacional e ML aplicados ao melhoramento.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Treinamento-GEFERT</h3><p>Material de treinamento e workshops.</p><a class="btn" href="https://github.com/WevertonGomesCosta/Treinamento-GEFERT" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>AlphaSimR_Examples</h3><p data-pt="Exemplos e exercícios com AlphaSimR (fork)." data-en="Examples and exercises with AlphaSimR (fork).">Exemplos e exercícios com AlphaSimR (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/AlphaSimR_Examples" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>GS_Embrapa_2022</h3><p>Recursos e scripts para projeto de seleção genômica EMBRAPA 2022.</p><a class="btn" href="https://github.com/WevertonGomesCosta/GS_Embrapa_2022" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Treinamento-GEFERT</h3><p data-pt="Material de treinamento e workshops." data-en="Training material and workshops.">Material de treinamento e workshops.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Treinamento-GEFERT" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>analisys-next-gen-2022</h3><p>Análises relacionadas a dados de sequência de nova geração (NGS).</p><a class="btn" href="https://github.com/WevertonGomesCosta/analisys-next-gen-2022" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>GS_Embrapa_2022</h3><p data-pt="Recursos e scripts para projeto de seleção genômica EMBRAPA 2022." data-en="Resources and scripts for EMBRAPA genomic selection project 2022.">Recursos e scripts para projeto de seleção genômica EMBRAPA 2022.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GS_Embrapa_2022" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self</h3><p>Scripts e material sobre diversidade genética em soja (com página de apoio).</p><a class="btn" href="https://github.com/WevertonGomesCosta/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>analisys-next-gen-2022</h3><p data-pt="Análises relacionadas a dados de sequência de nova geração (NGS)." data-en="Analyses related to next-generation sequencing (NGS) data.">Análises relacionadas a dados de sequência de nova geração (NGS).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/analisys-next-gen-2022" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>EMBRAPAImputation2022</h3><p>Recursos e scripts de imputação (fork).</p><a class="btn" href="https://github.com/WevertonGomesCosta/EMBRAPAImputation2022" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self</h3><p data-pt="Scripts e material sobre diversidade genética em soja (com página de apoio)." data-en="Scripts and material on genetic diversity in soybean (with project page).">Scripts e material sobre diversidade genética em soja (com página de apoio).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self" target="_blank" rel="noopener">Abrir</a></div></div>
 
-                <div class="project-card"><h3>GenomicSelectionManual</h3><p>Manual de seleção genômica (fork) — material de apoio.</p><a class="btn" href="https://github.com/WevertonGomesCosta/GenomicSelectionManual" target="_blank" rel="noopener">Abrir</a></div>
+                    <div class="project-card"><h3>EMBRAPAImputation2022</h3><p data-pt="Recursos e scripts de imputação (fork)." data-en="Resources and imputation scripts (fork).">Recursos e scripts de imputação (fork).</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/EMBRAPAImputation2022" target="_blank" rel="noopener">Abrir</a></div></div>
 
-            </div>
-        </section>
+                    <div class="project-card"><h3>GenomicSelectionManual</h3><p data-pt="Manual de seleção genômica (fork) — material de apoio." data-en="Genomic selection manual (fork) — supporting material.">Manual de seleção genômica (fork) — material de apoio.</p><div class="project-actions"><a class="btn" href="https://github.com/WevertonGomesCosta/GenomicSelectionManual" target="_blank" rel="noopener">Abrir</a></div></div>
 
-        <section class="card" id="habilidades">
-            <h2>Habilidades</h2>
-            <ul>
-                <li>Python (Pandas, Scikit-learn, TensorFlow)</li>
-                <li>R (tidyverse, caret, Shiny)</li>
-                <li>Machine Learning & Estatística</li>
-                <li>Reprodutibilidade e versionamento (Git/GitHub)</li>
-                <li>Visualização de dados</li>
-            </ul>
-        </section>
-
-        <section class="card" id="contato">
-            <h2>Contato</h2>
-            <p>Entre em contato comigo para colaborações ou oportunidades:</p>
-            <div class="contact-links">
-                <a class="contact-link" href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener noreferrer" aria-label="GitHub Profile">
-                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-                    GitHub
-                </a>
-                <a class="contact-link" href="mailto:weverton@email.com" aria-label="Email">weverton@email.com</a>
-                <a class="contact-link" href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener">LinkedIn</a>
-                <a class="contact-link" href="https://orcid.org/0000-0003-0742-5936" target="_blank" rel="noopener">ORCID</a>
-                <a class="contact-link" href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener">Lattes</a>
-            </div>
-        </section>
-
+                </div>
+            </aside>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Weverton Gomes Costa</p>
+        <p id="footer-text">&copy; 2025 Weverton Gomes Costa</p>
     </footer>
 
     <script>
         const content = {
             pt: {
-                tagline: "Pesquisador em genética e bioestatística — seleção genômica, modelos preditivos e análise de dados para agricultura.",
-                aboutText: "Sou mestre/doutorando em genética quantitativa, com experiência em machine learning e bioinformática aplicada à agricultura. Desenvolvo pipelines reprodutíveis em R e Python para seleção genômica, análise de pragas, e apoio a decisões em melhoramento.",
+                name: "🌱 Weverton Gomes da Costa",
+                subtitle: "Pesquisador em Genética & Bioestatística",
+                location: "📍 Viçosa, MG, Brasil | Universidade Federal de Viçosa",
+                aboutText: "💡 Transformo dados em descobertas: uso estatística, aprendizado de máquina e seleção genômica para decifrar padrões biológicos e otimizar cultivos agrícolas. Trabalho com pipelines reprodutíveis em R e Python, otimização computacional (CPU/GPU) e comunicação científica em LaTeX e RMarkdown.",
+                expertiseTitle: "Áreas de Especialização",
+                skillsTitle: "Habilidades",
+                contactTitle: "Contato",
+                contactEmail: "wevertonufv@gmail.com",
+                suggestionsTitle: "Sugestões de melhoria de design",
+                projectsTitle: "Projetos e Repositórios",
                 footer: "&copy; 2025 Weverton Gomes Costa"
             },
             en: {
-                tagline: "Researcher in genetics and biostatistics — genomic selection, predictive models, and data analysis for agriculture.",
-                aboutText: "I am a MSc/PhD candidate in quantitative genetics, with experience in machine learning and bioinformatics applied to agriculture. I develop reproducible pipelines in R and Python for genomic selection, pest analysis, and breeding decision support.",
+                name: "🌱 Weverton Gomes da Costa",
+                subtitle: "Researcher in genetics and biostatistics",
+                location: "📍 Viçosa, MG, Brazil | Federal University of Viçosa",
+                aboutText: "💡 I turn data into discoveries: I use statistics, machine learning and genomic selection to decipher biological patterns and optimize crops. I work on reproducible pipelines in R and Python, computational optimization (CPU/GPU) and scientific communication in LaTeX and RMarkdown.",
+                expertiseTitle: "Areas of Expertise",
+                skillsTitle: "Skills",
+                contactTitle: "Contact",
+                contactEmail: "wevertonufv@gmail.com",
+                suggestionsTitle: "Design improvement suggestions",
+                projectsTitle: "Projects & Repositories",
                 footer: "&copy; 2025 Weverton Gomes Costa"
             }
         };
 
         function setLang(lang){
-            document.querySelector('.subtitle').innerText = content[lang].tagline || document.querySelector('.subtitle').innerText;
-            document.getElementById('about-text').innerText = content[lang].aboutText || document.getElementById('about-text').innerText;
-            document.getElementById('footer-text')?.remove();
-            // footer updated directly below if needed
+            document.getElementById('name').innerText = content[lang].name;
+            document.getElementById('subtitle').innerText = content[lang].subtitle;
+            document.getElementById('location').innerText = content[lang].location;
+            document.getElementById('about-text').innerText = content[lang].aboutText;
+            document.getElementById('expertise-title').innerText = content[lang].expertiseTitle;
+            document.getElementById('skills-title').innerText = content[lang].skillsTitle;
+            document.getElementById('sugestoes').querySelector('h2').innerText = content[lang].suggestionsTitle;
+            document.getElementById('projetos-title').innerText = content[lang].projectsTitle;
+            document.getElementById('footer-text').innerHTML = content[lang].footer;
+            // email
+            document.querySelectorAll('.contact-link[href^="mailto:"]').forEach(el => el.innerText = content[lang].contactEmail);
+            document.querySelectorAll('.contact-link[href^="mailto:"]').forEach(el => el.href = 'mailto:'+content[lang].contactEmail);
+
+            // translate project descriptions (use data attributes)
+            document.querySelectorAll('#projects-list .project-card p').forEach(p=>{
+                const en = p.getAttribute('data-en');
+                const pt = p.getAttribute('data-pt');
+                p.innerText = (lang === 'en') ? (en || p.innerText) : (pt || p.innerText);
+            });
         }
 
         function toggleLang(){
@@ -207,7 +246,17 @@
             }
         }
 
-        // Inicializa em pt
+        // project search
+        document.getElementById('project-search').addEventListener('input', e=>{
+            const q = e.target.value.toLowerCase();
+            document.querySelectorAll('#projects-list .project-card').forEach(card=>{
+                const title = card.querySelector('h3').innerText.toLowerCase();
+                const desc = card.querySelector('p').innerText.toLowerCase();
+                card.style.display = (title.includes(q) || desc.includes(q)) ? '' : 'none';
+            });
+        });
+
+        // inicializar
         setLang('pt');
     </script>
 </body>
