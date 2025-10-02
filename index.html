@@ -776,16 +776,17 @@
             </div>
         </section>
 
+        <!-- REPLACE: aside.sidebar (Projetos & Repositórios) -->
         <aside class="sidebar" aria-labelledby="projetos-title">
             <h2 id="projetos-title">Projetos & Repositórios</h2>
-    
+        
             <div class="controls">
                 <input id="project-search" placeholder="Buscar repositório (nome/descrição/língua)..." aria-label="Buscar repositório">
                 <button id="clear-btn" title="Limpar busca">Limpar</button>
             </div>
-    
+        
             <div class="meta" id="projects-meta">Carregando repositórios...</div>
-    
+        
             <!-- Featured (top repos by stars) -->
             <div id="featured-wrap" style="margin-bottom:12px;">
                 <h3 style="margin:0 0 8px;color:var(--primary);font-size:1rem;">Destaques</h3>
@@ -793,11 +794,12 @@
                     <!-- featured cards injected here -->
                 </div>
             </div>
-    
-            <div class="projects" id="projects-list" role="list">
+        
+            <!-- Projects list: full-width column; page will grow vertically -->
+            <div class="projects" id="projects-list" role="list" style="max-height:none;overflow:visible;padding-right:0;">
                 <!-- initial project cards rendered here -->
             </div>
-    
+        
             <div style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center">
                 <div class="small-muted" id="shown-count">—</div>
                 <div class="center">
@@ -948,15 +950,19 @@
             <p>&copy; 2025 Weverton Gomes da Costa</p>
         </div>
     </footer>
+<!-- REPLACE: the IIFE script that handles fetching/rendering repos -->
 <script>
 (function(){
     const GITHUB_USER = 'WevertonGomesCosta';
     const CACHE_KEY = 'gh_repos_cache_v1';
     const CACHE_TS_KEY = 'gh_repos_cache_ts_v1';
     const CACHE_TTL = 1000 * 60 * 60; // 1h
-    const INITIAL_SHOW = 3; // how many repos to show initially
-    const PAGE_SIZE = 3; // expand by 3 each click
-    let showingCount = INITIAL_SHOW; // current number of repos shown
+    const INITIAL_SHOW = 3; // show 3 initially
+    const PAGE_SIZE = 3;    // expand by 3 each click
+
+    let showingCount = INITIAL_SHOW;
+    let showingAll = false;
+    let currentFilter = '';
 
     const projectsListEl = document.getElementById('projects-list');
     const featuredListEl = document.getElementById('featured-list');
@@ -967,31 +973,41 @@
     const clearBtn = document.getElementById('clear-btn');
 
     let allRepos = [];
-    let showingAll = false;
-    let currentFilter = '';
 
-    // debounce helper
     function debounce(fn, wait=250){ let t; return (...args)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(this,args),wait); }; }
 
     function readCache(){
-        try{ const ts = Number(localStorage.getItem(CACHE_TS_KEY)||0); const now=Date.now(); if(now-ts < CACHE_TTL){ const data = JSON.parse(localStorage.getItem(CACHE_KEY)||'[]'); return data; } }
-        catch(e){ console.warn('cache read failed',e); }
+        try{
+            const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0);
+            if(Date.now() - ts < CACHE_TTL){
+                return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
+            }
+        } catch(e){ console.warn('cache read failed', e); }
         return null;
     }
-    function writeCache(data){ try{ localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch(e){ console.warn('cache write failed',e); } }
+    function writeCache(data){
+        try{
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
+        } catch(e){ console.warn('cache write failed', e); }
+    }
 
     async function fetchRepos(){
         metaEl.textContent = 'Buscando repositórios...';
-        // try cache first
+
         const cache = readCache();
-        if(cache && cache.length){ allRepos = cache; metaEl.textContent = `Carregado ${cache.length} repositórios (cache).`; renderAll(); }
+        if(cache && cache.length){
+            allRepos = cache;
+            metaEl.textContent = `Carregado ${cache.length} repositórios (cache).`;
+            resetViewState();
+            renderAll();
+        }
 
         try{
             const per_page = 100;
             const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=${per_page}&sort=updated`);
-            if(!res.ok){ throw new Error('GitHub API respondeu: '+res.status); }
+            if(!res.ok) throw new Error('GitHub API respondeu: ' + res.status);
             const data = await res.json();
-            // map relevant fields
             allRepos = data.map(r=>({
                 name: r.name,
                 html_url: r.html_url,
@@ -1003,6 +1019,7 @@
             }));
             writeCache(allRepos);
             metaEl.textContent = `Encontrados ${allRepos.length} repositórios.`;
+            resetViewState();
             renderAll();
         }catch(err){
             console.error(err);
@@ -1014,9 +1031,18 @@
                     {name:'Importance-of-markers-for-QTL-detection-by-machine-learning-methods', description:'Detecção de QTL por métodos de machine learning.', html_url:'#', language:'R', stargazers_count:5, forks_count:0, updated_at: null},
                     {name:'Genomic-Selection_Course', description:'Minicurso sobre seleção genômica.', html_url:'#', language:'R', stargazers_count:4, forks_count:0, updated_at: null}
                 ];
+                resetViewState();
                 renderAll();
             }
         }
+    }
+
+    function resetViewState(){
+        showingCount = INITIAL_SHOW;
+        showingAll = false;
+        currentFilter = '';
+        if(searchEl) searchEl.value = '';
+        if(document.getElementById('featured-wrap')) document.getElementById('featured-wrap').style.display = '';
     }
 
     function renderFeatured(repos){
@@ -1031,7 +1057,7 @@
             el.style.boxShadow = '0 8px 30px rgba(16,185,129,0.06)';
             el.innerHTML = `
                 <div class="project-top">
-                    <h3>${escapeHtml(formatTitle(r.name))}</h3>
+                    <h3>${escapeHtml(titleCase(formatTitle(r.name)))}</h3>
                     <div class="project-meta">
                         <span class="badge">⭐ ${r.stargazers_count}</span>
                         <span class="badge">🍴 ${r.forks_count}</span>
@@ -1051,8 +1077,8 @@
     }
 
     function render(){
-        const filter = currentFilter.trim().toLowerCase();
-        // filter full list
+        const filter = (currentFilter || '').trim().toLowerCase();
+
         const filtered = allRepos.filter(r=>{
             if(!filter) return true;
             return (r.name && r.name.toLowerCase().includes(filter)) ||
@@ -1060,12 +1086,9 @@
                    (r.language && r.language.toLowerCase().includes(filter));
         });
 
-        // decide how many to show
-        let toShow;
-        if(filter){
-            // when searching, show all matching results
-            toShow = filtered.length;
-        } else {
+        let toShow = filtered.length;
+        if(!filter){
+            // if not searching, show only a portion (showingCount)
             toShow = Math.min(showingCount, filtered.length);
         }
 
@@ -1078,11 +1101,13 @@
             return;
         }
 
-        filtered.slice(0,toShow).forEach(repo=>{
-            const card = document.createElement('div'); card.className='project-card'; card.setAttribute('role','listitem');
+        filtered.slice(0, toShow).forEach(repo=>{
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.setAttribute('role','listitem');
             card.innerHTML = `
                 <div class="project-top">
-                    <h3>${escapeHtml(formatTitle(repo.name))}</h3>
+                    <h3>${escapeHtml(titleCase(formatTitle(repo.name)))}</h3>
                     <div class="project-meta">
                         <span class="badge">⭐ ${repo.stargazers_count}</span>
                         <span class="badge">🍴 ${repo.forks_count}</span>
@@ -1103,17 +1128,25 @@
 
         shownCountEl.textContent = `${Math.min(toShow, filtered.length)} / ${allRepos.length}`;
 
-        // toggle visibility of 'mostrar mais' when appropriate
+        // toggle button logic
         if(filter){
             toggleBtn.classList.add('hidden');
         } else if(allRepos.length <= INITIAL_SHOW){
             toggleBtn.classList.add('hidden');
         } else {
             toggleBtn.classList.remove('hidden');
-            toggleBtn.textContent = showingAll ? 'Mostrar menos' : 'Mostrar mais';
+            // if we've shown all available filtered repos -> show "Mostrar menos"
+            const filteredLen = filtered.length;
+            if(toShow >= filteredLen && filteredLen > INITIAL_SHOW){
+                toggleBtn.textContent = 'Mostrar menos';
+                showingAll = true;
+            } else {
+                toggleBtn.textContent = 'Mostrar mais';
+                showingAll = false;
+            }
         }
 
-        // attach copy listeners
+        // copy listeners
         projectsListEl.querySelectorAll('button[data-copy]').forEach(btn=>{
             btn.removeEventListener('click', onCopy);
             btn.addEventListener('click', onCopy);
@@ -1121,7 +1154,7 @@
     }
 
     function renderAll(){
-        // compute featured (top 3 by stars)
+        // featured: top 3 by stars
         const sorted = [...allRepos].sort((a,b)=> (b.stargazers_count||0) - (a.stargazers_count||0));
         const featured = sorted.slice(0,3);
         renderFeatured(featured);
@@ -1137,38 +1170,64 @@
         }).catch(()=>alert('Não foi possível copiar.'));
     }
 
-    function formatTitle(name){ if(!name) return ''; return String(name).replace(/[-_]+/g,' '); }
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    // helpers
+    function formatTitle(name){
+        if(!name) return '';
+        return String(name).replace(/[-_]+/g,' ').replace(/\s+/g,' ').trim();
+    }
+    function titleCase(str){
+        return String(str).split(' ').map(w=>{
+            if(!w) return '';
+            return w[0].toUpperCase() + w.slice(1).toLowerCase();
+        }).join(' ');
+    }
+    function escapeHtml(s){ if(s === null || s === undefined) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-    // handlers
+    // events
     const onSearch = debounce((e)=>{
         currentFilter = e.target.value || '';
-        showingAll = false; // when searching, show full filtered list
+        // when searching we want to show all matching results
+        showingCount = Number.MAX_SAFE_INTEGER;
         render();
-        // hide featured while searching to focus on results
-        if(currentFilter.trim()) document.getElementById('featured-wrap').style.display = 'none'; else document.getElementById('featured-wrap').style.display = '';
-    },250);
+        document.getElementById('featured-wrap').style.display = currentFilter.trim() ? 'none' : '';
+    }, 250);
 
     searchEl.addEventListener('input', onSearch);
-    clearBtn.addEventListener('click', ()=>{ searchEl.value=''; currentFilter=''; showingAll=false; render(); document.getElementById('featured-wrap').style.display = ''; searchEl.focus(); });
+    clearBtn.addEventListener('click', ()=>{
+        searchEl.value = '';
+        currentFilter = '';
+        showingCount = INITIAL_SHOW;
+        render();
+        if(document.getElementById('featured-wrap')) document.getElementById('featured-wrap').style.display = '';
+        searchEl.focus();
+    });
 
     toggleBtn.addEventListener('click', ()=>{
         const filter = (currentFilter||'').trim().toLowerCase();
-        const filteredLen = allRepos.filter(r=>{
+        const filtered = allRepos.filter(r=>{
             if(!filter) return true;
             return (r.name && r.name.toLowerCase().includes(filter)) ||
                    (r.description && r.description.toLowerCase().includes(filter)) ||
                    (r.language && r.language.toLowerCase().includes(filter));
-        }).length;
+        });
+        const filteredLen = filtered.length;
 
-        if(showingCount >= filteredLen){
-            // collapse back to initial
+        if(showingAll || showingCount >= filteredLen){
+            // collapse
             showingCount = INITIAL_SHOW;
+            showingAll = false;
         } else {
-            // expand by PAGE_SIZE
+            // expand by PAGE_SIZE (or to all if less than PAGE_SIZE remain)
             showingCount = Math.min(showingCount + PAGE_SIZE, filteredLen);
+            showingAll = showingCount >= filteredLen;
         }
         render();
+        // smooth scroll to the first newly shown item (optional UX)
+        if(showingCount > INITIAL_SHOW){
+            const firstNewIndex = INITIAL_SHOW;
+            const items = projectsListEl.querySelectorAll('.project-card');
+            if(items[firstNewIndex]) items[firstNewIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     });
 
     // init
