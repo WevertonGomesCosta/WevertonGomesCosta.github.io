@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Weverton Gomes da Costa - Pesquisador em Genética e Estatística, Data Scientist, CEO da Conecta GEM, especialista em Machine Learning">
-    <meta name="keywords" content="genética, bioestatística, machine learning, agronegócio, UFV, seleção genômica">
+    <meta name="keywords" content="genética, bioestatística, machine learning, agronegócio, UFV, seleção genômica, software GENES">
     <meta name="author" content="Weverton Gomes da Costa">
     <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
@@ -400,6 +400,25 @@
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
+        
+        #toast-notification {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary);
+            color: var(--dark);
+            padding: 12px 24px;
+            border-radius: 8px;
+            z-index: 2000;
+            transition: bottom 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            font-weight: 500;
+        }
+        #toast-notification.show {
+            bottom: 30px;
+        }
+
     </style>
 </head>
 
@@ -443,7 +462,7 @@
             <h2 class="reveal" data-key="about-title">Sobre Mim</h2>
             <div class="card reveal">
                  <p style="font-size: 1.1rem; line-height: 1.8;" data-key="about-p1">Sou <strong>Engenheiro Agrônomo</strong> com mestrado e doutorado em <strong>Genética e Melhoramento</strong> pela UFV, atualmente cursando <strong>Doutorado em Estatística Aplicada e Biometria</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística, ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.</p>
-                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p2">Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.</p>
+                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p2">Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sou especialista no software GENES, e busco sempre a excelência na comunicação científica e na aplicação prática do conhecimento.</p>
                 <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p3">Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.</p>
             </div>
         </section>
@@ -469,7 +488,7 @@
                 <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3">Random Forest, redes neurais, QRF e otimização de hiperparâmetros para predição fenotípica.</p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4">Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.</p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5">Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico de Crescimento">📈</span><h3 data-key="exp-title6">Data Science em AgTech</h3><p data-key="exp-desc6">Integração de dados multi-ômicos, análise de big data agrícola e visualização interativa de dados.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7">Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.</p></div>
             </div>
         </section>
 
@@ -566,6 +585,7 @@
             <div class="skills-container stagger-children">
                 <span class="skill-tag reveal" data-key="skill1" data-tooltip="Pandas, Scikit-learn, TensorFlow">Python</span>
                 <span class="skill-tag reveal" data-key="skill2" data-tooltip="Tidyverse, Caret, Shiny">R</span>
+                <span class="skill-tag reveal" data-key="skill8" data-tooltip="Análise de variância, Modelos Biométricos, Análise Multivariada">Software GENES</span>
                 <span class="skill-tag reveal" data-key="skill3" data-tooltip="Modelos Preditivos, Inferência">Machine Learning & Estatística</span>
                 <span class="skill-tag reveal" data-key="skill4" data-tooltip="GWS, GWAS">Seleção Genômica</span>
                 <span class="skill-tag reveal" data-key="skill5" data-tooltip="LMM, GLMM">Modelos Mistos & Biometria</span>
@@ -601,7 +621,7 @@
                 <aside class="contact-links-aside">
                     <h3 data-key="contact-other">Redes Sociais e Perfis</h3>
                     <div class="contact-grid">
-<a href="mailto:wevertonufv@gmail.com" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>Email</a>
+<a href="#" id="copy-email-link" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>Email</a>
                     <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
                     <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
                     <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" class="contact-link">
@@ -623,6 +643,8 @@
             <p>&copy; 2025 Weverton Gomes da Costa</p>
         </div>
     </footer>
+
+    <div id="toast-notification"></div>
 
     <script>
         // --- Lógica de Inicialização e Scripts ---
@@ -725,7 +747,27 @@
                     status.style.color = '#f44336';
                 });
             }
-            form.addEventListener("submit", handleSubmit)
+            form.addEventListener("submit", handleSubmit);
+            
+            // --- Copiar Email ---
+            document.getElementById('copy-email-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                const emailToCopy = 'wevertonufv@gmail.com';
+                
+                const textArea = document.createElement('textarea');
+                textArea.value = emailToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                const toast = document.getElementById('toast-notification');
+                toast.textContent = `Email: ${emailToCopy} copiado!`;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            });
         });
     </script>
     
@@ -741,7 +783,7 @@
                 'nav-about': 'Sobre', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
                 'about-title': 'Sobre Mim',
                 'about-p1': `Sou <strong>Engenheiro Agrônomo</strong> com mestrado e doutorado em <strong>Genética e Melhoramento</strong> pela UFV, atualmente cursando <strong>Doutorado em Estatística Aplicada e Biometria</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística, ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.`,
-                'about-p2': `Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.`,
+                'about-p2': `Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sou especialista no software GENES, e busco sempre a excelência na comunicação científica e na aplicação prática do conhecimento.`,
                 'about-p3': `Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.`,
                 'publications-title': 'Publicações e Citações',
                 'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
@@ -763,7 +805,7 @@
                 'exp-title3': 'Machine Learning & IA', 'exp-desc3': 'Random Forest, redes neurais, QRF e otimização de hiperparâmetros para predição fenotípica.',
                 'exp-title4': 'Pipelines Reprodutíveis', 'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.',
                 'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
-                'exp-title6': 'Data Science em AgTech', 'exp-desc6': 'Integração de dados multi-ômicos, análise de big data agrícola e visualização interativa de dados.',
+                'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
                 'projects-title': 'Projetos & Repositórios',
                 'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Destaques', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
                 'licae-desc': 'No LICAE, desenvolvo e aplico métodos de machine learning e estatística avançada para o melhoramento genético, focando em aumentar a eficiência da seleção genômica e apoiar decisões estratégicas no campo.',
@@ -772,6 +814,7 @@
                 'conecta-item1': 'Consultoria em bioestatística e IA', 'conecta-item2': 'Implementação de pipelines de seleção genômica', 'conecta-item3': 'Capacitação e treinamentos em R e Python',
                 'skills-title': 'Habilidades Técnicas',
                 'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Estatística', 'skill4': 'Seleção Genômica', 'skill5': 'Modelos Mistos & Biometria', 'skill6': 'Reprodutibilidade', 'skill7': 'Visualização de Dados',
+                'skill8': 'Software GENES',
                 'contact-title': 'Contato',
                 'contact-other': 'Redes Sociais e Perfis',
                 'form-name': 'Nome', 'form-name-ph': 'Seu nome completo',
@@ -795,7 +838,7 @@
                 'nav-about': 'About', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
                 'about-title': 'About Me',
                 'about-p1': `I am an <strong>Agronomist Engineer</strong> with a Master's and PhD in <strong>Genetics and Plant Breeding</strong> from UFV, currently pursuing a <strong>PhD in Applied Statistics and Biometrics</strong> and a postdoctoral fellowship from FAPEMIG/CNPq. As <strong>CEO and Co-founder of Conecta GEM</strong>, I lead initiatives that connect statistics, data science, and agriculture, transforming complex data into intelligent solutions for agribusiness.`,
-                'about-p2': `My expertise ranges from <strong>advanced statistical models</strong> and <strong>genomic selection</strong> to the implementation of <strong>machine learning algorithms</strong> and <strong>neural networks</strong> to solve challenges in plant breeding and digital agriculture. I work with reproducible pipelines in R and Python, always striving for excellence in scientific communication and practical application of knowledge.`,
+                'about-p2': `My expertise ranges from <strong>advanced statistical models</strong> and <strong>genomic selection</strong> to the implementation of <strong>machine learning algorithms</strong> and <strong>neural networks</strong> to solve challenges in plant breeding and digital agriculture. I work with reproducible pipelines in R and Python, am an expert in GENES software, and always strive for excellence in scientific communication and practical application of knowledge.`,
                 'about-p3': `Since <strong>2022</strong>, I have also served as the <strong>Student Coordinator at LICAE – UFV</strong>, where I develop research in computational intelligence, biometrics, and genomic selection, in addition to collaborating in the training of new researchers and the integration of multidisciplinary projects.`,
                 'publications-title': 'Publications and Citations',
                 'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
@@ -817,7 +860,7 @@
                 'exp-title3': 'Machine Learning & AI', 'exp-desc3': 'Random Forest, neural networks, QRF, and hyperparameter optimization for phenotypic prediction.',
                 'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.',
                 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
-                'exp-title6': 'Data Science in AgTech', 'exp-desc6': 'Integration of multi-omics data, analysis of agricultural big data, and interactive data visualization.',
+                'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
                 'projects-title': 'Projects & Repositories',
                 'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured', 'show-more': 'Show more', 'show-less': 'Show less',
                 'licae-desc': 'At LICAE, I develop and apply machine learning and advanced statistics methods for genetic improvement, focusing on increasing the efficiency of genomic selection and supporting strategic decisions in the field.',
@@ -826,6 +869,7 @@
                 'conecta-item1': 'Consulting in biostatistics and AI', 'conecta-item2': 'Implementation of genomic selection pipelines', 'conecta-item3': 'Training and workshops in R and Python',
                 'skills-title': 'Technical Skills',
                 'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Statistics', 'skill4': 'Genomic Selection', 'skill5': 'Mixed Models & Biometrics', 'skill6': 'Reproducibility', 'skill7': 'Data Visualization',
+                'skill8': 'GENES Software',
                 'contact-title': 'Social Media and Contact',
                 'contact-other': 'Social Media and Profiles',
                 'form-name': 'Name', 'form-name-ph': 'Your full name',
@@ -858,8 +902,9 @@
                 translations[currentLang]['subtitle-2'],
                 translations[currentLang]['subtitle-3'],
                 translations[currentLang]['subtitle-4']
-            ].filter(Boolean); // Filter out any undefined keys
+            ].filter(Boolean);
 
+            if (currentPhrases.length === 0) return;
             const currentPhrase = currentPhrases[subtitleIndex];
             
             let displayText;
@@ -907,7 +952,6 @@
             document.querySelector('.lang-switch .lang-pt').classList.toggle('active', lang === 'pt');
             document.querySelector('.lang-switch .lang-en').classList.toggle('active', lang === 'en');
             
-            // Reset and restart subtitle animation for the new language
             clearTimeout(subtitleTimeout);
             subtitleIndex = 0;
             charIndex = 0;
@@ -973,7 +1017,6 @@
             }
 
             async function fetchRepos() {
-                // Skeletons are now in HTML, so no need to create them here.
                 metaEl.textContent = translations[currentLang].fetching_repos;
                 const cache = readCache();
                 if (cache && cache.length) { allRepos = cache; metaEl.textContent = translations[currentLang].loaded_repos_cache(cache.length); renderAll(); return; }
@@ -1184,8 +1227,7 @@
 
             const ctx = canvas.getContext('2d');
             let particles = [];
-            const particleCount = 70;
-
+            
             function setCanvasSize() {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
