@@ -40,29 +40,21 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text);
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background: #0f172a;
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-            cursor: default; /* Cursor padrão */
+            cursor: default;
         }
 
-        body::before {
-            content: '';
+        #particle-canvas {
             position: fixed;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
-            animation: drift 30s infinite linear;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
-        }
-
-        @keyframes drift {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            pointer-events: none;
         }
 
         header {
@@ -105,11 +97,13 @@
         .subtitle {
             font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-muted);
             margin-bottom: 15px; font-weight: 300; height: 1.6em; 
+            min-height: 1.6em;
         }
         .subtitle::after {
             content: '▋';
             animation: blink 0.7s infinite;
             color: var(--primary);
+            font-weight: 400;
         }
         @keyframes blink {
             0%, 100% { opacity: 1; }
@@ -151,13 +145,22 @@
         .card p { color: var(--text-muted); line-height: 1.6; }
 
         .card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.2) 0%, transparent 40%);
-            opacity: 0; transition: opacity 0.4s ease; z-index: 1;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(120px circle at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.3), transparent 80%);
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.4s;
+            z-index: 1;
         }
         .card:hover::before { opacity: 1; }
         .card > * { position: relative; z-index: 2; }
-        .card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.5); }
+        .card:hover { 
+            transform: translateY(-5px); 
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2);
+        }
         .icon { font-size: 2rem; margin-bottom: 15px; display: block; }
         
         .timeline { position: relative; padding: 20px 0; }
@@ -370,10 +373,38 @@
             will-change: opacity, transform; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         .stagger-children .reveal { transition-delay: calc(var(--stagger-index) * 120ms); }
+
+        /* Skeleton Loader Styles */
+        .skeleton-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            height: 220px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .skeleton-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
     </style>
 </head>
 
 <body>
+    <canvas id="particle-canvas"></canvas>
     <a href="#" class="back-to-top" aria-label="Voltar ao topo">↑</a>
     
     <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
@@ -446,7 +477,14 @@
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
             <div class="meta reveal" id="projects-meta"></div>
-            <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;"></div>
+            <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
             <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
 
@@ -490,7 +528,9 @@
             </div>
         
             <div class="grid stagger-children" id="publicacoes-grid">
-                <!-- Publicações serão inseridas aqui via JS -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
         </section>
         
@@ -537,14 +577,6 @@
         <section id="contato" class="section">
             <h2 class="reveal" data-key="contact-title">Contato</h2>
             <div class="contact-container reveal">
-                <!--
-                    INSTRUÇÕES PARA ATIVAR O FORMULÁRIO:
-                    1. Vá para https://formspree.io/ e crie uma conta (é grátis).
-                    2. Crie um novo formulário ("New Form").
-                    3. Copie o ID único do seu formulário (ex: xjvoqzpe).
-                    4. Substitua "your_unique_form_id" na linha 'action' abaixo pelo seu ID.
-                    O formulário começará a funcionar e a enviar e-mails para sua conta.
-                -->
                 <form id="contact-form" class="contact-form" action="https://formspree.io/f/mnngvbbg" method="POST">
                     <div class="form-group">
                         <label for="name" data-key="form-name">Nome</label>
@@ -701,7 +733,10 @@
         // --- Lógica de Tradução e Conteúdo Dinâmico ---
         const translations = {
             pt: {
-                'subtitle': 'Pesquisador em Genética & Estatística | Data Scientist',
+                'subtitle-1': 'Pesquisador em Genética & Estatística',
+                'subtitle-2': 'Data Scientist',
+                'subtitle-3': 'CEO & Cofundador - Conecta GEM',
+                'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 Doutorando em Estatística - UFV', 'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM', 'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
                 'nav-about': 'Sobre', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
                 'about-title': 'Sobre Mim',
@@ -752,7 +787,10 @@
                 'open_btn': 'Abrir', 'copy_btn': 'Copiar link', 'copied_btn': 'Copiado!', 'no_description': 'Sem descrição.', 'updated_at': 'Atualizado:'
             },
             en: {
-                'subtitle': 'Genetics & Statistics Researcher | Data Scientist',
+                'subtitle-1': 'Genetics & Statistics Researcher',
+                'subtitle-2': 'Data Scientist',
+                'subtitle-3': 'CEO & Co-founder - Conecta GEM',
+                'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 PhD Candidate in Statistics - UFV', 'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM', 'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
                 'nav-about': 'About', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
                 'about-title': 'About Me',
@@ -805,41 +843,85 @@
         };
 
         let currentLang = 'pt';
-        let typingInterval;
+        let subtitleTimeout;
+        let subtitleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function typeAndEraseSubtitle() {
+            const subtitleEl = document.getElementById('subtitle');
+            if (!subtitleEl) return;
+            
+            clearTimeout(subtitleTimeout);
+            const currentPhrases = [
+                translations[currentLang]['subtitle-1'],
+                translations[currentLang]['subtitle-2'],
+                translations[currentLang]['subtitle-3'],
+                translations[currentLang]['subtitle-4']
+            ].filter(Boolean); // Filter out any undefined keys
 
-        function typeEffect(element, text) {
-            let i = 0; element.innerHTML = "";
-            if (typingInterval) clearInterval(typingInterval);
-            typingInterval = setInterval(() => {
-                if (i < text.length) { element.innerHTML += text.charAt(i); i++; } 
-                else { clearInterval(typingInterval); }
-            }, 50);
+            const currentPhrase = currentPhrases[subtitleIndex];
+            
+            let displayText;
+            let typeSpeed = 100;
+
+            if (isDeleting) {
+                displayText = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50;
+            } else {
+                displayText = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            subtitleEl.innerHTML = displayText;
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
+                typeSpeed = 500; // Pause before new phrase
+            }
+            
+            subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
         }
 
         function setLanguage(lang) {
             if (!translations[lang]) return;
             currentLang = lang;
             document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+            
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.dataset.key;
                 const translation = translations[lang][key];
-                if (typeof translation === 'function') {
-                    // Placeholder for functions that need arguments, though none are used this way here.
-                } else if (translation) {
+                if (translation) {
                     el.innerHTML = translation;
                 }
             });
+
             document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
             document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
+            
             document.querySelector('.lang-switch .lang-pt').classList.toggle('active', lang === 'pt');
             document.querySelector('.lang-switch .lang-en').classList.toggle('active', lang === 'en');
-            typeEffect(document.getElementById('subtitle'), translations[lang].subtitle);
+            
+            // Reset and restart subtitle animation for the new language
+            clearTimeout(subtitleTimeout);
+            subtitleIndex = 0;
+            charIndex = 0;
+            isDeleting = false;
+            typeAndEraseSubtitle();
+            
             if (window.githubScript?.renderAll) window.githubScript.renderAll();
         }
 
         window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
 
-        document.addEventListener('DOMContentLoaded', () => setLanguage('pt'));
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('pt');
+        });
     </script>
     <script>
         // --- Script para buscar repositórios do GitHub (Separado para clareza) ---
@@ -848,7 +930,6 @@
             const CACHE_KEY = 'gh_repos_cache_v8';
             const CACHE_TS_KEY = 'gh_repos_cache_ts_v8';
             const CACHE_TTL = 1000 * 60 * 60 * 24; // Cache de 24 horas
-            // Adicionado um proxy para evitar erros de limite de taxa da API do GitHub (403 Forbidden)
             const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
 
             const fallbackRepos = [
@@ -892,6 +973,7 @@
             }
 
             async function fetchRepos() {
+                // Skeletons are now in HTML, so no need to create them here.
                 metaEl.textContent = translations[currentLang].fetching_repos;
                 const cache = readCache();
                 if (cache && cache.length) { allRepos = cache; metaEl.textContent = translations[currentLang].loaded_repos_cache(cache.length); renderAll(); return; }
@@ -907,11 +989,12 @@
             function createCard(repo) { const lang = currentLang; return `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p><div class="project-meta"><span class="badge">${escapeHtml(repo.language || '—')}</span><span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span></div><div class="actions"><a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a><button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button></div>`; }
             
             function render() {
+                listEl.innerHTML = ''; // Clear skeletons
                 const lang = currentLang; const filter = currentFilter.trim().toLowerCase();
                 const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos;
                 const sorted = sortByStars(filtered);
                 const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
-                listEl.innerHTML = '';
+                
                 if (sorted.length === 0) { listEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`; } 
                 else { sorted.slice(0, toShow).forEach(repo => { const card = document.createElement('div'); card.className = 'project-card'; card.setAttribute('role', 'listitem'); card.innerHTML = createCard(repo); listEl.appendChild(card); }); }
                 shownCountEl.textContent = `${toShow} / ${sorted.length}`;
@@ -947,27 +1030,14 @@
     <script>
         // --- ATENÇÃO ---
         // A sua chave da API SerpApi está visível publicamente neste código.
-        // Para um ambiente de produção, é ALTAMENTE RECOMENDADO mover esta lógica
-        // para um backend (como uma Cloud Function) para proteger sua chave.
-        // O método abaixo, usando um proxy, resolve o erro de 'fetch' mas não a
-        // questão da segurança da chave.
-
-        // Substitua pela sua chave SerpApi!
-        const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1"; // <== Cole sua chave aqui!
-        const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; // <== Confirme seu ID Google Scholar
-
-        // URL do proxy para contornar problemas de CORS (Cross-Origin Resource Sharing)
-        // O navegador bloqueia requisições diretas para a SerpApi por segurança. O proxy faz a ponte.
+        const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1";
+        const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
         const PROXY_URL = 'https://corsproxy.io/?';
-
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
 
         async function fetchFromSerpApi(params) {
             const baseUrl = 'https://serpapi.com/search.json';
-            const searchParams = new URLSearchParams({
-                ...params,
-                api_key: SERPAPI_KEY
-            });
+            const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
             const apiUrl = `${baseUrl}?${searchParams.toString()}`;
             const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
             
@@ -976,13 +1046,10 @@
                 if (!res.ok) {
                     const errorText = await res.text();
                     console.error("Erro da API ou do Proxy:", errorText);
-                    if (errorText.includes("monthly search limit")) {
-                        throw new Error(serpApiLimitMsg);
-                    }
+                    if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
                     throw new Error(`Falha na requisição. Status: ${res.status}.`);
                 }
-                const data = await res.json();
-                return data;
+                return await res.json();
             } catch (error) {
                 console.error("Erro ao buscar dados do Google Scholar:", error);
                 throw error;
@@ -992,6 +1059,7 @@
         function renderCitationChart(graphData) {
             const container = document.querySelector('.scholar-chart-container');
             if (!container || !graphData || graphData.length === 0) return;
+            container.innerHTML = ''; // Limpa antes de renderizar
 
             const maxCitation = Math.max(...graphData.map(d => d.citations));
             const chartHeight = 100;
@@ -1023,14 +1091,8 @@
 
         async function updateScholarSection() {
             try {
-                const profile = await fetchFromSerpApi({
-                    engine: 'google_scholar_author',
-                    author_id: SCHOLAR_USER_ID
-                });
-
-                if (profile.error) {
-                    throw new Error(profile.error);
-                }
+                const profile = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID });
+                if (profile.error) throw new Error(profile.error);
 
                 const citedBy = profile.cited_by;
 
@@ -1054,11 +1116,8 @@
                         const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_'));
                         document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—';
                     }
-
-                } else if (citedBy && citedBy.value) {
+                } else if (citedBy?.value) {
                     document.getElementById("cit-total").textContent = citedBy.value ?? '—';
-                    document.getElementById("h-total").textContent = citedBy.h_index ?? '—';
-                    document.getElementById("i10-total").textContent = citedBy.i10_index ?? '—';
                 } else {
                      throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado.");
                 }
@@ -1066,11 +1125,9 @@
                 if (profile.author_url) {
                     document.querySelector(".scholar-link a").href = profile.author_url;
                 }
-
                 if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
                     renderCitationChart(profile.cited_by.graph);
                 }
-
             } catch (e) {
                 console.error("Erro ao atualizar seção do Scholar:", e);
                 const scholarCard = document.querySelector(".scholar-summary-card");
@@ -1087,22 +1144,13 @@
 
         async function updateScholarPublications() {
             try {
-                const result = await fetchFromSerpApi({
-                    engine: 'google_scholar_author',
-                    author_id: SCHOLAR_USER_ID,
-                    hl: 'pt-BR'
-                });
+                const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
+                if (result.error) throw new Error(result.error);
                 
-                if (result.error) {
-                    throw new Error(result.error);
-                }
-
                 const articles = result.articles || [];
                 const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = ""; // Limpa cards antigos
-                if (!articles.length) {
-                    throw new Error("Nenhuma publicação foi encontrada.");
-                }
+                grid.innerHTML = ""; // Limpa skeletons
+                if (!articles.length) throw new Error("Nenhuma publicação foi encontrada.");
                 
                 articles.slice(0, 3).forEach((art) => {
                     const card = document.createElement("div");
@@ -1126,6 +1174,98 @@
         document.addEventListener("DOMContentLoaded", () => {
             updateScholarSection();
             updateScholarPublications();
+        });
+    </script>
+     <script>
+        // --- Particle Background Script ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('particle-canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const particleCount = 70;
+
+            function setCanvasSize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = 'rgba(148, 163, 184, 0.1)';
+                    ctx.fill();
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+                    this.draw();
+                }
+            }
+
+            function init() {
+                particles = [];
+                let density = (canvas.width * canvas.height) / 15000;
+                for (let i = 0; i < density && i < 120; i++) {
+                    let size = Math.random() * 2 + 1;
+                    let x = Math.random() * (innerWidth - size * 2) + size;
+                    let y = Math.random() * (innerHeight - size * 2) + size;
+                    let directionX = (Math.random() * .4) - .2;
+                    let directionY = (Math.random() * .4) - .2;
+                    particles.push(new Particle(x, y, directionX, directionY, size));
+                }
+            }
+
+            function connect() {
+                let opacityValue = 1;
+                for (let a = 0; a < particles.length; a++) {
+                    for (let b = a; b < particles.length; b++) {
+                        let distance = Math.sqrt(
+                            (particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)
+                            + (particles[a].y - particles[b].y) * (particles[a].y - particles[b].y)
+                        );
+                        if (distance < 120) {
+                            opacityValue = 1 - (distance / 120);
+                            ctx.strokeStyle = 'rgba(148, 163, 184, ' + opacityValue * 0.2 + ')';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, innerWidth, innerHeight);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                }
+                connect();
+            }
+
+            window.addEventListener('resize', () => {
+                setCanvasSize();
+                init();
+            });
+
+            setCanvasSize();
+            init();
+            animate();
         });
     </script>
 </body>
