@@ -806,17 +806,19 @@
         // --- Script para buscar repositórios do GitHub (Separado para clareza) ---
         window.githubScript = (function() {
             const GITHUB_USER = 'WevertonGomesCosta';
-            const CACHE_KEY = 'gh_repos_cache_v7';
-            const CACHE_TS_KEY = 'gh_repos_cache_ts_v7';
+            const CACHE_KEY = 'gh_repos_cache_v8';
+            const CACHE_TS_KEY = 'gh_repos_cache_ts_v8';
             const CACHE_TTL = 1000 * 60 * 60 * 24; // Cache de 24 horas
             // Adicionado um proxy para evitar erros de limite de taxa da API do GitHub (403 Forbidden)
             const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
 
             const fallbackRepos = [
-                { name: 'Integrating-nir-genomic-kernel', html_url: 'https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel', description: 'Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.', language: 'R', stargazers_count: 12, forks_count: 3, updated_at: '2023-10-27T10:00:00Z', topics: ['genomics', 'R', 'machine-learning'] },
-                { name: 'Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro', html_url: 'https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro', description: 'Aplicações de ML e redes neurais no melhoramento do cafeeiro.', language: 'Python', stargazers_count: 8, forks_count: 1, updated_at: '2023-09-15T10:00:00Z', topics: ['python', 'agtech'] },
-                { name: 'Importance-of-markers-for-QTL-detection-by-machine-learning-methods', html_url: 'https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods', description: 'Detecção de QTL por métodos de machine learning.', language: 'R', stargazers_count: 5, forks_count: 0, updated_at: '2023-08-01T10:00:00Z', topics: ['genetics', 'qtl'] },
-                { name: 'Genomic-Selection_Course', html_url: 'https://github.com/WevertonGomesCosta/Genomic-Selection_Course', description: 'Minicurso sobre seleção genômica.', language: 'R', stargazers_count: 4, forks_count: 0, updated_at: '2023-05-20T10:00:00Z', topics: ['course', 'genomic-selection'] }
+                { "name": "Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava", "html_url": "https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava", "description": "This website is a project for analysis of the Genomic Selection for Drought Tolerance Using Genome Wide GBS and/or DART in Cassava by EMBRAPA Mandioca.", "language": "R", "stargazers_count": 2, "forks_count": 0, "updated_at": "2022-10-20T17:47:16Z", "topics": ["cassava", "eda", "gblup", "genomic-selection", "mixed-models", "multi-environment", "rr-blup", "single-environment"] },
+                { "name": "Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "html_url": "https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "description": null, "language": "Python", "stargazers_count": 1, "forks_count": 1, "updated_at": "2022-12-01T14:00:58Z", "topics": [] },
+                { "name": "Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self", "html_url": "https://github.com/WevertonGomesCosta/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self", "description": "Script to article https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self ", "language": "R", "stargazers_count": 1, "forks_count": 0, "updated_at": "2022-06-20T17:48:43Z", "topics": [] },
+                { "name": "Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "html_url": "https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "description": "Mask R-CNN for object detection and instance segmentation on Keras and TensorFlow", "language": "Python", "stargazers_count": 0, "forks_count": 3, "updated_at": "2022-07-04T19:06:20Z", "topics": [] },
+                { "name": "Integrating-nir-genomic-kernel", "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel", "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-08-29T17:16:37Z", "topics": [] },
+                { "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "html_url": "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "description": "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativos. Utiliza dados reais de 195 genótipos (21 211 SNPs) com características de doença e produtividade.", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-07-09T11:55:40Z", "topics": ["breeding", "coffee", "genetics", "machine-learning", "neural-network"] }
             ];
             let allRepos = []; let showingCount = 6; let currentFilter = '';
             const listEl = document.getElementById('projects-list');
@@ -961,7 +963,7 @@
 
                 const citedBy = profile.cited_by;
 
-                // Nova lógica para lidar com a estrutura da API
+                // Lógica corrigida para lidar com a estrutura da API
                 if (citedBy && citedBy.table && citedBy.table.length >= 3) {
                     const citationsData = citedBy.table.find(item => item.citations)?.citations;
                     const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
