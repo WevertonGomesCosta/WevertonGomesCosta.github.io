@@ -8,6 +8,7 @@
     <meta name="keywords" content="genética, bioestatística, machine learning, agronegócio, UFV, seleção genômica">
     <meta name="author" content="Weverton Gomes da Costa">
     <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
     <style>
         * {
@@ -56,24 +57,13 @@
             background: radial-gradient(circle at 20% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
-            animation: drift 30s infinite;
+            animation: drift 30s infinite linear;
             z-index: -1;
         }
 
         @keyframes drift {
-
-            0%,
-            100% {
-                transform: rotate(0deg) scale(1);
-            }
-
-            33% {
-                transform: rotate(120deg) scale(1.1);
-            }
-
-            66% {
-                transform: rotate(240deg) scale(0.9);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         /* Hero Section */
@@ -96,7 +86,6 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -115,29 +104,26 @@
         }
 
         @keyframes glow {
-
-            0%,
-            100% {
+            0%, 100% {
                 box-shadow: 0 0 20px var(--glow);
             }
-
             50% {
                 box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(16, 185, 129, 0.3);
             }
         }
 
         h1 {
-            font-size: 2.8rem;
+            font-size: clamp(2rem, 5vw, 2.8rem);
             font-weight: 700;
             margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-            font-size: 1.3rem;
+            font-size: clamp(1.1rem, 3vw, 1.3rem);
             color: var(--text-muted);
             margin-bottom: 15px;
             font-weight: 300;
@@ -192,7 +178,7 @@
             color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
             position: relative;
         }
 
@@ -207,11 +193,12 @@
             transition: width 0.3s ease;
         }
 
-        .nav-link:hover {
+        .nav-link:hover, .nav-link.active {
             color: var(--primary);
+            transform: translateY(-2px);
         }
 
-        .nav-link:hover::after {
+        .nav-link:hover::after, .nav-link.active::after {
             width: 100%;
         }
 
@@ -227,7 +214,7 @@
         }
 
         h2 {
-            font-size: 2rem;
+            font-size: clamp(1.5rem, 4vw, 2rem);
             margin-bottom: 30px;
             color: var(--primary);
             position: relative;
@@ -372,14 +359,6 @@
             font-weight: 600;
             margin-bottom: 5px;
         }
-
-        /* Projects */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
         
         /* Contact */
         .contact-grid {
@@ -401,6 +380,13 @@
             text-decoration: none;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+        }
+        
+        .contact-link svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            color: var(--primary);
         }
 
         .contact-link:hover {
@@ -492,21 +478,14 @@
             color: var(--primary);
             box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
         }
+        
+        .social-link svg {
+            width: 24px;
+            height: 24px;
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            .subtitle {
-                font-size: 1.1rem;
-            }
-
             .nav-container {
                 flex-wrap: wrap;
                 gap: 15px;
@@ -540,14 +519,14 @@
         }
 
         @keyframes bounce {
-
-            0%,
-            100% {
+            0%, 20%, 50%, 80%, 100% {
                 transform: translateX(-50%) translateY(0);
             }
-
-            50% {
+            40% {
                 transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
             }
         }
 
@@ -564,6 +543,13 @@
             cursor: pointer;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .lang-switch .lang-pt.active,
+        .lang-switch .lang-en.active {
+            color: var(--text);
+            font-weight: 700;
         }
 
         .lang-switch:hover {
@@ -647,7 +633,6 @@
             border-color: var(--primary);
         }
 
-
         .project-top {
             display: flex;
             justify-content: space-between;
@@ -676,9 +661,10 @@
         }
         
         .actions {
-            margin-top: 8px;
+            margin-top: auto; /* Alinha os botões na parte inferior */
+            padding-top: 8px;
             display: flex;
-            gap: 8px
+            gap: 8px;
         }
 
         .link-btn {
@@ -738,12 +724,12 @@
             border-radius: 6px
         }
 
-        /* --- NOVAS ANIMAÇÕES DE SCROLL --- */
+        /* --- ANIMAÇÕES DE SCROLL --- */
         .reveal {
             opacity: 0;
             transform: translateY(40px);
             transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1);
-            will-change: opacity, transform; /* Otimização de performance */
+            will-change: opacity, transform;
         }
 
         .reveal.visible {
@@ -751,62 +737,62 @@
             transform: translateY(0);
         }
 
-        /* Efeito de delay para elementos filhos */
         .stagger-children .reveal {
             transition-delay: calc(var(--stagger-index) * 120ms);
         }
-        /* --- FIM DAS NOVAS ANIMAÇÕES --- */
 
     </style>
 </head>
 
 <body>
-    <button class="lang-switch" onclick="toggleLanguage()">EN | PT</button>
+    <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
+        <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+    </button>
 
     <header>
         <div class="hero-content">
-            <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar">
+            <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
-            <p class="subtitle" id="hero-subtitle">Pesquisador em Genética & Estatística | Data Scientist</p>
+            <p class="subtitle" data-key="hero-subtitle">Pesquisador em Genética & Estatística | Data Scientist</p>
             <div class="badges">
-                <span class="badge">🎓 Doutorando em Estatística - UFV</span>
-                <span class="badge">🚀 CEO & Cofundador - Conecta GEM</span>
-                <span class="badge">🔬 Pós-Doc FAPEMIG/CNPq</span>
-                <span class="badge">🤖 Machine Learning Expert</span>
+                <span class="badge" data-key="badge-phd">🎓 Doutorando em Estatística - UFV</span>
+                <span class="badge" data-key="badge-ceo">🚀 CEO & Cofundador - Conecta GEM</span>
+                <span class="badge" data-key="badge-postdoc1">🔬 Pós-Doc FAPEMIG/CNPq</span>
+                <span class="badge" data-key="badge-ml">🤖 Machine Learning Expert</span>
             </div>
         </div>
-        <div class="scroll-indicator">⬇</div>
+        <div class="scroll-indicator" aria-hidden="true">⬇</div>
     </header>
 
     <nav>
         <div class="nav-container">
-            <a href="#sobre" class="nav-link" data-pt="Sobre" data-en="About">Sobre</a>
-            <a href="#formacao" class="nav-link" data-pt="Formação" data-en="Education">Formação</a>
-            <a href="#experiencia" class="nav-link" data-pt="Experiência" data-en="Experience">Experiência</a>
-            <a href="#projetos" class="nav-link" data-pt="Projetos" data-en="Projects">Projetos</a>
-            <a href="#habilidades" class="nav-link" data-pt="Habilidades" data-en="Skills">Habilidades</a>
+            <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
+            <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
+            <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
+            <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
+            <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
             <a href="#conecta" class="nav-link">Conecta GEM</a>
-            <a href="#contato" class="nav-link" data-pt="Contato" data-en="Contact">Contato</a>
+            <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
         </div>
     </nav>
 
-    <div class="container">
+    <main class="container">
         <section id="sobre" class="section">
-            <h2 class="reveal" data-pt="Sobre Mim" data-en="About Me">Sobre Mim</h2>
+            <h2 class="reveal" data-key="about-title">Sobre Mim</h2>
             <div class="card reveal">
-                <p style="font-size: 1.1rem; line-height: 1.8;" id="about-text">
+                <p style="font-size: 1.1rem; line-height: 1.8;" data-key="about-p1">
                     Sou <strong>Engenheiro Agrônomo</strong> com mestrado e doutorado em <strong>Genética e Melhoramento</strong> pela UFV,
                     atualmente cursando <strong>Doutorado em Estatística Aplicada e Biometria</strong> e realizando pós-doutorado pela FAPEMIG/CNPq.
                     Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística,
                     ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.
                 </p>
-                <p style="margin-top: 20px; line-height: 1.8;" id="about-text2">
+                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p2">
                     Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong>
                     até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para
                     resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis
                     em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.
                 </p>
-                <p style="margin-top: 20px; line-height: 1.8;" id="about-text3">
+                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p3">
                     Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>,
                     onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica,
                     além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.
@@ -815,264 +801,167 @@
         </section>
 
         <section id="formacao" class="section">
-            <h2 class="reveal" data-pt="Formação Acadêmica" data-en="Education">Formação Acadêmica</h2>
+            <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2023 - Presente</div>
-                        <h3>Doutorado em Estatística Aplicada e Biometria</h3>
+                        <div class="timeline-date" data-key="edu-date1">2023 - Presente</div>
+                        <h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2023 - Presente</div>
-                        <h3>Pós-Doutorado</h3>
+                        <div class="timeline-date" data-key="edu-date2">2023 - Presente</div>
+                        <h3 data-key="edu-title2">Pós-Doutorado</h3>
                         <p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Desenvolvimento de análises estatísticas avançadas aplicadas ao melhoramento genético.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
-                        <div class="timeline-date">2022 - 2023</div>
-                        <h3>Pós-Doutorado</h3>
+                        <div class="timeline-date" data-key="edu-date3">2022 - 2023</div>
+                        <h3 data-key="edu-title3">Pós-Doutorado</h3>
                         <p>Universidade Federal de Viçosa (UFV) — CNPq</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Estudos em seleção genômica ampla e modelos mistos aplicados à agricultura.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2022</div>
-                        <h3>Pós-Doutorado</h3>
+                        <h3 data-key="edu-title4">Pós-Doutorado</h3>
                         <p>EMBRAPA Mandioca e Fruticultura — CNPq</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2018 - 2022</div>
-                        <h3>Doutorado em Genética e Melhoramento</h3>
+                        <h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Eficiência de técnicas de machine learning e redes neurais na predição genômica e identificação de marcadores.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2016 - 2018</div>
-                        <h3>Mestrado em Genética e Melhoramento</h3>
+                        <h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais.
-                        </p>
                     </div>
                 </div>
                 <div class="timeline-item reveal">
                     <div class="timeline-dot"></div>
                     <div class="timeline-content">
                         <div class="timeline-date">2010 - 2015</div>
-                        <h3>Graduação em Agronomia</h3>
+                        <h3 data-key="edu-title7">Graduação em Agronomia</h3>
                         <p>Universidade Federal de Viçosa (UFV)</p>
-                        <p style="color: var(--text-muted); margin-top: 10px;">
-                            Estágio na EPAMIG com foco em planejamento experimental e análises estatísticas.
-                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-
         <section id="experiencia" class="section">
-            <h2 class="reveal" data-pt="Áreas de Especialização" data-en="Areas of Expertise">Áreas de Especialização</h2>
+            <h2 class="reveal" data-key="expertise-title">Áreas de Especialização</h2>
             <div class="grid stagger-children">
                 <div class="card reveal">
-                    <span class="icon">🧬</span>
-                    <h3>Genética Quantitativa</h3>
-                    <p>Análise de variabilidade genética, seleção genômica ampla (GWS) e estudos de associação genômica (GWAS) para identificação de características de interesse agronômico.</p>
+                    <span class="icon" role="img" aria-label="DNA">🧬</span>
+                    <h3 data-key="exp-title1">Genética Quantitativa</h3>
+                    <p data-key="exp-desc1">Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.</p>
                 </div>
                 <div class="card reveal">
-                    <span class="icon">📊</span>
-                    <h3>Bioestatística Avançada</h3>
-                    <p>Modelagem estatística complexa, validação cruzada, modelos mistos e interpretação de experimentos em larga escala para tomada de decisão baseada em dados.</p>
+                    <span class="icon" role="img" aria-label="Gráfico">📊</span>
+                    <h3 data-key="exp-title2">Bioestatística Avançada</h3>
+                    <p data-key="exp-desc2">Modelagem estatística complexa, validação cruzada e modelos mistos para tomada de decisão baseada em dados.</p>
                 </div>
                 <div class="card reveal">
-                    <span class="icon">🤖</span>
-                    <h3>Machine Learning & IA</h3>
-                    <p>Random Forest, redes neurais profundas, QRF, otimização de hiperparâmetros e interpretação de modelos para predição fenotípica e seleção assistida.</p>
+                    <span class="icon" role="img" aria-label="Robô">🤖</span>
+                    <h3 data-key="exp-title3">Machine Learning & IA</h3>
+                    <p data-key="exp-desc3">Random Forest, redes neurais, QRF e otimização de hiperparâmetros para predição fenotípica.</p>
                 </div>
                 <div class="card reveal">
-                    <span class="icon">🛠️</span>
-                    <h3>Pipelines Reprodutíveis</h3>
-                    <p>Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub, documentação técnica em LaTeX e RMarkdown.</p>
+                    <span class="icon" role="img" aria-label="Ferramentas">🛠️</span>
+                    <h3 data-key="exp-title4">Pipelines Reprodutíveis</h3>
+                    <p data-key="exp-desc4">Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.</p>
                 </div>
                 <div class="card reveal">
-                    <span class="icon">🌱</span>
-                    <h3>Melhoramento de Plantas</h3>
-                    <p>Aplicação de técnicas avançadas de seleção genômica, análise de diversidade genética e desenvolvimento de estratégias para otimização de cultivos.</p>
+                    <span class="icon" role="img" aria-label="Planta">🌱</span>
+                    <h3 data-key="exp-title5">Melhoramento de Plantas</h3>
+                    <p data-key="exp-desc5">Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.</p>
                 </div>
                 <div class="card reveal">
-                    <span class="icon">📈</span>
-                    <h3>Data Science em AgTech</h3>
-                    <p>Integração de dados multi-ômicos, análise de big data agrícola, visualização interativa e desenvolvimento de dashboards para monitoramento de safras.</p>
+                    <span class="icon" role="img" aria-label="Gráfico de Crescimento">📈</span>
+                    <h3 data-key="exp-title6">Data Science em AgTech</h3>
+                    <p data-key="exp-desc6">Integração de dados multi-ômicos, análise de big data agrícola e visualização interativa de dados.</p>
                 </div>
             </div>
         </section>
 
-        <!-- SIDEBAR: Projetos & Repositórios -->
-        <aside class="sidebar" aria-labelledby="projetos-title">
-            <h2 id="projetos-title" class="reveal">Projetos & Repositórios</h2>
+        <!-- Projetos & Repositórios do GitHub -->
+        <section id="projetos" class="sidebar section" aria-labelledby="projetos-title">
+            <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
 
             <div class="controls reveal">
-                <input id="project-search" placeholder="Buscar repositório (nome/descrição/linguagem)..." aria-label="Buscar repositório">
-                <button id="clear-btn" title="Limpar busca">Limpar</button>
+                <input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder">
+                <button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button>
             </div>
 
-            <div class="meta reveal" id="projects-meta">Carregando repositórios...</div>
+            <div class="meta reveal" id="projects-meta"></div>
 
-            <!-- Destaques -->
             <div id="featured-wrap" style="margin-bottom:12px;">
-                <h3 class="reveal" style="margin:0 0 8px;color:var(--primary);font-size:1rem;">Destaques</h3>
+                <h3 class="reveal" style="margin:0 0 8px;color:var(--primary);font-size:1rem;" data-key="featured-title">Destaques</h3>
                 <div id="featured-list" class="stagger-children" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
-                    <!-- featured cards injected here -->
+                    <!-- Cards de destaque injetados aqui -->
                 </div>
             </div>
 
-            <!-- Lista principal de projetos (cresce verticalmente) -->
             <div class="projects stagger-children" id="projects-list" role="list" style="max-height:none;overflow:visible;padding-right:0;">
-                <!-- project cards rendered here -->
+                <!-- Cards de projetos injetados aqui -->
             </div>
 
             <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center">
                 <div class="small-muted" id="shown-count">—</div>
                 <div class="center">
-                    <button id="toggle-more" class="link-btn">Mostrar mais</button>
+                    <button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button>
                 </div>
             </div>
-        </aside>
+        </section>
 
-        <!-- Seção LICAE -->
         <div id="licae" class="empresa-section reveal">
             <div class="empresa-header">
-                <div class="empresa-logo">🧠</div>
+                <div class="empresa-logo" role="img" aria-label="Cérebro">🧠</div>
                 <div class="empresa-info">
                     <h3>LICAE - UFV</h3>
-                    <p>Laboratório de Inteligência Computacional e Aprendizado Estatístico</p>
+                    <p data-key="licae-subtitle">Laboratório de Inteligência Computacional e Aprendizado Estatístico</p>
                 </div>
             </div>
-            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" id="licae-desc">
-                No <strong>LICAE – UFV</strong>, atuo no desenvolvimento e aplicação de métodos de
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" data-key="licae-desc">
+                 No <strong>LICAE – UFV</strong>, atuo no desenvolvimento e aplicação de métodos de
                 <strong>aprendizado de máquina, redes neurais e estatística avançada</strong> voltados para o
                 melhoramento genético e a agricultura digital. Minha pesquisa envolve desde a
                 <em>avaliação de modelos preditivos</em> até a <em>identificação de marcadores genômicos relevantes</em>,
                 sempre com foco em aumentar a eficiência da seleção genômica e apoiar decisões estratégicas no campo.
             </p>
-            <div class="grid stagger-children">
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>🔬 Pesquisa</h3>
-                    <p>Aplicação de machine learning e redes neurais em seleção genômica ampla</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>📊 Análises Avançadas</h3>
-                    <p>Modelos mistos, meta-análise e biometria aplicados ao melhoramento genético</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>🤝 Colaboração</h3>
-                    <p>Integração em projetos multidisciplinares envolvendo genética, estatística e ciência de dados</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>📚 Formação</h3>
-                    <p>Participação em grupos de estudo, orientação de análises e apoio à formação de novos pesquisadores</p>
-                </div>
-            </div>
         </div>
 
         <div id="conecta" class="empresa-section reveal">
             <div class="empresa-header">
-                <div class="empresa-logo">🚀</div>
+                <div class="empresa-logo" role="img" aria-label="Foguete">🚀</div>
                 <div class="empresa-info">
                     <h3>Conecta GEM</h3>
-                    <p>CEO & Cofundador | Empresa de Base Tecnológica em AgTech</p>
+                    <p data-key="conecta-subtitle">CEO & Cofundador | Empresa de Base Tecnológica em AgTech</p>
                 </div>
             </div>
-            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" id="empresa-desc">
-                A <strong>Conecta GEM</strong> nasceu com o propósito de transformar dados em soluções inteligentes para o agronegócio,
+            <p style="font-size: 1.1rem; line-height: 1.8; margin-bottom: 25px;" data-key="conecta-desc">
+                 A <strong>Conecta GEM</strong> nasceu com o propósito de transformar dados em soluções inteligentes para o agronegócio,
                 aproximando pesquisa científica e aplicações práticas. Lideramos iniciativas que conectam estatística avançada,
                 ciência de dados e agricultura de precisão.
             </p>
-            <div class="grid stagger-children">
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>📊 Consultoria Especializada</h3>
-                    <p>Modelagem estatística e biometria aplicada ao agronegócio</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>🌱 Seleção Genômica</h3>
-                    <p>Implementação de programas de melhoramento assistido por marcadores</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>🤖 Soluções em IA</h3>
-                    <p>Desenvolvimento de modelos preditivos e sistemas inteligentes</p>
-                </div>
-                <div class="card reveal" style="background: rgba(15, 23, 42, 0.6);">
-                    <h3>💻 Capacitação</h3>
-                    <p>Treinamentos e workshops em R, Python e análise de dados aplicados ao agro</p>
-                </div>
-            </div>
         </div>
 
-        <section id="projetos" class="section">
-            <h2 class="reveal" data-pt="Projetos em Destaque" data-en="Featured Projects">Projetos em Destaque</h2>
-            <div class="projects-grid stagger-children">
-                <div class="project-card reveal">
-                    <h3>Seleção Genômica em Milho</h3>
-                    <p>Pipeline em R para prever produtividade com base em dados genômicos.</p>
-                    <div class="project-meta">
-                        <span class="badge">R</span>
-                        <span class="badge">Machine Learning</span>
-                        <span class="badge">Genômica</span>
-                    </div>
-                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
-                </div>
-                <div class="project-card reveal">
-                    <h3>Modelagem Preditiva de Safras</h3>
-                    <p>Modelos em Python para estimar rendimento agrícola usando dados climáticos.</p>
-                    <div class="project-meta">
-                        <span class="badge">Python</span>
-                        <span class="badge">Scikit-learn</span>
-                        <span class="badge">AgTech</span>
-                    </div>
-                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
-                </div>
-                <div class="project-card reveal">
-                    <h3>Dashboard Interativo</h3>
-                    <p>Visualização de dados agrícolas em Shiny (R) para tomada de decisão.</p>
-                    <div class="project-meta">
-                        <span class="badge">R</span>
-                        <span class="badge">Shiny</span>
-                        <span class="badge">DataViz</span>
-                    </div>
-                    <a href="https://github.com/WevertonGomesCosta" target="_blank" style="display:block;margin-top:15px;color:var(--primary);">🔗 Ver no GitHub</a>
-                </div>
-            </div>
-        </section>
-
         <section id="habilidades" class="section">
-            <h2 class="reveal" data-pt="Habilidades Técnicas" data-en="Technical Skills">Habilidades Técnicas</h2>
+            <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-container stagger-children">
                 <span class="skill-tag reveal">Python (Pandas, Scikit-learn, TensorFlow)</span>
                 <span class="skill-tag reveal">R (tidyverse, caret, Shiny)</span>
@@ -1085,33 +974,60 @@
         </section>
 
         <section id="contato" class="section">
-            <h2 class="reveal" data-pt="Contato" data-en="Contact">Contato</h2>
+            <h2 class="reveal" data-key="contact-title">Contato</h2>
             <div class="contact-grid stagger-children">
-                <a href="mailto:wevertonufv@gmail.com" class="contact-link reveal">✉️ Email</a>
-                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link reveal">💼 LinkedIn</a>
-                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="contact-link reveal">🧾 ORCID</a>
-                <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" class="contact-link reveal">📚 Lattes</a>
-                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link reveal">🐙 GitHub</a>
-                <a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" class="contact-link reveal">🔬 LICAE/UFV</a>
-                <a href="https://www.conectagem.com/sobre" target="_blank" class="contact-link reveal">🚀 Conecta GEM</a>
+                <a href="mailto:wevertonufv@gmail.com" class="contact-link reveal">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>
+                    Email
+                </a>
+                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link reveal">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    LinkedIn
+                </a>
+                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="contact-link reveal">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#A6CE39"><path d="M256,128c0,70.7-57.3,128-128,128S0,198.7,0,128,57.3,0,128,0,256,57.3,256,128Z"/><path fill="#FFF" d="m146.8,194.2h25.8v-90.3h-25.8v90.3zm-34.9-120.8c0-14.7,11.9-26.6,26.6-26.6s26.6,11.9,26.6,26.6-11.9,26.6-26.6,26.6-26.6-11.9-26.6-26.6zm69.8,120.8h25.8v-70.1h-25.8v70.1z"/></svg>
+                    ORCID
+                </a>
+                <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" class="contact-link reveal">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22h-16c-1.104 0-2-.896-2-2v-16c0-1.104.896-2 2-2h16c1.104 0 2 .896 2 2v16c0 1.104-.896 2-2 2zm-16-20c-.552 0-1 .448-1 1v16c0 .552.448 1 1 1h16c.552 0 1-.448 1-1v-16c0-.552-.448-1-1-1h-16zm-1 6h18v1h-18v-1zm11 3.5c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5z"/></svg>
+                    Lattes
+                </a>
+                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link reveal">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+                <a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" class="contact-link reveal">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.96 14.32l-2.32-2.32c.06-.22.1-.45.1-.7s-.04-.48-.1-.7l2.32-2.32c.39-.39.39-1.02 0-1.41l-2.83-2.83c-.39-.39-1.02-.39-1.41 0l-2.32 2.32c-.22-.06-.45-.1-.7-.1s-.48.04-.7.1l-2.32-2.32c-.39-.39-1.02-.39-1.41 0L4.04 6.34c-.39.39-.39 1.02 0 1.41l2.32 2.32c-.06.22-.1.45-.1.7s.04.48.1.7l-2.32 2.32c-.39.39-.39 1.02 0 1.41l2.83 2.83c.39.39 1.02.39 1.41 0l2.32-2.32c.22.06.45.1.7.1s.48-.04.7-.1l2.32 2.32c.39.39 1.02.39 1.41 0l2.83-2.83c.39-.39.39-1.02 0-1.41zM12 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
+                    LICAE/UFV
+                </a>
+                <a href="https://www.conectagem.com/sobre" target="_blank" class="contact-link reveal">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5,9C18.91,9 18.33,8.9 17.77,8.73L12,11.4V14.5C12,15.89 13.06,17.11 14.4,17.42C14.15,18.06 14,18.78 14,19.5C14,21.43 15.57,23 17.5,23S21,21.43 21,19.5C21,17.57 19.43,16 17.5,16C16.89,16 16.32,16.18 15.83,16.5L15.83,11.53L20.4,9.44C20.59,9.81 20.85,10.15 21.17,10.45C21.8,11.08 22.84,11.08 23.47,10.45C24.1,9.82 24.1,8.78 23.47,8.15C22.84,7.52 21.79,7.52 21.17,8.15C20.84,8.48 20.59,8.81 20.4,9.18L15.3,11.5C15.3,11.5 15.3,11.5 15.3,11.5L9.6,8.73C9.07,8.9 8.5,9 7.91,9C5.97,9 4.41,7.43 4.41,5.5C4.41,3.57 5.97,2 7.91,2S11.41,3.57 11.41,5.5C11.41,6.22 11.23,6.94 10.92,7.58L15,9.5V9.5L15.83,9.11C16.32,8.68 16.89,8.5 17.5,8.5C18.12,8.5 18.7,8.68 19.18,9.11L21.17,8.15C20.54,7.52 20.54,6.47 21.17,5.84C21.79,5.21 22.84,5.21 23.47,5.84C24.1,6.47 24.1,7.52 23.47,8.15C22.84,8.78 21.8,8.78 21.17,8.15C20.85,7.85 20.59,7.52 20.4,7.18L18.4,8.15C18.09,8.05 17.77,8 17.5,8C17.2,8 16.91,8.05 16.63,8.14L11.53,5.82C11.82,5.18 12,4.46 12,3.75C12,1.82 10.43,0.25 8.5,0.25S5,1.82 5,3.75C5,5.68 6.57,7.25 8.5,7.25C9.11,7.25 9.68,7.07 10.17,6.75L15.28,9.07C14.97,9.72 14.75,10.43 14.75,11.25C14.75,11.36 14.76,11.47 14.77,11.58L9.07,8.73C8.5,8.9 7.91,9 7.33,9C5.39,9 3.83,7.43 3.83,5.5C3.83,3.57 5.39,2 7.33,2S10.83,3.57 10.83,5.5C10.83,6.22 10.65,6.94 10.34,7.58L10.92,7.82L15,9.75V10.75L10.92,8.82C10.65,8.93 10.37,9.03 10.08,9.12L4.97,6.79C5.27,6.15 5.42,5.45 5.42,4.75C5.42,2.82 3.85,1.25 1.92,1.25S-1.58,2.82 -1.58,4.75C-1.58,6.68 0,8.25 1.92,8.25C2.54,8.25 3.11,8.07 3.6,7.75L8.72,10.07C8.41,10.72 8.18,11.43 8.18,12.25C8.18,13.84 9.05,15.25 10.42,16.03V19.95C9.05,20.73 8.18,22.14 8.18,23.73C8.18,25.66 9.75,27.23 11.68,27.23S15.18,25.66 15.18,23.73C15.18,22.14 14.28,20.73 12.92,19.95V16.03C14.28,15.25 15.18,13.84 15.18,12.23C15.18,11.43 14.97,10.72 14.65,10.07L19.77,12.39C20.07,13.04 20.23,13.75 20.23,14.5C20.23,16.43 21.79,18 23.73,18S27.23,16.43 27.23,14.5C27.23,12.57 25.67,11 23.73,11C23.09,11 22.5,11.18 21.97,11.5L16.9,9.18C16.71,8.81 16.46,8.48 16.14,8.18C15.51,7.55 14.46,7.55 13.83,8.18C13.2,8.81 13.2,9.85 13.83,10.48C14.46,11.11 15.51,11.11 16.14,10.48C16.46,10.15 16.71,9.82 16.9,9.45L19.5,10.5Z" transform="translate(1.58, -0.25) scale(0.8)"/></svg>
+                    Conecta GEM
+                </a>
             </div>
         </section>
-    </div>
+    </main>
 
     <footer class="reveal">
         <div class="footer-content">
             <div class="social-links">
-                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="social-link">in</a>
-                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="social-link">GH</a>
-                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="social-link">OR</a>
+                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="social-link" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" role="img"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+                <a href="https://github.com/WevertonGomesCosta" target="_blank" class="social-link" aria-label="GitHub">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" role="img"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="social-link" aria-label="ORCID">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#A6CE39" role="img"><path d="M256,128c0,70.7-57.3,128-128,128S0,198.7,0,128,57.3,0,128,0,256,57.3,256,128Z"/><path fill="#FFF" d="m146.8,194.2h25.8v-90.3h-25.8v90.3zm-34.9-120.8c0-14.7,11.9-26.6,26.6-26.6s26.6,11.9,26.6,26.6-11.9,26.6-26.6,26.6-26.6-11.9-26.6-26.6zm69.8,120.8h25.8v-70.1h-25.8v70.1z"/></svg>
+                </a>
             </div>
             <p>&copy; 2025 Weverton Gomes da Costa</p>
         </div>
     </footer>
 
-    <!-- Script de Animação de Scroll -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Animações de Scroll ---
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1119,11 +1035,10 @@
                         observer.unobserve(entry.target);
                     }
                 });
-            }, {
-                threshold: 0.1 // A animação começa quando 10% do elemento está visível
-            });
+            }, { threshold: 0.1 });
 
-            // Adiciona um delay em cascata para elementos filhos
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            
             const staggerContainers = document.querySelectorAll('.stagger-children');
             staggerContainers.forEach(container => {
                 const children = container.querySelectorAll('.reveal');
@@ -1132,46 +1047,230 @@
                 });
             });
 
-            // Observa todos os elementos com a classe 'reveal'
-            document.querySelectorAll('.reveal').forEach(el => {
-                revealObserver.observe(el);
-            });
-
-            // Lida com conteúdo dinâmico (lista de projetos do GitHub)
             const projectsListEl = document.getElementById('projects-list');
             const featuredListEl = document.getElementById('featured-list');
-
-            const mutationCallback = (mutationsList) => {
+            const mutationObserver = new MutationObserver((mutationsList) => {
                 for (const mutation of mutationsList) {
                     if (mutation.type === 'childList') {
                         mutation.addedNodes.forEach(node => {
-                            if (node.nodeType === 1 && node.matches('.project-card')) {
-                                node.classList.add('reveal');
+                            if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.reveal'))) {
+                                if(!node.classList.contains('reveal')) node.classList.add('reveal');
                                 revealObserver.observe(node);
                             }
                         });
                     }
                 }
-            };
-            
-            const mutationObserver = new MutationObserver(mutationCallback);
+            });
             mutationObserver.observe(projectsListEl, { childList: true });
             mutationObserver.observe(featuredListEl, { childList: true });
+
+            // --- Highlight do Link de Navegação Ativo ---
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav .nav-link');
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+            sections.forEach(section => navObserver.observe(section));
         });
     </script>
     
-    <!-- Script Original (Projetos do GitHub) -->
     <script>
-        (function() {
-            const GITHUB_USER = 'WevertonGomesCosta';
-            const CACHE_KEY = 'gh_repos_cache_v1';
-            const CACHE_TS_KEY = 'gh_repos_cache_ts_v1';
-            const CACHE_TTL = 1000 * 60 * 60; // 1h
-            const INITIAL_SHOW = 3; // show 3 initially
-            const PAGE_SIZE = 3; // expand by 3 each click
+        // --- Lógica de Tradução ---
+        const translations = {
+            pt: {
+                'hero-subtitle': 'Pesquisador em Genética & Estatística | Data Scientist',
+                'badge-phd': '🎓 Doutorando em Estatística - UFV',
+                'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM',
+                'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq',
+                'badge-ml': '🤖 Machine Learning Expert',
+                'nav-about': 'Sobre',
+                'nav-education': 'Formação',
+                'nav-experience': 'Experiência',
+                'nav-projects': 'Projetos',
+                'nav-skills': 'Habilidades',
+                'nav-contact': 'Contato',
+                'about-title': 'Sobre Mim',
+                'about-p1': `Sou <strong>Engenheiro Agrônomo</strong> com mestrado e doutorado em <strong>Genética e Melhoramento</strong> pela UFV, atualmente cursando <strong>Doutorado em Estatística Aplicada e Biometria</strong> e realizando pós-doutorado pela FAPEMIG/CNPq. Como <strong>CEO e Cofundador da Conecta GEM</strong>, lidero iniciativas que conectam estatística, ciência de dados e agricultura, transformando dados complexos em soluções inteligentes para o agronegócio.`,
+                'about-p2': `Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sempre buscando a excelência na comunicação científica e na aplicação prática do conhecimento.`,
+                'about-p3': `Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.`,
+                'education-title': 'Formação Acadêmica',
+                'edu-date1': '2023 - Presente',
+                'edu-title1': 'Doutorado em Estatística Aplicada e Biometria',
+                'edu-date2': '2023 - Presente',
+                'edu-title2': 'Pós-Doutorado',
+                'edu-date3': '2022 - 2023',
+                'edu-title3': 'Pós-Doutorado',
+                'edu-title4': 'Pós-Doutorado',
+                'edu-title5': 'Doutorado em Genética e Melhoramento',
+                'edu-title6': 'Mestrado em Genética e Melhoramento',
+                'edu-title7': 'Graduação em Agronomia',
+                'expertise-title': 'Áreas de Especialização',
+                'exp-title1': 'Genética Quantitativa',
+                'exp-desc1': 'Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.',
+                'exp-title2': 'Bioestatística Avançada',
+                'exp-desc2': 'Modelagem estatística complexa, validação cruzada e modelos mistos para tomada de decisão baseada em dados.',
+                'exp-title3': 'Machine Learning & IA',
+                'exp-desc3': 'Random Forest, redes neurais, QRF e otimização de hiperparâmetros para predição fenotípica.',
+                'exp-title4': 'Pipelines Reprodutíveis',
+                'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.',
+                'exp-title5': 'Melhoramento de Plantas',
+                'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
+                'exp-title6': 'Data Science em AgTech',
+                'exp-desc6': 'Integração de dados multi-ômicos, análise de big data agrícola e visualização interativa de dados.',
+                'projects-title': 'Projetos & Repositórios',
+                'search-placeholder': 'Buscar repositório (nome/descrição/linguagem)...',
+                'clear-search': 'Limpar busca',
+                'featured-title': 'Destaques',
+                'show-more': 'Mostrar mais',
+                'show-less': 'Mostrar menos',
+                'licae-subtitle': 'Laboratório de Inteligência Computacional e Aprendizado Estatístico',
+                'licae-desc': `No <strong>LICAE – UFV</strong>, atuo no desenvolvimento e aplicação de métodos de <strong>aprendizado de máquina, redes neurais e estatística avançada</strong> voltados para o melhoramento genético e a agricultura digital. Minha pesquisa envolve desde a <em>avaliação de modelos preditivos</em> até a <em>identificação de marcadores genômicos relevantes</em>, sempre com foco em aumentar a eficiência da seleção genômica e apoiar decisões estratégicas no campo.`,
+                'conecta-subtitle': 'CEO & Cofundador | Empresa de Base Tecnológica em AgTech',
+                'conecta-desc': `A <strong>Conecta GEM</strong> nasceu com o propósito de transformar dados em soluções inteligentes para o agronegócio, aproximando pesquisa científica e aplicações práticas. Lideramos iniciativas que conectam estatística avançada, ciência de dados e agricultura de precisão.`,
+                'skills-title': 'Habilidades Técnicas',
+                'contact-title': 'Contato',
+                'fetching_repos': 'Buscando repositórios...',
+                'loaded_repos_cache': (count) => `Carregado ${count} repositórios (cache).`,
+                'found_repos': (count) => `Encontrados ${count} repositórios.`,
+                'fetch_error': 'Não foi possível buscar repositórios do GitHub.',
+                'no_repos_found': 'Nenhum repositório encontrado.',
+                'open_btn': 'Abrir',
+                'copy_btn': 'Copiar link',
+                'copied_btn': 'Copiado!',
+                'no_description': 'Sem descrição.',
+                'updated_at': 'Atualizado:'
+            },
+            en: {
+                'hero-subtitle': 'Genetics & Statistics Researcher | Data Scientist',
+                'badge-phd': '🎓 PhD Candidate in Statistics - UFV',
+                'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM',
+                'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq',
+                'badge-ml': '🤖 Machine Learning Expert',
+                'nav-about': 'About',
+                'nav-education': 'Education',
+                'nav-experience': 'Experience',
+                'nav-projects': 'Projects',
+                'nav-skills': 'Skills',
+                'nav-contact': 'Contact',
+                'about-title': 'About Me',
+                'about-p1': `I am an <strong>Agronomist Engineer</strong> with a Master's and PhD in <strong>Genetics and Plant Breeding</strong> from UFV, currently pursuing a <strong>PhD in Applied Statistics and Biometrics</strong> and a postdoctoral fellowship from FAPEMIG/CNPq. As <strong>CEO and Co-founder of Conecta GEM</strong>, I lead initiatives that connect statistics, data science, and agriculture, transforming complex data into intelligent solutions for agribusiness.`,
+                'about-p2': `My expertise ranges from <strong>advanced statistical models</strong> and <strong>genomic selection</strong> to the implementation of <strong>machine learning algorithms</strong> and <strong>neural networks</strong> to solve challenges in plant breeding and digital agriculture. I work with reproducible pipelines in R and Python, always striving for excellence in scientific communication and practical application of knowledge.`,
+                'about-p3': `Since <strong>2022</strong>, I have also served as the <strong>Student Coordinator at LICAE – UFV</strong>, where I develop research in computational intelligence, biometrics, and genomic selection, in addition to collaborating in the training of new researchers and the integration of multidisciplinary projects.`,
+                'education-title': 'Education',
+                'edu-date1': '2023 - Present',
+                'edu-title1': 'PhD in Applied Statistics and Biometrics',
+                'edu-date2': '2023 - Present',
+                'edu-title2': 'Postdoctoral Researcher',
+                'edu-date3': '2022 - 2023',
+                'edu-title3': 'Postdoctoral Researcher',
+                'edu-title4': 'Postdoctoral Researcher',
+                'edu-title5': 'PhD in Genetics and Plant Breeding',
+                'edu-title6': 'MSc in Genetics and Plant Breeding',
+                'edu-title7': 'BSc in Agronomy',
+                'expertise-title': 'Areas of Expertise',
+                'exp-title1': 'Quantitative Genetics',
+                'exp-desc1': 'Analysis of genetic variability, GWS, and GWAS for identifying traits of agronomic interest.',
+                'exp-title2': 'Advanced Biostatistics',
+                'exp-desc2': 'Complex statistical modeling, cross-validation, and mixed models for data-driven decision-making.',
+                'exp-title3': 'Machine Learning & AI',
+                'exp-desc3': 'Random Forest, neural networks, QRF, and hyperparameter optimization for phenotypic prediction.',
+                'exp-title4': 'Reproducible Pipelines',
+                'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.',
+                'exp-title5': 'Plant Breeding',
+                'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
+                'exp-title6': 'Data Science in AgTech',
+                'exp-desc6': 'Integration of multi-omics data, analysis of agricultural big data, and interactive data visualization.',
+                'projects-title': 'Projects & Repositories',
+                'search-placeholder': 'Search repository (name/description/language)...',
+                'clear-search': 'Clear search',
+                'featured-title': 'Featured',
+                'show-more': 'Show more',
+                'show-less': 'Show less',
+                'licae-subtitle': 'Laboratory of Computational Intelligence and Statistical Learning',
+                'licae-desc': `At <strong>LICAE – UFV</strong>, I work on developing and applying <strong>machine learning, neural networks, and advanced statistics</strong> methods for genetic improvement and digital agriculture. My research involves everything from <em>evaluating predictive models</em> to <em>identifying relevant genomic markers</em>, always aiming to increase the efficiency of genomic selection and support strategic decisions in the field.`,
+                'conecta-subtitle': 'CEO & Co-founder | AgTech-Based Technology Company',
+                'conecta-desc': `<strong>Conecta GEM</strong> was founded with the purpose of transforming data into intelligent solutions for agribusiness, bridging the gap between scientific research and practical applications. We lead initiatives that connect advanced statistics, data science, and precision agriculture.`,
+                'skills-title': 'Technical Skills',
+                'contact-title': 'Contact',
+                'fetching_repos': 'Fetching repositories...',
+                'loaded_repos_cache': (count) => `Loaded ${count} repositories (from cache).`,
+                'found_repos': (count) => `Found ${count} repositories.`,
+                'fetch_error': 'Could not fetch repositories from GitHub.',
+                'no_repos_found': 'No repositories found.',
+                'open_btn': 'Open',
+                'copy_btn': 'Copy link',
+                'copied_btn': 'Copied!',
+                'no_description': 'No description provided.',
+                'updated_at': 'Updated:'
+            }
+        };
 
+        let currentLang = 'pt';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.dataset.key;
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+            
+            document.querySelectorAll('[data-key-placeholder]').forEach(el => {
+                const key = el.dataset.keyPlaceholder;
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+            
+             document.querySelectorAll('[data-key-title]').forEach(el => {
+                const key = el.dataset.keyTitle;
+                if (translations[lang][key]) {
+                    el.title = translations[lang][key];
+                }
+            });
+
+            // Update language switcher style
+            document.querySelector('.lang-switch .lang-pt').classList.toggle('active', lang === 'pt');
+            document.querySelector('.lang-switch .lang-en').classList.toggle('active', lang === 'en');
+
+            // Re-render dynamic content like GitHub repos
+            if (window.githubScript && typeof window.githubScript.renderAll === 'function') {
+                window.githubScript.renderAll();
+            }
+        }
+
+        function toggleLanguage() {
+            const newLang = currentLang === 'pt' ? 'en' : 'pt';
+            setLanguage(newLang);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => setLanguage('pt'));
+
+        // --- Script para buscar repositórios do GitHub ---
+        window.githubScript = (function() {
+            const GITHUB_USER = 'WevertonGomesCosta';
+            const CACHE_KEY = 'gh_repos_cache_v2';
+            const CACHE_TS_KEY = 'gh_repos_cache_ts_v2';
+            const CACHE_TTL = 1000 * 60 * 60; // 1 hora
+            const INITIAL_SHOW = 3;
+            const PAGE_SIZE = 3;
+
+            let allRepos = [];
             let showingCount = INITIAL_SHOW;
-            let showingAll = false;
             let currentFilter = '';
 
             const projectsListEl = document.getElementById('projects-list');
@@ -1182,25 +1281,13 @@
             const shownCountEl = document.getElementById('shown-count');
             const clearBtn = document.getElementById('clear-btn');
 
-            let allRepos = [];
-
-            function debounce(fn, wait = 250) {
-                let t;
-                return (...args) => {
-                    clearTimeout(t);
-                    t = setTimeout(() => fn.apply(this, args), wait);
-                };
-            }
-
             function readCache() {
                 try {
                     const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0);
                     if (Date.now() - ts < CACHE_TTL) {
                         return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
                     }
-                } catch (e) {
-                    console.warn('cache read failed', e);
-                }
+                } catch (e) { console.warn('Falha ao ler cache', e); }
                 return null;
             }
 
@@ -1208,301 +1295,162 @@
                 try {
                     localStorage.setItem(CACHE_KEY, JSON.stringify(data));
                     localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
-                } catch (e) {
-                    console.warn('cache write failed', e);
-                }
+                } catch (e) { console.warn('Falha ao escrever cache', e); }
             }
 
             async function fetchRepos() {
-                metaEl.textContent = 'Buscando repositórios...';
-
+                metaEl.textContent = translations[currentLang].fetching_repos;
                 const cache = readCache();
                 if (cache && cache.length) {
                     allRepos = cache;
-                    metaEl.textContent = `Carregado ${cache.length} repositórios (cache).`;
-                    resetViewState();
+                    metaEl.textContent = translations[currentLang].loaded_repos_cache(cache.length);
                     renderAll();
+                    return;
                 }
-
                 try {
-                    const per_page = 100;
-                    const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=${per_page}&sort=updated`);
+                    const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated`);
                     if (!res.ok) throw new Error('GitHub API respondeu: ' + res.status);
                     const data = await res.json();
-                    allRepos = data.map(r => ({
-                        name: r.name,
-                        html_url: r.html_url,
-                        description: r.description || '',
-                        language: r.language || '',
-                        stargazers_count: r.stargazers_count || 0,
-                        forks_count: r.forks_count || 0,
-                        updated_at: r.updated_at
-                    }));
+                    allRepos = data
+                        .filter(r => !r.fork)
+                        .map(r => ({
+                            name: r.name,
+                            html_url: r.html_url,
+                            description: r.description || '',
+                            language: r.language || '',
+                            stargazers_count: r.stargazers_count || 0,
+                            forks_count: r.forks_count || 0,
+                            updated_at: r.updated_at,
+                            topics: r.topics || []
+                        }));
                     writeCache(allRepos);
-                    metaEl.textContent = `Encontrados ${allRepos.length} repositórios.`;
-                    resetViewState();
+                    metaEl.textContent = translations[currentLang].found_repos(allRepos.length);
                     renderAll();
                 } catch (err) {
                     console.error(err);
-                    if (!allRepos.length) {
-                        metaEl.textContent = 'Não foi possível buscar repositórios do GitHub. Mostrando exemplos locais.';
-                        allRepos = [{
-                                name: 'Integrating-nir-genomic-kernel',
-                                description: 'Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.',
-                                html_url: '#',
-                                language: 'R',
-                                stargazers_count: 12,
-                                forks_count: 3,
-                                updated_at: null
-                            },
-                            {
-                                name: 'Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro',
-                                description: 'Aplicações de ML e redes neurais no melhoramento do cafeeiro.',
-                                html_url: '#',
-                                language: 'Python',
-                                stargazers_count: 8,
-                                forks_count: 1,
-                                updated_at: null
-                            },
-                            {
-                                name: 'Importance-of-markers-for-QTL-detection-by-machine-learning-methods',
-                                description: 'Detecção de QTL por métodos de machine learning.',
-                                html_url: '#',
-                                language: 'R',
-                                stargazers_count: 5,
-                                forks_count: 0,
-                                updated_at: null
-                            },
-                            {
-                                name: 'Genomic-Selection_Course',
-                                description: 'Minicurso sobre seleção genômica.',
-                                html_url: '#',
-                                language: 'R',
-                                stargazers_count: 4,
-                                forks_count: 0,
-                                updated_at: null
-                            }
-                        ];
-                        resetViewState();
-                        renderAll();
-                    }
+                    metaEl.textContent = translations[currentLang].fetch_error;
                 }
             }
-
-            function resetViewState() {
-                showingCount = INITIAL_SHOW;
-                showingAll = false;
-                currentFilter = '';
-                if (searchEl) searchEl.value = '';
-                if (document.getElementById('featured-wrap')) document.getElementById('featured-wrap').style.display = '';
-            }
-
-            // sorting helper: stars desc, then forks desc
+            
             function sortByStarsThenForks(arr) {
-                return arr.slice().sort((a, b) => {
-                    const sa = Number(a.stargazers_count || 0),
-                        sb = Number(b.stargazers_count || 0);
-                    if (sb !== sa) return sb - sa;
-                    const fa = Number(a.forks_count || 0),
-                        fb = Number(b.forks_count || 0);
-                    return fb - fa;
-                });
+                return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count);
             }
 
-            function renderFeatured(repos) {
-                featuredListEl.innerHTML = '';
-                if (!repos || !repos.length) {
-                    featuredListEl.style.display = 'none';
-                    return;
-                }
-                featuredListEl.style.display = 'flex';
-                repos.forEach(r => {
-                    const el = document.createElement('div');
-                    // O MutationObserver vai adicionar a classe 'reveal'
-                    el.className = 'project-card'; 
-                    el.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.04))';
-                    el.style.border = '1px solid rgba(16,185,129,0.18)';
-                    el.style.boxShadow = '0 8px 30px rgba(16,185,129,0.06)';
-                    el.innerHTML = `
-                <div class="project-top">
-                    <h3>${escapeHtml(titleCase(formatTitle(r.name)))}</h3>
-                    <div class="project-meta">
-                        <span class="badge">⭐ ${r.stargazers_count}</span>
-                        <span class="badge">🍴 ${r.forks_count}</span>
+            function createCardHTML(repo) {
+                const lang = currentLang;
+                return `
+                    <div class="project-top">
+                        <h3>${escapeHtml(titleCase(formatTitle(repo.name)))}</h3>
+                        <div class="project-meta">
+                            <span class="badge">⭐ ${repo.stargazers_count}</span>
+                            <span class="badge">🍴 ${repo.forks_count}</span>
+                        </div>
                     </div>
-                </div>
-                <p class="project-desc">${escapeHtml(r.description || '')}</p>
-                <div class="project-meta">
-                    <span class="badge">${escapeHtml(r.language || '—')}</span>
-                    <span class="small-muted">Atualizado: ${r.updated_at ? new Date(r.updated_at).toLocaleDateString() : '—'}</span>
-                </div>
-                <div class="actions">
-                    <a class="link-btn" href="${r.html_url}" target="_blank" rel="noopener">Abrir</a>
-                </div>
-            `;
-                    featuredListEl.appendChild(el);
-                });
+                    <p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p>
+                    <div class="project-meta">
+                        <span class="badge">${escapeHtml(repo.language || '—')}</span>
+                        <span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                    </div>
+                    <div class="actions">
+                        <a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a>
+                        <button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button>
+                    </div>
+                `;
             }
 
             function render() {
-                const filter = (currentFilter || '').trim().toLowerCase();
-
-                const filtered = allRepos.filter(r => {
-                    if (!filter) return true;
-                    return (r.name && r.name.toLowerCase().includes(filter)) ||
-                        (r.description && r.description.toLowerCase().includes(filter)) ||
-                        (r.language && r.language.toLowerCase().includes(filter));
-                });
+                const lang = currentLang;
+                const filter = currentFilter.trim().toLowerCase();
+                const filtered = filter ? allRepos.filter(r => 
+                    r.name.toLowerCase().includes(filter) ||
+                    (r.description || '').toLowerCase().includes(filter) ||
+                    (r.language || '').toLowerCase().includes(filter) ||
+                    r.topics.some(t => t.toLowerCase().includes(filter))
+                ) : allRepos;
 
                 const sortedFiltered = sortByStarsThenForks(filtered);
-
-                let toShow = sortedFiltered.length;
-                if (!filter) {
-                    toShow = Math.min(showingCount, sortedFiltered.length);
-                }
-
+                const toShowCount = filter ? sortedFiltered.length : Math.min(showingCount, sortedFiltered.length);
+                
                 projectsListEl.innerHTML = '';
-
                 if (sortedFiltered.length === 0) {
-                    projectsListEl.innerHTML = '<div class="project-card"><p class="project-desc">Nenhum repositório encontrado.</p></div>';
-                    shownCountEl.textContent = `0 / ${allRepos.length}`;
-                    toggleBtn.classList.add('hidden');
-                    return;
-                }
-
-                sortedFiltered.slice(0, toShow).forEach(repo => {
-                    const card = document.createElement('div');
-                     // O MutationObserver vai adicionar a classe 'reveal'
-                    card.className = 'project-card';
-                    card.setAttribute('role', 'listitem');
-                    card.innerHTML = `
-                <div class="project-top">
-                    <h3>${escapeHtml(titleCase(formatTitle(repo.name)))}</h3>
-                    <div class="project-meta">
-                        <span class="badge">⭐ ${repo.stargazers_count}</span>
-                        <span class="badge">🍴 ${repo.forks_count}</span>
-                    </div>
-                </div>
-                <p class="project-desc">${escapeHtml(repo.description || '')}</p>
-                <div class="project-meta">
-                    <span class="badge">${escapeHtml(repo.language || '—')}</span>
-                    <span class="small-muted">Atualizado: ${repo.updated_at ? new Date(repo.updated_at).toLocaleDateString() : '—'}</span>
-                </div>
-                <div class="actions">
-                    <a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">Abrir</a>
-                    <button class="link-btn secondary" data-copy="${repo.html_url}">Copiar link</button>
-                </div>
-            `;
-                    projectsListEl.appendChild(card);
-                });
-
-                shownCountEl.textContent = `${Math.min(toShow, sortedFiltered.length)} / ${allRepos.length}`;
-
-                if (filter) {
-                    toggleBtn.classList.add('hidden');
-                } else if (allRepos.length <= INITIAL_SHOW) {
-                    toggleBtn.classList.add('hidden');
+                    projectsListEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`;
                 } else {
-                    toggleBtn.classList.remove('hidden');
-                    const filteredLen = sortedFiltered.length;
-                    if (toShow >= filteredLen && filteredLen > INITIAL_SHOW) {
-                        toggleBtn.textContent = 'Mostrar menos';
-                        showingAll = true;
-                    } else {
-                        toggleBtn.textContent = 'Mostrar mais';
-                        showingAll = false;
-                    }
+                    sortedFiltered.slice(0, toShowCount).forEach(repo => {
+                        const card = document.createElement('div');
+                        card.className = 'project-card';
+                        card.setAttribute('role', 'listitem');
+                        card.innerHTML = createCardHTML(repo);
+                        projectsListEl.appendChild(card);
+                    });
                 }
-
-                projectsListEl.querySelectorAll('button[data-copy]').forEach(btn => {
-                    btn.removeEventListener('click', onCopy);
-                    btn.addEventListener('click', onCopy);
-                });
+                
+                shownCountEl.textContent = `${toShowCount} / ${filtered.length}`;
+                toggleBtn.classList.toggle('hidden', filter || toShowCount >= filtered.length);
+                toggleBtn.textContent = toShowCount >= filtered.length ? translations[lang].show_less : translations[lang].show_more;
             }
 
             function renderAll() {
                 const sorted = sortByStarsThenForks(allRepos);
                 const featured = sorted.slice(0, 3);
-                renderFeatured(featured);
+                featuredListEl.innerHTML = '';
+                featured.forEach(r => {
+                    const el = document.createElement('div');
+                    el.className = 'project-card';
+                    el.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.04))';
+                    el.innerHTML = createCardHTML(r);
+                    featuredListEl.appendChild(el);
+                });
                 render();
             }
 
             function onCopy(e) {
                 const url = e.currentTarget.getAttribute('data-copy');
-                navigator.clipboard?.writeText(url).then(() => {
+                navigator.clipboard.writeText(url).then(() => {
                     const prev = e.currentTarget.textContent;
-                    e.currentTarget.textContent = 'Copiado!';
+                    e.currentTarget.textContent = translations[currentLang].copied_btn;
                     setTimeout(() => e.currentTarget.textContent = prev, 1500);
                 }).catch(() => alert('Não foi possível copiar.'));
             }
 
-            function formatTitle(name) {
-                if (!name) return '';
-                return String(name).replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
-            }
+            function formatTitle(name) { return (name || '').replace(/[-_]+/g, ' ').trim(); }
+            function titleCase(str) { return str.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); }
+            function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
-            function titleCase(str) {
-                return String(str).split(' ').map(w => {
-                    if (!w) return '';
-                    return w[0].toUpperCase() + w.slice(1).toLowerCase();
-                }).join(' ');
-            }
-
-            function escapeHtml(s) {
-                if (s === null || s === undefined) return '';
-                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            }
-
-            const onSearch = debounce((e) => {
-                currentFilter = e.target.value || '';
-                showingCount = Number.MAX_SAFE_INTEGER;
-                render();
+            searchEl.addEventListener('input', debounce(e => {
+                currentFilter = e.target.value;
                 document.getElementById('featured-wrap').style.display = currentFilter.trim() ? 'none' : '';
-            }, 250);
+                render();
+            }));
 
-            searchEl.addEventListener('input', onSearch);
             clearBtn.addEventListener('click', () => {
                 searchEl.value = '';
                 currentFilter = '';
                 showingCount = INITIAL_SHOW;
+                document.getElementById('featured-wrap').style.display = '';
                 render();
-                if (document.getElementById('featured-wrap')) document.getElementById('featured-wrap').style.display = '';
                 searchEl.focus();
             });
 
             toggleBtn.addEventListener('click', () => {
-                const filter = (currentFilter || '').trim().toLowerCase();
-                const filtered = allRepos.filter(r => {
-                    if (!filter) return true;
-                    return (r.name && r.name.toLowerCase().includes(filter)) ||
-                        (r.description && r.description.toLowerCase().includes(filter)) ||
-                        (r.language && r.language.toLowerCase().includes(filter));
-                });
-                const sortedFiltered = sortByStarsThenForks(filtered);
-                const filteredLen = sortedFiltered.length;
-
-                if (showingAll || showingCount >= filteredLen) {
+                const total = allRepos.length;
+                if (showingCount >= total) {
                     showingCount = INITIAL_SHOW;
-                    showingAll = false;
                 } else {
-                    showingCount = Math.min(showingCount + PAGE_SIZE, filteredLen);
-                    showingAll = showingCount >= filteredLen;
+                    showingCount = Math.min(showingCount + PAGE_SIZE, total);
                 }
                 render();
-                if (showingCount > INITIAL_SHOW) {
-                    const firstNewIndex = INITIAL_SHOW;
-                    const items = projectsListEl.querySelectorAll('.project-card');
-                    if (items[firstNewIndex]) items[firstNewIndex].scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
             });
 
+            projectsListEl.addEventListener('click', e => {
+                if (e.target.matches('button[data-copy]')) onCopy(e);
+            });
+            
             fetchRepos();
+
+            return { renderAll };
         })();
     </script>
 </body>
-
 </html>
 
