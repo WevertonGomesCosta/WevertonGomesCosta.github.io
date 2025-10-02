@@ -808,6 +808,9 @@
             const CACHE_KEY = 'gh_repos_cache_v7';
             const CACHE_TS_KEY = 'gh_repos_cache_ts_v7';
             const CACHE_TTL = 1000 * 60 * 60 * 24; // Cache de 24 horas
+            // Adicionado um proxy para evitar erros de limite de taxa da API do GitHub (403 Forbidden)
+            const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
+
             const fallbackRepos = [
                 { name: 'Integrating-nir-genomic-kernel', html_url: 'https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel', description: 'Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.', language: 'R', stargazers_count: 12, forks_count: 3, updated_at: '2023-10-27T10:00:00Z', topics: ['genomics', 'R', 'machine-learning'] },
                 { name: 'Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro', html_url: 'https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro', description: 'Aplicações de ML e redes neurais no melhoramento do cafeeiro.', language: 'Python', stargazers_count: 8, forks_count: 1, updated_at: '2023-09-15T10:00:00Z', topics: ['python', 'agtech'] },
@@ -829,7 +832,7 @@
                 let results = [];
                 let nextUrl = url;
                 while (nextUrl) {
-                    const response = await fetch(nextUrl);
+                    const response = await fetch(`${GITHUB_PROXY_URL}${encodeURIComponent(nextUrl)}`);
                     if (!response.ok) { throw new Error(`GitHub API request failed: ${response.status}`); }
                     const data = await response.json();
                     results = results.concat(data);
@@ -913,7 +916,8 @@
 
         // URL do proxy para contornar problemas de CORS (Cross-Origin Resource Sharing)
         // O navegador bloqueia requisições diretas para a SerpApi por segurança. O proxy faz a ponte.
-        const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+        // O proxy anterior (allorigins.win) pode ser instável, então usamos uma alternativa.
+        const PROXY_URL = 'https://corsproxy.io/?';
 
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
 
@@ -1027,3 +1031,5 @@
     </script>
 </body>
 </html>
+
+
