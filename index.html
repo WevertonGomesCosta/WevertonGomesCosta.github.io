@@ -190,6 +190,44 @@
         .metric-label { font-size: 0.9rem; color: var(--text-muted); }
         .scholar-link { margin-top: 10px; }
 
+        .scholar-chart-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 30px auto 0;
+        }
+
+        .scholar-chart {
+            width: 100%;
+            overflow: visible;
+        }
+
+        .chart-bar {
+            fill: var(--primary);
+            transform-origin: bottom;
+            transform: scaleY(0);
+            animation: grow 0.8s ease-out forwards;
+            animation-delay: var(--delay);
+        }
+
+        @keyframes grow {
+            to { transform: scaleY(1); }
+        }
+
+        .chart-label, .chart-year {
+            font-size: 11px;
+            fill: var(--text-muted);
+            text-anchor: middle;
+        }
+        .chart-label {
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out forwards;
+            animation-delay: calc(var(--delay) + 0.5s);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
         .feature-section {
             display: grid; grid-template-columns: 1fr; gap: 40px;
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
@@ -444,6 +482,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="scholar-chart-container reveal"></div>
                 <div class="scholar-link">
                     <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo
                     </a>
@@ -950,6 +989,38 @@
             }
         }
 
+        function renderCitationChart(graphData) {
+            const container = document.querySelector('.scholar-chart-container');
+            if (!container || !graphData || graphData.length === 0) return;
+
+            const maxCitation = Math.max(...graphData.map(d => d.citations));
+            const chartHeight = 100;
+            const barPadding = 15;
+            const barWidth = 35;
+            
+            const barsHtml = graphData.map((item, index) => {
+                const barHeight = item.citations > 0 ? (item.citations / maxCitation) * chartHeight : 0;
+                const x = index * (barWidth + barPadding);
+                const y = chartHeight - barHeight;
+                
+                return `
+                    <g transform="translate(${x}, 0)" style="--delay: ${index * 100}ms">
+                        <rect class="chart-bar" x="0" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"></rect>
+                        <text class="chart-label" x="${barWidth / 2}" y="${y - 5}">${item.citations}</text>
+                        <text class="chart-year" x="${barWidth / 2}" y="${chartHeight + 15}">${item.year}</text>
+                    </g>
+                `;
+            }).join('');
+
+            const chartWidth = graphData.length * (barWidth + barPadding) - barPadding;
+            
+            container.innerHTML = `
+                <svg class="scholar-chart" viewBox="0 0 ${chartWidth} ${chartHeight + 20}" preserveAspectRatio="xMidYMid meet">
+                    ${barsHtml}
+                </svg>
+            `;
+        }
+
         async function updateScholarSection() {
             try {
                 const profile = await fetchFromSerpApi({
@@ -963,7 +1034,6 @@
 
                 const citedBy = profile.cited_by;
 
-                // Lógica corrigida para lidar com a estrutura da API
                 if (citedBy && citedBy.table && citedBy.table.length >= 3) {
                     const citationsData = citedBy.table.find(item => item.citations)?.citations;
                     const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
@@ -986,7 +1056,6 @@
                     }
 
                 } else if (citedBy && citedBy.value) {
-                    // Fallback para um formato mais simples
                     document.getElementById("cit-total").textContent = citedBy.value ?? '—';
                     document.getElementById("h-total").textContent = citedBy.h_index ?? '—';
                     document.getElementById("i10-total").textContent = citedBy.i10_index ?? '—';
@@ -997,6 +1066,11 @@
                 if (profile.author_url) {
                     document.querySelector(".scholar-link a").href = profile.author_url;
                 }
+
+                if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
+                    renderCitationChart(profile.cited_by.graph);
+                }
+
             } catch (e) {
                 console.error("Erro ao atualizar seção do Scholar:", e);
                 const scholarCard = document.querySelector(".scholar-summary-card");
