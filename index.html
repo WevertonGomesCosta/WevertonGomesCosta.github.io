@@ -176,7 +176,7 @@
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
 
         .publication-card { display: flex; flex-direction: column; gap: 10px; }
-        .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
         .publication-card a:hover { color: var(--primary-dark); }
         .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
         .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
@@ -790,9 +790,6 @@
                 'publications-title': 'Publicações e Citações',
                 'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
                 'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
-                'pub1-title': 'Acurácia da seleção genômica com modelos não paramétricos', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.', 'pub1-citations': 'Citado 39 vezes',
-                'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.', 'pub2-citations': 'Citado 27 vezes',
-                'pub3-title': 'Meta-análise de estimativas de parâmetros genéticos em arroz', 'pub3-meta': 'Ciência Rural, 2019', 'pub3-desc': 'Meta-análise de parâmetros genéticos e correlações em genótipos de arroz irrigado em Minas Gerais.', 'pub3-citations': 'Citado 25 vezes',
                 'pub-read': 'Ver publicação →',
                 'education-title': 'Formação Acadêmica',
                 'edu-date1': '2023 - Presente', 'edu-title1': 'Doutorado em Estatística Aplicada e Biometria', 'edu-desc1': 'Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.',
@@ -846,9 +843,6 @@
                 'publications-title': 'Publications and Citations',
                 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
                 'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
-                'pub1-title': 'Accuracy of genomic selection with non-parametric models', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Study on the accuracy of non-parametric models in popcorn populations.', 'pub1-citations': 'Cited by 39',
-                'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparison of machine learning algorithms for genomic prediction in common bean.', 'pub2-citations': 'Cited by 27',
-                'pub3-title': 'Meta-analysis of genetic parameter estimates in rice', 'pub3-meta': 'Ciência Rural, 2019', 'pub3-desc': 'Meta-analysis of genetic parameters and correlations in irrigated rice genotypes in Minas Gerais.', 'pub3-citations': 'Cited by 25',
                 'pub-read': 'View publication →',
                 'education-title': 'Education',
                 'edu-date1': '2023 - Present', 'edu-title1': 'PhD in Applied Statistics and Biometrics', 'edu-desc1': 'Application of advanced statistical methods and biometric techniques to challenges in plant breeding.',
@@ -1210,26 +1204,29 @@
                   )
                 : allArticles;
 
-            const articlesToShow = lowerCaseFilter ? filteredArticles : filteredArticles.slice(0, 3);
+            // Exibe todos os resultados filtrados, ou os 6 primeiros se não houver filtro.
+            const articlesToShow = lowerCaseFilter ? filteredArticles : filteredArticles.slice(0, 6);
 
             if (articlesToShow.length === 0) {
-                grid.innerHTML = `<div class="card"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
                 return;
             }
             
             articlesToShow.forEach((art) => {
                 const card = document.createElement("div");
                 card.className = "card reveal publication-card";
+                const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
                 card.innerHTML = `
                     <h3>${art.title || 'Título indisponível'}</h3>
                     <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
                     <p>${art.snippet || ""}</p>
-                    <p class="citations">${art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem citações"}</p>
-                    <a href="${art.link}" target="_blank" rel="noopener">Ver publicação →</a>
+                    <p class="citations">${citationText}</p>
+                    <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>
                 `;
                 grid.appendChild(card);
             });
             
+            // Re-ativa o observer para as animações de entrada
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1242,17 +1239,53 @@
         }
 
         async function updateScholarPublications() {
+            const grid = document.getElementById("publicacoes-grid");
+            // Exibe 'skeletons' enquanto carrega os dados
+            grid.innerHTML = `
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            `;
+
             try {
-                const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
-                if (result.error) throw new Error(result.error);
-                
-                allArticles = result.articles || [];
+                let allFetchedArticles = [];
+                let startIndex = 0;
+                let hasMorePages = true;
+
+                // Loop para buscar todas as páginas de publicações
+                while (hasMorePages) {
+                    const result = await fetchFromSerpApi({
+                        engine: 'google_scholar_author',
+                        author_id: SCHOLAR_USER_ID,
+                        hl: 'pt-BR',
+                        start: startIndex
+                    });
+
+                    if (result.error) {
+                        if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
+                        throw new Error(result.error);
+                    }
+
+                    const newArticles = result.articles || [];
+                    if (newArticles.length > 0) {
+                        allFetchedArticles = allFetchedArticles.concat(newArticles);
+                    }
+
+                    // Condição para parar: não há mais link para a próxima página ou a página veio vazia
+                    if (result.serpapi_pagination && result.serpapi_pagination.next_link && newArticles.length > 0) {
+                        startIndex += 20; // O 'start' da API incrementa de 20 em 20
+                    } else {
+                        hasMorePages = false;
+                    }
+                }
+
+                allArticles = allFetchedArticles;
+                // Com a lista completa, renderiza a visualização inicial
                 renderPublications();
-                
+
             } catch (e) {
                 console.error("Erro ao atualizar publicações:", e);
-                const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = `<div style="color: #f44336; margin: 16px 0;">Erro ao carregar publicações: ${e.message}</div>`;
+                grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
             }
         }
 
@@ -1369,4 +1402,3 @@
     </script>
 </body>
 </html>
-
