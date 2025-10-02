@@ -360,10 +360,10 @@
     <nav>
         <div class="nav-container">
             <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
-            <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
             <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
             <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
             <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
+            <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
             <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
             <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
         </div>
@@ -379,58 +379,6 @@
             </div>
         </section>
         
-        <section id="publicacoes" class="section">
-            <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
-            
-            <div class="card reveal scholar-summary-card">
-                <div class="scholar-header">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
-                    <h3>Google Scholar</h3>
-                </div>
-                <div class="scholar-metrics">
-                    <div class="metric-item">
-                        <div class="metric-value">243</div>
-                        <div class="metric-label" data-key="scholar-total-citations">Total de Citações</div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-value">8</div>
-                        <div class="metric-label" data-key="scholar-h-index">Índice h</div>
-                    </div>
-                    <div class="metric-item">
-                        <div class="metric-value">8</div>
-                        <div class="metric-label" data-key="scholar-i10-index">Índice i10</div>
-                    </div>
-                </div>
-                <div class="scholar-link">
-                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo →</a>
-                </div>
-            </div>
-
-            <div class="grid stagger-children">
-                <div class="card reveal publication-card">
-                    <h3 data-key="pub1-title">Acurácia da seleção genômica com modelos não paramétricos</h3>
-                    <p class="publication-meta" data-key="pub1-meta">Crop Breeding and Applied Biotechnology, 2021</p>
-                    <p data-key="pub1-desc">Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.</p>
-                    <p class="citations" data-key="pub1-citations">Citado 37 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
-                <div class="card reveal publication-card">
-                    <h3 data-key="pub2-title">Comparison of machine learning algorithms for genomic prediction</h3>
-                    <p class="publication-meta" data-key="pub2-meta">Euphytica, 2022</p>
-                    <p data-key="pub2-desc">Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.</p>
-                     <p class="citations" data-key="pub2-citations">Citado 27 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
-                 <div class="card reveal publication-card">
-                    <h3 data-key="pub3-title">Meta-análise de estimativas de parâmetros genéticos em arroz</h3>
-                    <p class="publication-meta" data-key="pub3-meta">Ciência Rural, 2019</p>
-                    <p data-key="pub3-desc">Meta-análise de parâmetros genéticos e correlações em genótipos de arroz irrigado em Minas Gerais.</p>
-                     <p class="citations" data-key="pub3-citations">Citado 25 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
-            </div>
-        </section>
-
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
@@ -460,9 +408,60 @@
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
             <div class="meta reveal" id="projects-meta"></div>
-            <div id="featured-wrap" style="margin-bottom:12px;"><h3 class="reveal" style="margin:0 0 8px;color:var(--primary);font-size:1rem;" data-key="featured-title">Destaques</h3><div id="featured-list" class="stagger-children" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div></div>
-            <div class="projects stagger-children" id="projects-list" role="list"></div>
+            <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;"></div>
             <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
+        </section>
+
+        <section id="publicacoes" class="section">
+            <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
+            
+            <div class="card reveal scholar-summary-card">
+                <div class="scholar-header">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
+                    <h3>Google Scholar</h3>
+                </div>
+                <div class="scholar-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value">251</div>
+                        <div class="metric-label" data-key="scholar-total-citations">Total de Citações</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">9</div>
+                        <div class="metric-label" data-key="scholar-h-index">Índice h</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">8</div>
+                        <div class="metric-label" data-key="scholar-i10-index">Índice i10</div>
+                    </div>
+                </div>
+                <div class="scholar-link">
+                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo →</a>
+                </div>
+            </div>
+
+            <div class="grid stagger-children">
+                <div class="card reveal publication-card">
+                    <h3 data-key="pub1-title">Acurácia da seleção genômica com modelos não paramétricos</h3>
+                    <p class="publication-meta" data-key="pub1-meta">Crop Breeding and Applied Biotechnology, 2021</p>
+                    <p data-key="pub1-desc">Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.</p>
+                    <p class="citations" data-key="pub1-citations">Citado 39 vezes</p>
+                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
+                </div>
+                <div class="card reveal publication-card">
+                    <h3 data-key="pub2-title">Comparison of machine learning algorithms for genomic prediction</h3>
+                    <p class="publication-meta" data-key="pub2-meta">Euphytica, 2022</p>
+                    <p data-key="pub2-desc">Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.</p>
+                     <p class="citations" data-key="pub2-citations">Citado 27 vezes</p>
+                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
+                </div>
+                 <div class="card reveal publication-card">
+                    <h3 data-key="pub3-title">Meta-análise de estimativas de parâmetros genéticos em arroz</h3>
+                    <p class="publication-meta" data-key="pub3-meta">Ciência Rural, 2019</p>
+                    <p data-key="pub3-desc">Meta-análise de parâmetros genéticos e correlações em genótipos de arroz irrigado em Minas Gerais.</p>
+                     <p class="citations" data-key="pub3-citations">Citado 25 vezes</p>
+                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
+                </div>
+            </div>
         </section>
         
         <section id="licae-conecta" class="section">
@@ -506,9 +505,17 @@
         </section>
 
         <section id="contato" class="section">
-            <h2 class="reveal" data-key="contact-title">Redes Sociais e Contato</h2>
+            <h2 class="reveal" data-key="contact-title">Contato</h2>
             <div class="contact-container reveal">
-                <form id="contact-form" class="contact-form" action="https://formspree.io/f/wevertonufv@gmail.com" method="POST">
+                <!--
+                    INSTRUÇÕES PARA ATIVAR O FORMULÁRIO:
+                    1. Vá para https://formspree.io/ e crie uma conta (é grátis).
+                    2. Crie um novo formulário ("New Form").
+                    3. Copie o ID único do seu formulário (ex: xjvoqzpe).
+                    4. Substitua "your_unique_form_id" na linha 'action' abaixo pelo seu ID.
+                    O formulário começará a funcionar e a enviar e-mails para sua conta.
+                -->
+                <form id="contact-form" class="contact-form" action="https://formspree.io/f/mnngvbbg" method="POST">
                     <div class="form-group">
                         <label for="name" data-key="form-name">Nome</label>
                         <input type="text" id="name" name="name" required data-key-placeholder="form-name-ph">
@@ -532,12 +539,17 @@
                 <aside class="contact-links-aside">
                     <h3 data-key="contact-other">Redes Sociais e Perfis</h3>
                     <div class="contact-grid">
-                        <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
-                        <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
-                        <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" class="contact-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
-                            Google Scholar
-                        </a>
+<a href="mailto:wevertonufv@gmail.com" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>Email</a>
+                    <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
+                    <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
+                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" class="contact-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
+                        Google Scholar
+                    </a>
+                    <a href="https://orcid.org/0000-0003-0742-5936" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#A6CE39"><path d="M256,128c0,70.7-57.3,128-128,128S0,198.7,0,128,57.3,0,128,0,256,57.3,256,128Z"/><path fill="#FFF" d="m146.8,194.2h25.8v-90.3h-25.8v90.3zm-34.9-120.8c0-14.7,11.9-26.6,26.6-26.6s26.6,11.9,26.6,26.6-11.9,26.6-26.6,26.6-26.6-11.9-26.6-26.6zm69.8,120.8h25.8v-70.1h-25.8v70.1z"/></svg>ORCID</a>
+                    <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 22h-16c-1.104 0-2-.896-2-2v-16c0-1.104.896-2 2-2h16c1.104 0 2 .896 2 2v16c0 1.104-.896 2-2 2zm-16-20c-.552 0-1 .448-1 1v16c0 .552.448 1 1 1h16c.552 0 1-.448 1-1v-16c0-.552-.448-1-1-1h-16zm-1 6h18v1h-18v-1zm11 3.5c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5z"/></svg>Lattes</a>
+                    <a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.96 14.32l-2.32-2.32c.06-.22.1-.45.1-.7s-.04-.48-.1-.7l2.32-2.32c.39-.39.39-1.02 0-1.41l-2.83-2.83c-.39-.39-1.02-.39-1.41 0l-2.32 2.32c-.22-.06-.45-.1-.7-.1s-.48.04-.7.1l-2.32-2.32c-.39-.39-1.02-.39-1.41 0L4.04 6.34c-.39.39-.39 1.02 0 1.41l2.32 2.32c-.06.22-.1.45-.1.7s.04.48.1.7l-2.32 2.32c-.39.39-.39 1.02 0 1.41l2.83 2.83c.39.39 1.02.39 1.41 0l2.32-2.32c.22.06.45.1.7.1s.48-.04.7-.1l2.32 2.32c.39.39 1.02.39 1.41 0l2.83-2.83c.39-.39.39-1.02 0-1.41zM12 15c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>LICAE/UFV</a>
+                    <a href="https://www.conectagem.com/sobre" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.5,9C18.91,9 18.33,8.9 17.77,8.73L12,11.4V14.5C12,15.89 13.06,17.11 14.4,17.42C14.15,18.06 14,18.78 14,19.5C14,21.43 15.57,23 17.5,23S21,21.43 21,19.5C21,17.57 19.43,16 17.5,16C16.89,16 16.32,16.18 15.83,16.5L15.83,11.53L20.4,9.44C20.59,9.81 20.85,10.15 21.17,10.45C21.8,11.08 22.84,11.08 23.47,10.45C24.1,9.82 24.1,8.78 23.47,8.15C22.84,7.52 21.79,7.52 21.17,8.15C20.84,8.48 20.59,8.81 20.4,9.18L15.3,11.5C15.3,11.5 15.3,11.5 15.3,11.5L9.6,8.73C9.07,8.9 8.5,9 7.91,9C5.97,9 4.41,7.43 4.41,5.5C4.41,3.57 5.97,2 7.91,2S11.41,3.57 11.41,5.5C11.41,6.22 11.23,6.94 10.92,7.58L15,9.5V9.5L15.83,9.11C16.32,8.68 16.89,8.5 17.5,8.5C18.12,8.5 18.7,8.68 19.18,9.11L21.17,8.15C20.54,7.52 20.54,6.47 21.17,5.84C21.79,5.21 22.84,5.21 23.47,5.84C24.1,6.47 24.1,7.52 23.47,8.15C22.84,8.78 21.8,8.78 21.17,8.15C20.85,7.85 20.59,7.52 20.4,7.18L18.4,8.15C18.09,8.05 17.77,8 17.5,8C17.2,8 16.91,8.05 16.63,8.14L11.53,5.82C11.82,5.18 12,4.46 12,3.75C12,1.82 10.43,0.25 8.5,0.25S5,1.82 5,3.75C5,5.68 6.57,7.25 8.5,7.25C9.11,7.25 9.68,7.07 10.17,6.75L15.28,9.07C14.97,9.72 14.75,10.43 14.75,11.25C14.75,11.36 14.76,11.47 14.77,11.58L9.07,8.73C8.5,8.9 7.91,9 7.33,9C5.39,9 3.83,7.43 3.83,5.5C3.83,3.57 5.39,2 7.33,2S10.83,3.57 10.83,5.5C10.83,6.22 10.65,6.94 10.34,7.58L10.92,7.82L15,9.75V10.75L10.92,8.82C10.65,8.93 10.37,9.03 10.08,9.12L4.97,6.79C5.27,6.15 5.42,5.45 5.42,4.75C5.42,2.82 3.85,1.25 1.92,1.25S-1.58,2.82 -1.58,4.75C-1.58,6.68 0,8.25 1.92,8.25C2.54,8.25 3.11,8.07 3.6,7.75L8.72,10.07C8.41,10.72 8.18,11.43 8.18,12.25C8.18,13.84 9.05,15.25 10.42,16.03V19.95C9.05,20.73 8.18,22.14 8.18,23.73C8.18,25.66 9.75,27.23 11.68,27.23S15.18,25.66 15.18,23.73C15.18,22.14 14.28,20.73 12.92,19.95V16.03C14.28,15.25 15.18,13.84 15.18,12.23C15.18,11.43 14.97,10.72 14.65,10.07L19.77,12.39C20.07,13.04 20.23,13.75 20.23,14.5C20.23,16.43 21.79,18 23.73,18S27.23,16.43 27.23,14.5C27.23,12.57 25.67,11 23.73,11C23.09,11 22.5,11.18 21.97,11.5L16.9,9.18C16.71,8.81 16.46,8.48 16.14,8.18C15.51,7.55 14.46,7.55 13.83,8.18C13.2,8.81 13.2,9.85 13.83,10.48C14.46,11.11 15.51,11.11 16.14,10.48C16.46,10.15 16.71,9.82 16.9,9.45L19.5,10.5Z" transform="translate(1.58, -0.25) scale(0.8)"/></svg>Conecta GEM</a>
                     </div>
                 </aside>
             </div>
@@ -577,7 +589,6 @@
                 }));
             });
             mutationObserver.observe(document.getElementById('projects-list'), { childList: true });
-            mutationObserver.observe(document.getElementById('featured-list'), { childList: true });
 
             // --- Highlight do Link de Navegação Ativo ---
             const sections = document.querySelectorAll('main > section[id]');
@@ -668,7 +679,7 @@
                 'about-p3': `Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.`,
                 'publications-title': 'Publicações e Citações',
                 'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
-                'pub1-title': 'Acurácia da seleção genômica com modelos não paramétricos', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.', 'pub1-citations': 'Citado 37 vezes',
+                'pub1-title': 'Acurácia da seleção genômica com modelos não paramétricos', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.', 'pub1-citations': 'Citado 39 vezes',
                 'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.', 'pub2-citations': 'Citado 27 vezes',
                 'pub3-title': 'Meta-análise de estimativas de parâmetros genéticos em arroz', 'pub3-meta': 'Ciência Rural, 2019', 'pub3-desc': 'Meta-análise de parâmetros genéticos e correlações em genótipos de arroz irrigado em Minas Gerais.', 'pub3-citations': 'Citado 25 vezes',
                 'pub-read': 'Ver publicação →',
@@ -695,7 +706,7 @@
                 'conecta-item1': 'Consultoria em bioestatística e IA', 'conecta-item2': 'Implementação de pipelines de seleção genômica', 'conecta-item3': 'Capacitação e treinamentos em R e Python',
                 'skills-title': 'Habilidades Técnicas',
                 'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Estatística', 'skill4': 'Seleção Genômica', 'skill5': 'Modelos Mistos & Biometria', 'skill6': 'Reprodutibilidade', 'skill7': 'Visualização de Dados',
-                'contact-title': 'Redes Sociais e Contato',
+                'contact-title': 'Contato',
                 'contact-other': 'Redes Sociais e Perfis',
                 'form-name': 'Nome', 'form-name-ph': 'Seu nome completo',
                 'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com',
@@ -719,7 +730,7 @@
                 'about-p3': `Since <strong>2022</strong>, I have also served as the <strong>Student Coordinator at LICAE – UFV</strong>, where I develop research in computational intelligence, biometrics, and genomic selection, in addition to collaborating in the training of new researchers and the integration of multidisciplinary projects.`,
                 'publications-title': 'Publications and Citations',
                 'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
-                'pub1-title': 'Accuracy of genomic selection with non-parametric models', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Study on the accuracy of non-parametric models in popcorn populations.', 'pub1-citations': 'Cited by 37',
+                'pub1-title': 'Accuracy of genomic selection with non-parametric models', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Study on the accuracy of non-parametric models in popcorn populations.', 'pub1-citations': 'Cited by 39',
                 'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparison of machine learning algorithms for genomic prediction in common bean.', 'pub2-citations': 'Cited by 27',
                 'pub3-title': 'Meta-analysis of genetic parameter estimates in rice', 'pub3-meta': 'Ciência Rural, 2019', 'pub3-desc': 'Meta-analysis of genetic parameters and correlations in irrigated rice genotypes in Minas Gerais.', 'pub3-citations': 'Cited by 25',
                 'pub-read': 'View publication →',
@@ -803,8 +814,8 @@
         // --- Script para buscar repositórios do GitHub (Separado para clareza) ---
         window.githubScript = (function() {
             const GITHUB_USER = 'WevertonGomesCosta';
-            const CACHE_KEY = 'gh_repos_cache_v5'; // Cache version updated
-            const CACHE_TS_KEY = 'gh_repos_cache_ts_v5';
+            const CACHE_KEY = 'gh_repos_cache_v7';
+            const CACHE_TS_KEY = 'gh_repos_cache_ts_v7';
             const CACHE_TTL = 1000 * 60 * 60 * 24; // Cache de 24 horas
             const fallbackRepos = [
                 { name: 'Integrating-nir-genomic-kernel', html_url: 'https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel', description: 'Fusão de dados espectrais (NIR) e kernel genômico para melhorar predição fenotípica.', language: 'R', stargazers_count: 12, forks_count: 3, updated_at: '2023-10-27T10:00:00Z', topics: ['genomics', 'R', 'machine-learning'] },
@@ -812,9 +823,8 @@
                 { name: 'Importance-of-markers-for-QTL-detection-by-machine-learning-methods', html_url: 'https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods', description: 'Detecção de QTL por métodos de machine learning.', language: 'R', stargazers_count: 5, forks_count: 0, updated_at: '2023-08-01T10:00:00Z', topics: ['genetics', 'qtl'] },
                 { name: 'Genomic-Selection_Course', html_url: 'https://github.com/WevertonGomesCosta/Genomic-Selection_Course', description: 'Minicurso sobre seleção genômica.', language: 'R', stargazers_count: 4, forks_count: 0, updated_at: '2023-05-20T10:00:00Z', topics: ['course', 'genomic-selection'] }
             ];
-            let allRepos = []; let showingCount = 3; let currentFilter = '';
+            let allRepos = []; let showingCount = 6; let currentFilter = '';
             const listEl = document.getElementById('projects-list');
-            const featuredEl = document.getElementById('featured-list');
             const metaEl = document.getElementById('projects-meta');
             const searchEl = document.getElementById('project-search');
             const toggleBtn = document.getElementById('toggle-more');
@@ -824,14 +834,34 @@
             function readCache() { try { const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0); if (Date.now() - ts < CACHE_TTL) { return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } } catch (e) { console.warn('Falha ao ler cache', e); } return null; }
             function writeCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch (e) { console.warn('Falha ao escrever cache', e); } }
 
+            async function fetchAllPages(url) {
+                let results = [];
+                let nextUrl = url;
+                while (nextUrl) {
+                    const response = await fetch(nextUrl);
+                    if (!response.ok) { throw new Error(`GitHub API request failed: ${response.status}`); }
+                    const data = await response.json();
+                    results = results.concat(data);
+                    const linkHeader = response.headers.get('Link');
+                    nextUrl = null;
+                    if (linkHeader) {
+                        const nextLink = linkHeader.split(',').find(s => s.includes('rel="next"'));
+                        if (nextLink) {
+                            const match = nextLink.match(/<([^>]+)>/);
+                            if (match) nextUrl = match[1];
+                        }
+                    }
+                }
+                return results;
+            }
+
             async function fetchRepos() {
                 metaEl.textContent = translations[currentLang].fetching_repos;
                 const cache = readCache();
                 if (cache && cache.length) { allRepos = cache; metaEl.textContent = translations[currentLang].loaded_repos_cache(cache.length); renderAll(); return; }
                 try {
-                    const res = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&sort=updated`);
-                    if (!res.ok) throw new Error(`Status: ${res.status}`);
-                    const data = await res.json();
+                    const initialUrl = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100`;
+                    const data = await fetchAllPages(initialUrl);
                     allRepos = data.filter(r => !r.fork).map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [] }));
                     writeCache(allRepos); metaEl.textContent = translations[currentLang].found_repos(allRepos.length); renderAll();
                 } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; allRepos = fallbackRepos; renderAll(); }
@@ -843,24 +873,35 @@
             function render() {
                 const lang = currentLang; const filter = currentFilter.trim().toLowerCase();
                 const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos;
-                const sorted = sortByStars(filtered); const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
+                const sorted = sortByStars(filtered);
+                const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
                 listEl.innerHTML = '';
                 if (sorted.length === 0) { listEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`; } 
                 else { sorted.slice(0, toShow).forEach(repo => { const card = document.createElement('div'); card.className = 'project-card'; card.setAttribute('role', 'listitem'); card.innerHTML = createCard(repo); listEl.appendChild(card); }); }
-                shownCountEl.textContent = `${toShow} / ${filtered.length}`;
-                toggleBtn.classList.toggle('hidden', filter || toShow >= filtered.length);
-                toggleBtn.textContent = translations[lang][toShow >= filtered.length ? 'show-less' : 'show-more'];
+                shownCountEl.textContent = `${toShow} / ${sorted.length}`;
+                toggleBtn.classList.toggle('hidden', filter || toShow >= sorted.length);
+                toggleBtn.textContent = translations[lang][toShow >= sorted.length ? 'show-less' : 'show-more'];
             }
             
-            function renderAll() { const sorted = sortByStars(allRepos); const featured = sorted.slice(0, 3); featuredEl.innerHTML = ''; featured.forEach(r => { const el = document.createElement('div'); el.className = 'project-card'; el.style.background = 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(59,130,246,0.04))'; el.innerHTML = createCard(r); featuredEl.appendChild(el); }); render(); }
+            function renderAll() { 
+                render(); 
+            }
             function onCopy(e) { const url = e.target.getAttribute('data-copy'); navigator.clipboard.writeText(url).then(() => { const prev = e.target.textContent; e.target.textContent = translations[currentLang].copied_btn; setTimeout(() => e.target.textContent = prev, 1500); }); }
             function titleCase(str) { return (str || '').replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); }
             function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
             const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
-            searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; document.getElementById('featured-wrap').style.display = currentFilter.trim() ? 'none' : ''; render(); }));
-            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; showingCount = 3; document.getElementById('featured-wrap').style.display = ''; render(); searchEl.focus(); });
-            toggleBtn.addEventListener('click', () => { const total = allRepos.length; if (showingCount >= total) { showingCount = 3; } else { showingCount = Math.min(showingCount + 3, total); } render(); });
+            searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
+            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; showingCount = 6; render(); searchEl.focus(); });
+            toggleBtn.addEventListener('click', () => { 
+                const total = (currentFilter ? allRepos.filter(r => r.name.toLowerCase().includes(currentFilter) || (r.description || '').toLowerCase().includes(currentFilter) || (r.language || '').toLowerCase().includes(currentFilter) || r.topics.some(t => t.toLowerCase().includes(currentFilter))) : allRepos).length;
+                if (showingCount >= total) { 
+                    showingCount = 6; 
+                } else { 
+                    showingCount = Math.min(showingCount + 6, total); 
+                } 
+                render(); 
+            });
             listEl.addEventListener('click', e => { if (e.target.matches('button[data-copy]')) onCopy(e); });
             
             fetchRepos();
