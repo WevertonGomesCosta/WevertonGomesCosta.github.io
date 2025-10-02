@@ -776,18 +776,18 @@
             </div>
         </section>
 
-        <!-- REPLACE: aside.sidebar (Projetos & Repositórios) -->
+         <!-- SIDEBAR: Projetos & Repositórios -->
         <aside class="sidebar" aria-labelledby="projetos-title">
             <h2 id="projetos-title">Projetos & Repositórios</h2>
         
             <div class="controls">
-                <input id="project-search" placeholder="Buscar repositório (nome/descrição/língua)..." aria-label="Buscar repositório">
+                <input id="project-search" placeholder="Buscar repositório (nome/descrição/linguagem)..." aria-label="Buscar repositório">
                 <button id="clear-btn" title="Limpar busca">Limpar</button>
             </div>
         
             <div class="meta" id="projects-meta">Carregando repositórios...</div>
         
-            <!-- Featured (top repos by stars) -->
+            <!-- Destaques -->
             <div id="featured-wrap" style="margin-bottom:12px;">
                 <h3 style="margin:0 0 8px;color:var(--primary);font-size:1rem;">Destaques</h3>
                 <div id="featured-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
@@ -795,9 +795,9 @@
                 </div>
             </div>
         
-            <!-- Projects list: full-width column; page will grow vertically -->
+            <!-- Lista principal de projetos (cresce verticalmente) -->
             <div class="projects" id="projects-list" role="list" style="max-height:none;overflow:visible;padding-right:0;">
-                <!-- initial project cards rendered here -->
+                <!-- project cards rendered here -->
             </div>
         
             <div style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center">
@@ -950,7 +950,7 @@
             <p>&copy; 2025 Weverton Gomes da Costa</p>
         </div>
     </footer>
-<!-- REPLACE: the IIFE script that handles fetching/rendering repos -->
+
 <script>
 (function(){
     const GITHUB_USER = 'WevertonGomesCosta';
@@ -1045,6 +1045,16 @@
         if(document.getElementById('featured-wrap')) document.getElementById('featured-wrap').style.display = '';
     }
 
+    // sorting helper: stars desc, then forks desc
+    function sortByStarsThenForks(arr){
+        return arr.slice().sort((a,b)=>{
+            const sa = Number(a.stargazers_count||0), sb = Number(b.stargazers_count||0);
+            if(sb !== sa) return sb - sa;
+            const fa = Number(a.forks_count||0), fb = Number(b.forks_count||0);
+            return fb - fa;
+        });
+    }
+
     function renderFeatured(repos){
         featuredListEl.innerHTML = '';
         if(!repos || !repos.length){ featuredListEl.style.display='none'; return; }
@@ -1086,22 +1096,25 @@
                    (r.language && r.language.toLowerCase().includes(filter));
         });
 
-        let toShow = filtered.length;
+        // SORT: stars desc, then forks desc
+        const sortedFiltered = sortByStarsThenForks(filtered);
+
+        let toShow = sortedFiltered.length;
         if(!filter){
             // if not searching, show only a portion (showingCount)
-            toShow = Math.min(showingCount, filtered.length);
+            toShow = Math.min(showingCount, sortedFiltered.length);
         }
 
         projectsListEl.innerHTML = '';
 
-        if(filtered.length === 0){
+        if(sortedFiltered.length === 0){
             projectsListEl.innerHTML = '<div class="project-card"><p class="project-desc">Nenhum repositório encontrado.</p></div>';
             shownCountEl.textContent = `0 / ${allRepos.length}`;
             toggleBtn.classList.add('hidden');
             return;
         }
 
-        filtered.slice(0, toShow).forEach(repo=>{
+        sortedFiltered.slice(0, toShow).forEach(repo=>{
             const card = document.createElement('div');
             card.className = 'project-card';
             card.setAttribute('role','listitem');
@@ -1126,7 +1139,7 @@
             projectsListEl.appendChild(card);
         });
 
-        shownCountEl.textContent = `${Math.min(toShow, filtered.length)} / ${allRepos.length}`;
+        shownCountEl.textContent = `${Math.min(toShow, sortedFiltered.length)} / ${allRepos.length}`;
 
         // toggle button logic
         if(filter){
@@ -1135,8 +1148,7 @@
             toggleBtn.classList.add('hidden');
         } else {
             toggleBtn.classList.remove('hidden');
-            // if we've shown all available filtered repos -> show "Mostrar menos"
-            const filteredLen = filtered.length;
+            const filteredLen = sortedFiltered.length;
             if(toShow >= filteredLen && filteredLen > INITIAL_SHOW){
                 toggleBtn.textContent = 'Mostrar menos';
                 showingAll = true;
@@ -1154,8 +1166,8 @@
     }
 
     function renderAll(){
-        // featured: top 3 by stars
-        const sorted = [...allRepos].sort((a,b)=> (b.stargazers_count||0) - (a.stargazers_count||0));
+        // featured: top 3 by stars then forks
+        const sorted = sortByStarsThenForks(allRepos);
         const featured = sorted.slice(0,3);
         renderFeatured(featured);
         render();
@@ -1210,7 +1222,8 @@
                    (r.description && r.description.toLowerCase().includes(filter)) ||
                    (r.language && r.language.toLowerCase().includes(filter));
         });
-        const filteredLen = filtered.length;
+        const sortedFiltered = sortByStarsThenForks(filtered);
+        const filteredLen = sortedFiltered.length;
 
         if(showingAll || showingCount >= filteredLen){
             // collapse
@@ -1222,7 +1235,7 @@
             showingAll = showingCount >= filteredLen;
         }
         render();
-        // smooth scroll to the first newly shown item (optional UX)
+        // smooth scroll to first newly shown item
         if(showingCount > INITIAL_SHOW){
             const firstNewIndex = INITIAL_SHOW;
             const items = projectsListEl.querySelectorAll('.project-card');
