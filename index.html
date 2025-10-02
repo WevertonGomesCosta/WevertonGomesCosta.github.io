@@ -917,27 +917,22 @@
 
         // URL do proxy para contornar problemas de CORS (Cross-Origin Resource Sharing)
         // O navegador bloqueia requisições diretas para a SerpApi por segurança. O proxy faz a ponte.
-        // O proxy anterior (allorigins.win) pode ser instável, então usamos uma alternativa.
         const PROXY_URL = 'https://corsproxy.io/?';
 
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
 
         async function fetchFromSerpApi(params) {
             const baseUrl = 'https://serpapi.com/search.json';
-            // Adiciona a chave da API e outros parâmetros à URL de busca
             const searchParams = new URLSearchParams({
                 ...params,
                 api_key: SERPAPI_KEY
             });
             const apiUrl = `${baseUrl}?${searchParams.toString()}`;
-
-            // Usa o proxy para fazer a requisição
             const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
             
             try {
                 const res = await fetch(proxyRequestUrl);
                 if (!res.ok) {
-                    // Tenta ler a resposta de erro para dar uma mensagem mais específica
                     const errorText = await res.text();
                     console.error("Erro da API ou do Proxy:", errorText);
                     if (errorText.includes("monthly search limit")) {
@@ -945,12 +940,10 @@
                     }
                     throw new Error(`Falha na requisição. Status: ${res.status}.`);
                 }
-                // A API allorigins retorna o conteúdo como texto, então precisamos converter para JSON
                 const data = await res.json();
                 return data;
             } catch (error) {
                 console.error("Erro ao buscar dados do Google Scholar:", error);
-                // Re-lança o erro para que as funções que chamam possam tratá-lo
                 throw error;
             }
         }
@@ -968,26 +961,35 @@
 
                 const citedBy = profile.cited_by;
 
-                if (citedBy && citedBy.table && citedBy.table.length >= 1) {
-                    const allTime = citedBy.table[0];
-                    const recent = citedBy.table.length > 1 ? citedBy.table[1] : null;
-
-                    document.getElementById("cit-total").textContent = allTime.citations ?? '—';
-                    document.getElementById("h-total").textContent = allTime.h_index ?? '—';
-                    document.getElementById("i10-total").textContent = allTime.i10_index ?? '—';
-
-                    if (recent) {
-                        document.getElementById("cit-period").textContent = recent.citations ?? '—';
-                        document.getElementById("h-period").textContent = recent.h_index ?? '—';
-                        document.getElementById("i10-period").textContent = recent.i10_index ?? '—';
+                // Nova lógica para lidar com a estrutura da API
+                if (citedBy && citedBy.table && citedBy.table.length >= 3) {
+                    const citationsData = citedBy.table.find(item => item.citations)?.citations;
+                    const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
+                    const i10IndexData = citedBy.table.find(item => item.i10_index)?.i10_index;
+                    
+                    if (citationsData) {
+                        document.getElementById("cit-total").textContent = citationsData.all ?? '—';
+                        const sinceKey = Object.keys(citationsData).find(k => k.startsWith('since_'));
+                        document.getElementById("cit-period").textContent = sinceKey ? citationsData[sinceKey] : '—';
                     }
+                    if (hIndexData) {
+                        document.getElementById("h-total").textContent = hIndexData.all ?? '—';
+                        const sinceKey = Object.keys(hIndexData).find(k => k.startsWith('since_'));
+                        document.getElementById("h-period").textContent = sinceKey ? hIndexData[sinceKey] : '—';
+                    }
+                    if (i10IndexData) {
+                        document.getElementById("i10-total").textContent = i10IndexData.all ?? '—';
+                        const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_'));
+                        document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—';
+                    }
+
                 } else if (citedBy && citedBy.value) {
-                    // Fallback para valor total se a tabela não estiver no formato esperado
+                    // Fallback para um formato mais simples
                     document.getElementById("cit-total").textContent = citedBy.value ?? '—';
                     document.getElementById("h-total").textContent = citedBy.h_index ?? '—';
                     document.getElementById("i10-total").textContent = citedBy.i10_index ?? '—';
                 } else {
-                     throw new Error("Dados de citação ('cited_by') não encontrados na resposta.");
+                     throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado.");
                 }
 
                 if (profile.author_url) {
@@ -996,8 +998,9 @@
             } catch (e) {
                 console.error("Erro ao atualizar seção do Scholar:", e);
                 const scholarCard = document.querySelector(".scholar-summary-card");
-                if (scholarCard) {
+                if (scholarCard && !scholarCard.querySelector('.scholar-error')) {
                     const errorDiv = document.createElement('div');
+                    errorDiv.className = 'scholar-error';
                     errorDiv.style.color = '#f44336';
                     errorDiv.style.marginTop = '15px';
                     errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`;
