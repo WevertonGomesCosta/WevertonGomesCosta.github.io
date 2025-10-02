@@ -412,55 +412,46 @@
             <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
 
+        <!-- Seção de Métricas e Publicações Google Scholar -->
         <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
-            
+        
             <div class="card reveal scholar-summary-card">
                 <div class="scholar-header">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 464c-132.5 0-240-107.5-240-240S123.5 16 256 16s240 107.5 240 240-107.5 240-240 240z"/><path d="M256 96c-88.4 0-160 71.6-160 160s71.6 160 160 160 160-71.6 160-160S344.4 96 256 96zm0 288c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>
                     <h3>Google Scholar</h3>
                 </div>
                 <div class="scholar-metrics">
                     <div class="metric-item">
-                        <div class="metric-value">251</div>
-                        <div class="metric-label" data-key="scholar-total-citations">Total de Citações</div>
+                        <div class="metric-label">Citações</div>
+                        <div>
+                            <span class="metric-value" id="cit-total">—</span> <span>TODOS</span> /
+                            <span class="metric-value-period" id="cit-period">—</span> <span>DESDE 2020</span>
+                        </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-value">9</div>
-                        <div class="metric-label" data-key="scholar-h-index">Índice h</div>
+                        <div class="metric-label">Índice h</div>
+                        <div>
+                            <span class="metric-value" id="h-total">—</span> <span>TODOS</span> /
+                            <span class="metric-value-period" id="h-period">—</span> <span>DESDE 2020</span>
+                        </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-value">8</div>
-                        <div class="metric-label" data-key="scholar-i10-index">Índice i10</div>
+                        <div class="metric-label">Índice i10</div>
+                        <div>
+                            <span class="metric-value" id="i10-total">—</span> <span>TODOS</span> /
+                            <span class="metric-value-period" id="i10-period">—</span> <span>DESDE 2020</span>
+                        </div>
                     </div>
                 </div>
                 <div class="scholar-link">
-                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo →</a>
+                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo
+                    </a>
                 </div>
             </div>
-
-            <div class="grid stagger-children">
-                <div class="card reveal publication-card">
-                    <h3 data-key="pub1-title">Acurácia da seleção genômica com modelos não paramétricos</h3>
-                    <p class="publication-meta" data-key="pub1-meta">Crop Breeding and Applied Biotechnology, 2021</p>
-                    <p data-key="pub1-desc">Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.</p>
-                    <p class="citations" data-key="pub1-citations">Citado 39 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
-                <div class="card reveal publication-card">
-                    <h3 data-key="pub2-title">Comparison of machine learning algorithms for genomic prediction</h3>
-                    <p class="publication-meta" data-key="pub2-meta">Euphytica, 2022</p>
-                    <p data-key="pub2-desc">Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.</p>
-                     <p class="citations" data-key="pub2-citations">Citado 27 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
-                 <div class="card reveal publication-card">
-                    <h3 data-key="pub3-title">Meta-análise de estimativas de parâmetros genéticos em arroz</h3>
-                    <p class="publication-meta" data-key="pub3-meta">Ciência Rural, 2019</p>
-                    <p data-key="pub3-desc">Meta-análise de parâmetros genéticos e correlações em genótipos de arroz irrigado em Minas Gerais.</p>
-                     <p class="citations" data-key="pub3-citations">Citado 25 vezes</p>
-                    <a href="https://scholar.google.com.br/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC" target="_blank" rel="noopener" data-key="pub-read">Ver publicação →</a>
-                </div>
+        
+            <div class="grid stagger-children" id="publicacoes-grid">
+                <!-- Publicações serão inseridas aqui via JS -->
             </div>
         </section>
         
@@ -862,7 +853,7 @@
                 try {
                     const initialUrl = `https://api.github.com/users/${GITHUB_USER}/repos?per_page=100`;
                     const data = await fetchAllPages(initialUrl);
-                    allRepos = data.filter(r => !r.fork).map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [] }));
+                    allRepos = data.map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [] }));
                     writeCache(allRepos); metaEl.textContent = translations[currentLang].found_repos(allRepos.length); renderAll();
                 } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; allRepos = fallbackRepos; renderAll(); }
             }
@@ -907,6 +898,91 @@
             fetchRepos();
             return { renderAll };
         })();
+    </script>
+    <script>
+        // Substitua pela sua chave SerpApi!
+        const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1"; // <== Cole sua chave aqui!
+        const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; // <== Confirme seu ID Google Scholar
+    
+        const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
+    
+        async function fetchScholarProfile() {
+            const url = `https://serpapi.com/search.json?engine=google_scholar_author&author_id=${SCHOLAR_USER_ID}&api_key=${SERPAPI_KEY}`;
+            const res = await fetch(url);
+            if (res.status === 429) throw new Error(serpApiLimitMsg);
+            if (!res.ok) throw new Error("Falha ao buscar perfil do Google Scholar");
+            const data = await res.json();
+            return data;
+        }
+    
+        async function fetchScholarArticles() {
+            const url = `https://serpapi.com/search.json?engine=google_scholar_author&author_id=${SCHOLAR_USER_ID}&api_key=${SERPAPI_KEY}&hl=pt-BR`;
+            const res = await fetch(url);
+            if (res.status === 429) throw new Error(serpApiLimitMsg);
+            if (!res.ok) throw new Error("Falha ao buscar artigos do Google Scholar");
+            const data = await res.json();
+            return data.articles || [];
+        }
+    
+        async function updateScholarSection() {
+            try {
+                const profile = await fetchScholarProfile();
+                if (profile.cited_by && profile.cited_by.table && profile.cited_by.table.length === 2) {
+                    document.getElementById("cit-total").textContent = profile.cited_by.table[0].citations;
+                    document.getElementById("cit-period").textContent = profile.cited_by.table[1].citations;
+                    document.getElementById("h-total").textContent = profile.cited_by.table[0].h_index;
+                    document.getElementById("h-period").textContent = profile.cited_by.table[1].h_index;
+                    document.getElementById("i10-total").textContent = profile.cited_by.table[0].i10_index;
+                    document.getElementById("i10-period").textContent = profile.cited_by.table[1].i10_index;
+                } else {
+                    // Fallback para valor total
+                    document.getElementById("cit-total").textContent = profile.cited_by.value;
+                    document.getElementById("h-total").textContent = profile.cited_by.h_index;
+                    document.getElementById("i10-total").textContent = profile.cited_by.i10_index;
+                    document.getElementById("cit-period").textContent = "—";
+                    document.getElementById("h-period").textContent = "—";
+                    document.getElementById("i10-period").textContent = "—";
+                }
+                document.querySelector(".scholar-link a").href = profile.author_url;
+            } catch (e) {
+                document.getElementById("cit-total").textContent = "—";
+                document.getElementById("cit-period").textContent = "—";
+                document.getElementById("h-total").textContent = "—";
+                document.getElementById("h-period").textContent = "—";
+                document.getElementById("i10-total").textContent = "—";
+                document.getElementById("i10-period").textContent = "—";
+                document.querySelector(".scholar-link").insertAdjacentHTML("beforeend", `<div style="color: #f44336; margin-top:8px;">${e.message}</div>`);
+            }
+        }
+    
+        async function updateScholarPublications() {
+            try {
+                const articles = await fetchScholarArticles();
+                const grid = document.getElementById("publicacoes-grid");
+                grid.innerHTML = ""; // Limpa cards antigos
+                if (!articles.length) throw new Error("Nenhuma publicação encontrada.");
+                articles.slice(0, 3).forEach((art) => {
+                    const card = document.createElement("div");
+                    card.className = "card reveal publication-card";
+                    card.innerHTML = `
+                        <h3>${art.title}</h3>
+                        <p class="publication-meta">${art.publication}</p>
+                        <p>${art.snippet || ""}</p>
+                        <p class="citations">${art.cited_by ? `Citado ${art.cited_by.value} vezes` : ""}</p>
+                        <a href="${art.link}" target="_blank" rel="noopener">Ver publicação →</a>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                const grid = document.getElementById("publicacoes-grid");
+                grid.innerHTML = `<div style="color: #f44336; margin: 16px 0;">${e.message}</div>`;
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            updateScholarSection();
+            updateScholarPublications();
+        });
     </script>
 </body>
 </html>
