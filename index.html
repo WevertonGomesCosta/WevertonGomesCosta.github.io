@@ -500,9 +500,6 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
             </div>
             <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
@@ -510,8 +507,7 @@
         <!-- Seção de Métricas e Publicações Google Scholar -->
         <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
-        
-            <div class="card reveal scholar-summary-card">
+            <div class="card reveal scholar-summary-card" style="margin-top: 25px;">
                 <div class="scholar-header">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 464c-132.5 0-240-107.5-240-240S123.5 16 256 16s240 107.5 240 240-107.5 240-240 240z"/><path d="M256 96c-88.4 0-160 71.6-160 160s71.6 160 160 160 160-71.6 160-160S344.4 96 256 96zm0 288c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>
                     <h3>Google Scholar</h3>
@@ -545,6 +541,10 @@
                     </a>
                 </div>
             </div>
+            <div class="controls reveal">
+                <input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder">
+                <button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search">Limpar</button>
+            </div>
         
             <div class="grid stagger-children" id="publicacoes-grid">
                 <div class="skeleton-card"></div>
@@ -557,7 +557,7 @@
              <div class="feature-section reveal">
                 <div class="feature-logo" role="img" aria-label="Cérebro">🧠</div>
                 <div class="feature-content">
-                    <h3>LICAE - UFV</h3>
+                    <h3>Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</h3>
                     <p data-key="licae-desc">No LICAE, desenvolvo e aplico métodos de machine learning e estatística avançada para o melhoramento genético, focando em aumentar a eficiência da seleção genômica e apoiar decisões estratégicas no campo.</p>
                     <ul class="feature-list">
                         <li data-key="licae-item1">Pesquisa em redes neurais e seleção genômica</li>
@@ -641,6 +641,7 @@
     <footer class="reveal">
         <div class="footer-content">
             <p>&copy; 2025 Weverton Gomes da Costa</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
         </div>
     </footer>
 
@@ -786,6 +787,7 @@
                 'about-p2': `Minha expertise abrange desde <strong>modelos estatísticos avançados</strong> e <strong>seleção genômica</strong> até a implementação de <strong>algoritmos de machine learning</strong> e <strong>redes neurais</strong> para resolver desafios no melhoramento de plantas e agricultura digital. Trabalho com pipelines reprodutíveis em R e Python, sou especialista no software GENES, e busco sempre a excelência na comunicação científica e na aplicação prática do conhecimento.`,
                 'about-p3': `Desde <strong>2022</strong>, atuo também como <strong>Coordenador Discente do LICAE – UFV</strong>, onde desenvolvo pesquisas em inteligência computacional, biometria e seleção genômica, além de colaborar na formação de novos pesquisadores e na integração de projetos multidisciplinares.`,
                 'publications-title': 'Publicações e Citações',
+                'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
                 'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
                 'pub1-title': 'Acurácia da seleção genômica com modelos não paramétricos', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Estudo sobre a acurácia de modelos não paramétricos em populações de milho-pipoca.', 'pub1-citations': 'Citado 39 vezes',
                 'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparação de algoritmos de aprendizado de máquina para predição genômica em feijão comum.', 'pub2-citations': 'Citado 27 vezes',
@@ -841,6 +843,7 @@
                 'about-p2': `My expertise ranges from <strong>advanced statistical models</strong> and <strong>genomic selection</strong> to the implementation of <strong>machine learning algorithms</strong> and <strong>neural networks</strong> to solve challenges in plant breeding and digital agriculture. I work with reproducible pipelines in R and Python, am an expert in GENES software, and always strive for excellence in scientific communication and practical application of knowledge.`,
                 'about-p3': `Since <strong>2022</strong>, I have also served as the <strong>Student Coordinator at LICAE – UFV</strong>, where I develop research in computational intelligence, biometrics, and genomic selection, in addition to collaborating in the training of new researchers and the integration of multidisciplinary projects.`,
                 'publications-title': 'Publications and Citations',
+                'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
                 'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
                 'pub1-title': 'Accuracy of genomic selection with non-parametric models', 'pub1-meta': 'Crop Breeding and Applied Biotechnology, 2021', 'pub1-desc': 'Study on the accuracy of non-parametric models in popcorn populations.', 'pub1-citations': 'Cited by 39',
                 'pub2-title': 'Comparison of machine learning algorithms for genomic prediction', 'pub2-meta': 'Euphytica, 2022', 'pub2-desc': 'Comparison of machine learning algorithms for genomic prediction in common bean.', 'pub2-citations': 'Cited by 27',
@@ -984,7 +987,7 @@
                 { "name": "Integrating-nir-genomic-kernel", "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel", "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-08-29T17:16:37Z", "topics": [] },
                 { "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "html_url": "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "description": "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativos. Utiliza dados reais de 195 genótipos (21 211 SNPs) com características de doença e produtividade.", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-07-09T11:55:40Z", "topics": ["breeding", "coffee", "genetics", "machine-learning", "neural-network"] }
             ];
-            let allRepos = []; let showingCount = 6; let currentFilter = '';
+            let allRepos = []; let showingCount = 3; let currentFilter = '';
             const listEl = document.getElementById('projects-list');
             const metaEl = document.getElementById('projects-meta');
             const searchEl = document.getElementById('project-search');
@@ -1028,14 +1031,20 @@
                 } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; allRepos = fallbackRepos; renderAll(); }
             }
             
-            function sortByStars(arr) { return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count); }
+            function sortRepos(arr) { 
+                return [...arr].sort((a, b) => 
+                    b.stargazers_count - a.stargazers_count || 
+                    b.forks_count - a.forks_count ||
+                    new Date(b.updated_at) - new Date(a.updated_at)
+                ); 
+            }
             function createCard(repo) { const lang = currentLang; return `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p><div class="project-meta"><span class="badge">${escapeHtml(repo.language || '—')}</span><span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span></div><div class="actions"><a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a><button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button></div>`; }
             
             function render() {
                 listEl.innerHTML = ''; // Clear skeletons
                 const lang = currentLang; const filter = currentFilter.trim().toLowerCase();
                 const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos;
-                const sorted = sortByStars(filtered);
+                const sorted = sortRepos(filtered);
                 const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
                 
                 if (sorted.length === 0) { listEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`; } 
@@ -1054,11 +1063,11 @@
             const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
             searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
-            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; showingCount = 6; render(); searchEl.focus(); });
+            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; showingCount = 3; render(); searchEl.focus(); });
             toggleBtn.addEventListener('click', () => { 
                 const total = (currentFilter ? allRepos.filter(r => r.name.toLowerCase().includes(currentFilter) || (r.description || '').toLowerCase().includes(currentFilter) || (r.language || '').toLowerCase().includes(currentFilter) || r.topics.some(t => t.toLowerCase().includes(currentFilter))) : allRepos).length;
                 if (showingCount >= total) { 
-                    showingCount = 6; 
+                    showingCount = 3; 
                 } else { 
                     showingCount = Math.min(showingCount + 6, total); 
                 } 
@@ -1077,6 +1086,7 @@
         const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
         const PROXY_URL = 'https://corsproxy.io/?';
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
+        let allArticles = [];
 
         async function fetchFromSerpApi(params) {
             const baseUrl = 'https://serpapi.com/search.json';
@@ -1102,7 +1112,7 @@
         function renderCitationChart(graphData) {
             const container = document.querySelector('.scholar-chart-container');
             if (!container || !graphData || graphData.length === 0) return;
-            container.innerHTML = ''; // Limpa antes de renderizar
+            container.innerHTML = ''; 
 
             const maxCitation = Math.max(...graphData.map(d => d.citations));
             const chartHeight = 100;
@@ -1184,29 +1194,60 @@
                 }
             }
         }
+        
+        function renderPublications(filter = '') {
+            const grid = document.getElementById("publicacoes-grid");
+            grid.innerHTML = ""; 
+            
+            const lowerCaseFilter = filter.trim().toLowerCase();
+            
+            const filteredArticles = lowerCaseFilter 
+                ? allArticles.filter(art => 
+                    (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
+                    (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
+                    (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
+                  )
+                : allArticles;
+
+            const articlesToShow = lowerCaseFilter ? filteredArticles : filteredArticles.slice(0, 3);
+
+            if (articlesToShow.length === 0) {
+                grid.innerHTML = `<div class="card"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                return;
+            }
+            
+            articlesToShow.forEach((art) => {
+                const card = document.createElement("div");
+                card.className = "card reveal publication-card";
+                card.innerHTML = `
+                    <h3>${art.title || 'Título indisponível'}</h3>
+                    <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
+                    <p>${art.snippet || ""}</p>
+                    <p class="citations">${art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem citações"}</p>
+                    <a href="${art.link}" target="_blank" rel="noopener">Ver publicação →</a>
+                `;
+                grid.appendChild(card);
+            });
+            
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        }
 
         async function updateScholarPublications() {
             try {
                 const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
                 if (result.error) throw new Error(result.error);
                 
-                const articles = result.articles || [];
-                const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = ""; // Limpa skeletons
-                if (!articles.length) throw new Error("Nenhuma publicação foi encontrada.");
+                allArticles = result.articles || [];
+                renderPublications();
                 
-                articles.slice(0, 3).forEach((art) => {
-                    const card = document.createElement("div");
-                    card.className = "card reveal publication-card";
-                    card.innerHTML = `
-                        <h3>${art.title || 'Título indisponível'}</h3>
-                        <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
-                        <p>${art.snippet || ""}</p>
-                        <p class="citations">${art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem citações"}</p>
-                        <a href="${art.link}" target="_blank" rel="noopener">Ver publicação →</a>
-                    `;
-                    grid.appendChild(card);
-                });
             } catch (e) {
                 console.error("Erro ao atualizar publicações:", e);
                 const grid = document.getElementById("publicacoes-grid");
@@ -1217,6 +1258,21 @@
         document.addEventListener("DOMContentLoaded", () => {
             updateScholarSection();
             updateScholarPublications();
+
+            const pubSearchInput = document.getElementById('publication-search');
+            const pubClearBtn = document.getElementById('publication-clear-btn');
+            
+            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
+
+            pubSearchInput.addEventListener('input', debounce(e => {
+                renderPublications(e.target.value);
+            }));
+            
+            pubClearBtn.addEventListener('click', () => {
+                pubSearchInput.value = '';
+                renderPublications();
+                pubSearchInput.focus();
+            });
         });
     </script>
      <script>
