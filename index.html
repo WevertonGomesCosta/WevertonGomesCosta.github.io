@@ -900,85 +900,126 @@
         })();
     </script>
     <script>
+        // --- ATENÇÃO ---
+        // A sua chave da API SerpApi está visível publicamente neste código.
+        // Para um ambiente de produção, é ALTAMENTE RECOMENDADO mover esta lógica
+        // para um backend (como uma Cloud Function) para proteger sua chave.
+        // O método abaixo, usando um proxy, resolve o erro de 'fetch' mas não a
+        // questão da segurança da chave.
+
         // Substitua pela sua chave SerpApi!
         const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1"; // <== Cole sua chave aqui!
         const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; // <== Confirme seu ID Google Scholar
-    
+
+        // URL do proxy para contornar problemas de CORS (Cross-Origin Resource Sharing)
+        // O navegador bloqueia requisições diretas para a SerpApi por segurança. O proxy faz a ponte.
+        const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
-    
-        async function fetchScholarProfile() {
-            const url = `https://serpapi.com/search.json?engine=google_scholar_author&author_id=${SCHOLAR_USER_ID}&api_key=${SERPAPI_KEY}`;
-            const res = await fetch(url);
-            if (res.status === 429) throw new Error(serpApiLimitMsg);
-            if (!res.ok) throw new Error("Falha ao buscar perfil do Google Scholar");
-            const data = await res.json();
-            return data;
-        }
-    
-        async function fetchScholarArticles() {
-            const url = `https://serpapi.com/search.json?engine=google_scholar_author&author_id=${SCHOLAR_USER_ID}&api_key=${SERPAPI_KEY}&hl=pt-BR`;
-            const res = await fetch(url);
-            if (res.status === 429) throw new Error(serpApiLimitMsg);
-            if (!res.ok) throw new Error("Falha ao buscar artigos do Google Scholar");
-            const data = await res.json();
-            return data.articles || [];
-        }
-    
-        async function updateScholarSection() {
+
+        async function fetchFromSerpApi(params) {
+            const baseUrl = 'https://serpapi.com/search.json';
+            // Adiciona a chave da API e outros parâmetros à URL de busca
+            const searchParams = new URLSearchParams({
+                ...params,
+                api_key: SERPAPI_KEY
+            });
+            const apiUrl = `${baseUrl}?${searchParams.toString()}`;
+
+            // Usa o proxy para fazer a requisição
+            const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
+            
             try {
-                const profile = await fetchScholarProfile();
-                if (profile.cited_by && profile.cited_by.table && profile.cited_by.table.length === 2) {
-                    document.getElementById("cit-total").textContent = profile.cited_by.table[0].citations;
-                    document.getElementById("cit-period").textContent = profile.cited_by.table[1].citations;
-                    document.getElementById("h-total").textContent = profile.cited_by.table[0].h_index;
-                    document.getElementById("h-period").textContent = profile.cited_by.table[1].h_index;
-                    document.getElementById("i10-total").textContent = profile.cited_by.table[0].i10_index;
-                    document.getElementById("i10-period").textContent = profile.cited_by.table[1].i10_index;
-                } else {
-                    // Fallback para valor total
-                    document.getElementById("cit-total").textContent = profile.cited_by.value;
-                    document.getElementById("h-total").textContent = profile.cited_by.h_index;
-                    document.getElementById("i10-total").textContent = profile.cited_by.i10_index;
-                    document.getElementById("cit-period").textContent = "—";
-                    document.getElementById("h-period").textContent = "—";
-                    document.getElementById("i10-period").textContent = "—";
+                const res = await fetch(proxyRequestUrl);
+                if (!res.ok) {
+                    // Tenta ler a resposta de erro para dar uma mensagem mais específica
+                    const errorText = await res.text();
+                    console.error("Erro da API ou do Proxy:", errorText);
+                    if (errorText.includes("monthly search limit")) {
+                        throw new Error(serpApiLimitMsg);
+                    }
+                    throw new Error(`Falha na requisição. Status: ${res.status}.`);
                 }
-                document.querySelector(".scholar-link a").href = profile.author_url;
-            } catch (e) {
-                document.getElementById("cit-total").textContent = "—";
-                document.getElementById("cit-period").textContent = "—";
-                document.getElementById("h-total").textContent = "—";
-                document.getElementById("h-period").textContent = "—";
-                document.getElementById("i10-total").textContent = "—";
-                document.getElementById("i10-period").textContent = "—";
-                document.querySelector(".scholar-link").insertAdjacentHTML("beforeend", `<div style="color: #f44336; margin-top:8px;">${e.message}</div>`);
+                // A API allorigins retorna o conteúdo como texto, então precisamos converter para JSON
+                const data = await res.json();
+                return data;
+            } catch (error) {
+                console.error("Erro ao buscar dados do Google Scholar:", error);
+                // Re-lança o erro para que as funções que chamam possam tratá-lo
+                throw error;
             }
         }
-    
+
+        async function updateScholarSection() {
+            try {
+                const profile = await fetchFromSerpApi({
+                    engine: 'google_scholar_author',
+                    author_id: SCHOLAR_USER_ID
+                });
+
+                if (profile.error) {
+                    throw new Error(profile.error);
+                }
+
+                if (profile.cited_by?.table?.length === 2) {
+                    const [allTime, recent] = profile.cited_by.table;
+                    document.getElementById("cit-total").textContent = allTime.citations ?? '—';
+                    document.getElementById("cit-period").textContent = recent.citations ?? '—';
+                    document.getElementById("h-total").textContent = allTime.h_index ?? '—';
+                    document.getElementById("h-period").textContent = recent.h_index ?? '—';
+                    document.getElementById("i10-total").textContent = allTime.i10_index ?? '—';
+                    document.getElementById("i10-period").textContent = recent.i10_index ?? '—';
+                } else if (profile.cited_by) {
+                    // Fallback para valor total se a tabela não estiver no formato esperado
+                    document.getElementById("cit-total").textContent = profile.cited_by.value ?? '—';
+                    document.getElementById("h-total").textContent = profile.cited_by.h_index ?? '—';
+                    document.getElementById("i10-total").textContent = profile.cited_by.i10_index ?? '—';
+                }
+                if (profile.author_url) {
+                    document.querySelector(".scholar-link a").href = profile.author_url;
+                }
+            } catch (e) {
+                console.error("Erro ao atualizar seção do Scholar:", e);
+                document.querySelector(".scholar-link").insertAdjacentHTML("beforeend", `<div style="color: #f44336; margin-top:8px;">Erro: ${e.message}</div>`);
+            }
+        }
+
         async function updateScholarPublications() {
             try {
-                const articles = await fetchScholarArticles();
+                const result = await fetchFromSerpApi({
+                    engine: 'google_scholar_author',
+                    author_id: SCHOLAR_USER_ID,
+                    hl: 'pt-BR'
+                });
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                const articles = result.articles || [];
                 const grid = document.getElementById("publicacoes-grid");
                 grid.innerHTML = ""; // Limpa cards antigos
                 if (!articles.length) throw new Error("Nenhuma publicação encontrada.");
+                
                 articles.slice(0, 3).forEach((art) => {
                     const card = document.createElement("div");
                     card.className = "card reveal publication-card";
                     card.innerHTML = `
-                        <h3>${art.title}</h3>
-                        <p class="publication-meta">${art.publication}</p>
+                        <h3>${art.title || 'Título indisponível'}</h3>
+                        <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
                         <p>${art.snippet || ""}</p>
-                        <p class="citations">${art.cited_by ? `Citado ${art.cited_by.value} vezes` : ""}</p>
+                        <p class="citations">${art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem citações"}</p>
                         <a href="${art.link}" target="_blank" rel="noopener">Ver publicação →</a>
                     `;
                     grid.appendChild(card);
                 });
             } catch (e) {
+                console.error("Erro ao atualizar publicações:", e);
                 const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = `<div style="color: #f44336; margin: 16px 0;">${e.message}</div>`;
+                grid.innerHTML = `<div style="color: #f44336; margin: 16px 0;">Erro ao carregar publicações: ${e.message}</div>`;
             }
         }
-    
+
         document.addEventListener("DOMContentLoaded", () => {
             updateScholarSection();
             updateScholarPublications();
@@ -986,4 +1027,3 @@
     </script>
 </body>
 </html>
-
