@@ -1269,7 +1269,7 @@
                 'exp-title4': 'Pipelines Reprodutíveis', 'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.',
                 'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
                 'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
-                'projects-title': 'Projetos & Repositórios',
+                'projects-title': 'Projetos',
                 'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
                 'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Destaques', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
                 'licae-desc': 'O LICAE é um laboratório multidisciplinar dedicado a propor, avaliar e aplicar técnicas de Inteligência Computacional e Aprendizado Estatístico para solucionar problemas complexos na Agropecuária. Nosso objetivo é aperfeiçoar e complementar as metodologias biométricas tradicionais, desenvolvendo projetos inovadores em áreas como Redes Neurais, Seleção Genômica e Random Forest.',
@@ -1332,7 +1332,7 @@
                 'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.',
                 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
                 'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
-                'projects-title': 'Projects & Repositories',
+                'projects-title': 'Projects',
                 'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.',
                 'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured', 'show-more': 'Show more', 'show-less': 'Show less',
                 'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.',
@@ -1978,6 +1978,7 @@
                 const margin = 40;
                 const max_width = page_width - margin * 2;
                 let y = margin;
+                const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
 
                 const checkPageBreak = (neededHeight) => {
                     if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
@@ -2004,35 +2005,24 @@
                 
                 // --- 4. Adicionar Cabeçalho ---
                 if (avatarDataUrl) {
-                    doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80);
+                    doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
                 }
                 
-                doc.setFontSize(22);
+                doc.setFontSize(24);
                 doc.setFont('helvetica', 'bold');
-                doc.text(document.getElementById('hero-name').textContent, margin + 95, y + 25);
+                doc.text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
                 
                 doc.setFontSize(11);
                 doc.setFont('helvetica', 'normal');
                 doc.setTextColor(100);
-                doc.text("Viçosa - Minas Gerais - Brasil", margin + 95, y + 45);
+                doc.text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
 
-                y += 85;
-
-                // Informações de Contato em duas colunas
-                doc.setFontSize(9);
+                doc.setFontSize(10);
                 doc.setTextColor(80);
-                const col1X = margin;
-                const col2X = margin + max_width / 2;
-                doc.text("Email: wevertonufv@gmail.com", col1X, y);
-                doc.text("LinkedIn: linkedin.com/in/wevertoncosta", col1X, y + 15);
-                
-                doc.text("GitHub: github.com/WevertonGomesCosta", col2X, y);
-                const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
-                if (scholarLink) {
-                    doc.text(`Google Scholar: ${scholarLink.href}`, col2X, y + 15);
-                }
-                
-                y += 35;
+                doc.text("Email: wevertonufv@gmail.com", margin + 115, y + 75);
+                doc.text("LinkedIn: linkedin.com/in/wevertoncosta", margin + 115, y + 90);
+
+                y += 120;
 
                 // --- 5. Funções Auxiliares para Seções ---
                 const addSectionTitle = (title) => {
@@ -2050,7 +2040,7 @@
                 
                 const addJustifiedText = (content) => {
                     const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width);
-                    const textHeight = lines.length * 12; // Altura aproximada do bloco de texto
+                    const textHeight = lines.length * 12; 
                     checkPageBreak(textHeight);
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
@@ -2058,6 +2048,17 @@
                     doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width });
                     y += textHeight + 5;
                 };
+
+                const addBulletedList = (items) => {
+                    items.forEach(item => {
+                        const text = `• ${item}`;
+                        const lines = doc.splitTextToSize(text, max_width - 10);
+                        const textHeight = lines.length * 12;
+                        checkPageBreak(textHeight);
+                        doc.text(lines, margin, y);
+                        y+= textHeight + 2;
+                    });
+                }
 
                 // --- 6. Adicionar Seções do Currículo ---
 
@@ -2079,18 +2080,21 @@
                 });
 
                 addSectionTitle('Habilidades Técnicas');
-                const skills = Array.from(document.querySelectorAll('#habilidades .skill-tag')).map(el => el.textContent).join(' • ');
-                addJustifiedText(skills);
+                const skills = Array.from(document.querySelectorAll('#habilidades .skill-tag')).map(el => el.textContent);
+                addBulletedList(skills);
+                y+= 10;
 
                 addSectionTitle('Áreas de Especialização');
-                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => {
-                    return `• ${card.querySelector('h3').textContent.trim()}: ${card.querySelector('p').textContent.trim()}`;
-                }).join('\n');
-                addJustifiedText(experiences);
+                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => 
+                     `${card.querySelector('h3').textContent.trim()}: ${card.querySelector('p').textContent.trim()}`
+                );
+                addBulletedList(experiences);
+                y+= 10;
+
 
                 addSectionTitle("Formação Acadêmica");
                 document.querySelectorAll('#formacao .timeline-item').forEach(item => {
-                    checkPageBreak(60);
+                    checkPageBreak(70);
                     const date = item.querySelector('.timeline-date').textContent.trim();
                     const title = item.querySelector('h3').textContent.trim();
                     const institution = item.querySelector('p').textContent.trim();
@@ -2101,20 +2105,21 @@
                     doc.setFont('helvetica', 'bold');
                     doc.setTextColor(0);
                     doc.text(title, margin, y);
+                    y += 14;
                     
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'italic');
                     doc.setTextColor(100);
-                    doc.text(date, margin, y + 12);
+                    doc.text(date, margin, y);
+                    y += 14;
                     
                     doc.setFont('helvetica', 'normal');
                     doc.setTextColor(80);
-                    doc.text(institution, page_width - margin, y, { align: 'right' });
-                    
-                    y += 28;
+                    doc.text(institution, margin, y);
+                    y += 14;
 
                     addJustifiedText(description);
-                    y += 10;
+                    y += 15;
                 });
                 
                 addSectionTitle("Principais Projetos");
@@ -2134,6 +2139,13 @@
                         addJustifiedText(desc);
                         y += 5;
                     });
+                     y += 15;
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(0, 0, 255);
+                    doc.textWithLink('Para mais projetos, acesse meu perfil no GitHub.', margin, y, { url: 'https://github.com/WevertonGomesCosta' });
+                    doc.setTextColor(80);
+                    y += 10;
                 }
                 
                 addSectionTitle("Principais Publicações");
@@ -2164,6 +2176,15 @@
                         }
                         y += 10;
                     });
+                    y += 15;
+                    doc.setFontSize(9);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(0, 0, 255);
+                    if (scholarLink) {
+                        doc.textWithLink('Para mais publicações, acesse meu perfil no Google Scholar.', margin, y, { url: scholarLink.href });
+                    }
+                    doc.setTextColor(80);
+                    y += 10;
                 }
 
                 // --- 7. Salvar o PDF ---
