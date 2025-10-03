@@ -2050,9 +2050,12 @@
                 };
 
                 const addBulletedList = (items) => {
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(80);
                     items.forEach(item => {
                         const text = `• ${item}`;
-                        const lines = doc.splitTextToSize(text, max_width - 10);
+                        const lines = doc.splitTextToSize(text, max_width - 10); // leave space for bullet
                         const textHeight = lines.length * 12;
                         checkPageBreak(textHeight);
                         doc.text(lines, margin, y);
@@ -2063,7 +2066,7 @@
                 // --- 6. Adicionar Seções do Currículo ---
 
                 addSectionTitle("Sobre Mim");
-                const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join('\n\n');
+                const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join(' ');
                 addJustifiedText(aboutText);
 
                 addSectionTitle("Serviços & Consultoria");
@@ -2204,3 +2207,5 @@
     </script>
 </body>
 </html>
+"
+
