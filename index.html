@@ -136,15 +136,34 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
         }
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .cta-btn:hover::before {
+            left: 100%;
+        }
+
         .cta-btn.primary {
             background: var(--primary);
             color: var(--dark);
         }
         .cta-btn.primary:hover {
             background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
         .cta-btn.secondary {
             background: transparent;
@@ -153,7 +172,8 @@
         }
         .cta-btn.secondary:hover {
             background: rgba(16, 185, 129, 0.1);
-            transform: translateY(-2px);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
         }
 
 
@@ -247,18 +267,56 @@
             border-color: rgba(16, 185, 129, 0.4);
             box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2);
         }
-        .icon { font-size: 2rem; margin-bottom: 15px; display: block; }
+        .icon { 
+            font-size: 2rem; 
+            margin-bottom: 15px; 
+            display: block; 
+            position: relative;
+            overflow: hidden;
+        }
+        .icon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            transform: translateX(-100%);
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
+        .card.visible .icon::after {
+            animation: shine-effect 2.5s ease-in-out infinite;
+        }
+        @keyframes shine-effect {
+            0% { transform: translateX(-150%) skewX(-30deg); }
+            100% { transform: translateX(250%) skewX(-30deg); }
+        }
+
         
         .timeline { position: relative; padding: 20px 0; }
         .timeline::before { content: ''; position: absolute; left: 30px; top: 0; height: 100%; width: 2px;
             background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
         .timeline-item { position: relative; padding-left: 70px; margin-bottom: 40px; }
-        .timeline-dot { position: absolute; left: 24px; top: 5px; width: 14px; height: 14px;
+        .timeline-dot { position: absolute; left: 24px; top: 15px; width: 14px; height: 14px;
             background: var(--primary); border-radius: 50%; box-shadow: 0 0 20px var(--glow); transition: transform 0.3s ease; }
         .timeline-item:hover .timeline-dot { transform: scale(1.5); }
         .timeline-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
             padding: 20px; backdrop-filter: blur(10px); }
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
+        .timeline-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .institution-logo { width: 40px; height: 40px; border-radius: 8px; background-color: rgba(255,255,255,0.1); object-fit: contain; padding: 4px;}
+        .timeline-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            color: var(--text-muted);
+        }
+        .timeline-item.expanded .timeline-details { max-height: 200px; /* Adjust as needed */ }
+        .toggle-details-btn {
+            background: none; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px;
+            border-radius: 5px; cursor: pointer; margin-top: 15px; transition: all 0.3s;
+        }
+        .toggle-details-btn:hover { background: rgba(16, 185, 129, 0.1); }
+
 
         .publication-card { display: flex; flex-direction: column; gap: 10px; }
         .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
@@ -331,10 +389,17 @@
         .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
         
         .skills-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        .skill-tag { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
+        .skill-tag { 
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
             color: var(--primary); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;
-            transition: all 0.3s ease; position: relative; }
-        .skill-tag:hover { background: rgba(16, 185, 129, 0.2); transform: scale(1.05); }
+            transition: all 0.3s ease; position: relative; cursor: pointer;
+        }
+        .skill-tag:hover, .skill-tag.active { 
+            background: var(--primary); 
+            color: var(--dark);
+            transform: scale(1.05); 
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
 
         .skill-tag[data-tooltip]::after {
             content: attr(data-tooltip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
@@ -342,7 +407,8 @@
             font-size: 0.85rem; white-space: nowrap; opacity: 0; visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none;
         }
-        .skill-tag[data-tooltip]:hover::after { opacity: 1; visibility: visible; }
+        .skill-tag.active:hover::after,
+        .skill-tag:hover::after { opacity: 1; visibility: visible; }
         
         .contact-container {
             display: grid;
@@ -455,8 +521,15 @@
             color: #042017; cursor: pointer; }
         .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px }
         .projects { display: flex; flex-direction: column; gap: 12px; max-height: none; overflow: visible; }
-        .project-card { background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
-            border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; transition: all 0.3s ease; }
+        .project-card { 
+            background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
+            border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; 
+            transition: all 0.4s ease; 
+        }
+        .project-card.filtered-out {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
         .project-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 50px rgba(16, 185, 129, 0.3);
             border-color: var(--primary); }
         .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
@@ -618,13 +691,90 @@
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
-                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date1">2023 - Presente</div><h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc1"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date2">2023 - Presente</div><h3 data-key="edu-title2">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc2"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date3">2022 - 2023</div><h3 data-key="edu-title3">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc3"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2022</div><h3 data-key="edu-title4">Pós-Doutorado</h3><p>EMBRAPA Mandioca e Fruticultura — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc4"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2018 - 2022</div><h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc5"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2016 - 2018</div><h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc6"></p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2010 - 2015</div><h3 data-key="edu-title7">Graduação em Agronomia</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc7"></p></div></div>
+                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                            <div class="timeline-date" data-key="edu-date1">2023 - Presente</div>
+                            <h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3>
+                            <p>Universidade Federal de Viçosa (UFV)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc1"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                     <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                            <div class="timeline-date" data-key="edu-date2">2023 - Presente</div>
+                            <h3 data-key="edu-title2">Pós-Doutorado</h3>
+                            <p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc2"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                            <div class="timeline-date" data-key="edu-date3">2022 - 2023</div>
+                            <h3 data-key="edu-title3">Pós-Doutorado</h3>
+                            <p>Universidade Federal de Viçosa (UFV) — CNPq</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc3"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=E" alt="Logo Embrapa" class="institution-logo">
+                        <div>
+                            <div class="timeline-date">2022</div>
+                            <h3 data-key="edu-title4">Pós-Doutorado</h3>
+                            <p>EMBRAPA Mandioca e Fruticultura — CNPq</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc4"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                             <div class="timeline-date">2018 - 2022</div>
+                            <h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3>
+                            <p>Universidade Federal de Viçosa (UFV)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc5"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                            <div class="timeline-date">2016 - 2018</div>
+                            <h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3>
+                            <p>Universidade Federal de Viçosa (UFV)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc6"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                    <div class="timeline-header">
+                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div>
+                            <div class="timeline-date">2010 - 2015</div>
+                            <h3 data-key="edu-title7">Graduação em Agronomia</h3>
+                            <p>Universidade Federal de Viçosa (UFV)</p>
+                        </div>
+                    </div>
+                    <div class="timeline-details" data-key="edu-desc7"></div>
+                    <button class="toggle-details-btn">Ver mais</button>
+                </div></div>
             </div>
         </section>
 
@@ -723,14 +873,14 @@
         <section id="habilidades" class="section">
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-container stagger-children">
-                <span class="skill-tag reveal" data-key="skill1" data-tooltip="Pandas, Scikit-learn, TensorFlow">Python</span>
-                <span class="skill-tag reveal" data-key="skill2" data-tooltip="Tidyverse, Caret, Shiny">R</span>
-                <span class="skill-tag reveal" data-key="skill8" data-tooltip="Análise de variância, Modelos Biométricos, Análise Multivariada">Software GENES</span>
-                <span class="skill-tag reveal" data-key="skill3" data-tooltip="Modelos Preditivos, Inferência">Machine Learning & Estatística</span>
-                <span class="skill-tag reveal" data-key="skill4" data-tooltip="GWS, GWAS">Seleção Genômica</span>
-                <span class="skill-tag reveal" data-key="skill5" data-tooltip="LMM, GLMM">Modelos Mistos & Biometria</span>
-                <span class="skill-tag reveal" data-key="skill6" data-tooltip="Git, GitHub, Docker">Reprodutibilidade</span>
-                <span class="skill-tag reveal" data-key="skill7" data-tooltip="Plotly, ggplot2, Shiny">Visualização de Dados</span>
+                <span class="skill-tag reveal" data-skill="python" data-key="skill1" data-tooltip="Pandas, Scikit-learn, TensorFlow">Python</span>
+                <span class="skill-tag reveal" data-skill="r" data-key="skill2" data-tooltip="Tidyverse, Caret, Shiny">R</span>
+                <span class="skill-tag reveal" data-skill="genes" data-key="skill8" data-tooltip="Análise de variância, Modelos Biométricos, Análise Multivariada">Software GENES</span>
+                <span class="skill-tag reveal" data-skill="machine learning" data-key="skill3" data-tooltip="Modelos Preditivos, Inferência">Machine Learning & Estatística</span>
+                <span class="skill-tag reveal" data-skill="genomic selection" data-key="skill4" data-tooltip="GWS, GWAS">Seleção Genômica</span>
+                <span class="skill-tag reveal" data-skill="mixed models" data-key="skill5" data-tooltip="LMM, GLMM">Modelos Mistos & Biometria</span>
+                <span class="skill-tag reveal" data-skill="git" data-key="skill6" data-tooltip="Git, GitHub, Docker">Reprodutibilidade</span>
+                <span class="skill-tag reveal" data-skill="data visualization" data-key="skill7" data-tooltip="Plotly, ggplot2, Shiny">Visualização de Dados</span>
             </div>
         </section>
 
@@ -802,7 +952,8 @@
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
+                        // No longer unobserve for repeating animations
+                        // observer.unobserve(entry.target);
                     }
                 });
             }, { threshold: 0.1 });
@@ -822,6 +973,58 @@
             });
             mutationObserver.observe(document.getElementById('projects-list'), { childList: true });
             mutationObserver.observe(document.getElementById('publicacoes-grid'), { childList: true });
+
+            // --- Lógica da Linha do Tempo Expansível ---
+            const timeline = document.querySelector('.timeline');
+            timeline.addEventListener('click', function(event) {
+                const button = event.target.closest('.toggle-details-btn');
+                if (button) {
+                    const item = button.closest('.timeline-item');
+                    item.classList.toggle('expanded');
+                    button.textContent = item.classList.contains('expanded') ? 'Ver menos' : 'Ver mais';
+                    
+                    const details = item.querySelector('.timeline-details');
+                    if(item.classList.contains('expanded')) {
+                        details.innerHTML = translations[currentLang][details.dataset.key];
+                    }
+                }
+            });
+
+            // --- Lógica de Filtragem de Habilidades ---
+            const skillsContainer = document.querySelector('.skills-container');
+            const projectsList = document.getElementById('projects-list');
+            skillsContainer.addEventListener('click', function(event) {
+                const skillTag = event.target.closest('.skill-tag');
+                if (!skillTag) return;
+
+                const selectedSkill = skillTag.dataset.skill;
+                const isActive = skillTag.classList.contains('active');
+                
+                // Desativa todos os tags
+                skillsContainer.querySelectorAll('.skill-tag').forEach(tag => tag.classList.remove('active'));
+
+                // Se o tag clicado não estava ativo, ative-o
+                if (!isActive) {
+                    skillTag.classList.add('active');
+                }
+
+                // Filtra os projetos
+                const projectCards = projectsList.querySelectorAll('.project-card');
+                projectCards.forEach(card => {
+                    const cardTags = card.dataset.tags || '';
+                    // Se nenhum tag estiver ativo (ou o ativo foi clicado de novo), mostra todos
+                    if (isActive) {
+                        card.classList.remove('filtered-out');
+                    } else {
+                        if (cardTags.includes(selectedSkill)) {
+                            card.classList.remove('filtered-out');
+                        } else {
+                            card.classList.add('filtered-out');
+                        }
+                    }
+                });
+            });
+
 
             // --- Highlight do Link de Navegação Ativo ---
             const sections = document.querySelectorAll('main > section[id]');
@@ -1226,7 +1429,32 @@
                     new Date(b.updated_at) - new Date(a.updated_at)
                 ); 
             }
-            function createCard(repo) { const lang = currentLang; return `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p><div class="project-meta"><span class="badge">${escapeHtml(repo.language || '—')}</span><span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span></div><div class="actions"><a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a><button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button></div>`; }
+            
+            function createCard(repo) {
+                const lang = currentLang;
+                const tags = [repo.language, ...(repo.topics || [])].filter(Boolean).map(t => t.toLowerCase().replace(/ /g, '-'));
+                const cardHTML = `
+                    <div class="project-top">
+                        <h3>${escapeHtml(titleCase(repo.name))}</h3>
+                        <div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div>
+                    </div>
+                    <p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p>
+                    <div class="project-meta">
+                        <span class="badge">${escapeHtml(repo.language || '—')}</span>
+                        <span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                    </div>
+                    <div class="actions">
+                        <a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a>
+                        <button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button>
+                    </div>
+                `;
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.setAttribute('role', 'listitem');
+                card.dataset.tags = tags.join(',');
+                card.innerHTML = cardHTML;
+                return card;
+            }
             
             function render() {
                 listEl.innerHTML = ''; // Clear skeletons
@@ -1236,7 +1464,12 @@
                 const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
                 
                 if (sorted.length === 0) { listEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`; } 
-                else { sorted.slice(0, toShow).forEach(repo => { const card = document.createElement('div'); card.className = 'project-card'; card.setAttribute('role', 'listitem'); card.innerHTML = createCard(repo); listEl.appendChild(card); }); }
+                else { 
+                    sorted.slice(0, toShow).forEach(repo => { 
+                        const cardElement = createCard(repo);
+                        listEl.appendChild(cardElement); 
+                    }); 
+                }
                 shownCountEl.textContent = `${toShow} / ${sorted.length}`;
                 toggleBtn.classList.toggle('hidden', filter || toShow >= sorted.length);
                 toggleBtn.textContent = translations[lang][toShow >= sorted.length ? 'show-less' : 'show-more'];
