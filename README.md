@@ -63,7 +63,7 @@ Nossas principais frentes de atuação incluem:
 ## 📫 Contato
 - 📍 Viçosa, MG — Brasil  
 - ✉️ [Email](mailto:weverton@email.com)  
-- 🔗 [LinkedIn](https://www.linkedin.com/in/wevertoncosta/) | [ORCID](https://orcid.org/0000-0003-0742-5936) | [Lattes](http://lattes.cnpq.br/2723811288754046) | [GitHub](https://github.com/WevertonGomesCosta) | [LICAE/UFV](https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/) | [Conecta GEM](https://www.conectagem.com/sobre)
+- 🔗 [LinkedIn](https://www.linkedin.com/in/wevertoncosta/) | [ORCID](https://orcid.org/0000-0003-0742-5936) | [Lattes](http://lattes.cnpq.br/2723811288754046) | [GitHub](https://github.com/WevertonGomesCosta) | [LICAE/UFV](https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/) | [Conecta GEM](https://www.conectagem.com/sobre) | [Google Scholar](https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ)
 
 ---
 
