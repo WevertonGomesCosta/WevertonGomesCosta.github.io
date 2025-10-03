@@ -446,7 +446,8 @@
         
         .sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px;
             backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
-        .sidebar h2 { margin: 0 0 12px; color: var(--primary); font-size: 1.2rem }
+        .sidebar .controls { margin-top: 10px; }
+        
         .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px }
         .controls input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
             background: var(--glass); color: var(--text) }
@@ -561,6 +562,7 @@
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
             <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
             <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
+            <a href="#servicos" class="nav-link" data-key="nav-services">Serviços</a>
             <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
             <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
             <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
@@ -582,39 +584,63 @@
         <section id="experiencia" class="section">
             <h2 class="reveal" data-key="expertise-title">Áreas de Especialização</h2>
             <div class="grid stagger-children">
-                 <div class="card reveal"><span class="icon" role="img" aria-label="DNA">🧬</span><h3 data-key="exp-title1">Genética Quantitativa</h3><p data-key="exp-desc1">Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico">📊</span><h3 data-key="exp-title2">Biometria Avançada</h3><p data-key="exp-desc2">Aplico modelagem estatística robusta e modelos mistos para extrair insights precisos e orientar decisões estratégicas.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3">Utilizo algoritmos como Random Forest e redes neurais para criar modelos preditivos de alta performance na agricultura.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4">Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5">Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7">Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.</p></div>
+                 <div class="card reveal"><span class="icon" role="img" aria-label="DNA">🧬</span><h3 data-key="exp-title1">Genética Quantitativa</h3><p data-key="exp-desc1"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico">📊</span><h3 data-key="exp-title2">Biometria Avançada</h3><p data-key="exp-desc2"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7"></p></div>
+            </div>
+        </section>
+
+        <!-- NOVA SEÇÃO: SERVIÇOS -->
+        <section id="servicos" class="section">
+            <h2 class="reveal" data-key="services-title">Como Posso Ajudar</h2>
+            <div class="grid stagger-children">
+                <div class="card reveal">
+                    <span class="icon" role="img" aria-label="Consultoria">🤝</span>
+                    <h3 data-key="service-title1">Consultoria em Dados e IA</h3>
+                    <p data-key="service-desc1"></p>
+                </div>
+                <div class="card reveal">
+                    <span class="icon" role="img" aria-label="Colaboração">🔬</span>
+                    <h3 data-key="service-title2">Colaboração Científica</h3>
+                    <p data-key="service-desc2"></p>
+                </div>
+                <div class="card reveal">
+                    <span class="icon" role="img" aria-label="Treinamento">👨‍🏫</span>
+                    <h3 data-key="service-title3">Capacitação e Treinamentos</h3>
+                    <p data-key="service-desc3"></p>
+                </div>
             </div>
         </section>
         
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
-                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date1">2023 - Presente</div><h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc1">Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date2">2023 - Presente</div><h3 data-key="edu-title2">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc2">Desenvolvimento de análises estatísticas avançadas aplicadas ao melhoramento genético.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date3">2022 - 2023</div><h3 data-key="edu-title3">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc3">Estudos em seleção genômica ampla e modelos mistos aplicados à agricultura.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2022</div><h3 data-key="edu-title4">Pós-Doutorado</h3><p>EMBRAPA Mandioca e Fruticultura — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc4">Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2018 - 2022</div><h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc5">Eficiência de técnicas de machine learning e redes neurais na predição genômica e identificação de marcadores.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2016 - 2018</div><h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc6">Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais.</p></div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2010 - 2015</div><h3 data-key="edu-title7">Graduação em Agronomia</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc7">Estágio na EPAMIG com foco em planejamento experimental e análises estatísticas.</p></div></div>
+                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date1">2023 - Presente</div><h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc1"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date2">2023 - Presente</div><h3 data-key="edu-title2">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc2"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date" data-key="edu-date3">2022 - 2023</div><h3 data-key="edu-title3">Pós-Doutorado</h3><p>Universidade Federal de Viçosa (UFV) — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc3"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2022</div><h3 data-key="edu-title4">Pós-Doutorado</h3><p>EMBRAPA Mandioca e Fruticultura — CNPq</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc4"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2018 - 2022</div><h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc5"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2016 - 2018</div><h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc6"></p></div></div>
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content"><div class="timeline-date">2010 - 2015</div><h3 data-key="edu-title7">Graduação em Agronomia</h3><p>Universidade Federal de Viçosa (UFV)</p><p style="color: var(--text-muted); margin-top: 10px;" data-key="edu-desc7"></p></div></div>
             </div>
         </section>
 
-        <section id="projetos" class="sidebar section" aria-labelledby="projetos-title">
+        <section id="projetos" class="section" aria-labelledby="projetos-title">
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <p class="section-intro reveal" data-key="projects-intro"></p>
-            <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
-            <div class="meta reveal" id="projects-meta"></div>
-            <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
+            <div class="sidebar">
+                <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
+                <div class="meta reveal" id="projects-meta"></div>
+                <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+                <div class="reveal load-more-container"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
             </div>
-            <div class="reveal load-more-container"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
 
         <section id="publicacoes" class="section">
@@ -674,9 +700,9 @@
                     <h3>Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</h3>
                     <p data-key="licae-desc"></p>
                     <ul class="feature-list">
-                        <li data-key="licae-item1">Pesquisa em redes neurais e seleção genômica</li>
-                        <li data-key="licae-item2">Desenvolvimento de modelos preditivos</li>
-                        <li data-key="licae-item3">Colaboração em projetos multidisciplinares</li>
+                        <li data-key="licae-item1"></li>
+                        <li data-key="licae-item2"></li>
+                        <li data-key="licae-item3"></li>
                     </ul>
                 </div>
             </div>
@@ -686,9 +712,9 @@
                     <h3>Conecta GEM</h3>
                     <p data-key="conecta-desc"></p>
                      <ul class="feature-list">
-                        <li data-key="conecta-item1">Consultoria em biometria e IA</li>
-                        <li data-key="conecta-item2">Implementação de pipelines de seleção genômica</li>
-                        <li data-key="conecta-item3">Capacitação e treinamentos em R e Python</li>
+                        <li data-key="conecta-item1"></li>
+                        <li data-key="conecta-item2"></li>
+                        <li data-key="conecta-item3"></li>
                     </ul>
                 </div>
             </div>
@@ -712,7 +738,7 @@
             <h2 class="reveal" data-key="contact-title">Contato</h2>
             <div class="contact-container reveal">
                 <form id="contact-form" class="contact-form" action="https://formspree.io/f/mnngvbbg" method="POST">
-                    <p data-key="contact-intro" class="section-intro" style="margin-top: 0;">Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.</p>
+                    <p data-key="contact-intro" class="section-intro" style="margin-top: 0;"></p>
                     <div class="form-group">
                         <label for="name" data-key="form-name">Nome</label>
                         <input type="text" id="name" name="name" required data-key-placeholder="form-name-ph">
@@ -929,11 +955,15 @@
                 'subtitle-3': 'CEO & Cofundador - Conecta GEM',
                 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 Doutorando em Estatística - UFV', 'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM', 'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
-                'nav-about': 'Sobre', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
+                'nav-about': 'Sobre', 'nav-services': 'Serviços', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
                 'about-title': 'Sobre Mim',
                 'about-p1': `Minha jornada acadêmica, iniciada na Agronomia pela UFV e aprofundada com mestrado e doutorado em Genética e Melhoramento, proporcionou-me uma base sólida para explorar a fronteira do conhecimento. Hoje, como doutorando em Estatística Aplicada e Biometria, busco integrar modelos avançados à pesquisa agronômica. Essa paixão por inovação culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>, liderando a missão de traduzir a ciência de dados em soluções práticas e inteligentes para o agronegócio.`,
                 'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`,
                 'about-p3': `Atuando no Laboratório de Bioinformática da UFV e como <strong>Coordenador Discente no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</strong>, tenho a oportunidade de colaborar em pesquisas de ponta e contribuir para a formação de novos cientistas, unindo esforços para avançar as fronteiras da biometria e da inteligência artificial aplicada à agropecuária.`,
+                'services-title': 'Como Posso Ajudar',
+                'service-title1': 'Consultoria em Dados e IA', 'service-desc1': 'Análise estratégica de dados, desenvolvimento de modelos de machine learning e implementação de soluções de IA para otimizar processos no agronegócio e na pesquisa.',
+                'service-title2': 'Colaboração Científica', 'service-desc2': 'Parcerias em projetos de pesquisa que envolvam genética, biometria e estatística aplicada, contribuindo com análises robustas e publicação de resultados de alto impacto.',
+                'service-title3': 'Capacitação e Treinamentos', 'service-desc3': 'Cursos e workshops customizados em R, Python, Software GENES e pipelines de análise de dados para equipes acadêmicas e corporativas, através da Conecta GEM.',
                 'publications-title': 'Publicações e Citações',
                 'publications-intro': 'Minhas publicações refletem um compromisso contínuo com a inovação científica. Cada artigo representa um esforço para desenvolver e aplicar metodologias que não apenas avançam o conhecimento teórico, mas também oferecem soluções práticas e eficientes para os desafios do agronegócio.',
                 'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
@@ -987,11 +1017,15 @@
                 'subtitle-3': 'CEO & Co-founder - Conecta GEM',
                 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 PhD Candidate in Statistics - UFV', 'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM', 'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
-                'nav-about': 'About', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
+                'nav-about': 'About', 'nav-services': 'Services', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
                 'about-title': 'About Me',
                 'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`,
                 'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`,
                 'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
+                'services-title': 'How I Can Help',
+                'service-title1': 'Data & AI Consulting', 'service-desc1': 'Strategic data analysis, machine learning model development, and implementation of AI solutions to optimize processes in agribusiness and research.',
+                'service-title2': 'Scientific Collaboration', 'service-desc2': 'Partnerships in research projects involving genetics, biometrics, and applied statistics, contributing with robust analyses and high-impact publications.',
+                'service-title3': 'Training & Workshops', 'service-desc3': 'Customized courses and workshops in R, Python, GENES Software, and data analysis pipelines for academic and corporate teams, through Conecta GEM.',
                 'publications-title': 'Publications and Citations',
                 'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.',
                 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
