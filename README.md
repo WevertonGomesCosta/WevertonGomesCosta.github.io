@@ -4,6 +4,7 @@
 [![ORCID](https://img.shields.io/badge/ORCID-0000--0003--0742--5936-green?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0000-0003-0742-5936)
 [![Lattes](https://img.shields.io/badge/Lattes-CNPq-blue)](http://lattes.cnpq.br/2723811288754046)
 [![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/WevertonGomesCosta)
+[![Google Scholar](https://img.shields.io/badge/Google%20Scholar-Profile-4285F4?style=flat&logo=google-scholar&logoColor=white)](https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ)
 [![LICAE/UFV](https://img.shields.io/badge/LICAE-UFV-2c3e50)](https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/)
 [![Conecta GEM](https://img.shields.io/badge/Conecta%20GEM-AgTech-success)](https://www.conectagem.com/sobre)
 
