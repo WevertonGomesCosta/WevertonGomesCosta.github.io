@@ -2159,7 +2159,8 @@
                     y += 15;
                 });
                 
-                checkPageBreak(y + 100 > doc.internal.pageSize.getHeight() ? doc.internal.pageSize.getHeight() : 100) // check if there is enough space, otherwise add a new page.
+                doc.addPage();
+                y = margin;
                 
                 addSectionTitle(pdfTranslations['projects-title']);
                 if (window.githubScript && window.githubScript.allRepos.length > 0) {
