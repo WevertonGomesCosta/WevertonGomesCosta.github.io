@@ -12,7 +12,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
     <!-- Bibliotecas para Geração de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-cQpWTCGR92IQzS6mtA+VzS_ay3_p2aJ5F6Qz_bXy3TchV3LP-mH+g20/fszVfFTX+sC1C4jMIIq2oN0c6c+gQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5rKcSKrMJat+HKevibvuia2vQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
@@ -1861,66 +1861,104 @@
                 setTimeout(() => toast.classList.remove('show'), 3000);
                 return;
             }
-
-            // --- Etapa 1: Preparar a UI para a captura ---
+            
+            // --- Etapa 1: Preparar UI e criar conteúdo para impressão ---
             button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Preparando...</span>`;
             button.style.pointerEvents = 'none';
-            toast.textContent = 'Expandindo todas as seções...';
+            toast.textContent = 'Preparando o documento...';
             toast.classList.add('show');
 
-            // Injeta estilos específicos para o PDF
+            const printableContent = document.createElement('div');
+            printableContent.id = 'printable-content';
+            
+            // Clonar seções relevantes
+            const header = document.querySelector('header');
+            const main = document.querySelector('main.container');
+            if (header) printableContent.appendChild(header.cloneNode(true));
+            if (main) printableContent.appendChild(main.cloneNode(true));
+            
+            // Posicionar o conteúdo clonado fora da tela
+            printableContent.style.position = 'absolute';
+            printableContent.style.left = '0';
+            printableContent.style.top = '-9999px';
+            printableContent.style.width = '800px'; // Largura fixa para renderização consistente
+            document.body.appendChild(printableContent);
+
+            // Injetar estilos específicos para o PDF
             const pdfStyles = `
-                body { background: #fff !important; color: #000 !important; font-family: 'Georgia', serif !important; font-size: 11pt !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-                header, main.container, section { padding: 15px 25px !important; margin: 0 !important; border: none !important; background: none !important; animation: none !important; box-shadow: none !important; }
-                nav, footer, #particle-canvas, .back-to-top, .lang-switch, .hero-cta, #contact-form, .scroll-indicator, .toggle-details-btn, .load-more-container, .controls, .actions, .scholar-link, .icon, .feature-logo, .scholar-chart-container, .social-links, .contact-link svg, .institution-logo { display: none !important; }
-                .hero-content { display: block; text-align: center; max-width: 100% !important; animation: none !important; }
-                .avatar { width: 150px !important; height: 150px !important; margin: 0 auto 15px !important; border: 1px solid #ddd !important; box-shadow: none !important; animation: none !important; }
-                h1 { font-size: 26pt !important; background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; margin-bottom: 5px !important; }
-                .subtitle { font-size: 14pt !important; color: #333 !important; margin: 0 auto 15px !important; height: auto !important; min-height: auto !important; }
-                .subtitle::after { display: none; }
-                .badges { justify-content: center; margin: 0 0 20px 0 !important; }
-                .badge { background: #f0f0f0 !important; color: #333 !important; border: 1px solid #ddd !important; box-shadow: none !important; backdrop-filter: none !important; }
-                h2 { font-size: 16pt !important; color: #000 !important; border-bottom: 2px solid #000; padding: 0 0 5px 0 !important; margin: 25px 0 15px 0 !important; }
-                h2::before { display: none !important; }
-                .grid, .projects, .skills-container, .timeline, .feature-section { display: block !important; }
-                .card, .timeline-content, .sidebar, .project-card, .feature-section { background: none !important; border: none !important; border-radius: 0 !important; padding: 0 0 15px 0 !important; box-shadow: none !important; backdrop-filter: none !important; page-break-inside: avoid; transform: none !important; }
-                .card p, p, li, .project-desc, .publication-meta, .timeline-details { color: #333 !important; font-size: 11pt; }
-                h3 { font-size: 13pt !important; color: #000 !important; }
-                .timeline::before, .timeline-dot { display: none; }
-                .timeline-item { padding-left: 0 !important; page-break-inside: avoid; }
-                .timeline-content { border-bottom: 1px solid #eee; }
-                .timeline-details { max-height: none !important; overflow: visible !important; display: block !important; }
-                .project-card, .publication-card { border-bottom: 1px solid #eee !important; margin-bottom: 10px !important; }
-                .project-top h3 { color: #000 !important; }
-                .scholar-summary-card { padding: 10px 0 !important; }
-                .skill-tag { background: #f0f0f0 !important; color: #333 !important; border: 1px solid #ddd !important; }
-                .contact-links-aside { padding-top: 20px; text-align: left; }
-                .contact-grid { display: block !important; }
-                .contact-link { display: block !important; background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; }
-                #copy-email-link::after { content: ': wevertonufv@gmail.com'; color: #444; font-size: 10pt; }
-                .contact-link[target="_blank"]::after { content: ': ' attr(href); color: #444; font-size: 10pt; }
-                .reveal { opacity: 1 !important; transform: none !important; }
-                a { color: #000 !important; text-decoration: none !important; }
+                #printable-content {
+                    background: #fff !important; color: #000 !important; font-family: 'Times New Roman', serif !important; font-size: 10pt !important;
+                    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+                }
+                #printable-content header, #printable-content main, #printable-content section { 
+                    padding: 10px 0 !important; margin: 0 !important; border: none !important; background: none !important; animation: none !important; box-shadow: none !important; 
+                }
+                #printable-content nav, #printable-content footer, #printable-content #particle-canvas, #printable-content .back-to-top, #printable-content .lang-switch, 
+                #printable-content .hero-cta, #printable-content #contact-form, #printable-content .scroll-indicator, #printable-content .toggle-details-btn, 
+                #printable-content .load-more-container, #printable-content .controls, #printable-content .actions, #printable-content .scholar-link, 
+                #printable-content .icon, #printable-content .feature-logo, #printable-content .scholar-chart-container, #printable-content .social-links, 
+                #printable-content .contact-link svg, #printable-content .institution-logo, #printable-content .link-btn[data-copy], #printable-content .sidebar .meta { 
+                    display: none !important; 
+                }
+                #printable-content .hero-content { text-align: center; max-width: 100% !important; animation: none !important; }
+                #printable-content .avatar { width: 120px !important; height: 120px !important; margin: 0 auto 10px !important; border: 1px solid #ccc !important; box-shadow: none !important; animation: none !important; }
+                #printable-content h1 { font-size: 22pt !important; background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; margin-bottom: 4px !important; }
+                #printable-content .subtitle { font-size: 12pt !important; color: #333 !important; margin: 0 auto 10px !important; height: auto !important; min-height: auto !important; }
+                #printable-content .subtitle::after { display: none; }
+                #printable-content .badges { justify-content: center; margin: 0 0 15px 0 !important; }
+                #printable-content .badge { background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; box-shadow: none !important; backdrop-filter: none !important; font-size: 8pt !important; padding: 4px 8px; }
+                #printable-content h2 { font-size: 14pt !important; color: #000 !important; border-bottom: 1px solid #000; padding: 0 0 4px 0 !important; margin: 20px 0 10px 0 !important; page-break-before: auto; page-break-after: avoid; }
+                #printable-content h2::before { display: none !important; }
+                #printable-content .grid, #printable-content .projects, #printable-content .skills-container, #printable-content .timeline, #printable-content .feature-section { display: block !important; }
+                #printable-content .card, #printable-content .timeline-content, #printable-content .sidebar, #printable-content .project-card, #printable-content .feature-section { 
+                    background: none !important; border: none !important; border-radius: 0 !important; padding: 0 0 10px 0 !important; box-shadow: none !important; backdrop-filter: none !important; page-break-inside: avoid; transform: none !important; 
+                }
+                #printable-content p, #printable-content li, #printable-content .project-desc, #printable-content .publication-meta, #printable-content .timeline-details { color: #222 !important; font-size: 10pt; line-height: 1.4; }
+                #printable-content h3 { font-size: 11pt !important; color: #000 !important; margin-bottom: 5px; }
+                #printable-content .timeline::before, #printable-content .timeline-dot { display: none; }
+                #printable-content .timeline-item { padding-left: 0 !important; margin-bottom: 15px !important; page-break-inside: avoid; }
+                #printable-content .timeline-content { border-bottom: 1px solid #eee; padding-bottom: 10px; }
+                #printable-content .timeline-details { max-height: none !important; overflow: visible !important; display: block !important; padding-top: 5px; }
+                #printable-content .project-card, #printable-content .publication-card { border-bottom: 1px solid #eee !important; margin-bottom: 10px !important; padding-bottom: 10px; }
+                #printable-content .scholar-summary-card, #printable-content .contact-container, #printable-content .feature-section { page-break-inside: avoid; }
+                #printable-content .skill-tag { background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; display: inline-block; margin: 2px; }
+                #printable-content .contact-links-aside { padding-top: 15px; }
+                #printable-content .contact-grid { display: block !important; }
+                #printable-content .contact-link { display: block !important; background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; text-decoration: none !important; }
+                #printable-content #copy-email-link::after { content: ': wevertonufv@gmail.com'; }
+                #printable-content .contact-link[target="_blank"] > span::after { content: ': ' attr(href); }
+                #printable-content .reveal { opacity: 1 !important; transform: none !important; }
+                #printable-content a { color: #000 !important; text-decoration: none !important; }
+                #printable-content .publication-card a, #printable-content .project-card a { display: none; } /* Ocultar botões "Ver mais" */
             `;
             const styleEl = document.createElement('style');
             styleEl.id = 'pdf-styles';
             styleEl.innerHTML = pdfStyles;
             document.head.appendChild(styleEl);
 
+            // Expandir todas as seções dinâmicas no conteúdo clonado
+            printableContent.querySelectorAll('.timeline-item:not(.expanded) .toggle-details-btn').forEach(btn => btn.click());
+            // Mostra todos os repositórios (se o script já os carregou)
+            if (window.githubScript && window.githubScript.allRepos) {
+                const projectListClone = printableContent.querySelector('#projects-list');
+                projectListClone.innerHTML = ''; // Limpa os skeletons
+                const sortedRepos = [...window.githubScript.allRepos].sort((a,b) => b.stargazers_count - a.stargazers_count);
+                sortedRepos.forEach(repo => {
+                    projectListClone.innerHTML += `<div class="project-card"><h3>${repo.name.replace(/-/g, ' ')}</h3><p class="project-desc">${repo.description || 'Sem descrição.'}</p></div>`;
+                });
+            }
+             // Mostra todas as publicações (se o script já as carregou)
+            if (window.scholarScript && window.scholarScript.allArticles) {
+                const pubListClone = printableContent.querySelector('#publicacoes-grid');
+                pubListClone.innerHTML = ''; // Limpa os skeletons
+                window.scholarScript.allArticles.forEach(art => {
+                    pubListClone.innerHTML += `<div class="publication-card"><h3>${art.title}</h3><p class="publication-meta">${art.publication || ''}</p><p class="citations">Citado ${art.cited_by?.value || 0} vezes</p></div>`;
+                });
+            }
 
-            // Expandir todas as seções dinâmicas
-            if (window.githubScript && window.githubScript.allRepos.length > 0) {
-                window.githubScript.showingCount = window.githubScript.allRepos.length;
-                window.githubScript.renderAll();
-            }
-            if (window.scholarScript && window.scholarScript.allArticles.length > 0) {
-                window.scholarScript.showingPubsCount = window.scholarScript.allArticles.length;
-                window.scholarScript.renderPublications();
-            }
-            document.querySelectorAll('.timeline-item:not(.expanded) .toggle-details-btn').forEach(btn => btn.click());
 
             // Aguardar a renderização do DOM após as expansões
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             // --- Etapa 2: Gerar o PDF ---
             toast.textContent = 'Gerando o PDF... Isso pode demorar um pouco.';
@@ -1928,35 +1966,47 @@
 
             try {
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF({
-                    orientation: 'p',
-                    unit: 'pt',
-                    format: 'a4'
+                const pdf = new jsPDF('p', 'pt', 'a4');
+                
+                const canvas = await html2canvas(printableContent, {
+                    scale: 2, // Aumenta a resolução para melhor qualidade do texto
+                    useCORS: true,
+                    logging: false
                 });
 
-                const content = document.body;
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
                 
-                await pdf.html(content, {
-                    callback: function(doc) {
-                        doc.save('CV-Weverton_Gomes_da_Costa.pdf');
-                        toast.textContent = 'Download do currículo iniciado!';
-                    },
-                    margin: [40, 40, 40, 40],
-                    autoPaging: 'text',
-                    width: 595, // A4 width in points
-                    windowWidth: 1200,
-                    html2canvas: {
-                        scale: 0.8, 
-                        useCORS: true,
-                        logging: false
-                    }
-                });
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                const ratio = canvasHeight / canvasWidth;
+                
+                const imgHeight = pdfWidth * ratio;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                // Adiciona a primeira página
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
+
+                // Adiciona páginas subsequentes, se necessário
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                    heightLeft -= pdfHeight;
+                }
+                
+                pdf.save('CV-Weverton_Gomes_da_Costa.pdf');
+                toast.textContent = 'Download do currículo iniciado!';
 
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
                 toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
             } finally {
                 // --- Etapa 3: Restaurar a UI ---
+                document.body.removeChild(printableContent);
                 document.head.removeChild(styleEl);
                 button.innerHTML = originalButtonHTML;
                 button.style.pointerEvents = 'auto';
@@ -1976,4 +2026,3 @@
     </script>
 </body>
 </html>
-
