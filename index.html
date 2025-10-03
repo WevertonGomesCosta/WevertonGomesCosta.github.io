@@ -12,7 +12,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
     <!-- Bibliotecas para Geração de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5rKcSKrMJat+HKevibvuia2vQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
@@ -250,8 +249,9 @@
         .card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px;
             backdrop-filter: blur(10px); transition: all 0.3s ease; position: relative; overflow: hidden;
+            text-align: justify;
         }
-        .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
+        .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; text-align: left;}
         .card p { color: var(--text-muted); line-height: 1.6; }
 
         .card::before {
@@ -483,6 +483,20 @@
         .footer-license .cc-icons svg {
             height: 22px;
             width: auto;
+        }
+
+        .footer-update {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .footer-update svg {
+            width: 14px;
+            height: 14px;
         }
 
 
@@ -1000,6 +1014,13 @@
                 </a>
             </div>
             <p>&copy; <span id="copyright-year">2025</span> Weverton Gomes da Costa</p>
+            <div class="footer-update">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                    <path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
+                    <path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"/>
+                </svg>
+                <span>Última atualização: <span id="last-updated-date"></span></span>
+            </div>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
         </div>
     </footer>
@@ -1009,16 +1030,16 @@
     <script>
         // --- Lógica de Inicialização e Scripts ---
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Atualizar Ano do Copyright ---
+            // --- Atualizar Ano e Data do Copyright ---
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            document.getElementById('last-updated-date').textContent = "3 de outubro de 2025";
+
 
             // --- Animações de Scroll ---
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
-                        // No longer unobserve for repeating animations
-                        // observer.unobserve(entry.target);
                     }
                 });
             }, { threshold: 0.1 });
@@ -1065,19 +1086,15 @@
                 const selectedSkill = skillTag.dataset.skill;
                 const isActive = skillTag.classList.contains('active');
                 
-                // Desativa todos os tags
                 skillsContainer.querySelectorAll('.skill-tag').forEach(tag => tag.classList.remove('active'));
 
-                // Se o tag clicado não estava ativo, ative-o
                 if (!isActive) {
                     skillTag.classList.add('active');
                 }
 
-                // Filtra os projetos
                 const projectCards = projectsList.querySelectorAll('.project-card');
                 projectCards.forEach(card => {
                     const cardTags = card.dataset.tags || '';
-                    // Se nenhum tag estiver ativo (ou o ativo foi clicado de novo), mostra todos
                     if (isActive) {
                         card.classList.remove('filtered-out');
                     } else {
@@ -1739,13 +1756,11 @@
                 grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             }
 
-            // --- INÍCIO DA MODIFICAÇÃO ---
-
             async function fetchAllScholarArticles() {
                 let start = 0;
                 let allResults = [];
                 let hasMore = true;
-                const articlesPerPage = 20; // O padrão da API é 20, mas pode ser definido explicitamente.
+                const articlesPerPage = 20;
 
                 while (hasMore) {
                     try {
@@ -1767,7 +1782,6 @@
                             hasMore = false;
                         } else {
                             allResults = allResults.concat(articles);
-                            // Se a API retornar menos artigos do que o solicitado, é a última página.
                             if (articles.length < articlesPerPage) {
                                 hasMore = false;
                             } else {
@@ -1776,9 +1790,7 @@
                         }
                     } catch(e) {
                         console.error(`Erro ao buscar página de publicações (start=${start}):`, e);
-                        // Interrompe a paginação em caso de erro, mas mantém os resultados já obtidos.
                         hasMore = false; 
-                        // Se for um erro na primeira página, lança a exceção para ser tratada pela função chamadora.
                         if (allResults.length === 0) throw e;
                     }
                 }
@@ -1790,22 +1802,14 @@
                 grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
 
                 try {
-                    // Chama a nova função para buscar todos os artigos com paginação.
                     allArticles = await fetchAllScholarArticles();
-                    
-                    // Ordena a lista completa de artigos.
                     allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
-                    
-                    // Renderiza a primeira leva de publicações.
                     renderPublications();
-                    
                 } catch (e) {
                     console.error("Erro ao atualizar publicações:", e);
                     grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
                 }
             }
-            
-            // --- FIM DA MODIFICAÇÃO ---
 
             document.addEventListener("DOMContentLoaded", () => {
                 updateScholarSection();
@@ -1818,7 +1822,7 @@
                 const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
                 pubSearchInput.addEventListener('input', debounce(e => {
-                    showingPubsCount = 3; // Reset on search
+                    showingPubsCount = 3; 
                     renderPublications(e.target.value);
                 }));
                 
@@ -1945,180 +1949,237 @@
 
     <!-- SCRIPT PARA GERAR PDF ATUALIZADO -->
     <script>
-        async function generatePdf() {
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadBtn = document.getElementById('download-cv-btn');
+            if(downloadBtn) {
+                downloadBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    generateCvPdf();
+                });
+            }
+        });
+
+        async function generateCvPdf() {
             const button = document.getElementById('download-cv-btn');
             const originalButtonHTML = button.innerHTML;
             const toast = document.getElementById('toast-notification');
+            const { jsPDF } = window.jspdf;
 
-            if (!window.jspdf || !window.html2canvas) {
-                toast.textContent = 'Erro: Bibliotecas de PDF não carregadas.';
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3000);
-                return;
-            }
-            
-            // --- Etapa 1: Preparar UI e criar conteúdo para impressão ---
-            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Preparando...</span>`;
+            // --- 1. Preparar UI ---
+            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Gerando...</span>`;
             button.style.pointerEvents = 'none';
-            toast.textContent = 'Preparando o documento...';
+            toast.textContent = 'Preparando seu currículo...';
             toast.classList.add('show');
 
-            const printableContent = document.createElement('div');
-            printableContent.id = 'printable-content';
-            
-            // Clonar seções relevantes
-            const header = document.querySelector('header');
-            const main = document.querySelector('main.container');
-            if (header) printableContent.appendChild(header.cloneNode(true));
-            if (main) printableContent.appendChild(main.cloneNode(true));
-            
-            // Posicionar o conteúdo clonado fora da tela
-            printableContent.style.position = 'absolute';
-            printableContent.style.left = '0';
-            printableContent.style.top = '-9999px';
-            printableContent.style.width = '800px'; // Largura fixa para renderização consistente
-            document.body.appendChild(printableContent);
-
-            // Injetar estilos específicos para o PDF
-            const pdfStyles = `
-                #printable-content {
-                    background: #fff !important; color: #000 !important; font-family: 'Times New Roman', serif !important; font-size: 10pt !important;
-                    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-                }
-                #printable-content header, #printable-content main, #printable-content section { 
-                    padding: 10px 0 !important; margin: 0 !important; border: none !important; background: none !important; animation: none !important; box-shadow: none !important; 
-                }
-                #printable-content nav, #printable-content footer, #printable-content #particle-canvas, #printable-content .back-to-top, #printable-content .lang-switch, 
-                #printable-content .hero-cta, #printable-content #contact-form, #printable-content .scroll-indicator, #printable-content .toggle-details-btn, 
-                #printable-content .load-more-container, #printable-content .controls, #printable-content .actions, #printable-content .scholar-link, 
-                #printable-content .icon, #printable-content .feature-logo, #printable-content .scholar-chart-container, #printable-content .social-links, 
-                #printable-content .contact-link svg, #printable-content .institution-logo, #printable-content .link-btn[data-copy], #printable-content .sidebar .meta { 
-                    display: none !important; 
-                }
-                #printable-content .hero-content { text-align: center; max-width: 100% !important; animation: none !important; }
-                #printable-content .avatar { width: 120px !important; height: 120px !important; margin: 0 auto 10px !important; border: 1px solid #ccc !important; box-shadow: none !important; animation: none !important; }
-                #printable-content h1 { font-size: 22pt !important; background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; margin-bottom: 4px !important; }
-                #printable-content .subtitle { font-size: 12pt !important; color: #333 !important; margin: 0 auto 10px !important; height: auto !important; min-height: auto !important; }
-                #printable-content .subtitle::after { display: none; }
-                #printable-content .badges { justify-content: center; margin: 0 0 15px 0 !important; }
-                #printable-content .badge { background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; box-shadow: none !important; backdrop-filter: none !important; font-size: 8pt !important; padding: 4px 8px; }
-                #printable-content h2 { font-size: 14pt !important; color: #000 !important; border-bottom: 1px solid #000; padding: 0 0 4px 0 !important; margin: 20px 0 10px 0 !important; page-break-before: auto; page-break-after: avoid; }
-                #printable-content h2::before { display: none !important; }
-                #printable-content .grid, #printable-content .projects, #printable-content .skills-container, #printable-content .timeline, #printable-content .feature-section { display: block !important; }
-                #printable-content .card, #printable-content .timeline-content, #printable-content .sidebar, #printable-content .project-card, #printable-content .feature-section { 
-                    background: none !important; border: none !important; border-radius: 0 !important; padding: 0 0 10px 0 !important; box-shadow: none !important; backdrop-filter: none !important; page-break-inside: avoid; transform: none !important; 
-                }
-                #printable-content p, #printable-content li, #printable-content .project-desc, #printable-content .publication-meta, #printable-content .timeline-details { color: #222 !important; font-size: 10pt; line-height: 1.4; }
-                #printable-content h3 { font-size: 11pt !important; color: #000 !important; margin-bottom: 5px; }
-                #printable-content .timeline::before, #printable-content .timeline-dot { display: none; }
-                #printable-content .timeline-item { padding-left: 0 !important; margin-bottom: 15px !important; page-break-inside: avoid; }
-                #printable-content .timeline-content { border-bottom: 1px solid #eee; padding-bottom: 10px; }
-                #printable-content .timeline-details { max-height: none !important; overflow: visible !important; display: block !important; padding-top: 5px; }
-                #printable-content .project-card, #printable-content .publication-card { border-bottom: 1px solid #eee !important; margin-bottom: 10px !important; padding-bottom: 10px; }
-                #printable-content .scholar-summary-card, #printable-content .contact-container, #printable-content .feature-section { page-break-inside: avoid; }
-                #printable-content .skill-tag { background: #eee !important; color: #333 !important; border: 1px solid #ccc !important; display: inline-block; margin: 2px; }
-                #printable-content .contact-links-aside { padding-top: 15px; }
-                #printable-content .contact-grid { display: block !important; }
-                #printable-content .contact-link { display: block !important; background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; text-decoration: none !important; }
-                #printable-content #copy-email-link::after { content: ': wevertonufv@gmail.com'; }
-                #printable-content .contact-link[target="_blank"] > span::after { content: ': ' attr(href); }
-                #printable-content .reveal { opacity: 1 !important; transform: none !important; }
-                #printable-content a { color: #000 !important; text-decoration: none !important; }
-                #printable-content .publication-card a, #printable-content .project-card a { display: none; } /* Ocultar botões "Ver mais" */
-            `;
-            const styleEl = document.createElement('style');
-            styleEl.id = 'pdf-styles';
-            styleEl.innerHTML = pdfStyles;
-            document.head.appendChild(styleEl);
-
-            // Expandir todas as seções dinâmicas no conteúdo clonado
-            printableContent.querySelectorAll('.timeline-item:not(.expanded) .toggle-details-btn').forEach(btn => btn.click());
-            // Mostra todos os repositórios (se o script já os carregou)
-            if (window.githubScript && window.githubScript.allRepos) {
-                const projectListClone = printableContent.querySelector('#projects-list');
-                projectListClone.innerHTML = ''; // Limpa os skeletons
-                const sortedRepos = [...window.githubScript.allRepos].sort((a,b) => b.stargazers_count - a.stargazers_count);
-                sortedRepos.forEach(repo => {
-                    projectListClone.innerHTML += `<div class="project-card"><h3>${repo.name.replace(/-/g, ' ')}</h3><p class="project-desc">${repo.description || 'Sem descrição.'}</p></div>`;
-                });
-            }
-             // Mostra todas as publicações (se o script já as carregou)
-            if (window.scholarScript && window.scholarScript.allArticles) {
-                const pubListClone = printableContent.querySelector('#publicacoes-grid');
-                pubListClone.innerHTML = ''; // Limpa os skeletons
-                window.scholarScript.allArticles.forEach(art => {
-                    pubListClone.innerHTML += `<div class="publication-card"><h3>${art.title}</h3><p class="publication-meta">${art.publication || ''}</p><p class="citations">Citado ${art.cited_by?.value || 0} vezes</p></div>`;
-                });
-            }
-
-
-            // Aguardar a renderização do DOM após as expansões
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // --- Etapa 2: Gerar o PDF ---
-            toast.textContent = 'Gerando o PDF... Isso pode demorar um pouco.';
-            button.querySelector('span').textContent = 'Gerando...';
-
             try {
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'pt', 'a4');
-                
-                const canvas = await html2canvas(printableContent, {
-                    scale: 2, // Aumenta a resolução para melhor qualidade do texto
-                    useCORS: true,
-                    logging: false
-                });
+                // --- 2. Inicializar PDF e definir layout ---
+                const doc = new jsPDF('p', 'pt', 'a4');
+                const page_width = doc.internal.pageSize.getWidth();
+                const margin = 40;
+                const max_width = page_width - margin * 2;
+                let y = margin;
 
-                const imgData = canvas.toDataURL('image/png');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const checkPageBreak = (neededHeight) => {
+                    if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
+                        doc.addPage();
+                        y = margin;
+                    }
+                };
                 
-                const canvasWidth = canvas.width;
-                const canvasHeight = canvas.height;
-                const ratio = canvasHeight / canvasWidth;
-                
-                const imgHeight = pdfWidth * ratio;
-                let heightLeft = imgHeight;
-                let position = 0;
-
-                // Adiciona a primeira página
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-                heightLeft -= pdfHeight;
-
-                // Adiciona páginas subsequentes, se necessário
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-                    heightLeft -= pdfHeight;
+                // --- 3. Buscar e converter imagem do Avatar ---
+                const avatarImg = document.querySelector('.avatar');
+                let avatarDataUrl = null;
+                try {
+                    const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}`);
+                    const blob = await response.blob();
+                    avatarDataUrl = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    });
+                } catch(e) {
+                    console.error("Não foi possível carregar a imagem do avatar:", e);
                 }
                 
-                pdf.save('CV-Weverton_Gomes_da_Costa.pdf');
+                // --- 4. Adicionar Cabeçalho ---
+                if (avatarDataUrl) {
+                    doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80);
+                }
+                
+                doc.setFontSize(22);
+                doc.setFont('helvetica', 'bold');
+                doc.text(document.getElementById('hero-name').textContent, margin + 95, y + 25);
+                
+                doc.setFontSize(11);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100);
+                doc.text("Viçosa - Minas Gerais - Brasil", margin + 95, y + 45);
+
+                y += 85;
+
+                // Informações de Contato em duas colunas
+                doc.setFontSize(9);
+                doc.setTextColor(80);
+                const col1X = margin;
+                const col2X = margin + max_width / 2;
+                doc.text("Email: wevertonufv@gmail.com", col1X, y);
+                doc.text("LinkedIn: linkedin.com/in/wevertoncosta", col1X, y + 15);
+                
+                doc.text("GitHub: github.com/WevertonGomesCosta", col2X, y);
+                const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
+                if (scholarLink) {
+                    doc.text(`Google Scholar: ${scholarLink.href}`, col2X, y + 15);
+                }
+                
+                y += 35;
+
+                // --- 5. Funções Auxiliares para Seções ---
+                const addSectionTitle = (title) => {
+                    checkPageBreak(40);
+                    y += 20;
+                    doc.setFontSize(14);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0);
+                    doc.text(title.toUpperCase(), margin, y);
+                    y += 5;
+                    doc.setLineWidth(1.5);
+                    doc.line(margin, y, page_width - margin, y);
+                    y += 15;
+                };
+                
+                const addJustifiedText = (content) => {
+                    const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width);
+                    const textHeight = lines.length * 12; // Altura aproximada do bloco de texto
+                    checkPageBreak(textHeight);
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(80);
+                    doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width });
+                    y += textHeight + 5;
+                };
+
+                // --- 6. Adicionar Seções do Currículo ---
+
+                addSectionTitle("Sobre Mim");
+                const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join('\n\n');
+                addJustifiedText(aboutText);
+
+                addSectionTitle("Serviços & Consultoria");
+                document.querySelectorAll('#servicos .card').forEach(card => {
+                    const title = card.querySelector('h3').textContent.trim();
+                    const desc = card.querySelector('p').textContent.trim();
+                    checkPageBreak(40);
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`• ${title}`, margin, y);
+                    y += 14;
+                    addJustifiedText(desc);
+                    y += 5;
+                });
+
+                addSectionTitle('Habilidades Técnicas');
+                const skills = Array.from(document.querySelectorAll('#habilidades .skill-tag')).map(el => el.textContent).join(' • ');
+                addJustifiedText(skills);
+
+                addSectionTitle('Áreas de Especialização');
+                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => {
+                    return `• ${card.querySelector('h3').textContent.trim()}: ${card.querySelector('p').textContent.trim()}`;
+                }).join('\n');
+                addJustifiedText(experiences);
+
+                addSectionTitle("Formação Acadêmica");
+                document.querySelectorAll('#formacao .timeline-item').forEach(item => {
+                    checkPageBreak(60);
+                    const date = item.querySelector('.timeline-date').textContent.trim();
+                    const title = item.querySelector('h3').textContent.trim();
+                    const institution = item.querySelector('p').textContent.trim();
+                    const descriptionKey = item.querySelector('.timeline-details').dataset.key;
+                    const description = translations[currentLang][descriptionKey] || '';
+
+                    doc.setFontSize(11);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0);
+                    doc.text(title, margin, y);
+                    
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(100);
+                    doc.text(date, margin, y + 12);
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(80);
+                    doc.text(institution, page_width - margin, y, { align: 'right' });
+                    
+                    y += 28;
+
+                    addJustifiedText(description);
+                    y += 10;
+                });
+                
+                addSectionTitle("Principais Projetos");
+                if (window.githubScript && window.githubScript.allRepos.length > 0) {
+                    const topProjects = [...window.githubScript.allRepos]
+                        .sort((a, b) => b.stargazers_count - a.stargazers_count)
+                        .slice(0, 3);
+                    
+                    topProjects.forEach(repo => {
+                        const title = repo.name.replace(/[-_]/g, ' ');
+                        const desc = repo.description || 'Sem descrição.';
+                        checkPageBreak(50);
+                        doc.setFontSize(11);
+                        doc.setFont('helvetica', 'bold');
+                        doc.text(`• ${title}`, margin, y);
+                        y += 14;
+                        addJustifiedText(desc);
+                        y += 5;
+                    });
+                }
+                
+                addSectionTitle("Principais Publicações");
+                if (window.scholarScript && window.scholarScript.allArticles.length > 0) {
+                    const topArticles = window.scholarScript.allArticles.slice(0, 3);
+                    
+                    topArticles.forEach(art => {
+                        const title = `"${art.title}"`;
+                        const publication = art.publication || 'Publicação não especificada';
+                        const citations = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : '';
+                        
+                        checkPageBreak(60);
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'bold');
+                        const titleLines = doc.splitTextToSize(title, max_width);
+                        doc.text(titleLines, margin, y);
+                        y += titleLines.length * 12;
+
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(100);
+                        doc.text(publication, margin, y);
+                        y += 12;
+
+                        if (citations) {
+                            doc.setFont('helvetica', 'italic');
+                            doc.text(citations, margin, y);
+                            y += 12;
+                        }
+                        y += 10;
+                    });
+                }
+
+                // --- 7. Salvar o PDF ---
+                doc.save('CV-Weverton_Gomes_da_Costa.pdf');
                 toast.textContent = 'Download do currículo iniciado!';
 
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
                 toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
             } finally {
-                // --- Etapa 3: Restaurar a UI ---
-                document.body.removeChild(printableContent);
-                document.head.removeChild(styleEl);
+                // --- 8. Restaurar UI ---
                 button.innerHTML = originalButtonHTML;
                 button.style.pointerEvents = 'auto';
                 setTimeout(() => toast.classList.remove('show'), 4000);
             }
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const downloadBtn = document.getElementById('download-cv-btn');
-            if(downloadBtn) {
-                downloadBtn.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    generatePdf();
-                });
-            }
-        });
     </script>
 </body>
 </html>
-
