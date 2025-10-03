@@ -11,6 +11,10 @@
     <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
+    <!-- Bibliotecas para Geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-cQpWTCGR92IQzS6mtA+VzS_ay3_p2aJ5F6Qz_bXy3TchV3LP-mH+g20/fszVfFTX+sC1C4jMIIq2oN0c6c+gQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -72,7 +76,7 @@
                         linear-gradient(270deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
             background-size: 200% 200%;
             border-bottom: 1px solid var(--border);
-            animation: animated-gradient 15s ease infinite;
+            animation: animated-gradient 15s ease-infinite;
         }
 
         .hero-content {
@@ -600,6 +604,14 @@
             bottom: 30px;
         }
 
+        @keyframes spin { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .animate-spin { 
+            animation: spin 1s linear infinite; 
+        }
+
     </style>
 </head>
 
@@ -912,10 +924,15 @@
                 <aside class="contact-links-aside">
                     <h3 data-key="contact-other">Redes Sociais e Perfis</h3>
                     <div class="contact-grid">
-<a href="#" id="copy-email-link" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>Email</a>
-                    <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
-                    <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
-                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" class="contact-link">
+                        <!-- Botão para Baixar o Currículo -->
+                        <a href="#" id="download-cv-btn" class="contact-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 16h8v2H8v-2zm8-10.5l-4-4-4 4H5v11h14V5.5h-3zM12 3l5.5 5.5H17v9H7V8.5h2.5L12 3z"/></svg>
+                            <span data-key="download-cv">Baixar Currículo (PDF)</span>
+                        </a>
+                        <a href="#" id="copy-email-link" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>Email</a>
+                        <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>LinkedIn</a>
+                        <a href="https://github.com/WevertonGomesCosta" target="_blank" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
+                        <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" class="contact-link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 416c-105.9 0-192-86.1-192-192S150.1 64 256 64s192 86.1 192 192-86.1 192-192 192z"/><path d="M128 352h24v-96h-24c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48v80h16v-80c0-26.5 21.5-48 48-48s48 21.5 48 48-21.5 48-48 48h-16v96h16c26.5 0 48 21.5 48 48s-21.5 48-48 48-48-21.5-48-48v-80h-16v80c0 26.5-21.5 48-48 48s-48-21.5-48-48 21.5-48 48-48z"/></svg>
                         Google Scholar
                     </a>
@@ -1207,6 +1224,7 @@
                 'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem',
                 'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...',
                 'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Obrigado! Sua mensagem foi enviada.', 'formError': 'Ocorreu um erro. Tente novamente.',
+                'download-cv': 'Baixar Currículo (PDF)',
                 'fetching_repos': 'Buscando repositórios...',
                 'loaded_repos_cache': (c) => `Carregado ${c} repositórios (cache).`,
                 'found_repos': (c) => `Encontrados ${c} repositórios.`,
@@ -1269,6 +1287,7 @@
                 'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message',
                 'form-message': 'Message', 'form-message-ph': 'Write your message here...',
                 'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Thank you! Your message has been sent.', 'formError': 'An error occurred. Please try again.',
+                'download-cv': 'Download CV (PDF)',
                 'fetching_repos': 'Fetching repositories...',
                 'loaded_repos_cache': (c) => `Loaded ${c} repositories (from cache).`,
                 'found_repos': (c) => `Found ${c} repositories.`,
@@ -1497,239 +1516,243 @@
             listEl.addEventListener('click', e => { if (e.target.matches('button[data-copy]')) onCopy(e); });
             
             fetchRepos();
-            return { renderAll };
+            return { 
+                renderAll,
+                get allRepos() { return allRepos; },
+                set showingCount(value) { showingCount = value; }
+            };
         })();
     </script>
     <script>
-        // --- ATENÇÃO ---
-        // A sua chave da API SerpApi está visível publicamente neste código.
-        const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1";
-        const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
-        const PROXY_URL = 'https://corsproxy.io/?';
-        const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
-        let allArticles = [];
-        let showingPubsCount = 6;
+        // --- Script para buscar publicações do Google Scholar ---
+        window.scholarScript = (function() {
+            const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1";
+            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
+            const PROXY_URL = 'https://corsproxy.io/?';
+            const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
+            let allArticles = [];
+            let showingPubsCount = 6;
 
-        async function fetchFromSerpApi(params) {
-            const baseUrl = 'https://serpapi.com/search.json';
-            const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
-            const apiUrl = `${baseUrl}?${searchParams.toString()}`;
-            const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
-            
-            try {
-                const res = await fetch(proxyRequestUrl);
-                if (!res.ok) {
-                    const errorText = await res.text();
-                    console.error("Erro da API ou do Proxy:", errorText);
-                    if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
-                    throw new Error(`Falha na requisição. Status: ${res.status}.`);
-                }
-                return await res.json();
-            } catch (error) {
-                console.error("Erro ao buscar dados do Google Scholar:", error);
-                throw error;
-            }
-        }
-
-        function renderCitationChart(graphData) {
-            const container = document.querySelector('.scholar-chart-container');
-            if (!container || !graphData || graphData.length === 0) return;
-            container.innerHTML = ''; 
-
-            const maxCitation = Math.max(...graphData.map(d => d.citations));
-            const chartHeight = 100;
-            const barPadding = 15;
-            const barWidth = 35;
-            
-            const barsHtml = graphData.map((item, index) => {
-                const barHeight = item.citations > 0 ? (item.citations / maxCitation) * chartHeight : 0;
-                const x = index * (barWidth + barPadding);
-                const y = chartHeight - barHeight;
+            async function fetchFromSerpApi(params) {
+                const baseUrl = 'https://serpapi.com/search.json';
+                const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
+                const apiUrl = `${baseUrl}?${searchParams.toString()}`;
+                const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
                 
-                return `
-                    <g transform="translate(${x}, 0)" style="--delay: ${index * 100}ms">
-                        <rect class="chart-bar" x="0" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"></rect>
-                        <text class="chart-label" x="${barWidth / 2}" y="${y - 5}">${item.citations}</text>
-                        <text class="chart-year" x="${barWidth / 2}" y="${chartHeight + 15}">${item.year}</text>
-                    </g>
-                `;
-            }).join('');
+                try {
+                    const res = await fetch(proxyRequestUrl);
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        console.error("Erro da API ou do Proxy:", errorText);
+                        if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
+                        throw new Error(`Falha na requisição. Status: ${res.status}.`);
+                    }
+                    return await res.json();
+                } catch (error) {
+                    console.error("Erro ao buscar dados do Google Scholar:", error);
+                    throw error;
+                }
+            }
 
-            const chartWidth = graphData.length * (barWidth + barPadding) - barPadding;
-            
-            container.innerHTML = `
-                <svg class="scholar-chart" viewBox="0 0 ${chartWidth} ${chartHeight + 20}" preserveAspectRatio="xMidYMid meet">
-                    ${barsHtml}
-                </svg>
-            `;
-        }
+            function renderCitationChart(graphData) {
+                const container = document.querySelector('.scholar-chart-container');
+                if (!container || !graphData || graphData.length === 0) return;
+                container.innerHTML = ''; 
 
-        async function updateScholarSection() {
-            try {
-                const profile = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID });
-                if (profile.error) throw new Error(profile.error);
-
-                const citedBy = profile.cited_by;
-
-                if (citedBy && citedBy.table && citedBy.table.length >= 3) {
-                    const citationsData = citedBy.table.find(item => item.citations)?.citations;
-                    const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
-                    const i10IndexData = citedBy.table.find(item => item.i10_index)?.i10_index;
+                const maxCitation = Math.max(...graphData.map(d => d.citations));
+                const chartHeight = 100;
+                const barPadding = 15;
+                const barWidth = 35;
+                
+                const barsHtml = graphData.map((item, index) => {
+                    const barHeight = item.citations > 0 ? (item.citations / maxCitation) * chartHeight : 0;
+                    const x = index * (barWidth + barPadding);
+                    const y = chartHeight - barHeight;
                     
-                    if (citationsData) {
-                        document.getElementById("cit-total").textContent = citationsData.all ?? '—';
-                        const sinceKey = Object.keys(citationsData).find(k => k.startsWith('since_'));
-                        document.getElementById("cit-period").textContent = sinceKey ? citationsData[sinceKey] : '—';
-                    }
-                    if (hIndexData) {
-                        document.getElementById("h-total").textContent = hIndexData.all ?? '—';
-                        const sinceKey = Object.keys(hIndexData).find(k => k.startsWith('since_'));
-                        document.getElementById("h-period").textContent = sinceKey ? hIndexData[sinceKey] : '—';
-                    }
-                    if (i10IndexData) {
-                        document.getElementById("i10-total").textContent = i10IndexData.all ?? '—';
-                        const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_'));
-                        document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—';
-                    }
-                } else if (citedBy?.value) {
-                    document.getElementById("cit-total").textContent = citedBy.value ?? '—';
-                } else {
-                     throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado.");
-                }
+                    return `
+                        <g transform="translate(${x}, 0)" style="--delay: ${index * 100}ms">
+                            <rect class="chart-bar" x="0" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"></rect>
+                            <text class="chart-label" x="${barWidth / 2}" y="${y - 5}">${item.citations}</text>
+                            <text class="chart-year" x="${barWidth / 2}" y="${chartHeight + 15}">${item.year}</text>
+                        </g>
+                    `;
+                }).join('');
 
-                if (profile.author_url) {
-                    document.querySelector(".scholar-link a").href = profile.author_url;
-                }
-                if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
-                    renderCitationChart(profile.cited_by.graph);
-                }
-            } catch (e) {
-                console.error("Erro ao atualizar seção do Scholar:", e);
-                const scholarCard = document.querySelector(".scholar-summary-card");
-                if (scholarCard && !scholarCard.querySelector('.scholar-error')) {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'scholar-error';
-                    errorDiv.style.color = '#f44336';
-                    errorDiv.style.marginTop = '15px';
-                    errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`;
-                    scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv);
-                }
-            }
-        }
-        
-        function renderPublications(filter = '') {
-            const grid = document.getElementById("publicacoes-grid");
-            const toggleBtn = document.getElementById('pubs-toggle-more');
-            const shownCountEl = document.getElementById('pubs-shown-count');
-            grid.innerHTML = ""; 
-            
-            const lowerCaseFilter = filter.trim().toLowerCase();
-            
-            const filteredArticles = lowerCaseFilter 
-                ? allArticles.filter(art => 
-                    (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
-                    (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
-                    (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
-                  )
-                : allArticles;
-
-            const articlesToShow = filteredArticles.slice(0, showingPubsCount);
-
-            if (articlesToShow.length === 0) {
-                grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
-                shownCountEl.textContent = `0 / 0`;
-                toggleBtn.classList.add('hidden');
-                return;
-            }
-            
-            articlesToShow.forEach((art) => {
-                const card = document.createElement("div");
-                card.className = "card reveal publication-card";
-                const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
-                card.innerHTML = `
-                    <h3>${art.title || 'Título indisponível'}</h3>
-                    <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
-                    <p>${art.snippet || ""}</p>
-                    <p class="citations">${citationText}</p>
-                    <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>
+                const chartWidth = graphData.length * (barWidth + barPadding) - barPadding;
+                
+                container.innerHTML = `
+                    <svg class="scholar-chart" viewBox="0 0 ${chartWidth} ${chartHeight + 20}" preserveAspectRatio="xMidYMid meet">
+                        ${barsHtml}
+                    </svg>
                 `;
-                grid.appendChild(card);
-            });
-            
-            shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
-            toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
-            toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
-
-            const revealObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.1 });
-            grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-        }
-
-        async function updateScholarPublications() {
-            const grid = document.getElementById("publicacoes-grid");
-            grid.innerHTML = `
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-                <div class="skeleton-card"></div>
-            `;
-
-            try {
-                const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
-                if (result.error) {
-                    if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
-                    throw new Error(result.error);
-                }
-                
-                allArticles = result.articles || [];
-                renderPublications();
-                
-            } catch (e) {
-                console.error("Erro ao atualizar publicações:", e);
-                grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
             }
-        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            updateScholarSection();
-            updateScholarPublications();
+            async function updateScholarSection() {
+                try {
+                    const profile = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID });
+                    if (profile.error) throw new Error(profile.error);
 
-            const pubSearchInput = document.getElementById('publication-search');
-            const pubClearBtn = document.getElementById('publication-clear-btn');
-            const pubToggleBtn = document.getElementById('pubs-toggle-more');
-            
-            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
+                    const citedBy = profile.cited_by;
 
-            pubSearchInput.addEventListener('input', debounce(e => {
-                showingPubsCount = 6; // Reset on search
-                renderPublications(e.target.value);
-            }));
-            
-            pubClearBtn.addEventListener('click', () => {
-                pubSearchInput.value = '';
-                showingPubsCount = 6;
-                renderPublications();
-                pubSearchInput.focus();
-            });
+                    if (citedBy && citedBy.table && citedBy.table.length >= 3) {
+                        const citationsData = citedBy.table.find(item => item.citations)?.citations;
+                        const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
+                        const i10IndexData = citedBy.table.find(item => item.i10_index)?.i10_index;
+                        
+                        if (citationsData) {
+                            document.getElementById("cit-total").textContent = citationsData.all ?? '—';
+                            const sinceKey = Object.keys(citationsData).find(k => k.startsWith('since_'));
+                            document.getElementById("cit-period").textContent = sinceKey ? citationsData[sinceKey] : '—';
+                        }
+                        if (hIndexData) {
+                            document.getElementById("h-total").textContent = hIndexData.all ?? '—';
+                            const sinceKey = Object.keys(hIndexData).find(k => k.startsWith('since_'));
+                            document.getElementById("h-period").textContent = sinceKey ? hIndexData[sinceKey] : '—';
+                        }
+                        if (i10IndexData) {
+                            document.getElementById("i10-total").textContent = i10IndexData.all ?? '—';
+                            const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_'));
+                            document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—';
+                        }
+                    } else if (citedBy?.value) {
+                        document.getElementById("cit-total").textContent = citedBy.value ?? '—';
+                    } else {
+                        throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado.");
+                    }
 
-            pubToggleBtn.addEventListener('click', () => {
-                const total = (pubSearchInput.value ? allArticles.filter(art => art.title.toLowerCase().includes(pubSearchInput.value.toLowerCase())) : allArticles).length;
-                if(showingPubsCount >= total) {
-                    showingPubsCount = 6;
-                } else {
-                    showingPubsCount = Math.min(showingPubsCount + 6, total);
+                    if (profile.author_url) {
+                        document.querySelector(".scholar-link a").href = profile.author_url;
+                    }
+                    if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
+                        renderCitationChart(profile.cited_by.graph);
+                    }
+                } catch (e) {
+                    console.error("Erro ao atualizar seção do Scholar:", e);
+                    const scholarCard = document.querySelector(".scholar-summary-card");
+                    if (scholarCard && !scholarCard.querySelector('.scholar-error')) {
+                        const errorDiv = document.createElement('div');
+                        errorDiv.className = 'scholar-error';
+                        errorDiv.style.color = '#f44336';
+                        errorDiv.style.marginTop = '15px';
+                        errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`;
+                        scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv);
+                    }
                 }
-                renderPublications(pubSearchInput.value);
+            }
+            
+            function renderPublications(filter = '') {
+                const grid = document.getElementById("publicacoes-grid");
+                const toggleBtn = document.getElementById('pubs-toggle-more');
+                const shownCountEl = document.getElementById('pubs-shown-count');
+                grid.innerHTML = ""; 
+                
+                const lowerCaseFilter = filter.trim().toLowerCase();
+                
+                const filteredArticles = lowerCaseFilter 
+                    ? allArticles.filter(art => 
+                        (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
+                        (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
+                        (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
+                    )
+                    : allArticles;
+
+                const articlesToShow = filteredArticles.slice(0, showingPubsCount);
+
+                if (articlesToShow.length === 0) {
+                    grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                    shownCountEl.textContent = `0 / 0`;
+                    toggleBtn.classList.add('hidden');
+                    return;
+                }
+                
+                articlesToShow.forEach((art) => {
+                    const card = document.createElement("div");
+                    card.className = "card reveal publication-card";
+                    const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
+                    card.innerHTML = `
+                        <h3>${art.title || 'Título indisponível'}</h3>
+                        <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
+                        <p>${art.snippet || ""}</p>
+                        <p class="citations">${citationText}</p>
+                        <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
+                toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
+                toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
+
+                const revealObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            }
+
+            async function updateScholarPublications() {
+                const grid = document.getElementById("publicacoes-grid");
+                grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(6);
+
+                try {
+                    const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
+                    if (result.error) {
+                        if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
+                        throw new Error(result.error);
+                    }
+                    
+                    allArticles = result.articles || [];
+                    renderPublications();
+                    
+                } catch (e) {
+                    console.error("Erro ao atualizar publicações:", e);
+                    grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                updateScholarSection();
+                updateScholarPublications();
+
+                const pubSearchInput = document.getElementById('publication-search');
+                const pubClearBtn = document.getElementById('publication-clear-btn');
+                const pubToggleBtn = document.getElementById('pubs-toggle-more');
+                
+                const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
+
+                pubSearchInput.addEventListener('input', debounce(e => {
+                    showingPubsCount = 6; // Reset on search
+                    renderPublications(e.target.value);
+                }));
+                
+                pubClearBtn.addEventListener('click', () => {
+                    pubSearchInput.value = '';
+                    showingPubsCount = 6;
+                    renderPublications();
+                    pubSearchInput.focus();
+                });
+
+                pubToggleBtn.addEventListener('click', () => {
+                    const total = (pubSearchInput.value ? allArticles.filter(art => art.title.toLowerCase().includes(pubSearchInput.value.toLowerCase())) : allArticles).length;
+                    if(showingPubsCount >= total) {
+                        showingPubsCount = 6;
+                    } else {
+                        showingPubsCount = Math.min(showingPubsCount + 6, total);
+                    }
+                    renderPublications(pubSearchInput.value);
+                });
             });
-        });
+
+            return {
+                renderPublications,
+                get allArticles() { return allArticles; },
+                set showingPubsCount(value) { showingPubsCount = value; }
+            };
+        })();
     </script>
      <script>
         // --- Particle Background Script ---
@@ -1820,6 +1843,147 @@
             setCanvasSize();
             init();
             animate();
+        });
+    </script>
+
+    <!-- SCRIPT PARA GERAR PDF ATUALIZADO -->
+    <script>
+        async function generatePdf() {
+            const button = document.getElementById('download-cv-btn');
+            const originalButtonHTML = button.innerHTML;
+            const toast = document.getElementById('toast-notification');
+
+            if (!window.jspdf || !window.html2canvas) {
+                toast.textContent = 'Erro: Bibliotecas de PDF não carregadas.';
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+                return;
+            }
+
+            // --- Etapa 1: Preparar a UI para a captura ---
+            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Preparando...</span>`;
+            button.style.pointerEvents = 'none';
+            toast.textContent = 'Expandindo todas as seções...';
+            toast.classList.add('show');
+
+            // Injeta estilos específicos para o PDF
+            const pdfStyles = `
+                body { background: #fff !important; color: #000 !important; font-family: 'Georgia', serif !important; font-size: 11pt !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                header, main.container, section { padding: 15px 25px !important; margin: 0 !important; border: none !important; background: none !important; animation: none !important; box-shadow: none !important; }
+                nav, footer, #particle-canvas, .back-to-top, .lang-switch, .hero-cta, #contact-form, .scroll-indicator, .toggle-details-btn, .load-more-container, .controls, .actions, .scholar-link, #download-cv-btn, .contact-link[target="_blank"], .icon, .scholar-chart-container, .social-links { display: none !important; }
+                .hero-content { display: block; text-align: center; max-width: 100% !important; animation: none !important; }
+                .avatar { width: 150px !important; height: 150px !important; margin: 0 auto 15px !important; border: 1px solid #ddd !important; box-shadow: none !important; animation: none !important; }
+                h1 { font-size: 26pt !important; background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; margin-bottom: 5px !important; }
+                .subtitle { font-size: 14pt !important; color: #333 !important; margin: 0 auto 15px !important; height: auto !important; min-height: auto !important; }
+                .subtitle::after { display: none; }
+                .badges { justify-content: center; margin: 0 0 20px 0 !important; }
+                .badge { background: #f0f0f0 !important; color: #333 !important; border: 1px solid #ddd !important; box-shadow: none !important; backdrop-filter: none !important; }
+                h2 { font-size: 16pt !important; color: #000 !important; border-bottom: 2px solid #000; padding: 0 0 5px 0 !important; margin: 25px 0 15px 0 !important; }
+                h2::before { display: none !important; }
+                .grid, .projects, .skills-container, .timeline, .feature-section { display: block !important; }
+                .card, .timeline-content, .sidebar, .project-card, .feature-section { background: none !important; border: none !important; border-radius: 0 !important; padding: 0 0 15px 0 !important; box-shadow: none !important; backdrop-filter: none !important; page-break-inside: avoid; transform: none !important; }
+                .card p, p, li, .project-desc, .publication-meta, .timeline-details { color: #333 !important; font-size: 11pt; }
+                h3 { font-size: 13pt !important; color: #000 !important; }
+                .timeline::before, .timeline-dot { display: none; }
+                .timeline-item { padding-left: 0 !important; page-break-inside: avoid; }
+                .timeline-content { border-bottom: 1px solid #eee; }
+                .timeline-details { max-height: none !important; overflow: visible !important; display: block !important; }
+                .project-card, .publication-card { border-bottom: 1px solid #eee !important; margin-bottom: 10px !important; }
+                .project-top h3 { color: #000 !important; }
+                .scholar-summary-card { padding: 10px 0 !important; }
+                .skill-tag { background: #f0f0f0 !important; color: #333 !important; border: 1px solid #ddd !important; }
+                .contact-links-aside { padding-top: 20px; text-align: center; }
+                .contact-grid { display: block !important; }
+                #copy-email-link { background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; display: block !important; text-align: center; }
+                #copy-email-link svg { display: inline-block; vertical-align: middle; margin-right: 5px; }
+                .reveal { opacity: 1 !important; transform: none !important; }
+                a { color: #000 !important; text-decoration: none !important; }
+            `;
+            const styleEl = document.createElement('style');
+            styleEl.id = 'pdf-styles';
+            styleEl.innerHTML = pdfStyles;
+            document.head.appendChild(styleEl);
+
+
+            // Expandir todas as seções dinâmicas
+            if (window.githubScript && window.githubScript.allRepos.length > 0) {
+                window.githubScript.showingCount = window.githubScript.allRepos.length;
+                window.githubScript.renderAll();
+            }
+            if (window.scholarScript && window.scholarScript.allArticles.length > 0) {
+                window.scholarScript.showingPubsCount = window.scholarScript.allArticles.length;
+                window.scholarScript.renderPublications();
+            }
+            document.querySelectorAll('.timeline-item:not(.expanded) .toggle-details-btn').forEach(btn => btn.click());
+
+            // Aguardar a renderização do DOM após as expansões
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // --- Etapa 2: Gerar o PDF ---
+            toast.textContent = 'Gerando o PDF... Isso pode demorar um pouco.';
+            button.querySelector('span').textContent = 'Gerando...';
+
+            try {
+                window.scrollTo(0, 0); // Garante que a captura comece do topo
+                const content = document.body;
+                
+                const canvas = await html2canvas(content, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: document.documentElement.scrollWidth,
+                    windowHeight: document.documentElement.scrollHeight
+                });
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                let heightLeft = pdfHeight;
+                let position = 0;
+                const pageHeight = pdf.internal.pageSize.getHeight();
+
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft > 0) {
+                    position -= pageHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                pdf.save('CV-Weverton_Gomes_da_Costa.pdf');
+                toast.textContent = 'Download do currículo iniciado!';
+
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
+            } finally {
+                // --- Etapa 3: Restaurar a UI ---
+                document.head.removeChild(styleEl);
+                button.innerHTML = originalButtonHTML;
+                button.style.pointerEvents = 'auto';
+                setTimeout(() => toast.classList.remove('show'), 4000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadBtn = document.getElementById('download-cv-btn');
+            if(downloadBtn) {
+                downloadBtn.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    generatePdf();
+                });
+            }
         });
     </script>
 </body>
