@@ -328,11 +328,30 @@
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
 
-        .lang-switch { position: fixed; top: 20px; right: 20px; z-index: 1001; background: var(--bg-card);
-            border: 1px solid var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 20px;
-            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease; font-weight: 500; }
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: top 0.3s ease, transform 0.3s ease;
+            font-weight: 500;
+        }
+        .lang-switch.in-nav {
+            top: 15px;
+        }
         .lang-switch .lang-pt.active, .lang-switch .lang-en.active { color: var(--text); font-weight: 700; }
-        .lang-switch:hover { background: var(--primary); color: var(--dark); transform: scale(1.05); }
+        .lang-switch:hover {
+            background: var(--primary);
+            color: var(--dark);
+            transform: scale(1.05);
+        }
 
         .back-to-top {
             position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary);
@@ -436,11 +455,10 @@
 <body>
     <canvas id="particle-canvas"></canvas>
     <a href="#" class="back-to-top" aria-label="Voltar ao topo">↑</a>
-    
     <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
         <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
     </button>
-
+    
     <header>
         <div class="hero-content">
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
@@ -787,6 +805,20 @@
                     toast.classList.remove('show');
                 }, 3000);
             });
+
+            // --- Language Switch Positioning ---
+            const nav = document.querySelector('nav');
+            const langSwitch = document.querySelector('.lang-switch');
+            if (nav && langSwitch) {
+                const navTop = nav.offsetTop;
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY >= navTop) {
+                        langSwitch.classList.add('in-nav');
+                    } else {
+                        langSwitch.classList.remove('in-nav');
+                    }
+                }, { passive: true });
+            }
         });
     </script>
     
