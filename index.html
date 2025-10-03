@@ -1359,6 +1359,30 @@
                 'fetch_error': 'GitHub API rate limit reached. Displaying featured projects. Full data will be updated automatically later.',
                 'no_repos_found': 'No repositories found.',
                 'open_btn': 'Open', 'copy_btn': 'Copy link', 'copied_btn': 'Copied!', 'no_description': 'No description provided.', 'updated_at': 'Updated:'
+            },
+            pdf: {
+                pt: {
+                    'about-title': 'Sobre Mim',
+                    'services-title': 'Serviços & Consultoria',
+                    'skills-title': 'Habilidades Técnicas',
+                    'expertise-title': 'Áreas de Especialização',
+                    'education-title': 'Formação Acadêmica',
+                    'projects-title': 'Principais Projetos',
+                    'publications-title': 'Principais Publicações',
+                    'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.',
+                    'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.'
+                },
+                en: {
+                    'about-title': 'About Me',
+                    'services-title': 'Services & Consulting',
+                    'skills-title': 'Technical Skills',
+                    'expertise-title': 'Areas of Expertise',
+                    'education-title': 'Education',
+                    'projects-title': 'Main Projects',
+                    'publications-title': 'Main Publications',
+                    'projects-link': 'For more projects, visit my GitHub profile.',
+                    'publications-link': 'For more publications, visit my Google Scholar profile.'
+                }
             }
         };
 
@@ -1964,6 +1988,7 @@
             const originalButtonHTML = button.innerHTML;
             const toast = document.getElementById('toast-notification');
             const { jsPDF } = window.jspdf;
+            const pdfTranslations = translations.pdf[currentLang];
 
             // --- 1. Preparar UI ---
             button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Gerando...</span>`;
@@ -2039,12 +2064,12 @@
                 };
                 
                 const addJustifiedText = (content) => {
-                    const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width);
-                    const textHeight = lines.length * 12; 
-                    checkPageBreak(textHeight);
                     doc.setFontSize(10);
                     doc.setFont('helvetica', 'normal');
                     doc.setTextColor(80);
+                    const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width);
+                    const textHeight = lines.length * 12; 
+                    checkPageBreak(textHeight);
                     doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width });
                     y += textHeight + 5;
                 };
@@ -2065,41 +2090,50 @@
 
                 // --- 6. Adicionar Seções do Currículo ---
 
-                addSectionTitle("Sobre Mim");
+                addSectionTitle(pdfTranslations['about-title']);
                 const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join(' ');
                 addJustifiedText(aboutText);
 
-                addSectionTitle("Serviços & Consultoria");
+                addSectionTitle(pdfTranslations['services-title']);
                 document.querySelectorAll('#servicos .card').forEach(card => {
-                    const title = card.querySelector('h3').textContent.trim();
-                    const desc = card.querySelector('p').textContent.trim();
+                    const titleKey = card.querySelector('h3').dataset.key;
+                    const descKey = card.querySelector('p').dataset.key;
+                    const title = translations[currentLang][titleKey];
+                    const desc = translations[currentLang][descKey];
+
                     checkPageBreak(40);
                     doc.setFontSize(11);
                     doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(0);
                     doc.text(`• ${title}`, margin, y);
                     y += 14;
                     addJustifiedText(desc);
                     y += 5;
                 });
 
-                addSectionTitle('Habilidades Técnicas');
+                addSectionTitle(pdfTranslations['skills-title']);
                 const skills = Array.from(document.querySelectorAll('#habilidades .skill-tag')).map(el => el.textContent);
                 addBulletedList(skills);
                 y+= 10;
 
-                addSectionTitle('Áreas de Especialização');
-                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => 
-                     `${card.querySelector('h3').textContent.trim()}: ${card.querySelector('p').textContent.trim()}`
-                );
+                addSectionTitle(pdfTranslations['expertise-title']);
+                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => {
+                     const titleKey = card.querySelector('h3').dataset.key;
+                     const descKey = card.querySelector('p').dataset.key;
+                     const title = translations[currentLang][titleKey];
+                     const desc = translations[currentLang][descKey];
+                     return `${title}: ${desc}`;
+                });
                 addBulletedList(experiences);
                 y+= 10;
 
 
-                addSectionTitle("Formação Acadêmica");
+                addSectionTitle(pdfTranslations['education-title']);
                 document.querySelectorAll('#formacao .timeline-item').forEach(item => {
                     checkPageBreak(70);
                     const date = item.querySelector('.timeline-date').textContent.trim();
-                    const title = item.querySelector('h3').textContent.trim();
+                    const titleKey = item.querySelector('h3').dataset.key;
+                    const title = translations[currentLang][titleKey];
                     const institution = item.querySelector('p').textContent.trim();
                     const descriptionKey = item.querySelector('.timeline-details').dataset.key;
                     const description = translations[currentLang][descriptionKey] || '';
@@ -2125,7 +2159,7 @@
                     y += 15;
                 });
                 
-                addSectionTitle("Principais Projetos");
+                addSectionTitle(pdfTranslations['projects-title']);
                 if (window.githubScript && window.githubScript.allRepos.length > 0) {
                     const topProjects = [...window.githubScript.allRepos]
                         .sort((a, b) => b.stargazers_count - a.stargazers_count)
@@ -2133,10 +2167,11 @@
                     
                     topProjects.forEach(repo => {
                         const title = repo.name.replace(/[-_]/g, ' ');
-                        const desc = repo.description || 'Sem descrição.';
+                        const desc = repo.description || (currentLang === 'pt' ? 'Sem descrição.' : 'No description.');
                         checkPageBreak(50);
                         doc.setFontSize(11);
                         doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(0);
                         doc.text(`• ${title}`, margin, y);
                         y += 14;
                         addJustifiedText(desc);
@@ -2146,12 +2181,12 @@
                     doc.setFontSize(9);
                     doc.setFont('helvetica', 'italic');
                     doc.setTextColor(0, 0, 255);
-                    doc.textWithLink('Para mais projetos, acesse meu perfil no GitHub.', margin, y, { url: 'https://github.com/WevertonGomesCosta' });
+                    doc.textWithLink(pdfTranslations['projects-link'], margin, y, { url: 'https://github.com/WevertonGomesCosta' });
                     doc.setTextColor(80);
                     y += 10;
                 }
                 
-                addSectionTitle("Principais Publicações");
+                addSectionTitle(pdfTranslations['publications-title']);
                 if (window.scholarScript && window.scholarScript.allArticles.length > 0) {
                     const topArticles = window.scholarScript.allArticles.slice(0, 3);
                     
@@ -2163,6 +2198,7 @@
                         checkPageBreak(60);
                         doc.setFontSize(10);
                         doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(0);
                         const titleLines = doc.splitTextToSize(title, max_width);
                         doc.text(titleLines, margin, y);
                         y += titleLines.length * 12;
@@ -2184,7 +2220,7 @@
                     doc.setFont('helvetica', 'italic');
                     doc.setTextColor(0, 0, 255);
                     if (scholarLink) {
-                        doc.textWithLink('Para mais publicações, acesse meu perfil no Google Scholar.', margin, y, { url: scholarLink.href });
+                        doc.textWithLink(pdfTranslations['publications-link'], margin, y, { url: scholarLink.href });
                     }
                     doc.setTextColor(80);
                     y += 10;
@@ -2207,5 +2243,3 @@
     </script>
 </body>
 </html>
-"
-
