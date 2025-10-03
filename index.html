@@ -1505,12 +1505,9 @@
             searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
             clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; showingCount = 3; render(); searchEl.focus(); });
             toggleBtn.addEventListener('click', () => { 
-                const total = (currentFilter ? allRepos.filter(r => r.name.toLowerCase().includes(currentFilter) || (r.description || '').toLowerCase().includes(currentFilter) || (r.language || '').toLowerCase().includes(currentFilter) || r.topics.some(t => t.toLowerCase().includes(currentFilter))) : allRepos).length;
-                if (showingCount >= total) { 
-                    showingCount = 3; 
-                } else { 
-                    showingCount = Math.min(showingCount + 6, total); 
-                } 
+                const filter = currentFilter.trim().toLowerCase();
+                const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos;
+                showingCount = Math.min(showingCount + 3, filtered.length);
                 render(); 
             });
             listEl.addEventListener('click', e => { if (e.target.matches('button[data-copy]')) onCopy(e); });
@@ -1531,7 +1528,7 @@
             const PROXY_URL = 'https://corsproxy.io/?';
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = [];
-            let showingPubsCount = 6;
+            let showingPubsCount = 3;
 
             async function fetchFromSerpApi(params) {
                 const baseUrl = 'https://serpapi.com/search.json';
@@ -1696,7 +1693,7 @@
 
             async function updateScholarPublications() {
                 const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(6);
+                grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
 
                 try {
                     const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR' });
@@ -1706,6 +1703,7 @@
                     }
                     
                     allArticles = result.articles || [];
+                    allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
                     renderPublications();
                     
                 } catch (e) {
@@ -1725,24 +1723,28 @@
                 const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
                 pubSearchInput.addEventListener('input', debounce(e => {
-                    showingPubsCount = 6; // Reset on search
+                    showingPubsCount = 3; // Reset on search
                     renderPublications(e.target.value);
                 }));
                 
                 pubClearBtn.addEventListener('click', () => {
                     pubSearchInput.value = '';
-                    showingPubsCount = 6;
+                    showingPubsCount = 3;
                     renderPublications();
                     pubSearchInput.focus();
                 });
 
                 pubToggleBtn.addEventListener('click', () => {
-                    const total = (pubSearchInput.value ? allArticles.filter(art => art.title.toLowerCase().includes(pubSearchInput.value.toLowerCase())) : allArticles).length;
-                    if(showingPubsCount >= total) {
-                        showingPubsCount = 6;
-                    } else {
-                        showingPubsCount = Math.min(showingPubsCount + 6, total);
-                    }
+                    const filter = pubSearchInput.value.trim().toLowerCase();
+                    const filteredArticles = filter 
+                        ? allArticles.filter(art => 
+                            (art.title && art.title.toLowerCase().includes(filter)) ||
+                            (art.publication && art.publication.toLowerCase().includes(filter)) ||
+                            (art.snippet && art.snippet.toLowerCase().includes(filter))
+                          )
+                        : allArticles;
+                    
+                    showingPubsCount = Math.min(showingPubsCount + 3, filteredArticles.length);
                     renderPublications(pubSearchInput.value);
                 });
             });
