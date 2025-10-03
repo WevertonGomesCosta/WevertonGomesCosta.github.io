@@ -58,12 +58,21 @@
             pointer-events: none;
         }
 
+        @keyframes animated-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         header {
             position: relative;
             padding: 100px 20px 60px;
             text-align: center;
-            background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
+            background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 60%), 
+                        linear-gradient(270deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            background-size: 200% 200%;
             border-bottom: 1px solid var(--border);
+            animation: animated-gradient 15s ease infinite;
         }
 
         .hero-content {
@@ -374,6 +383,7 @@
             will-change: opacity, transform; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         .stagger-children .reveal { transition-delay: calc(var(--stagger-index) * 120ms); }
+        .load-more-container { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
 
         /* Skeleton Loader Styles */
         .skeleton-card {
@@ -502,7 +512,7 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
             </div>
-            <div class="reveal" style="margin-top:12px;display:flex;gap:8px;justify-content:space-between;align-items:center"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
+            <div class="reveal load-more-container"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
 
         <!-- Seção de Métricas e Publicações Google Scholar -->
@@ -552,6 +562,7 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
             </div>
+            <div class="reveal load-more-container"><div class="small-muted" id="pubs-shown-count">—</div><div class="center"><button id="pubs-toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
         
         <section id="licae-conecta" class="section">
@@ -641,6 +652,12 @@
 
     <footer class="reveal">
         <div class="footer-content">
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+                <a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener" class="social-link" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="social-link" aria-label="Google Scholar"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.242 13.769L0 9.5L12 0l12 9.5l-5.242 4.269C17.548 11.249 14.978 9 12 9s-5.548 2.249-6.758 4.769zM12 10c-1.654 0-3 1.346-3 3s1.346 3 3 3s3-1.346 3-3s-1.346-3-3-3z"/></svg></a>
+                <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener" class="social-link" aria-label="Lattes"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 22h-16c-1.104 0-2-.896-2-2v-16c0-1.104.896-2 2-2h16c1.104 0 2 .896 2 2v16c0 1.104-.896 2-2 2zm-16-20c-.552 0-1 .448-1 1v16c0 .552.448 1 1 1h16c.552 0 1-.448 1-1v-16c0-.552-.448-1-1-1h-16zm-1 6h18v1h-18v-1zm11 3.5c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5zm-5 0c0-.828-.672-1.5-1.5-1.5s-1.5.672-1.5 1.5.672 1.5 1.5 1.5 1.5-.672 1.5-1.5z"/></svg></a>
+            </div>
             <p>&copy; 2025 Weverton Gomes da Costa</p>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
         </div>
@@ -1088,6 +1105,7 @@
         const PROXY_URL = 'https://corsproxy.io/?';
         const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
         let allArticles = [];
+        let showingPubsCount = 6;
 
         async function fetchFromSerpApi(params) {
             const baseUrl = 'https://serpapi.com/search.json';
@@ -1198,6 +1216,8 @@
         
         function renderPublications(filter = '') {
             const grid = document.getElementById("publicacoes-grid");
+            const toggleBtn = document.getElementById('pubs-toggle-more');
+            const shownCountEl = document.getElementById('pubs-shown-count');
             grid.innerHTML = ""; 
             
             const lowerCaseFilter = filter.trim().toLowerCase();
@@ -1210,10 +1230,12 @@
                   )
                 : allArticles;
 
-            const articlesToShow = lowerCaseFilter ? filteredArticles : filteredArticles.slice(0, 6);
+            const articlesToShow = filteredArticles.slice(0, showingPubsCount);
 
             if (articlesToShow.length === 0) {
                 grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                shownCountEl.textContent = `0 / 0`;
+                toggleBtn.classList.add('hidden');
                 return;
             }
             
@@ -1231,6 +1253,10 @@
                 grid.appendChild(card);
             });
             
+            shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
+            toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
+            toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
+
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1245,6 +1271,9 @@
         async function updateScholarPublications() {
             const grid = document.getElementById("publicacoes-grid");
             grid.innerHTML = `
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
@@ -1272,17 +1301,30 @@
 
             const pubSearchInput = document.getElementById('publication-search');
             const pubClearBtn = document.getElementById('publication-clear-btn');
+            const pubToggleBtn = document.getElementById('pubs-toggle-more');
             
             const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
 
             pubSearchInput.addEventListener('input', debounce(e => {
+                showingPubsCount = 6; // Reset on search
                 renderPublications(e.target.value);
             }));
             
             pubClearBtn.addEventListener('click', () => {
                 pubSearchInput.value = '';
+                showingPubsCount = 6;
                 renderPublications();
                 pubSearchInput.focus();
+            });
+
+            pubToggleBtn.addEventListener('click', () => {
+                const total = (pubSearchInput.value ? allArticles.filter(art => art.title.toLowerCase().includes(pubSearchInput.value.toLowerCase())) : allArticles).length;
+                if(showingPubsCount >= total) {
+                    showingPubsCount = 6;
+                } else {
+                    showingPubsCount = Math.min(showingPubsCount + 6, total);
+                }
+                renderPublications(pubSearchInput.value);
             });
         });
     </script>
