@@ -1926,45 +1926,30 @@
             button.querySelector('span').textContent = 'Gerando...';
 
             try {
-                window.scrollTo(0, 0); // Garante que a captura comece do topo
-                const content = document.body;
-                
-                const canvas = await html2canvas(content, {
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    windowWidth: document.documentElement.scrollWidth,
-                    windowHeight: document.documentElement.scrollHeight
-                });
-
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({
                     orientation: 'p',
-                    unit: 'mm',
+                    unit: 'pt',
                     format: 'a4'
                 });
 
-                const imgData = canvas.toDataURL('image/png');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-                let heightLeft = pdfHeight;
-                let position = 0;
-                const pageHeight = pdf.internal.pageSize.getHeight();
-
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pageHeight;
-
-                while (heightLeft > 0) {
-                    position -= pageHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pageHeight;
-                }
-
-                pdf.save('CV-Weverton_Gomes_da_Costa.pdf');
-                toast.textContent = 'Download do currículo iniciado!';
+                const content = document.body;
+                
+                await pdf.html(content, {
+                    callback: function(doc) {
+                        doc.save('CV-Weverton_Gomes_da_Costa.pdf');
+                        toast.textContent = 'Download do currículo iniciado!';
+                    },
+                    margin: [15, 15, 15, 15],
+                    autoPaging: 'text',
+                    width: 595, // A4 width in points
+                    windowWidth: 1200,
+                    html2canvas: {
+                        scale: 0.5, // Adjust scale for better resolution
+                        useCORS: true,
+                        logging: false
+                    }
+                });
 
             } catch (error) {
                 console.error('Erro ao gerar PDF:', error);
