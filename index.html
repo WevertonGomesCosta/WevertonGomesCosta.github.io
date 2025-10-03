@@ -128,9 +128,39 @@
         nav {
             position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
+            transition: padding 0.3s ease; /* Anima a altura da barra de navegação */
         }
-        .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: center;
-            gap: 25px; padding: 0 20px; flex-wrap: wrap; }
+        nav.scrolled {
+            padding: 8px 0; /* Diminui a altura ao rolar */
+        }
+        .nav-container { 
+            max-width: 1200px; margin: 0 auto; display: flex; justify-content: center;
+            gap: 25px; padding: 0 20px; flex-wrap: wrap; 
+            position: relative; /* Contexto para o avatar posicionado absolutamente */
+            align-items: center; /* Alinha verticalmente os links e o avatar */
+        }
+        
+        /* Avatar que aparece na barra de navegação */
+        .nav-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%) scale(0); /* Começa invisível e encolhido */
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 0 10px var(--glow);
+        }
+
+        /* Estado do avatar quando a página é rolada */
+        nav.scrolled .nav-avatar {
+            transform: translateY(-50%) scale(1); /* Torna-se visível e no tamanho normal */
+            opacity: 1;
+        }
+        
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500;
             transition: color 0.3s ease, transform 0.3s ease; position: relative; }
         .nav-link::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
@@ -323,6 +353,7 @@
             .timeline::before { left: 20px; }
             .timeline-dot { left: 14px; }
             .timeline-item { padding-left: 50px; }
+            .nav-avatar { display: none; } /* Esconde o avatar na navegação em telas pequenas */
         }
 
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
@@ -476,6 +507,9 @@
 
     <nav>
         <div class="nav-container">
+            <!-- Avatar que aparece ao rolar a página -->
+            <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
+            
             <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
             <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
             <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
@@ -752,6 +786,21 @@
                 }
             });
 
+            // --- Lógica da Barra de Navegação com Avatar ---
+            const nav = document.querySelector('nav');
+            const header = document.querySelector('header');
+            if (nav && header) {
+                // Ativa o efeito um pouco antes do cabeçalho desaparecer completamente
+                const scrollThreshold = header.offsetHeight - 100; 
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > scrollThreshold) {
+                        nav.classList.add('scrolled');
+                    } else {
+                        nav.classList.remove('scrolled');
+                    }
+                }, { passive: true });
+            }
+
             // --- Lógica do Formulário de Contato ---
             const form = document.getElementById("contact-form");
             const status = document.getElementById("form-status");
@@ -807,7 +856,6 @@
             });
 
             // --- Language Switch Positioning ---
-            const nav = document.querySelector('nav');
             const langSwitch = document.querySelector('.lang-switch');
             if (nav && langSwitch) {
                 const navTop = nav.offsetTop;
@@ -1453,4 +1501,3 @@
     </script>
 </body>
 </html>
-
