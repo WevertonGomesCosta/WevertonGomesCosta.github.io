@@ -1872,7 +1872,7 @@
             const pdfStyles = `
                 body { background: #fff !important; color: #000 !important; font-family: 'Georgia', serif !important; font-size: 11pt !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 header, main.container, section { padding: 15px 25px !important; margin: 0 !important; border: none !important; background: none !important; animation: none !important; box-shadow: none !important; }
-                nav, footer, #particle-canvas, .back-to-top, .lang-switch, .hero-cta, #contact-form, .scroll-indicator, .toggle-details-btn, .load-more-container, .controls, .actions, .scholar-link, #download-cv-btn, .contact-link[target="_blank"], .icon, .scholar-chart-container, .social-links { display: none !important; }
+                nav, footer, #particle-canvas, .back-to-top, .lang-switch, .hero-cta, #contact-form, .scroll-indicator, .toggle-details-btn, .load-more-container, .controls, .actions, .scholar-link, .icon, .feature-logo, .scholar-chart-container, .social-links, .contact-link svg, .institution-logo { display: none !important; }
                 .hero-content { display: block; text-align: center; max-width: 100% !important; animation: none !important; }
                 .avatar { width: 150px !important; height: 150px !important; margin: 0 auto 15px !important; border: 1px solid #ddd !important; box-shadow: none !important; animation: none !important; }
                 h1 { font-size: 26pt !important; background: none !important; -webkit-text-fill-color: #000 !important; color: #000 !important; margin-bottom: 5px !important; }
@@ -1894,10 +1894,11 @@
                 .project-top h3 { color: #000 !important; }
                 .scholar-summary-card { padding: 10px 0 !important; }
                 .skill-tag { background: #f0f0f0 !important; color: #333 !important; border: 1px solid #ddd !important; }
-                .contact-links-aside { padding-top: 20px; text-align: center; }
+                .contact-links-aside { padding-top: 20px; text-align: left; }
                 .contact-grid { display: block !important; }
-                #copy-email-link { background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; display: block !important; text-align: center; }
-                #copy-email-link svg { display: inline-block; vertical-align: middle; margin-right: 5px; }
+                .contact-link { display: block !important; background: none !important; border: none !important; padding: 2px 0 !important; color: #000 !important; }
+                #copy-email-link::after { content: ': wevertonufv@gmail.com'; color: #444; font-size: 10pt; }
+                .contact-link[target="_blank"]::after { content: ': ' attr(href); color: #444; font-size: 10pt; }
                 .reveal { opacity: 1 !important; transform: none !important; }
                 a { color: #000 !important; text-decoration: none !important; }
             `;
@@ -1940,12 +1941,12 @@
                         doc.save('CV-Weverton_Gomes_da_Costa.pdf');
                         toast.textContent = 'Download do currículo iniciado!';
                     },
-                    margin: [15, 15, 15, 15],
+                    margin: [40, 40, 40, 40],
                     autoPaging: 'text',
                     width: 595, // A4 width in points
                     windowWidth: 1200,
                     html2canvas: {
-                        scale: 0.5, // Adjust scale for better resolution
+                        scale: 0.8, 
                         useCORS: true,
                         logging: false
                     }
