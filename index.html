@@ -106,7 +106,7 @@
         
         .subtitle {
             font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-muted);
-            margin-bottom: 15px; font-weight: 300; height: 1.6em; 
+            margin-bottom: 25px; font-weight: 300; height: 1.6em; 
             min-height: 1.6em;
         }
         .subtitle::after {
@@ -119,6 +119,43 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
+
+        /* Botões de Ação no Header */
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .cta-btn {
+            padding: 12px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid transparent;
+        }
+        .cta-btn.primary {
+            background: var(--primary);
+            color: var(--dark);
+        }
+        .cta-btn.primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        .cta-btn.secondary {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .cta-btn.secondary:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+        }
+
 
         .badges { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
         .badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px;
@@ -140,7 +177,6 @@
             align-items: center; /* Alinha verticalmente os links e o avatar */
         }
         
-        /* Avatar que aparece na barra de navegação */
         .nav-avatar {
             width: 45px;
             height: 45px;
@@ -149,15 +185,14 @@
             position: absolute;
             left: 20px;
             top: 50%;
-            transform: translateY(-50%) scale(0); /* Começa invisível e encolhido */
+            transform: translateY(-50%) scale(0); 
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             box-shadow: 0 0 10px var(--glow);
         }
 
-        /* Estado do avatar quando a página é rolada */
         nav.scrolled .nav-avatar {
-            transform: translateY(-50%) scale(1); /* Torna-se visível e no tamanho normal */
+            transform: translateY(-50%) scale(1); 
             opacity: 1;
         }
         
@@ -174,6 +209,17 @@
             position: relative; padding-left: 20px; }
         h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
             width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
+        
+        .section-intro {
+            color: var(--text-muted);
+            margin: -15px 0 40px 0;
+            padding: 20px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 12px;
+            border-left: 3px solid var(--primary);
+        }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
         
@@ -495,6 +541,11 @@
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
             <p class="subtitle" id="subtitle"></p>
+            <!-- Botões de Ação -->
+            <div class="hero-cta">
+                <a href="#projetos" class="cta-btn primary">Meus Projetos</a>
+                <a href="#contato" class="cta-btn secondary">Entre em Contato</a>
+            </div>
             <div class="badges">
                 <span class="badge" data-key="badge-phd">🎓 Doutorando em Estatística - UFV</span>
                 <span class="badge" data-key="badge-ceo">🚀 CEO & Cofundador - Conecta GEM</span>
@@ -507,12 +558,10 @@
 
     <nav>
         <div class="nav-container">
-            <!-- Avatar que aparece ao rolar a página -->
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
-            
             <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
-            <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
             <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
+            <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
             <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
             <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
             <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
@@ -529,6 +578,18 @@
                 <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p3"></p>
             </div>
         </section>
+
+        <section id="experiencia" class="section">
+            <h2 class="reveal" data-key="expertise-title">Áreas de Especialização</h2>
+            <div class="grid stagger-children">
+                 <div class="card reveal"><span class="icon" role="img" aria-label="DNA">🧬</span><h3 data-key="exp-title1">Genética Quantitativa</h3><p data-key="exp-desc1">Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico">📊</span><h3 data-key="exp-title2">Biometria Avançada</h3><p data-key="exp-desc2">Aplico modelagem estatística robusta e modelos mistos para extrair insights precisos e orientar decisões estratégicas.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3">Utilizo algoritmos como Random Forest e redes neurais para criar modelos preditivos de alta performance na agricultura.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4">Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5">Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.</p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7">Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.</p></div>
+            </div>
+        </section>
         
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
@@ -543,20 +604,9 @@
             </div>
         </section>
 
-        <section id="experiencia" class="section">
-            <h2 class="reveal" data-key="expertise-title">Áreas de Especialização</h2>
-            <div class="grid stagger-children">
-                 <div class="card reveal"><span class="icon" role="img" aria-label="DNA">🧬</span><h3 data-key="exp-title1">Genética Quantitativa</h3><p data-key="exp-desc1">Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico">📊</span><h3 data-key="exp-title2">Biometria Avançada</h3><p data-key="exp-desc2"></p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3"></p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4">Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5">Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.</p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7">Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.</p></div>
-            </div>
-        </section>
-
         <section id="projetos" class="sidebar section" aria-labelledby="projetos-title">
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
+            <p class="section-intro reveal" data-key="projects-intro"></p>
             <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
             <div class="meta reveal" id="projects-meta"></div>
             <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
@@ -567,9 +617,9 @@
             <div class="reveal load-more-container"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
         </section>
 
-        <!-- Seção de Métricas e Publicações Google Scholar -->
         <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
+            <p class="section-intro reveal" data-key="publications-intro"></p>
             <div class="card reveal scholar-summary-card" style="margin-top: 25px;">
                 <div class="scholar-header">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 464c-132.5 0-240-107.5-240-240S123.5 16 256 16s240 107.5 240 240-107.5 240-240 240z"/><path d="M256 96c-88.4 0-160 71.6-160 160s71.6 160 160 160 160-71.6 160-160S344.4 96 256 96zm0 288c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>
@@ -662,6 +712,7 @@
             <h2 class="reveal" data-key="contact-title">Contato</h2>
             <div class="contact-container reveal">
                 <form id="contact-form" class="contact-form" action="https://formspree.io/f/mnngvbbg" method="POST">
+                    <p data-key="contact-intro" class="section-intro" style="margin-top: 0;">Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.</p>
                     <div class="form-group">
                         <label for="name" data-key="form-name">Nome</label>
                         <input type="text" id="name" name="name" required data-key-placeholder="form-name-ph">
@@ -790,7 +841,6 @@
             const nav = document.querySelector('nav');
             const header = document.querySelector('header');
             if (nav && header) {
-                // Ativa o efeito um pouco antes do cabeçalho desaparecer completamente
                 const scrollThreshold = header.offsetHeight - 100; 
                 window.addEventListener('scroll', () => {
                     if (window.scrollY > scrollThreshold) {
@@ -885,6 +935,7 @@
                 'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`,
                 'about-p3': `Atuando no Laboratório de Bioinformática da UFV e como <strong>Coordenador Discente no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</strong>, tenho a oportunidade de colaborar em pesquisas de ponta e contribuir para a formação de novos cientistas, unindo esforços para avançar as fronteiras da biometria e da inteligência artificial aplicada à agropecuária.`,
                 'publications-title': 'Publicações e Citações',
+                'publications-intro': 'Minhas publicações refletem um compromisso contínuo com a inovação científica. Cada artigo representa um esforço para desenvolver e aplicar metodologias que não apenas avançam o conhecimento teórico, mas também oferecem soluções práticas e eficientes para os desafios do agronegócio.',
                 'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
                 'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
                 'pub-read': 'Ver publicação →',
@@ -904,6 +955,7 @@
                 'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
                 'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
                 'projects-title': 'Projetos & Repositórios',
+                'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
                 'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Destaques', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
                 'licae-desc': 'O LICAE é um laboratório multidisciplinar dedicado a propor, avaliar e aplicar técnicas de Inteligência Computacional e Aprendizado Estatístico para solucionar problemas complexos na Agropecuária. Nosso objetivo é aperfeiçoar e complementar as metodologias biométricas tradicionais, desenvolvendo projetos inovadores em áreas como Redes Neurais, Seleção Genômica e Random Forest.',
                 'licae-item1': 'Pesquisa em redes neurais e seleção genômica', 'licae-item2': 'Desenvolvimento de modelos preditivos', 'licae-item3': 'Colaboração em projetos multidisciplinares',
@@ -915,6 +967,7 @@
                 'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Estatística', 'skill4': 'Seleção Genômica', 'skill5': 'Modelos Mistos & Biometria', 'skill6': 'Reprodutibilidade', 'skill7': 'Visualização de Dados',
                 'skill8': 'Software GENES',
                 'contact-title': 'Contato',
+                'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.',
                 'contact-other': 'Redes Sociais e Perfis',
                 'form-name': 'Nome', 'form-name-ph': 'Seu nome completo',
                 'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com',
@@ -940,6 +993,7 @@
                 'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`,
                 'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
                 'publications-title': 'Publications and Citations',
+                'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.',
                 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
                 'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
                 'pub-read': 'View publication →',
@@ -959,6 +1013,7 @@
                 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
                 'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
                 'projects-title': 'Projects & Repositories',
+                'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.',
                 'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured', 'show-more': 'Show more', 'show-less': 'Show less',
                 'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.',
                 'licae-item1': 'Research on neural networks and genomic selection', 'licae-item2': 'Development of predictive models', 'licae-item3': 'Collaboration in multidisciplinary projects',
@@ -969,7 +1024,8 @@
                 'skills-title': 'Technical Skills',
                 'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Statistics', 'skill4': 'Genomic Selection', 'skill5': 'Mixed Models & Biometrics', 'skill6': 'Reproducibility', 'skill7': 'Data Visualization',
                 'skill8': 'GENES Software',
-                'contact-title': 'Social Media and Contact',
+                'contact-title': 'Contact',
+                'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.',
                 'contact-other': 'Social Media and Profiles',
                 'form-name': 'Name', 'form-name-ph': 'Your full name',
                 'form-email': 'Email', 'form-email-ph': 'your.email@example.com',
@@ -1501,3 +1557,4 @@
     </script>
 </body>
 </html>
+
