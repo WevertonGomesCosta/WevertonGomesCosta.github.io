@@ -1003,7 +1003,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // --- Atualizar Ano e Data do Copyright ---
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
-            document.getElementById('last-updated-date').textContent = "3 de outubro de 2025";
+            document.getElementById('last-updated-date').textContent = "4 de outubro de 2025";
 
 
             // --- Animações de Scroll ---
@@ -1618,36 +1618,24 @@
                 const containerId = 'interactive-scholar-chart-container';
                 const container = document.getElementById(containerId);
                 if (!container || typeof Plotly === 'undefined') return;
-                
+
                 // 1. Processar e agregar dados anuais
                 const yearlyData = {};
-
                 (graphData || []).forEach(item => {
-                    yearlyData[item.year] = {
-                        citations: item.citations || 0,
-                        pubs: 0,
-                        topPubTitle: '', 
-                        topPubCites: -1
-                    };
+                    yearlyData[item.year] = { citations: item.citations || 0, pubs: 0, topPubTitle: '', topPubCites: -1 };
                 });
 
                 (articles || []).forEach(article => {
-                    let year = null;
-                    if (article.publication) {
-                        // Pega o último número de 4 dígitos (começando com 19 ou 20) da string, que é o mais provável de ser o ano.
-                        const yearMatches = article.publication.match(/\b(19|20)\d{2}\b/g);
-                        if (yearMatches && yearMatches.length > 0) {
-                            year = parseInt(yearMatches[yearMatches.length - 1]);
-                        }
-                    }
-
-                    if (year && yearlyData[year]) {
-                        yearlyData[year].pubs = (yearlyData[year].pubs || 0) + 1;
-                        
-                        const cites = article.cited_by?.value || 0;
-                        if (cites > (yearlyData[year].topPubCites || -1)) {
-                            yearlyData[year].topPubCites = cites;
-                            yearlyData[year].topPubTitle = article.title;
+                    const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
+                    if (yearMatches) {
+                        const year = parseInt(yearMatches[yearMatches.length - 1]);
+                        if (year && yearlyData[year]) {
+                            yearlyData[year].pubs++;
+                            const cites = article.cited_by?.value || 0;
+                            if (cites > yearlyData[year].topPubCites) {
+                                yearlyData[year].topPubCites = cites;
+                                yearlyData[year].topPubTitle = article.title;
+                            }
                         }
                     }
                 });
@@ -1658,39 +1646,51 @@
                 const years = sortedYears;
                 const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
                 const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
-                
-                // Escala para o tamanho das bolhas, para que não fiquem muito grandes ou pequenas
-                const scaledPubCounts = pubCounts.map(p => Math.sqrt(p) * 15 + 8); 
+                const maxPubs = Math.max(...pubCounts, 1);
+                const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); // Escala de tamanho mais limpa
 
-                const hoverTexts = sortedYears.map(year => {
-                    const data = yearlyData[year];
-                    let text = `<b>Ano: ${year}</b><br><br>`;
-                    text += `Publicações: <b>${data.pubs || 0}</b><br>`;
-                    text += `Citações: <b>${data.citations || 0}</b>`;
-                    if(data.topPubTitle) {
-                        text += `<br><br><b><u>Publicação Relevante:</u></b><br>${data.topPubTitle.substring(0, 80)}${data.topPubTitle.length > 80 ? '...' : ''}`;
-                    }
-                    return text;
-                });
-                
+                // Dados customizados para o hovertemplate
+                const customData = sortedYears.map(year => ({
+                    pubs: yearlyData[year].pubs || 0,
+                    topPub: yearlyData[year].topPubTitle || "N/A"
+                }));
+
                 // 3. Definir as traces (séries de dados)
                 const traceBubbles = {
                     x: years,
                     y: citCounts,
-                    text: hoverTexts,
-                    hoverinfo: 'text',
+                    customdata: customData,
+                    // Template para o tooltip, mais profissional e customizável
+                    hovertemplate: 
+                        '<b>Ano: %{x}</b><br><br>' +
+                        'Citações recebidas: <b>%{y}</b><br>' +
+                        'Publicações no ano: <b>%{customdata.pubs}</b><br>' +
+                        '<extra></extra>', // <extra> remove a caixa de trace
                     mode: 'markers',
                     marker: {
                         size: scaledPubCounts,
-                        color: pubCounts, // Cor baseada no número de publicações
-                        colorscale: [['0.0', '#059669'], ['1.0', '#f59e0b']], // De verde escuro para âmbar
+                        color: pubCounts,
+                        // Paleta de cores mais elegante, alinhada com a identidade visual do site
+                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], // Do primário transparente ao opaco
                         showscale: true,
                         colorbar: {
                             title: 'Nº de Pubs',
-                            thickness: 15,
-                            len: 0.75,
-                            x: 1.05,
-                            xanchor: 'left'
+                            thickness: 10,
+                            len: 0.9,
+                            x: 1.02,
+                            xanchor: 'left',
+                            tickfont: {
+                                color: 'var(--text-muted)'
+                            },
+                            titlefont: {
+                                color: 'var(--text-muted)'
+                            },
+                            outlinecolor: 'var(--border)',
+                        },
+                        // Adiciona uma borda sutil às bolhas
+                        line: {
+                            color: 'var(--primary-dark)',
+                            width: 1
                         }
                     },
                     name: 'Impacto Anual'
@@ -1701,10 +1701,12 @@
                     y: citCounts,
                     type: 'scatter',
                     mode: 'lines',
+                    // Linha suavizada (spline) para uma aparência mais fluida
                     line: {
-                        color: 'rgba(59, 130, 246, 0.5)', // Cor secundária com transparência
+                        color: 'var(--accent)', 
                         width: 2,
-                        dash: 'dash'
+                        shape: 'spline',
+                        smoothing: 0.7
                     },
                     hoverinfo: 'none',
                     name: 'Tendência de Citações',
@@ -1713,25 +1715,46 @@
                 
                 const data = [traceBubbles, traceLine];
 
-                // 4. Configurar o layout do gráfico
+                // 4. Configurar o layout do gráfico com um toque mais profissional
                 const layout = {
-                    title: 'Impacto Anual: Citações vs. Nº de Publicações',
+                    title: {
+                        text: '<b>Evolução da Produção Científica e Impacto</b>',
+                        x: 0.05,
+                        xanchor: 'left',
+                        y: 0.95,
+                        yanchor: 'top',
+                        font: {
+                            size: 18,
+                            color: 'var(--text)'
+                        }
+                    },
                     paper_bgcolor: 'transparent',
                     plot_bgcolor: 'transparent',
                     font: { color: 'var(--text-muted)', family: 'inherit' },
                     xaxis: { 
-                        title: 'Ano',
+                        title: 'Ano de Publicação',
                         gridcolor: 'var(--border)', 
-                        type: 'category'
+                        gridwidth: 1,
+                        griddash: 'dot',
+                        zeroline: false,
+                        showline: true,
+                        linecolor: 'var(--border)',
+                        type: 'category',
+                        tickangle: -45
                     },
                     yaxis: { 
-                        title: 'Total de Citações no Ano', 
-                        gridcolor: 'var(--border)'
+                        title: 'Número de Citações Recebidas', 
+                        gridcolor: 'var(--border)',
+                        gridwidth: 1,
+                        griddash: 'dot',
+                        zeroline: false,
+                        showline: true,
+                        linecolor: 'var(--border)',
                     },
                     legend: {
                         orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1
                     },
-                    margin: { l: 60, r: 40, b: 60, t: 60, pad: 4 },
+                    margin: { l: 80, r: 40, b: 80, t: 80 },
                     hovermode: 'closest',
                     showlegend: false,
                     autosize: true
@@ -1741,13 +1764,34 @@
 
                 Plotly.newPlot(containerId, data, layout, config);
                 
-                // 5. Adicionar evento de clique
+                // 5. Manter o evento de clique
                 const chartDiv = document.getElementById(containerId);
                 chartDiv.on('plotly_click', function(data) {
                     if (data.points.length > 0) {
-                        const yearClicked = parseInt(data.points[0].x);
+                        const point = data.points[0];
+                        const yearClicked = parseInt(point.x);
+
+                        // Adiciona um feedback visual ao clicar
+                        Plotly.Fx.animate(containerId, {
+                            data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }],
+                            traces: [0] // Anima apenas a trace de bolhas
+                        }, {
+                            transition: { duration: 300, easing: 'cubic-in-out' },
+                            frame: { duration: 300 }
+                        });
+
+                        setTimeout(() => {
+                            Plotly.Fx.animate(containerId, {
+                                data: [{ 'marker.opacity': 1 }],
+                                traces: [0]
+                            }, {
+                                transition: { duration: 500 },
+                                frame: { duration: 500 }
+                            });
+                        }, 800);
+
                         activeYearFilter = yearClicked;
-                        document.getElementById('publication-search').value = ''; // Limpa a busca de texto
+                        document.getElementById('publication-search').value = ''; 
                         renderPublications();
                         updateFilterUI();
                     }
