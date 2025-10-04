@@ -309,7 +309,13 @@
             padding: 20px; backdrop-filter: blur(10px); }
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
         .timeline-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .institution-logo { width: 40px; height: 40px; border-radius: 8px; background-color: rgba(255,255,255,0.1); object-fit: contain; padding: 4px;}
+        .institution-logo {
+            width: 40px; height: 40px; border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center; justify-content: center;
+            padding: 4px; flex-shrink: 0;
+        }
+        .institution-logo svg, .institution-logo .logo-text { width: 100%; height: 100%; object-fit: contain; fill: var(--text); }
         .timeline-details {
             max-height: 0;
             overflow: hidden;
@@ -362,28 +368,69 @@
         .feature-list li { display: flex; align-items: center; gap: 10px; }
         .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
         
-        .skills-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-        .skill-tag { 
-            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
-            color: var(--primary); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;
-            transition: all 0.3s ease; position: relative; cursor: pointer;
+        /* --- ESTILOS DA NOVA SEÇÃO DE HABILIDADES --- */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 20px;
         }
-        .skill-tag:hover, .skill-tag.active { 
-            background: var(--primary); 
-            color: var(--dark);
-            transform: scale(1.05); 
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        .skill-category h3 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            position: relative;
         }
+        .skill-category h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 50px;
+            height: 2px;
+            background: var(--primary);
+        }
+        .skill-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 18px;
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .skill-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .skill-name {
+            width: 40%;
+            color: var(--text);
+            padding-right: 15px;
+            font-weight: 500;
+        }
+        .skill-bar-container {
+            width: 60%;
+            height: 10px;
+            background-color: var(--dark-light);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .skill-bar {
+            height: 100%;
+            width: 0; /* Largura inicial para animação */
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border-radius: 5px;
+            transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .skill-item.visible .skill-bar {
+            width: var(--proficiency-level);
+        }
+        /* ------------------------------------------- */
 
-        .skill-tag[data-tooltip]::after {
-            content: attr(data-tooltip); position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
-            background-color: var(--dark-light); color: var(--text); padding: 8px 12px; border-radius: 8px;
-            font-size: 0.85rem; white-space: nowrap; opacity: 0; visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none;
-        }
-        .skill-tag.active:hover::after,
-        .skill-tag:hover::after { opacity: 1; visibility: visible; }
-        
         .contact-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -414,12 +461,25 @@
         #form-status { margin-top: 10px; text-align: center; }
 
         .contact-links-aside h3 { margin-bottom: 20px; color: var(--primary); }
-        .contact-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 0; }
-        .contact-link { display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: var(--bg-card);
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 0;
+            perspective: 1000px;
+        }
+        .contact-link {
+            display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: var(--bg-card);
             border: 1px solid var(--border); border-radius: 12px; color: var(--text); text-decoration: none;
-            transition: all 0.3s ease; backdrop-filter: blur(10px); }
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            backdrop-filter: blur(10px);
+        }
         .contact-link svg { width: 24px; height: 24px; flex-shrink: 0; color: var(--primary); transition: transform 0.3s ease; }
-        .contact-link:hover { transform: translateX(5px); border-color: var(--primary); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3); }
+        .contact-link:hover {
+            transform: scale(1.03) rotateY(3deg) translateX(5px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 35px rgba(16, 185, 129, 0.35);
+        }
         .contact-link:hover svg { transform: scale(1.1) rotate(-5deg); }
 
 
@@ -546,6 +606,14 @@
         .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
         .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem }
         .project-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted) }
+        .project-topics {
+            margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;
+        }
+        .topic-tag {
+            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--secondary); padding: 3px 8px; border-radius: 12px;
+            font-size: 0.75rem; font-weight: 500;
+        }
         .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
         .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none;
             font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease;
@@ -711,7 +779,9 @@
             <div class="timeline stagger-children">
                  <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                             <div class="timeline-date" data-key="edu-date1">2023 - Presente</div>
                             <h3 data-key="edu-title1">Doutorado em Estatística Aplicada e Biometria</h3>
@@ -723,7 +793,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                      <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                             <div class="timeline-date" data-key="edu-date2">2023 - Presente</div>
                             <h3 data-key="edu-title2">Pós-Doutorado</h3>
@@ -735,7 +807,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                             <div class="timeline-date" data-key="edu-date3">2022 - 2023</div>
                             <h3 data-key="edu-title3">Pós-Doutorado</h3>
@@ -747,7 +821,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=E" alt="Logo Embrapa" class="institution-logo">
+                        <div class="institution-logo">
+                            <svg viewBox="0 0 100 40"><text x="50" y="25" text-anchor="middle" font-size="12" fill="var(--text)" font-family="Arial, sans-serif" font-weight="bold">EMBRAPA</text></svg>
+                        </div>
                         <div>
                             <div class="timeline-date">2022</div>
                             <h3 data-key="edu-title4">Pós-Doutorado</h3>
@@ -759,7 +835,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                              <div class="timeline-date">2018 - 2022</div>
                             <h3 data-key="edu-title5">Doutorado em Genética e Melhoramento</h3>
@@ -771,7 +849,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                             <div class="timeline-date">2016 - 2018</div>
                             <h3 data-key="edu-title6">Mestrado em Genética e Melhoramento</h3>
@@ -783,7 +863,9 @@
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
                     <div class="timeline-header">
-                        <img src="https://placehold.co/40x40/1e293b/94a3b8?text=UFV" alt="Logo UFV" class="institution-logo">
+                        <div class="institution-logo">
+                           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.012 2.212L24 9.3v1.888l-11.988 7.088L0 11.188V9.3l12.012-7.088zm-1.112 8.075l-8.613-5.075-2.25 1.325L10.9 11.625v6.1l2.25 1.338v-7.438l8.6-5.075 2.25-1.325L13.125 10.287v7.438l-2.225-1.325v-6.1z"></path></svg>
+                        </div>
                         <div>
                             <div class="timeline-date">2010 - 2015</div>
                             <h3 data-key="edu-title7">Graduação em Agronomia</h3>
@@ -821,24 +903,24 @@
                 </div>
                 <div class="scholar-metrics">
                     <div class="metric-item">
-                        <div class="metric-label">Citações</div>
+                        <div class="metric-label" data-key="metric-label-citations">Citações</div>
                         <div>
-                            <span class="metric-value" id="cit-total">—</span> <span>TODOS</span> /
-                            <span class="metric-value-period" id="cit-period">—</span> <span>DESDE 2020</span>
+                            <span class="metric-value" id="cit-total">—</span> <span data-key="metric-all">TODOS</span> /
+                            <span class="metric-value-period" id="cit-period">—</span> <span data-key="metric-since">DESDE 2020</span>
                         </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Índice h</div>
+                        <div class="metric-label" data-key="metric-label-h-index">Índice h</div>
                         <div>
-                            <span class="metric-value" id="h-total">—</span> <span>TODOS</span> /
-                            <span class="metric-value-period" id="h-period">—</span> <span>DESDE 2020</span>
+                            <span class="metric-value" id="h-total">—</span> <span data-key="metric-all">TODOS</span> /
+                            <span class="metric-value-period" id="h-period">—</span> <span data-key="metric-since">DESDE 2020</span>
                         </div>
                     </div>
                     <div class="metric-item">
-                        <div class="metric-label">Índice i10</div>
+                        <div class="metric-label" data-key="metric-label-i10-index">Índice i10</div>
                         <div>
-                            <span class="metric-value" id="i10-total">—</span> <span>TODOS</span> /
-                            <span class="metric-value-period" id="i10-period">—</span> <span>DESDE 2020</span>
+                            <span class="metric-value" id="i10-total">—</span> <span data-key="metric-all">TODOS</span> /
+                            <span class="metric-value-period" id="i10-period">—</span> <span data-key="metric-since">DESDE 2020</span>
                         </div>
                     </div>
                 </div>
@@ -891,15 +973,33 @@
 
         <section id="habilidades" class="section">
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
-            <div class="skills-container stagger-children">
-                <span class="skill-tag reveal" data-skill="python" data-key="skill1" data-tooltip="Pandas, Scikit-learn, TensorFlow">Python</span>
-                <span class="skill-tag reveal" data-skill="r" data-key="skill2" data-tooltip="Tidyverse, Caret, Shiny">R</span>
-                <span class="skill-tag reveal" data-skill="genes" data-key="skill8" data-tooltip="Análise de variância, Modelos Biométricos, Análise Multivariada">Software GENES</span>
-                <span class="skill-tag reveal" data-skill="machine learning" data-key="skill3" data-tooltip="Modelos Preditivos, Inferência">Machine Learning & Estatística</span>
-                <span class="skill-tag reveal" data-skill="genomic selection" data-key="skill4" data-tooltip="GWS, GWAS">Seleção Genômica</span>
-                <span class="skill-tag reveal" data-skill="mixed models" data-key="skill5" data-tooltip="LMM, GLMM">Modelos Mistos & Biometria</span>
-                <span class="skill-tag reveal" data-skill="git" data-key="skill6" data-tooltip="Git, GitHub, Docker">Reprodutibilidade</span>
-                <span class="skill-tag reveal" data-skill="data visualization" data-key="skill7" data-tooltip="Plotly, ggplot2, Shiny">Visualização de Dados</span>
+            <div class="skills-grid">
+                <div class="skill-category reveal stagger-children">
+                    <h3 data-key="skills-cat-1">Linguagens & Desenvolvimento</h3>
+                    <div class="skill-item" data-level="98%"><span class="skill-name" data-key="skill-name-r">R</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="78%"><span class="skill-name" data-key="skill-name-python">Python</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="40%"><span class="skill-name" data-key="skill-name-html">HTML & CSS</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                </div>
+                <div class="skill-category reveal stagger-children">
+                    <h3 data-key="skills-cat-2">Análise & Modelagem</h3>
+                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-eda">Análise Exploratória de Dados (EDA)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-ml">Machine Learning</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="75%"><span class="skill-name" data-key="skill-name-deep-learning">Deep Learning (Keras/TF)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                </div>
+                <div class="skill-category reveal stagger-children">
+                    <h3 data-key="skills-cat-3">Genômica & Bioinformática</h3>
+                    <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-quant-gen">Genética Quantitativa</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-mixed-models">Modelos Mistos & Biometria</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="85%"><span class="skill-name" data-key="skill-name-genomic-sel">Seleção Genômica</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="80%"><span class="skill-name" data-key="skill-name-bioinfo">Bioinformática</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                </div>
+                <div class="skill-category reveal stagger-children">
+                    <h3 data-key="skills-cat-4">Ferramentas & Plataformas</h3>
+                    <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genes">Software GENES</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="80%"><span class="skill-name" data-key="skill-name-dataviz">Visualização de Dados</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="70%"><span class="skill-name" data-key="skill-name-shiny">Aplicações Interativas (Shiny)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="85%"><span class="skill-name" data-key="skill-name-git">Git & GitHub</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                </div>
             </div>
         </section>
 
@@ -1015,11 +1115,30 @@
                 });
             }, { threshold: 0.1 });
             document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            
+            const skillObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        const level = entry.target.dataset.level;
+                        const bar = entry.target.querySelector('.skill-bar');
+                        if (bar && level) {
+                            bar.style.setProperty('--proficiency-level', level);
+                        }
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            document.querySelectorAll('.skill-item').forEach(el => {
+                skillObserver.observe(el);
+            });
+
             document.querySelectorAll('.stagger-children').forEach(container => {
-                container.querySelectorAll('.reveal').forEach((child, index) => {
+                container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
                     child.style.setProperty('--stagger-index', index);
                 });
             });
+
             const mutationObserver = new MutationObserver((mutationsList) => {
                 mutationsList.forEach(mutation => mutation.addedNodes.forEach(node => {
                     if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.reveal'))) {
@@ -1046,38 +1165,6 @@
                     }
                 }
             });
-
-            // --- Lógica de Filtragem de Habilidades ---
-            const skillsContainer = document.querySelector('.skills-container');
-            const projectsList = document.getElementById('projects-list');
-            skillsContainer.addEventListener('click', function(event) {
-                const skillTag = event.target.closest('.skill-tag');
-                if (!skillTag) return;
-
-                const selectedSkill = skillTag.dataset.skill;
-                const isActive = skillTag.classList.contains('active');
-                
-                skillsContainer.querySelectorAll('.skill-tag').forEach(tag => tag.classList.remove('active'));
-
-                if (!isActive) {
-                    skillTag.classList.add('active');
-                }
-
-                const projectCards = projectsList.querySelectorAll('.project-card');
-                projectCards.forEach(card => {
-                    const cardTags = card.dataset.tags || '';
-                    if (isActive) {
-                        card.classList.remove('filtered-out');
-                    } else {
-                        if (cardTags.includes(selectedSkill)) {
-                            card.classList.remove('filtered-out');
-                        } else {
-                            card.classList.add('filtered-out');
-                        }
-                    }
-                });
-            });
-
 
             // --- Highlight do Link de Navegação Ativo ---
             const sections = document.querySelectorAll('main > section[id]');
@@ -1223,7 +1310,8 @@
                 'publications-title': 'Publicações e Citações',
                 'publications-intro': 'Minhas publicações refletem um compromisso contínuo com a inovação científica. Cada artigo representa um esforço para desenvolver e aplicar metodologias que não apenas avançam o conhecimento teórico, mas também oferecem soluções práticas e eficientes para os desafios do agronegócio.',
                 'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
-                'scholar-total-citations': 'Total de Citações', 'scholar-h-index': 'Índice h', 'scholar-i10-index': 'Índice i10', 'scholar-view-profile': 'Ver Perfil Completo →',
+                'scholar-view-profile': 'Ver Perfil Completo →',
+                'metric-label-citations': 'Citações', 'metric-all': 'TODOS', 'metric-since': 'DESDE 2020', 'metric-label-h-index': 'Índice h', 'metric-label-i10-index': 'Índice i10',
                 'pub-read': 'Ver publicação →',
                 'education-title': 'Formação Acadêmica',
                 'edu-date1': '2023 - Presente', 'edu-title1': 'Doutorado em Estatística Aplicada e Biometria', 'edu-desc1': 'Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.',
@@ -1250,8 +1338,11 @@
                 'conecta-item2': 'Implementação de pipelines de seleção genômica',
                 'conecta-item3': 'Capacitação e treinamentos em R e Python',
                 'skills-title': 'Habilidades Técnicas',
-                'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Estatística', 'skill4': 'Seleção Genômica', 'skill5': 'Modelos Mistos & Biometria', 'skill6': 'Reprodutibilidade', 'skill7': 'Visualização de Dados',
-                'skill8': 'Software GENES',
+                'skills-cat-1': 'Linguagens & Desenvolvimento', 'skills-cat-2': 'Análise & Modelagem', 'skills-cat-3': 'Genômica & Bioinformática', 'skills-cat-4': 'Ferramentas & Plataformas',
+                'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Genética Quantitativa',
+                'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Modelos Mistos & Biometria', 'skill-name-genomic-sel': 'Seleção Genômica',
+                'skill-name-multivariate': 'Análise Multivariada', 'skill-name-genes': 'Software GENES', 'skill-name-dataviz': 'Visualização de Dados', 'skill-name-git': 'Git & GitHub',
+                'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Aplicações Interativas (Shiny)', 'skill-name-eda': 'Análise Exploratória (EDA)', 'skill-name-bioinfo': 'Bioinformática',
                 'contact-title': 'Contato',
                 'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.',
                 'contact-other': 'Redes Sociais e Perfis',
@@ -1286,7 +1377,8 @@
                 'publications-title': 'Publications and Citations',
                 'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.',
                 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
-                'scholar-total-citations': 'Total Citations', 'scholar-h-index': 'h-index', 'scholar-i10-index': 'i10-index', 'scholar-view-profile': 'View Full Profile →',
+                'scholar-view-profile': 'View Full Profile →',
+                'metric-label-citations': 'Citations', 'metric-all': 'ALL', 'metric-since': 'SINCE 2020', 'metric-label-h-index': 'h-index', 'metric-label-i10-index': 'i10-index',
                 'pub-read': 'View publication →',
                 'education-title': 'Education',
                 'edu-date1': '2023 - Present', 'edu-title1': 'PhD in Applied Statistics and Biometrics', 'edu-desc1': 'Application of advanced statistical methods and biometric techniques to challenges in plant breeding.',
@@ -1313,8 +1405,11 @@
                 'conecta-item2': 'Implementation of genomic selection pipelines',
                 'conecta-item3': 'Training and workshops in R and Python',
                 'skills-title': 'Technical Skills',
-                'skill1': 'Python', 'skill2': 'R', 'skill3': 'Machine Learning & Statistics', 'skill4': 'Genomic Selection', 'skill5': 'Mixed Models & Biometrics', 'skill6': 'Reproducibility', 'skill7': 'Data Visualization',
-                'skill8': 'GENES Software',
+                'skills-cat-1': 'Languages & Development', 'skills-cat-2': 'Analysis & Modeling', 'skills-cat-3': 'Genomics & Bioinformatics', 'skills-cat-4': 'Tools & Platforms',
+                'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Quantitative Genetics',
+                'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Mixed Models & Biometrics', 'skill-name-genomic-sel': 'Genomic Selection',
+                'skill-name-multivariate': 'Multivariate Analysis', 'skill-name-genes': 'GENES Software', 'skill-name-dataviz': 'Data Visualization', 'skill-name-git': 'Git & GitHub',
+                'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Interactive Apps (Shiny)', 'skill-name-eda': 'Exploratory Data Analysis (EDA)', 'skill-name-bioinfo': 'Bioinformatics',
                 'contact-title': 'Contact',
                 'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.',
                 'contact-other': 'Social Media and Profiles',
@@ -1518,7 +1613,8 @@
                         <div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div>
                     </div>
                     <p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p>
-                    <div class="project-meta">
+                    <div class="project-topics"></div>
+                    <div class="project-meta" style="margin-top: auto;">
                         <span class="badge">${escapeHtml(repo.language || '—')}</span>
                         <span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span>
                     </div>
@@ -1532,6 +1628,17 @@
                 card.setAttribute('role', 'listitem');
                 card.dataset.tags = tags.join(',');
                 card.innerHTML = cardHTML;
+
+                const topicsContainer = card.querySelector('.project-topics');
+                if (topicsContainer && repo.topics && repo.topics.length > 0) {
+                    repo.topics.slice(0, 4).forEach(topic => { // Limita a 4 tópicos para não poluir
+                        const tag = document.createElement('span');
+                        tag.className = 'topic-tag';
+                        tag.textContent = topic;
+                        topicsContainer.appendChild(tag);
+                    });
+                }
+
                 return card;
             }
             
@@ -1613,13 +1720,11 @@
                 }
             }
             
-            // FUNÇÃO ATUALIZADA PARA GRÁFICO DE BOLHAS (3 EIXOS VISUAIS) E LINHA DE TENDÊNCIA
             function renderInteractiveChart(graphData, articles) {
                 const containerId = 'interactive-scholar-chart-container';
                 const container = document.getElementById(containerId);
                 if (!container || typeof Plotly === 'undefined') return;
 
-                // 1. Processar e agregar dados anuais
                 const yearlyData = {};
                 (graphData || []).forEach(item => {
                     yearlyData[item.year] = { citations: item.citations || 0, pubs: 0, topPubTitle: '', topPubCites: -1 };
@@ -1642,36 +1747,31 @@
 
                 const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
                 
-                // 2. Preparar dados para o Plotly
                 const years = sortedYears;
                 const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
                 const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
                 const maxPubs = Math.max(...pubCounts, 1);
-                const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); // Escala de tamanho mais limpa
+                const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); 
 
-                // Dados customizados para o hovertemplate
                 const customData = sortedYears.map(year => ({
                     pubs: yearlyData[year].pubs || 0,
                     topPub: yearlyData[year].topPubTitle || "N/A"
                 }));
 
-                // 3. Definir as traces (séries de dados)
                 const traceBubbles = {
                     x: years,
                     y: citCounts,
                     customdata: customData,
-                    // Template para o tooltip, mais profissional e customizável
                     hovertemplate: 
                         '<b>Ano: %{x}</b><br><br>' +
                         'Citações recebidas: <b>%{y}</b><br>' +
                         'Publicações no ano: <b>%{customdata.pubs}</b><br>' +
-                        '<extra></extra>', // <extra> remove a caixa de trace
+                        '<extra></extra>',
                     mode: 'markers',
                     marker: {
                         size: scaledPubCounts,
                         color: pubCounts,
-                        // Paleta de cores mais elegante, alinhada com a identidade visual do site
-                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], // Do primário transparente ao opaco
+                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']],
                         showscale: true,
                         colorbar: {
                             title: 'Nº de Pubs',
@@ -1679,15 +1779,10 @@
                             len: 0.9,
                             x: 1.02,
                             xanchor: 'left',
-                            tickfont: {
-                                color: 'var(--text-muted)'
-                            },
-                            titlefont: {
-                                color: 'var(--text-muted)'
-                            },
+                            tickfont: { color: 'var(--text-muted)' },
+                            titlefont: { color: 'var(--text-muted)' },
                             outlinecolor: 'var(--border)',
                         },
-                        // Adiciona uma borda sutil às bolhas
                         line: {
                             color: 'var(--primary-dark)',
                             width: 1
@@ -1701,7 +1796,6 @@
                     y: citCounts,
                     type: 'scatter',
                     mode: 'lines',
-                    // Linha suavizada (spline) para uma aparência mais fluida
                     line: {
                         color: 'var(--accent)', 
                         width: 2,
@@ -1715,7 +1809,6 @@
                 
                 const data = [traceBubbles, traceLine];
 
-                // 4. Configurar o layout do gráfico com um toque mais profissional
                 const layout = {
                     title: {
                         text: '<b>Evolução da Produção Científica e Impacto</b>',
@@ -1723,10 +1816,7 @@
                         xanchor: 'left',
                         y: 0.95,
                         yanchor: 'top',
-                        font: {
-                            size: 18,
-                            color: 'var(--text)'
-                        }
+                        font: { size: 18, color: 'var(--text)' }
                     },
                     paper_bgcolor: 'transparent',
                     plot_bgcolor: 'transparent',
@@ -1751,9 +1841,7 @@
                         showline: true,
                         linecolor: 'var(--border)',
                     },
-                    legend: {
-                        orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1
-                    },
+                    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
                     margin: { l: 80, r: 40, b: 80, t: 80 },
                     hovermode: 'closest',
                     showlegend: false,
@@ -1764,17 +1852,15 @@
 
                 Plotly.newPlot(containerId, data, layout, config);
                 
-                // 5. Manter o evento de clique
                 const chartDiv = document.getElementById(containerId);
                 chartDiv.on('plotly_click', function(data) {
                     if (data.points.length > 0) {
                         const point = data.points[0];
                         const yearClicked = parseInt(point.x);
 
-                        // Adiciona um feedback visual ao clicar
                         Plotly.Fx.animate(containerId, {
                             data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }],
-                            traces: [0] // Anima apenas a trace de bolhas
+                            traces: [0]
                         }, {
                             transition: { duration: 300, easing: 'cubic-in-out' },
                             frame: { duration: 300 }
@@ -1836,7 +1922,7 @@
                         document.querySelector(".scholar-link a").href = profile.author_url;
                     }
                     if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
-                         citationGraphData = profile.cited_by.graph; // Armazena os dados para o gráfico
+                         citationGraphData = profile.cited_by.graph;
                     }
                 } catch (e) {
                     console.error("Erro ao atualizar seção do Scholar:", e);
@@ -1968,7 +2054,6 @@
                     allArticles = await fetchAllScholarArticles();
                     allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
                     renderPublications();
-                    // Chama a função do gráfico aqui, quando todos os dados estiverem disponíveis
                     renderInteractiveChart(citationGraphData, allArticles);
                 } catch (e) {
                     console.error("Erro ao atualizar publicações:", e);
@@ -1977,7 +2062,6 @@
                 }
             }
 
-            // NEW: Function to manage the filter UI
             function updateFilterUI() {
                 const controlsContainer = document.querySelector('#publicacoes .controls');
                 let filterChip = document.getElementById('year-filter-chip');
@@ -2023,7 +2107,6 @@
                 pubClearBtn.addEventListener('click', () => {
                     pubSearchInput.value = '';
                     showingPubsCount = 3;
-                    // Also clear year filter if active
                     if (activeYearFilter) {
                         activeYearFilter = null;
                         updateFilterUI();
@@ -2301,7 +2384,7 @@
                 });
 
                 addSectionTitle(pdfTranslations['skills-title']);
-                const skills = Array.from(document.querySelectorAll('#habilidades .skill-tag')).map(el => el.textContent);
+                const skills = Array.from(document.querySelectorAll('#habilidades .skill-name')).map(el => translations[currentLang][el.dataset.key]);
                 addBulletedList(skills);
                 y+= 10;
 
