@@ -36,6 +36,7 @@
             --border: rgba(148, 163, 184, 0.1);
             --glow: rgba(16, 185, 129, 0.5);
             --glass: rgba(255, 255, 255, 0.03);
+            --error: #f44336;
         }
 
         html {
@@ -307,12 +308,11 @@
             background: var(--primary); border-radius: 50%; box-shadow: 0 0 20px var(--glow); transition: transform 0.3s ease; }
         .timeline-item:hover .timeline-dot { transform: scale(1.5); }
         
-        /* Apply card styles to timeline-content but keep original padding */
         .timeline-content {
              padding: 20px;
         }
         .timeline-content.card {
-            padding: 25px; /* Overwrite if card class is present */
+            padding: 25px; 
         }
 
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
@@ -446,7 +446,7 @@
             .contact-container { grid-template-columns: 2fr 1fr; }
         }
         .contact-form { display: flex; flex-direction: column; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; }
+        .form-group { display: flex; flex-direction: column; position: relative; }
         .form-group label { color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem; }
         .form-group input, .form-group textarea {
             background-color: var(--glass);
@@ -461,6 +461,15 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 10px var(--glow);
+        }
+        .form-group input.error, .form-group textarea.error {
+            border-color: var(--error);
+        }
+        .error-message {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
         }
         .form-group textarea { resize: vertical; min-height: 120px; }
         #form-status { margin-top: 10px; text-align: center; }
@@ -605,8 +614,7 @@
             opacity: 0.3;
             transform: scale(0.95);
         }
-        .project-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 50px rgba(16, 185, 129, 0.3);
-            border-color: var(--primary); }
+        
         .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
         .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
         .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem }
@@ -995,21 +1003,25 @@
                     <div class="form-group">
                         <label for="name" data-key="form-name">Nome</label>
                         <input type="text" id="name" name="name" required data-key-placeholder="form-name-ph">
+                        <span class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="email" data-key="form-email">Email</label>
                         <input type="email" id="email" name="email" required data-key-placeholder="form-email-ph">
+                        <span class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="subject" data-key="form-subject">Assunto</label>
                         <input type="text" id="subject" name="subject" required data-key-placeholder="form-subject-ph">
+                        <span class="error-message"></span>
                     </div>
                     <div class="form-group">
                         <label for="message" data-key="form-message">Mensagem</label>
                         <textarea id="message" name="message" required data-key-placeholder="form-message-ph"></textarea>
+                        <span class="error-message"></span>
                     </div>
                     <button type="submit" class="link-btn" data-key="form-submit">Enviar Mensagem</button>
-                    <p id="form-status"></p>
+                    <p id="form-status" aria-live="polite"></p>
                 </form>
 
                 <aside class="contact-links-aside">
@@ -1203,40 +1215,6 @@
                     }
                 }, { passive: true });
             }
-
-            // --- Lógica do Formulário de Contato ---
-            const form = document.getElementById("contact-form");
-            const status = document.getElementById("form-status");
-            async function handleSubmit(event) {
-                event.preventDefault();
-                const data = new FormData(event.target);
-                status.textContent = translations[currentLang].formSending;
-                status.style.color = 'var(--accent)';
-                fetch(event.target.action, {
-                    method: form.method,
-                    body: data,
-                    headers: { 'Accept': 'application/json' }
-                }).then(response => {
-                    if (response.ok) {
-                        status.textContent = translations[currentLang].formSuccess;
-                        status.style.color = 'var(--primary)';
-                        form.reset();
-                    } else {
-                        response.json().then(data => {
-                            if (Object.hasOwn(data, 'errors')) {
-                                status.textContent = data["errors"].map(error => error["message"]).join(", ");
-                            } else {
-                                status.textContent = translations[currentLang].formError;
-                            }
-                            status.style.color = '#f44336';
-                        })
-                    }
-                }).catch(error => {
-                    status.textContent = translations[currentLang].formError;
-                    status.style.color = '#f44336';
-                });
-            }
-            form.addEventListener("submit", handleSubmit);
             
             // --- Copiar Email ---
             document.getElementById('copy-email-link').addEventListener('click', function(event) {
@@ -1312,9 +1290,9 @@
                 'exp-title4': 'Pipelines Reprodutíveis', 'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.',
                 'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
                 'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
-                'projects-title': 'Projetos',
+                'projects-title': 'Projetos & Repositórios',
                 'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
-                'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Destaques', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
+                'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Projetos em Destaque', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
                 'licae-desc': 'O LICAE é um laboratório multidisciplinar dedicado a propor, avaliar e aplicar técnicas de Inteligência Computacional e Aprendizado Estatístico para solucionar problemas complexos na Agropecuária. Nosso objetivo é aperfeiçoar e complementar as metodologias biométricas tradicionais, desenvolvendo projetos inovadores em áreas como Redes Neurais, Seleção Genômica e Random Forest.',
                 'licae-item1': 'Pesquisa em redes neurais e seleção genômica', 'licae-item2': 'Desenvolvimento de modelos preditivos', 'licae-item3': 'Colaboração em projetos multidisciplinares',
                 'conecta-desc': 'A Conecta GEM nasceu da paixão por compartilhar conhecimento. Somos uma iniciativa que oferece capacitação, consultorias e mentorias de excelência em estatística, genética e melhoramento. Com coordenadores especialistas e uma metodologia focada no aprendizado individual, já qualificamos mais de mil pessoas, conectando a teoria da universidade com a prática do mercado.',
@@ -1330,10 +1308,10 @@
                 'contact-title': 'Contato',
                 'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.',
                 'contact-other': 'Redes Sociais e Perfis',
-                'form-name': 'Nome', 'form-name-ph': 'Seu nome completo',
-                'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com',
-                'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem',
-                'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...',
+                'form-name': 'Nome', 'form-name-ph': 'Seu nome completo', 'form-name-error': 'Por favor, insira seu nome.',
+                'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com', 'form-email-error': 'Por favor, insira um email válido.',
+                'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem', 'form-subject-error': 'Por favor, insira um assunto.',
+                'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...', 'form-message-error': 'Por favor, escreva uma mensagem.',
                 'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Obrigado! Sua mensagem foi enviada.', 'formError': 'Ocorreu um erro. Tente novamente.',
                 'download-cv': 'Baixar Currículo (PDF)',
                 'fetching_repos': 'Buscando repositórios...',
@@ -1346,6 +1324,9 @@
                 'footer-license-text': 'Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.',
                 'footer-update-text': 'Última atualização:',
                 'footer-location': 'Viçosa - Minas Gerais - Brasil',
+                'tech-stack': 'Tecnologias',
+                'project-problem': 'O Problema',
+                'all-topics': 'Todos',
             },
             en: {
                 'subtitle-1': 'Genetics & Statistics Researcher',
@@ -1383,9 +1364,9 @@
                 'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.',
                 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
                 'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
-                'projects-title': 'Projects',
+                'projects-title': 'Projects & Repositories',
                 'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.',
-                'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured', 'show-more': 'Show more', 'show-less': 'Show less',
+                'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured Projects', 'show-more': 'Show more', 'show-less': 'Show less',
                 'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.',
                 'licae-item1': 'Research on neural networks and genomic selection', 'licae-item2': 'Development of predictive models', 'licae-item3': 'Collaboration in multidisciplinary projects',
                 'conecta-desc': 'At Conecta GEM, my mission is to serve as a bridge between academia and the market, translating cutting-edge research into AgTech solutions that generate real value for producers and companies in the sector.',
@@ -1401,10 +1382,10 @@
                 'contact-title': 'Contact',
                 'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.',
                 'contact-other': 'Social Media and Profiles',
-                'form-name': 'Name', 'form-name-ph': 'Your full name',
-                'form-email': 'Email', 'form-email-ph': 'your.email@example.com',
-                'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message',
-                'form-message': 'Message', 'form-message-ph': 'Write your message here...',
+                'form-name': 'Name', 'form-name-ph': 'Your full name', 'form-name-error': 'Please enter your name.',
+                'form-email': 'Email', 'form-email-ph': 'your.email@example.com', 'form-email-error': 'Please enter a valid email address.',
+                'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message', 'form-subject-error': 'Please enter a subject.',
+                'form-message': 'Message', 'form-message-ph': 'Write your message here...', 'form-message-error': 'Please write a message.',
                 'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Thank you! Your message has been sent.', 'formError': 'An error occurred. Please try again.',
                 'download-cv': 'Download CV (PDF)',
                 'fetching_repos': 'Fetching repositories...',
@@ -1417,6 +1398,9 @@
                 'footer-license-text': 'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.',
                 'footer-update-text': 'Last updated:',
                 'footer-location': 'Viçosa - Minas Gerais - Brazil',
+                 'tech-stack': 'Tech Stack',
+                'project-problem': 'The Problem',
+                'all-topics': 'All',
             },
             pdf: {
                 pt: {
@@ -1681,7 +1665,143 @@
         })();
     </script>
     <script>
-        // --- Script para buscar publicações do Google Scholar ---
+        // --- Script para buscar publicações do Google Scholar e validação de formulário ---
+        (function() {
+             // --- Lógica do Formulário de Contato com Validação ---
+            const form = document.getElementById("contact-form");
+            form.addEventListener("submit", async function handleSubmit(event) {
+                event.preventDefault();
+                const status = document.getElementById("form-status");
+                
+                if (!validateForm()) {
+                    status.textContent = '';
+                    return;
+                }
+
+                const data = new FormData(event.target);
+                status.textContent = translations[currentLang].formSending;
+                status.style.color = 'var(--accent)';
+                
+                try {
+                    const response = await fetch(event.target.action, {
+                        method: form.method,
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    
+                    if (response.ok) {
+                        status.textContent = translations[currentLang].formSuccess;
+                        status.style.color = 'var(--primary)';
+                        form.reset();
+                    } else {
+                        const responseData = await response.json();
+                        if (Object.hasOwn(responseData, 'errors')) {
+                            status.textContent = responseData["errors"].map(error => error["message"]).join(", ");
+                        } else {
+                            status.textContent = translations[currentLang].formError;
+                        }
+                        status.style.color = 'var(--error)';
+                    }
+                } catch (error) {
+                    status.textContent = translations[currentLang].formError;
+                    status.style.color = 'var(--error)';
+                }
+            });
+
+            function validateForm() {
+                let isValid = true;
+                const name = document.getElementById('name');
+                const email = document.getElementById('email');
+                const subject = document.getElementById('subject');
+                const message = document.getElementById('message');
+
+                if (name.value.trim() === '') {
+                    showError(name, translations[currentLang]['form-name-error']);
+                    isValid = false;
+                } else {
+                    clearError(name);
+                }
+
+                if (!isValidEmail(email.value.trim())) {
+                    showError(email, translations[currentLang]['form-email-error']);
+                    isValid = false;
+                } else {
+                    clearError(email);
+                }
+
+                if (subject.value.trim() === '') {
+                    showError(subject, translations[currentLang]['form-subject-error']);
+                    isValid = false;
+                } else {
+                    clearError(subject);
+                }
+
+                if (message.value.trim() === '') {
+                    showError(message, translations[currentLang]['form-message-error']);
+                    isValid = false;
+                } else {
+                    clearError(message);
+                }
+
+                return isValid;
+            }
+
+            function showError(input, message) {
+                const formGroup = input.parentElement;
+                const errorDisplay = formGroup.querySelector('.error-message');
+                input.classList.add('error');
+                errorDisplay.textContent = message;
+                errorDisplay.style.display = 'block';
+            }
+
+            function clearError(input) {
+                const formGroup = input.parentElement;
+                const errorDisplay = formGroup.querySelector('.error-message');
+                input.classList.remove('error');
+                errorDisplay.textContent = '';
+                errorDisplay.style.display = 'none';
+            }
+
+            function isValidEmail(email) {
+                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                return re.test(String(email).toLowerCase());
+            }
+
+            // --- Animação de Contagem ---
+            function animateCountUp(el) {
+                const target = parseInt(el.textContent, 10);
+                if (isNaN(target)) return;
+                el.textContent = '0';
+                let current = 0;
+                const increment = Math.max(1, Math.ceil(target / 100));
+                const duration = 1500;
+                const stepTime = Math.abs(Math.floor(duration / (target/increment)));
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        current = target;
+                        clearInterval(timer);
+                    }
+                    el.textContent = current;
+                }, stepTime);
+            }
+
+            const metricsObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const metrics = entry.target.querySelectorAll('.metric-value, .metric-value-period');
+                        metrics.forEach(metric => animateCountUp(metric));
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.8 });
+            const metricsContainer = document.querySelector('.scholar-metrics');
+            if (metricsContainer) {
+                metricsObserver.observe(metricsContainer);
+            }
+        })();
+
         window.scholarScript = (function() {
             const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1";
             const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
@@ -1689,8 +1809,8 @@
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = [];
             let showingPubsCount = 3;
-            let citationGraphData = []; // Store graph data to pass to chart function
-            let activeYearFilter = null; // NEW: To store the currently filtered year
+            let citationGraphData = []; 
+            let activeYearFilter = null; 
 
             async function fetchFromSerpApi(params) {
                 const baseUrl = 'https://serpapi.com/search.json';
@@ -1845,7 +1965,6 @@
 
                 Plotly.newPlot(containerId, data, layout, config);
                 
-                // Add mousemove listener to propagate hover effect to parent card
                 const plotContainer = document.getElementById(containerId);
                 if (plotContainer) {
                     plotContainer.addEventListener('mousemove', e => {
