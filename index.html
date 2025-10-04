@@ -251,7 +251,6 @@
         .card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px;
             backdrop-filter: blur(10px); transition: all 0.3s ease; position: relative; overflow: hidden;
-            text-align: justify;
         }
         .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; text-align: left;}
         .card p { color: var(--text-muted); line-height: 1.6; }
@@ -273,6 +272,8 @@
             border-color: rgba(16, 185, 129, 0.4);
             box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2);
         }
+        #experiencia .card { text-align: justify; }
+
         .icon { 
             font-size: 2rem; 
             margin-bottom: 15px; 
@@ -305,8 +306,15 @@
         .timeline-dot { position: absolute; left: 24px; top: 15px; width: 14px; height: 14px;
             background: var(--primary); border-radius: 50%; box-shadow: 0 0 20px var(--glow); transition: transform 0.3s ease; }
         .timeline-item:hover .timeline-dot { transform: scale(1.5); }
-        .timeline-content { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
-            padding: 20px; backdrop-filter: blur(10px); }
+        
+        /* Apply card styles to timeline-content but keep original padding */
+        .timeline-content {
+             padding: 20px;
+        }
+        .timeline-content.card {
+            padding: 25px; /* Overwrite if card class is present */
+        }
+
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
         .timeline-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
         .timeline-details {
@@ -348,10 +356,11 @@
             margin: 30px auto 0;
         }
 
+        .feature-section.card {
+             padding: 40px;
+        }
         .feature-section {
             display: grid; grid-template-columns: 1fr; gap: 40px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-            border: 1px solid var(--border); border-radius: 20px; padding: 40px;
         }
         @media(min-width: 768px) { .feature-section { grid-template-columns: auto 1fr; align-items: center; text-align: left;} }
         .feature-logo { font-size: 5rem; line-height: 1; text-align: center; }
@@ -367,6 +376,9 @@
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 40px;
             margin-top: 20px;
+        }
+        .skill-category.card {
+            padding: 25px;
         }
         .skill-category h3 {
             color: var(--primary);
@@ -770,7 +782,7 @@
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
-                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                             <div class="timeline-date" data-key="edu-date1">2023 - Presente</div>
@@ -781,7 +793,7 @@
                     <div class="timeline-details" data-key="edu-desc1"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                      <div class="timeline-header">
                         <div>
                             <div class="timeline-date" data-key="edu-date2">2023 - Presente</div>
@@ -792,7 +804,7 @@
                     <div class="timeline-details" data-key="edu-desc2"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                             <div class="timeline-date" data-key="edu-date3">2022 - 2023</div>
@@ -803,7 +815,7 @@
                     <div class="timeline-details" data-key="edu-desc3"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                             <div class="timeline-date">2022</div>
@@ -814,7 +826,7 @@
                     <div class="timeline-details" data-key="edu-desc4"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                              <div class="timeline-date">2018 - 2022</div>
@@ -825,7 +837,7 @@
                     <div class="timeline-details" data-key="edu-desc5"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                             <div class="timeline-date">2016 - 2018</div>
@@ -836,7 +848,7 @@
                     <div class="timeline-details" data-key="edu-desc6"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content">
+                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
                         <div>
                             <div class="timeline-date">2010 - 2015</div>
@@ -917,7 +929,7 @@
         </section>
         
         <section id="licae-conecta" class="section">
-             <div class="feature-section reveal">
+             <div class="feature-section reveal card">
                 <div class="feature-logo" role="img" aria-label="Cérebro">🧠</div>
                 <div class="feature-content">
                     <h3>Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</h3>
@@ -929,7 +941,7 @@
                     </ul>
                 </div>
             </div>
-             <div class="feature-section reveal" style="margin-top: 40px;">
+             <div class="feature-section reveal card" style="margin-top: 40px;">
                 <div class="feature-logo" role="img" aria-label="Foguete">🚀</div>
                 <div class="feature-content">
                     <h3>Conecta GEM</h3>
@@ -946,26 +958,26 @@
         <section id="habilidades" class="section">
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-grid">
-                <div class="skill-category reveal stagger-children">
+                <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-1">Linguagens & Desenvolvimento</h3>
                     <div class="skill-item" data-level="98%"><span class="skill-name" data-key="skill-name-r">R</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="78%"><span class="skill-name" data-key="skill-name-python">Python</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="40%"><span class="skill-name" data-key="skill-name-html">HTML & CSS</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
-                <div class="skill-category reveal stagger-children">
+                <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-2">Análise & Modelagem</h3>
                      <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-eda">Análise Exploratória de Dados (EDA)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-ml">Machine Learning</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="75%"><span class="skill-name" data-key="skill-name-deep-learning">Deep Learning (Keras/TF)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
-                <div class="skill-category reveal stagger-children">
+                <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-3">Biometria</h3>
                     <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genomic-sel">Seleção Genômica</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-mixed-models">Modelos Mistos & Biometria</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="88%"><span class="skill-name" data-key="skill-name-quant-gen">Genética Quantitativa</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="80%"><span class="skill-name" data-key="skill-name-bioinfo">Bioinformática</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
-                <div class="skill-category reveal stagger-children">
+                <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-4">Ferramentas & Plataformas</h3>
                     <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genes">Software GENES</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-dataviz">Visualização de Dados</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
@@ -1053,7 +1065,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 13c-2.97 0-5.56-1.61-6.97-4H18.97c-1.41 2.39-4 4-6.97 4z"/></svg>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.99 11.99s-1.03 2.15-2.22 3.54c-1.17 1.36-2.5 2.47-3.77 2.47-1.29 0-2.3-.9-2.3-2.42 0-2.31 2.21-3.1 4.7-3.95 2.2-.75 2.8-.95 2.8-1.57 0-.54-.51-1.06-1.36-1.06-.92 0-1.52.53-1.69.79l-1.38-.94C12.45 8.2 13.5 7.5 14.89 7.5c1.6 0 2.87 1.15 2.87 2.58 0 1.59-.81 2.8-2.37 3.42-1.35.53-2.18.84-2.18 1.43 0 .41.33.74.83.74.53 0 1.15-.53 1.59-.98.6-.64 1.18-1.4 1.18-1.4l1.57.94zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                     </span>
-                    <span>Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.</span>
+                    <span data-key="footer-license-text">Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.</span>
                 </a>
             </div>
             <p>&copy; <span id="copyright-year">2025</span> Weverton Gomes da Costa</p>
@@ -1062,9 +1074,9 @@
                     <path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
                     <path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"/>
                 </svg>
-                <span>Última atualização: <span id="last-updated-date"></span></span>
+                <span><span data-key="footer-update-text">Última atualização:</span> <span id="last-updated-date"></span></span>
             </div>
-            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
+            <p data-key="footer-location" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
         </div>
     </footer>
 
@@ -1331,6 +1343,9 @@
                 'no_repos_found': 'Nenhum repositório encontrado.',
                 'open_btn': 'Abrir', 'copy_btn': 'Copiar link', 'copied_btn': 'Copiado!', 'no_description': 'Sem descrição.', 'updated_at': 'Atualizado:',
                 'chart-title': '<b>Evolução da Produção Científica e Impacto</b>', 'chart-xaxis-title': 'Ano de Publicação', 'chart-yaxis-title': 'Número de Citações Recebidas', 'chart-colorbar-title': 'Nº de Pubs',
+                'footer-license-text': 'Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.',
+                'footer-update-text': 'Última atualização:',
+                'footer-location': 'Viçosa - Minas Gerais - Brasil',
             },
             en: {
                 'subtitle-1': 'Genetics & Statistics Researcher',
@@ -1399,6 +1414,9 @@
                 'no_repos_found': 'No repositories found.',
                 'open_btn': 'Open', 'copy_btn': 'Copy link', 'copied_btn': 'Copied!', 'no_description': 'No description provided.', 'updated_at': 'Updated:',
                 'chart-title': '<b>Evolution of Scientific Production and Impact</b>', 'chart-xaxis-title': 'Year of Publication', 'chart-yaxis-title': 'Number of Citations Received', 'chart-colorbar-title': '# of Pubs',
+                'footer-license-text': 'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.',
+                'footer-update-text': 'Last updated:',
+                'footer-location': 'Viçosa - Minas Gerais - Brazil',
             },
             pdf: {
                 pt: {
