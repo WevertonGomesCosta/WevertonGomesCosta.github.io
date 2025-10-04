@@ -11,8 +11,10 @@
     <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
-    <!-- Bibliotecas para Geração de PDF -->
+    <!-- Bibliotecas para Geração de PDF e Gráficos -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" xintegrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
 
     <style>
         * {
@@ -343,40 +345,8 @@
 
         .scholar-chart-container {
             width: 100%;
-            max-width: 450px;
+            min-height: 450px; /* Garante espaço para o gráfico carregar */
             margin: 30px auto 0;
-        }
-
-        .scholar-chart {
-            width: 100%;
-            overflow: visible;
-        }
-
-        .chart-bar {
-            fill: var(--primary);
-            transform-origin: bottom;
-            transform: scaleY(0);
-            animation: grow 0.8s ease-out forwards;
-            animation-delay: var(--delay);
-        }
-
-        @keyframes grow {
-            to { transform: scaleY(1); }
-        }
-
-        .chart-label, .chart-year {
-            font-size: 11px;
-            fill: var(--text-muted);
-            text-anchor: middle;
-        }
-        .chart-label {
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
-            animation-delay: calc(var(--delay) + 0.5s);
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
         }
 
         .feature-section {
@@ -872,7 +842,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="scholar-chart-container reveal"></div>
+                <!-- NOVO CONTAINER DO GRÁFICO INTERATIVO -->
+                <div id="interactive-scholar-chart-container" class="scholar-chart-container reveal"></div>
                 <div class="scholar-link">
                     <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo
                     </a>
@@ -1618,6 +1589,8 @@
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = [];
             let showingPubsCount = 3;
+            let citationGraphData = []; // Store graph data to pass to chart function
+            let activeYearFilter = null; // NEW: To store the currently filtered year
 
             async function fetchFromSerpApi(params) {
                 const baseUrl = 'https://serpapi.com/search.json';
@@ -1639,39 +1612,148 @@
                     throw error;
                 }
             }
-
-            function renderCitationChart(graphData) {
-                const container = document.querySelector('.scholar-chart-container');
-                if (!container || !graphData || graphData.length === 0) return;
-                container.innerHTML = ''; 
-
-                const maxCitation = Math.max(...graphData.map(d => d.citations));
-                const chartHeight = 100;
-                const barPadding = 15;
-                const barWidth = 35;
+            
+            // FUNÇÃO ATUALIZADA PARA GRÁFICO DE BOLHAS (3 EIXOS VISUAIS) E LINHA DE TENDÊNCIA
+            function renderInteractiveChart(graphData, articles) {
+                const containerId = 'interactive-scholar-chart-container';
+                const container = document.getElementById(containerId);
+                if (!container || typeof Plotly === 'undefined') return;
                 
-                const barsHtml = graphData.map((item, index) => {
-                    const barHeight = item.citations > 0 ? (item.citations / maxCitation) * chartHeight : 0;
-                    const x = index * (barWidth + barPadding);
-                    const y = chartHeight - barHeight;
-                    
-                    return `
-                        <g transform="translate(${x}, 0)" style="--delay: ${index * 100}ms">
-                            <rect class="chart-bar" x="0" y="${y}" width="${barWidth}" height="${barHeight}" rx="3"></rect>
-                            <text class="chart-label" x="${barWidth / 2}" y="${y - 5}">${item.citations}</text>
-                            <text class="chart-year" x="${barWidth / 2}" y="${chartHeight + 15}">${item.year}</text>
-                        </g>
-                    `;
-                }).join('');
+                // 1. Processar e agregar dados anuais
+                const yearlyData = {};
 
-                const chartWidth = graphData.length * (barWidth + barPadding) - barPadding;
+                (graphData || []).forEach(item => {
+                    yearlyData[item.year] = {
+                        citations: item.citations || 0,
+                        pubs: 0,
+                        topPubTitle: '', 
+                        topPubCites: -1
+                    };
+                });
+
+                (articles || []).forEach(article => {
+                    let year = null;
+                    if (article.publication) {
+                        // Pega o último número de 4 dígitos (começando com 19 ou 20) da string, que é o mais provável de ser o ano.
+                        const yearMatches = article.publication.match(/\b(19|20)\d{2}\b/g);
+                        if (yearMatches && yearMatches.length > 0) {
+                            year = parseInt(yearMatches[yearMatches.length - 1]);
+                        }
+                    }
+
+                    if (year && yearlyData[year]) {
+                        yearlyData[year].pubs = (yearlyData[year].pubs || 0) + 1;
+                        
+                        const cites = article.cited_by?.value || 0;
+                        if (cites > (yearlyData[year].topPubCites || -1)) {
+                            yearlyData[year].topPubCites = cites;
+                            yearlyData[year].topPubTitle = article.title;
+                        }
+                    }
+                });
+
+                const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
                 
-                container.innerHTML = `
-                    <svg class="scholar-chart" viewBox="0 0 ${chartWidth} ${chartHeight + 20}" preserveAspectRatio="xMidYMid meet">
-                        ${barsHtml}
-                    </svg>
-                `;
+                // 2. Preparar dados para o Plotly
+                const years = sortedYears;
+                const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
+                const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
+                
+                // Escala para o tamanho das bolhas, para que não fiquem muito grandes ou pequenas
+                const scaledPubCounts = pubCounts.map(p => Math.sqrt(p) * 15 + 8); 
+
+                const hoverTexts = sortedYears.map(year => {
+                    const data = yearlyData[year];
+                    let text = `<b>Ano: ${year}</b><br><br>`;
+                    text += `Publicações: <b>${data.pubs || 0}</b><br>`;
+                    text += `Citações: <b>${data.citations || 0}</b>`;
+                    if(data.topPubTitle) {
+                        text += `<br><br><b><u>Publicação Relevante:</u></b><br>${data.topPubTitle.substring(0, 80)}${data.topPubTitle.length > 80 ? '...' : ''}`;
+                    }
+                    return text;
+                });
+                
+                // 3. Definir as traces (séries de dados)
+                const traceBubbles = {
+                    x: years,
+                    y: citCounts,
+                    text: hoverTexts,
+                    hoverinfo: 'text',
+                    mode: 'markers',
+                    marker: {
+                        size: scaledPubCounts,
+                        color: pubCounts, // Cor baseada no número de publicações
+                        colorscale: [['0.0', '#059669'], ['1.0', '#f59e0b']], // De verde escuro para âmbar
+                        showscale: true,
+                        colorbar: {
+                            title: 'Nº de Pubs',
+                            thickness: 15,
+                            len: 0.75,
+                            x: 1.05,
+                            xanchor: 'left'
+                        }
+                    },
+                    name: 'Impacto Anual'
+                };
+
+                const traceLine = {
+                    x: years,
+                    y: citCounts,
+                    type: 'scatter',
+                    mode: 'lines',
+                    line: {
+                        color: 'rgba(59, 130, 246, 0.5)', // Cor secundária com transparência
+                        width: 2,
+                        dash: 'dash'
+                    },
+                    hoverinfo: 'none',
+                    name: 'Tendência de Citações',
+                    showlegend: false
+                };
+                
+                const data = [traceBubbles, traceLine];
+
+                // 4. Configurar o layout do gráfico
+                const layout = {
+                    title: 'Impacto Anual: Citações vs. Nº de Publicações',
+                    paper_bgcolor: 'transparent',
+                    plot_bgcolor: 'transparent',
+                    font: { color: 'var(--text-muted)', family: 'inherit' },
+                    xaxis: { 
+                        title: 'Ano',
+                        gridcolor: 'var(--border)', 
+                        type: 'category'
+                    },
+                    yaxis: { 
+                        title: 'Total de Citações no Ano', 
+                        gridcolor: 'var(--border)'
+                    },
+                    legend: {
+                        orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1
+                    },
+                    margin: { l: 60, r: 40, b: 60, t: 60, pad: 4 },
+                    hovermode: 'closest',
+                    showlegend: false,
+                    autosize: true
+                };
+
+                const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['select2d', 'lasso2d', 'pan2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
+
+                Plotly.newPlot(containerId, data, layout, config);
+                
+                // 5. Adicionar evento de clique
+                const chartDiv = document.getElementById(containerId);
+                chartDiv.on('plotly_click', function(data) {
+                    if (data.points.length > 0) {
+                        const yearClicked = parseInt(data.points[0].x);
+                        activeYearFilter = yearClicked;
+                        document.getElementById('publication-search').value = ''; // Limpa a busca de texto
+                        renderPublications();
+                        updateFilterUI();
+                    }
+                });
             }
+
 
             async function updateScholarSection() {
                 try {
@@ -1710,7 +1792,7 @@
                         document.querySelector(".scholar-link a").href = profile.author_url;
                     }
                     if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
-                        renderCitationChart(profile.cited_by.graph);
+                         citationGraphData = profile.cited_by.graph; // Armazena os dados para o gráfico
                     }
                 } catch (e) {
                     console.error("Erro ao atualizar seção do Scholar:", e);
@@ -1731,16 +1813,29 @@
                 const toggleBtn = document.getElementById('pubs-toggle-more');
                 const shownCountEl = document.getElementById('pubs-shown-count');
                 grid.innerHTML = ""; 
+
+                let filteredByYear = allArticles;
+                if (activeYearFilter) {
+                    filteredByYear = allArticles.filter(art => {
+                        if (!art.publication) return false;
+                        const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g);
+                        if (yearMatches && yearMatches.length > 0) {
+                            const year = parseInt(yearMatches[yearMatches.length - 1]);
+                            return year === activeYearFilter;
+                        }
+                        return false;
+                    });
+                }
                 
                 const lowerCaseFilter = filter.trim().toLowerCase();
                 
                 const filteredArticles = lowerCaseFilter 
-                    ? allArticles.filter(art => 
+                    ? filteredByYear.filter(art => 
                         (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
                         (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
                         (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
                     )
-                    : allArticles;
+                    : filteredByYear;
 
                 const articlesToShow = filteredArticles.slice(0, showingPubsCount);
 
@@ -1829,9 +1924,40 @@
                     allArticles = await fetchAllScholarArticles();
                     allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
                     renderPublications();
+                    // Chama a função do gráfico aqui, quando todos os dados estiverem disponíveis
+                    renderInteractiveChart(citationGraphData, allArticles);
                 } catch (e) {
                     console.error("Erro ao atualizar publicações:", e);
                     grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                    document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: #f44336;">Erro ao carregar o gráfico: ${e.message}</div>`;
+                }
+            }
+
+            // NEW: Function to manage the filter UI
+            function updateFilterUI() {
+                const controlsContainer = document.querySelector('#publicacoes .controls');
+                let filterChip = document.getElementById('year-filter-chip');
+                
+                if (activeYearFilter) {
+                    if (!filterChip) {
+                        filterChip = document.createElement('div');
+                        filterChip.id = 'year-filter-chip';
+                        filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;';
+                        controlsContainer.appendChild(filterChip);
+                    }
+                    filterChip.innerHTML = `
+                        <span>Filtrando por: ${activeYearFilter}</span>
+                        <button style="background: none; border: none; color: var(--dark); font-size: 1.2rem; cursor: pointer; line-height: 1;">&times;</button>
+                    `;
+                    filterChip.querySelector('button').onclick = () => {
+                        activeYearFilter = null;
+                        renderPublications(document.getElementById('publication-search').value);
+                        updateFilterUI();
+                    };
+                } else {
+                    if (filterChip) {
+                        filterChip.remove();
+                    }
                 }
             }
 
@@ -1853,19 +1979,38 @@
                 pubClearBtn.addEventListener('click', () => {
                     pubSearchInput.value = '';
                     showingPubsCount = 3;
+                    // Also clear year filter if active
+                    if (activeYearFilter) {
+                        activeYearFilter = null;
+                        updateFilterUI();
+                    }
                     renderPublications();
                     pubSearchInput.focus();
                 });
 
                 pubToggleBtn.addEventListener('click', () => {
                     const filter = pubSearchInput.value.trim().toLowerCase();
+
+                    let baseArticleList = allArticles;
+                    if (activeYearFilter) {
+                         baseArticleList = allArticles.filter(art => {
+                            if (!art.publication) return false;
+                            const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g);
+                            if (yearMatches && yearMatches.length > 0) {
+                                const year = parseInt(yearMatches[yearMatches.length - 1]);
+                                return year === activeYearFilter;
+                            }
+                            return false;
+                        });
+                    }
+
                     const filteredArticles = filter 
-                        ? allArticles.filter(art => 
+                        ? baseArticleList.filter(art => 
                             (art.title && art.title.toLowerCase().includes(filter)) ||
                             (art.publication && art.publication.toLowerCase().includes(filter)) ||
                             (art.snippet && art.snippet.toLowerCase().includes(filter))
                           )
-                        : allArticles;
+                        : baseArticleList;
                     
                     showingPubsCount = Math.min(showingPubsCount + 3, filteredArticles.length);
                     renderPublications(pubSearchInput.value);
@@ -2246,4 +2391,5 @@
     </script>
 </body>
 </html>
+
 
