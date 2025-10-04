@@ -982,7 +982,7 @@
                     <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genes">Software GENES</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-dataviz">Visualização de Dados</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="65%"><span class="skill-name" data-key="skill-name-git">Git & GitHub</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
-                    <div class="skill-item" data-level="70%"><span class="skill-name" data-key="skill-name-shiny">Aplicações Interativas (Shiny)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="50%"><span class="skill-name" data-key="skill-name-shiny">Aplicações Interativas (Shiny)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
             </div>
         </section>
@@ -1844,6 +1844,21 @@
                 const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
 
                 Plotly.newPlot(containerId, data, layout, config);
+                
+                // Add mousemove listener to propagate hover effect to parent card
+                const plotContainer = document.getElementById(containerId);
+                if (plotContainer) {
+                    plotContainer.addEventListener('mousemove', e => {
+                        const card = plotContainer.closest('.card');
+                        if (card) {
+                            const rect = card.getBoundingClientRect();
+                            const x = e.clientX - rect.left;
+                            const y = e.clientY - rect.top;
+                            card.style.setProperty('--mouse-x', `${x}px`);
+                            card.style.setProperty('--mouse-y', `${y}px`);
+                        }
+                    });
+                }
                 
                 const chartDiv = document.getElementById(containerId);
                 chartDiv.on('plotly_click', function(data) {
