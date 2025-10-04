@@ -598,8 +598,8 @@
             backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
         .sidebar .controls { margin-top: 10px; }
         
-        .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px }
-        .controls input { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+        .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
             background: var(--glass); color: var(--text) }
         .controls button { padding: 8px 10px; border-radius: 10px; border: none; background: var(--primary);
             color: #042017; cursor: pointer; }
@@ -626,7 +626,15 @@
             background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
             color: var(--secondary); padding: 3px 8px; border-radius: 12px;
             font-size: 0.75rem; font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
+        .topic-tag:hover, .topic-tag.active {
+            background: var(--secondary);
+            color: var(--dark);
+            transform: scale(1.05);
+        }
+
         .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
         .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none;
             font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease;
@@ -1182,14 +1190,15 @@
             sections.forEach(section => navObserver.observe(section));
 
             // --- Card Hover Effect ---
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('mousemove', e => {
+            document.body.addEventListener('mousemove', e => {
+                const card = e.target.closest('.card');
+                if (card) {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
                     card.style.setProperty('--mouse-x', `${x}px`);
                     card.style.setProperty('--mouse-y', `${y}px`);
-                });
+                }
             });
 
             // --- Botão Voltar ao Topo ---
@@ -1601,7 +1610,7 @@
                     </div>
                 `;
                 const card = document.createElement('div');
-                card.className = 'project-card';
+                card.className = 'project-card card';
                 card.setAttribute('role', 'listitem');
                 card.dataset.tags = tags.join(',');
                 card.innerHTML = cardHTML;
@@ -1985,7 +1994,7 @@
                         const point = data.points[0];
                         const yearClicked = parseInt(point.x);
 
-                        Plotly.Fx.animate(containerId, {
+                        Plotly.animate(containerId, {
                             data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }],
                             traces: [0]
                         }, {
@@ -1994,7 +2003,7 @@
                         });
 
                         setTimeout(() => {
-                            Plotly.Fx.animate(containerId, {
+                            Plotly.animate(containerId, {
                                 data: [{ 'marker.opacity': 1 }],
                                 traces: [0]
                             }, {
@@ -2648,4 +2657,5 @@
     </script>
 </body>
 </html>
+
 
