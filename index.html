@@ -1640,12 +1640,25 @@
                 const container = document.getElementById(containerId);
                 
                 const yearlyData = {};
-                (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
+                // Primeiro, popula com citações do graphData
+                (graphData || []).forEach(item => {
+                    yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 };
+                });
+
+                // Em seguida, itera através dos artigos para contar as publicações
                 (articles || []).forEach(article => {
                     const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
                     if (yearMatches) {
                         const year = parseInt(yearMatches[yearMatches.length - 1]);
-                        if (year && yearlyData[year]) { yearlyData[year].pubs++; }
+                        if (year) {
+                            if (yearlyData[year]) {
+                                // O ano já existe (do graphData), apenas incrementa as pubs
+                                yearlyData[year].pubs++;
+                            } else {
+                                // O ano não existe (ex: pubs mas sem citações ainda), cria uma nova entrada
+                                yearlyData[year] = { citations: 0, pubs: 1 };
+                            }
+                        }
                     }
                 });
                 
