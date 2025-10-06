@@ -1187,7 +1187,7 @@
         // --- Lógica de Inicialização e Scripts ---
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
-            document.getElementById('last-updated-date').textContent = "4 de outubro de 2025";
+            document.getElementById('last-updated-date').textContent = "6 de outubro de 2025";
 
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -1622,122 +1622,122 @@
                 const container = document.getElementById(containerId);
                 if (!container || typeof Plotly === 'undefined') return;
 
+                // Animação ativada por rolagem
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateChart(graphData, articles);
+                            observer.unobserve(entry.target); // Anima apenas uma vez
+                        }
+                    });
+                }, { threshold: 0.5 }); // Inicia quando 50% do gráfico estiver visível
+
+                observer.observe(container);
+            }
+
+            function animateChart(graphData, articles) {
+                const containerId = 'interactive-scholar-chart-container';
+                const container = document.getElementById(containerId);
+                
                 const yearlyData = {};
-                (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0, topPubTitle: '', topPubCites: -1 }; });
+                (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
                 (articles || []).forEach(article => {
                     const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
                     if (yearMatches) {
                         const year = parseInt(yearMatches[yearMatches.length - 1]);
-                        if (year && yearlyData[year]) { yearlyData[year].pubs++; const cites = article.cited_by?.value || 0; if (cites > yearlyData[year].topPubCites) { yearlyData[year].topPubCites = cites; yearlyData[year].topPubTitle = article.title; } }
+                        if (year && yearlyData[year]) { yearlyData[year].pubs++; }
                     }
                 });
+                
                 const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
-                const years = sortedYears; const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0); const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
-                const maxPubs = Math.max(...pubCounts, 1); const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); 
-                const customData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0, topPub: yearlyData[year].topPubTitle || "N/A" }));
+                if (sortedYears.length === 0) {
+                    container.innerHTML = "Sem dados suficientes para o gráfico.";
+                    return;
+                }
 
+                const fullYears = sortedYears;
+                const fullCitCounts = sortedYears.map(year => yearlyData[year].citations || 0);
+                const fullPubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
+                const maxPubs = Math.max(...fullPubCounts, 1);
+                const fullScaledPubCounts = fullPubCounts.map(p => Math.max(10, (p / maxPubs) * 40));
+                const fullCustomData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0 }));
+                
                 const isMobile = window.innerWidth < 768;
 
-                const traceBubbles = { x: years, y: citCounts, customdata: customData, hovertemplate: '<b>Ano: %{x}</b><br><br>Citações recebidas: <b>%{y}</b><br>Publicações no ano: <b>%{customdata.pubs}</b><br><extra></extra>', mode: 'markers',
-                    marker: { size: scaledPubCounts, color: pubCounts, colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true,
-                        colorbar: { 
-                            title: translations[currentLang]['chart-colorbar-title'], 
-                            thickness: 10,
-                            len: isMobile ? 0.75 : 0.9, 
-                            x: isMobile ? 0.5 : 1.02, 
-                            xanchor: isMobile ? 'center' : 'left',
-                            y: isMobile ? -0.5 : 0.5,
-                            yanchor: isMobile ? 'bottom' : 'middle',
-                            orientation: isMobile ? 'h' : 'v',
-                            tickfont: { color: 'var(--text-muted)', size: isMobile ? 8 : 10 }, 
-                            titlefont: { color: 'var(--text-muted)', size: isMobile ? 10 : 12 }, 
-                            outlinecolor: 'var(--border)',
-                        },
-                        line: { color: 'var(--primary-dark)', width: 1 } }, name: 'Impacto Anual' };
-                const traceLine = { x: years, y: citCounts, type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none', name: 'Tendência de Citações', showlegend: false };
-                const data = [traceBubbles, traceLine];
-                
                 const layout = {
-                    title: { 
-                        text: translations[currentLang]['chart-title'], 
-                        x: 0.5, 
-                        xanchor: 'center', 
-                        y: 0.95, 
-                        yanchor: 'top', 
-                        font: { 
-                            size: isMobile ? 16 : 18, 
-                            color: 'var(--text)' 
-                        } 
-                    },
-                    paper_bgcolor: 'transparent', 
-                    plot_bgcolor: 'transparent', 
-                    font: { 
-                        color: 'var(--text-muted)', 
-                        family: 'inherit' 
-                    },
+                    title: { text: translations[currentLang]['chart-title'], x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
+                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
                     xaxis: { 
-                        title: {
-                            text: translations[currentLang]['chart-xaxis-title'],
-                            font: { size: isMobile ? 10 : 12 }
-                        },
-                        gridcolor: 'var(--border)', 
-                        gridwidth: 1, 
-                        griddash: 'dot', 
-                        zeroline: false, 
-                        showline: true, 
-                        linecolor: 'var(--border)', 
-                        type: 'category', 
-                        tickangle: isMobile ? -60 : -45,
-                        tickfont: {
-                            size: isMobile ? 8 : 10
-                        },
-                        automargin: true
+                        title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
+                        gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
+                        categoryorder: 'array',
+                        categoryarray: fullYears,
+                        tickangle: isMobile ? -60 : -45, 
+                        tickfont: { size: isMobile ? 8 : 10 }, 
+                        automargin: true 
                     },
                     yaxis: { 
-                        title: {
-                            text: translations[currentLang]['chart-yaxis-title'],
-                            font: { size: isMobile ? 10 : 12 }
-                        },
-                        gridcolor: 'var(--border)', 
-                        gridwidth: 1, 
-                        griddash: 'dot', 
-                        zeroline: false, 
-                        showline: true, 
-                        linecolor: 'var(--border)', 
-                        fixedrange: true,
-                        tickfont: {
-                            size: isMobile ? 8 : 10
-                        },
-                        automargin: true
+                        title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
+                        gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
+                        rangemode: 'tozero',
+                        tickfont: { size: isMobile ? 8 : 10 }, 
+                        automargin: true 
                     },
-                    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
                     margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 },
-                    hovermode: 'closest', 
-                    showlegend: false, 
-                    autosize: true
+                    hovermode: 'closest', showlegend: false, autosize: true
                 };
 
                 const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-                Plotly.newPlot(containerId, data, layout, config);
                 
-                window.addEventListener('resize', () => { 
-                    renderInteractiveChart(graphData, articles);
-                });
-
-                const plotContainer = document.getElementById(containerId);
-                if (plotContainer) { plotContainer.addEventListener('mousemove', e => { const card = plotContainer.closest('.card'); if (card) { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`); } }); }
-                
-                const chartDiv = document.getElementById(containerId);
-                chartDiv.on('plotly_click', function(data) {
-                    if (data.points.length > 0) {
-                        const point = data.points[0]; const yearClicked = parseInt(point.x);
-                        Plotly.animate(containerId, { data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }], traces: [0] }, { transition: { duration: 300, easing: 'cubic-in-out' }, frame: { duration: 300 } });
-                        setTimeout(() => { Plotly.animate(containerId, { data: [{ 'marker.opacity': 1 }], traces: [0] }, { transition: { duration: 500 }, frame: { duration: 500 } }); }, 800);
-                        activeYearFilter = yearClicked; document.getElementById('publication-search').value = ''; renderPublications(); updateFilterUI();
+                const bubbleTrace = {
+                    x: [], y: [], customdata: [],
+                    hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>',
+                    mode: 'markers',
+                    marker: {
+                        size: [], color: [],
+                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true,
+                        colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v', tickfont: { color: 'var(--text-muted)', size: isMobile ? 8 : 10 }, titlefont: { color: 'var(--text-muted)', size: isMobile ? 10 : 12 }, outlinecolor: 'var(--border)' }
                     }
-                });
-            }
+                };
 
+                const lineTrace = {
+                    x: [], y: [], type: 'scatter', mode: 'lines',
+                    line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 },
+                    hoverinfo: 'none'
+                };
+
+                Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
+                    gd.on('plotly_click', function(data) {
+                        if (data.points.length > 0) {
+                            const yearClicked = data.points[0].x;
+                            activeYearFilter = yearClicked;
+                            document.getElementById('publication-search').value = '';
+                            renderPublications();
+                            updateFilterUI();
+                        }
+                    });
+                });
+
+                let frame = 0;
+                function runAnimation() {
+                    if (frame >= fullYears.length) return;
+
+                    const slice = arr => arr.slice(0, frame + 1);
+
+                    Plotly.restyle(containerId, {
+                        x: [slice(fullYears), slice(fullYears)],
+                        y: [slice(fullCitCounts), slice(fullCitCounts)],
+                        customdata: [slice(fullCustomData)],
+                        'marker.size': [slice(fullScaledPubCounts)],
+                        'marker.color': [slice(fullPubCounts)]
+                    }, [0, 1]);
+                    
+                    frame++;
+                    setTimeout(runAnimation, 150);
+                }
+                
+                setTimeout(runAnimation, 300);
+            }
 
             async function updateScholarSection() {
                 try {
@@ -1882,4 +1882,5 @@
     </script>
 </body>
 </html>
+
 
