@@ -543,7 +543,7 @@
             height: 14px;
         }
         
-        /* CORREÇÃO: Estilos do botão de idioma */
+        /* ALTERAÇÃO: Estilos do botão de idioma */
         .lang-switch {
             background: var(--bg-card);
             border: 1px solid var(--primary);
@@ -555,28 +555,37 @@
             font-weight: 500;
             line-height: 1;
             white-space: nowrap;
-
-            position: absolute;
+            
+            /* Estado inicial: fixo no canto superior direito */
+            position: fixed;
+            top: 20px;
             right: 20px;
-            top: 50%;
-            opacity: 0;
-            transform: translateY(-50%) scale(0);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 10;
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.4s ease-in-out;
+            z-index: 1001; /* Z-index alto para ficar sobre o conteúdo */
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
         }
-
+        
         .lang-switch .lang-pt.active, .lang-switch .lang-en.active {
             color: var(--text);
             font-weight: 700;
         }
+        
         .lang-switch:hover {
             background: var(--primary);
             color: var(--dark);
         }
+
+        /* Estado após rolar a página: botão se integra à barra de navegação */
         nav.scrolled .lang-switch {
-            opacity: 1;
+            position: absolute; /* Posição relativa ao nav-container */
+            top: 50%;
+            right: 20px;
             transform: translateY(-50%) scale(1);
+            box-shadow: none; /* Remove a sombra quando está no menu */
         }
+        
         nav.scrolled .lang-switch:hover {
              transform: translateY(-50%) scale(1.05);
         }
@@ -591,12 +600,6 @@
             .timeline-dot { left: 14px; }
             .timeline-item { padding-left: 50px; }
             .nav-avatar { display: none; }
-            /* Esconde o botão se a tela for muito pequena para evitar quebra de layout */
-            @media (max-width: 480px) {
-                .lang-switch {
-                    display: none;
-                }
-            }
         }
 
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
@@ -1577,8 +1580,9 @@
                 const layout = {
                     title: { text: translations[currentLang]['chart-title'], x: 0.05, xanchor: 'left', y: 0.95, yanchor: 'top', font: { size: 18, color: 'var(--text)' } },
                     paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
-                    xaxis: { title: translations[currentLang]['chart-xaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', type: 'category', tickangle: -45 },
-                    yaxis: { title: translations[currentLang]['chart-yaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', },
+                    // ALTERAÇÃO: Adicionado fixedrange para desativar zoom
+                    xaxis: { title: translations[currentLang]['chart-xaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', type: 'category', tickangle: -45, fixedrange: true },
+                    yaxis: { title: translations[currentLang]['chart-yaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', fixedrange: true },
                     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
                     margin: isMobile ? { l: 60, r: 20, b: 80, t: 80 } : { l: 80, r: 40, b: 80, t: 80 },
                     hovermode: 'closest', showlegend: false, autosize: true
@@ -1586,7 +1590,6 @@
                 const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
                 Plotly.newPlot(containerId, data, layout, config);
                 
-                // CORREÇÃO: Adiciona listener para redimensionar o gráfico
                 window.addEventListener('resize', () => { Plotly.Plots.resize(containerId); });
 
                 const plotContainer = document.getElementById(containerId);
