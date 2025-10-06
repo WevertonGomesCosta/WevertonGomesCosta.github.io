@@ -1663,15 +1663,18 @@
                 const fullCustomData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0 }));
                 
                 const isMobile = window.innerWidth < 768;
+                const maxCitation = Math.max(...fullCitCounts, 0);
 
                 const layout = {
                     title: { text: translations[currentLang]['chart-title'], x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
                     paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
+                    dragmode: false,
                     xaxis: { 
                         title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
                         gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
-                        categoryorder: 'array',
-                        categoryarray: fullYears,
+                        tickvals: fullYears,
+                        ticktext: fullYears,
+                        fixedrange: true,
                         tickangle: isMobile ? -60 : -45, 
                         tickfont: { size: isMobile ? 8 : 10 }, 
                         automargin: true 
@@ -1679,7 +1682,8 @@
                     yaxis: { 
                         title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
                         gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
-                        rangemode: 'tozero',
+                        range: [0, maxCitation === 0 ? 10 : maxCitation * 1.1],
+                        fixedrange: true,
                         tickfont: { size: isMobile ? 8 : 10 }, 
                         automargin: true 
                     },
@@ -1687,10 +1691,10 @@
                     hovermode: 'closest', showlegend: false, autosize: true
                 };
 
-                const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
+                const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
                 
                 const bubbleTrace = {
-                    x: [], y: [], customdata: [],
+                    x: fullYears, y: [], customdata: [],
                     hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>',
                     mode: 'markers',
                     marker: {
@@ -1701,7 +1705,7 @@
                 };
 
                 const lineTrace = {
-                    x: [], y: [], type: 'scatter', mode: 'lines',
+                    x: fullYears, y: [], type: 'scatter', mode: 'lines',
                     line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 },
                     hoverinfo: 'none'
                 };
@@ -1716,27 +1720,26 @@
                             updateFilterUI();
                         }
                     });
-                });
 
-                let frame = 0;
-                function runAnimation() {
-                    if (frame >= fullYears.length) return;
+                    let frame = 0;
+                    function runAnimation() {
+                        if (frame >= fullYears.length) return;
 
-                    const slice = arr => arr.slice(0, frame + 1);
-
-                    Plotly.restyle(containerId, {
-                        x: [slice(fullYears), slice(fullYears)],
-                        y: [slice(fullCitCounts), slice(fullCitCounts)],
-                        customdata: [slice(fullCustomData)],
-                        'marker.size': [slice(fullScaledPubCounts)],
-                        'marker.color': [slice(fullPubCounts)]
-                    }, [0, 1]);
+                        const slice = arr => arr.slice(0, frame + 1);
+                        
+                        Plotly.restyle(gd, {
+                            y: [slice(fullCitCounts), slice(fullCitCounts)],
+                            customdata: [slice(fullCustomData)],
+                            'marker.size': [slice(fullScaledPubCounts)],
+                            'marker.color': [slice(fullPubCounts)]
+                        });
+                        
+                        frame++;
+                        setTimeout(runAnimation, 150);
+                    }
                     
-                    frame++;
-                    setTimeout(runAnimation, 150);
-                }
-                
-                setTimeout(runAnimation, 300);
+                    setTimeout(runAnimation, 300);
+                });
             }
 
             async function updateScholarSection() {
@@ -1882,5 +1885,6 @@
     </script>
 </body>
 </html>
+"
 
 
