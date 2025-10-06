@@ -543,7 +543,7 @@
             height: 14px;
         }
         
-        /* ALTERAÇÃO: Estilos do botão de idioma */
+        /* CORREÇÃO: Estilos do botão de idioma */
         .lang-switch {
             background: var(--bg-card);
             border: 1px solid var(--primary);
@@ -555,18 +555,17 @@
             font-weight: 500;
             line-height: 1;
             white-space: nowrap;
-            
-            /* Estado inicial: fixo no canto superior direito */
-            position: fixed;
-            top: 20px;
+
+            position: absolute;
             right: 20px;
-            opacity: 1;
-            transform: scale(1);
-            transition: all 0.4s ease-in-out;
-            z-index: 1001; /* Z-index alto para ficar sobre o conteúdo */
-            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+            top: 50%;
+            
+            opacity: 0;
+            transform: translateY(-50%) scale(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 10;
         }
-        
+
         .lang-switch .lang-pt.active, .lang-switch .lang-en.active {
             color: var(--text);
             font-weight: 700;
@@ -577,13 +576,10 @@
             color: var(--dark);
         }
 
-        /* Estado após rolar a página: botão se integra à barra de navegação */
+        /* Estado após rolar: aparece, igual ao avatar */
         nav.scrolled .lang-switch {
-            position: absolute; /* Posição relativa ao nav-container */
-            top: 50%;
-            right: 20px;
+            opacity: 1;
             transform: translateY(-50%) scale(1);
-            box-shadow: none; /* Remove a sombra quando está no menu */
         }
         
         nav.scrolled .lang-switch:hover {
@@ -1580,7 +1576,6 @@
                 const layout = {
                     title: { text: translations[currentLang]['chart-title'], x: 0.05, xanchor: 'left', y: 0.95, yanchor: 'top', font: { size: 18, color: 'var(--text)' } },
                     paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
-                    // ALTERAÇÃO: Adicionado fixedrange para desativar zoom
                     xaxis: { title: translations[currentLang]['chart-xaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', type: 'category', tickangle: -45, fixedrange: true },
                     yaxis: { title: translations[currentLang]['chart-yaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', fixedrange: true },
                     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
@@ -1750,3 +1745,4 @@
     </script>
 </body>
 </html>
+
