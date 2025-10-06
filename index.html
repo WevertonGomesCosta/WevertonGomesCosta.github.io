@@ -623,18 +623,27 @@
         
         @media (max-width: 992px) {
             .nav-container {
-                grid-template-columns: 1fr;
+                /* Layout de 3 colunas flexível para tablets e celulares */
+                grid-template-columns: auto 1fr auto; 
                 padding: 0 15px;
-            }
-            .nav-col-left, .nav-col-right {
-                display: none;
+                gap: 15px;
             }
             .nav-col-center {
-                gap: 15px;
+                gap: 15px; /* Espaçamento entre os links do menu */
             }
             .timeline::before { left: 20px; }
             .timeline-dot { left: 14px; }
             .timeline-item { padding-left: 50px; }
+        }
+
+        /* Ajustes para telas de celular menores */
+        @media (max-width: 768px) {
+            .nav-col-center {
+                gap: 10px; /* Diminui o espaçamento para caber mais links */
+            }
+            .nav-link {
+                font-size: 0.85rem; /* Diminui a fonte dos links */
+            }
         }
 
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
