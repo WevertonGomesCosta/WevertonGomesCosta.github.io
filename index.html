@@ -3,7 +3,7 @@
 
 <head>
     <meta name="google-site-verification" content="nfoEwVQ8Ln3F7m66zG3-P2TByH8jzyvs8iXEGwqVzKM" />
-    <meta charset="UTF-8">
+    <meta charset="UTF-T8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Weverton Gomes da Costa - Pesquisador em Genética e Estatística, Data Scientist, CEO da Conecta GEM, especialista em Machine Learning">
     <meta name="keywords" content="genética, biometria, machine learning, agronegócio, UFV, seleção genômica, software GENES">
@@ -1636,27 +1636,93 @@
                 const maxPubs = Math.max(...pubCounts, 1); const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); 
                 const customData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0, topPub: yearlyData[year].topPubTitle || "N/A" }));
 
+                const isMobile = window.innerWidth < 768;
+
                 const traceBubbles = { x: years, y: citCounts, customdata: customData, hovertemplate: '<b>Ano: %{x}</b><br><br>Citações recebidas: <b>%{y}</b><br>Publicações no ano: <b>%{customdata.pubs}</b><br><extra></extra>', mode: 'markers',
                     marker: { size: scaledPubCounts, color: pubCounts, colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true,
-                        colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: 0.9, x: 1.02, xanchor: 'left', tickfont: { color: 'var(--text-muted)' }, titlefont: { color: 'var(--text-muted)' }, outlinecolor: 'var(--border)', },
+                        colorbar: { 
+                            title: translations[currentLang]['chart-colorbar-title'], 
+                            thickness: 10,
+                            len: isMobile ? 0.75 : 0.9, 
+                            x: isMobile ? 0.5 : 1.02, 
+                            xanchor: isMobile ? 'center' : 'left',
+                            y: isMobile ? -0.5 : 0.5,
+                            yanchor: isMobile ? 'bottom' : 'middle',
+                            orientation: isMobile ? 'h' : 'v',
+                            tickfont: { color: 'var(--text-muted)', size: isMobile ? 8 : 10 }, 
+                            titlefont: { color: 'var(--text-muted)', size: isMobile ? 10 : 12 }, 
+                            outlinecolor: 'var(--border)',
+                        },
                         line: { color: 'var(--primary-dark)', width: 1 } }, name: 'Impacto Anual' };
                 const traceLine = { x: years, y: citCounts, type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none', name: 'Tendência de Citações', showlegend: false };
                 const data = [traceBubbles, traceLine];
                 
-                const isMobile = window.innerWidth < 768;
                 const layout = {
-                    title: { text: translations[currentLang]['chart-title'], x: 0.05, xanchor: 'left', y: 0.95, yanchor: 'top', font: { size: 18, color: 'var(--text)' } },
-                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
-                    xaxis: { title: translations[currentLang]['chart-xaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', type: 'category', tickangle: -45, fixedrange: true },
-                    yaxis: { title: translations[currentLang]['chart-yaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', fixedrange: true },
+                    title: { 
+                        text: translations[currentLang]['chart-title'], 
+                        x: 0.5, 
+                        xanchor: 'center', 
+                        y: 0.95, 
+                        yanchor: 'top', 
+                        font: { 
+                            size: isMobile ? 16 : 18, 
+                            color: 'var(--text)' 
+                        } 
+                    },
+                    paper_bgcolor: 'transparent', 
+                    plot_bgcolor: 'transparent', 
+                    font: { 
+                        color: 'var(--text-muted)', 
+                        family: 'inherit' 
+                    },
+                    xaxis: { 
+                        title: {
+                            text: translations[currentLang]['chart-xaxis-title'],
+                            font: { size: isMobile ? 10 : 12 }
+                        },
+                        gridcolor: 'var(--border)', 
+                        gridwidth: 1, 
+                        griddash: 'dot', 
+                        zeroline: false, 
+                        showline: true, 
+                        linecolor: 'var(--border)', 
+                        type: 'category', 
+                        tickangle: isMobile ? -60 : -45,
+                        tickfont: {
+                            size: isMobile ? 8 : 10
+                        },
+                        automargin: true
+                    },
+                    yaxis: { 
+                        title: {
+                            text: translations[currentLang]['chart-yaxis-title'],
+                            font: { size: isMobile ? 10 : 12 }
+                        },
+                        gridcolor: 'var(--border)', 
+                        gridwidth: 1, 
+                        griddash: 'dot', 
+                        zeroline: false, 
+                        showline: true, 
+                        linecolor: 'var(--border)', 
+                        fixedrange: true,
+                        tickfont: {
+                            size: isMobile ? 8 : 10
+                        },
+                        automargin: true
+                    },
                     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
-                    margin: isMobile ? { l: 60, r: 20, b: 80, t: 80 } : { l: 80, r: 40, b: 80, t: 80 },
-                    hovermode: 'closest', showlegend: false, autosize: true
+                    margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 },
+                    hovermode: 'closest', 
+                    showlegend: false, 
+                    autosize: true
                 };
+
                 const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
                 Plotly.newPlot(containerId, data, layout, config);
                 
-                window.addEventListener('resize', () => { Plotly.Plots.resize(containerId); });
+                window.addEventListener('resize', () => { 
+                    renderInteractiveChart(graphData, articles);
+                });
 
                 const plotContainer = document.getElementById(containerId);
                 if (plotContainer) { plotContainer.addEventListener('mousemove', e => { const card = plotContainer.closest('.card'); if (card) { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`); } }); }
