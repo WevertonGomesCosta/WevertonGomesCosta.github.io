@@ -630,6 +630,13 @@
             }
             .nav-col-center {
                 gap: 15px; /* Espaçamento entre os links do menu */
+                justify-content: start; /* Alinha links à esquerda em telas menores */
+                overflow-x: auto; /* Permite rolagem se os links não couberem */
+                -ms-overflow-style: none; /* IE e Edge */
+                scrollbar-width: none; /* Firefox */
+            }
+            .nav-col-center::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Opera */
             }
             .timeline::before { left: 20px; }
             .timeline-dot { left: 14px; }
@@ -792,8 +799,8 @@
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
             <p class="subtitle" id="subtitle"></p>
             <div class="hero-cta">
-                <a href="#projetos" class="cta-btn primary">Meus Projetos</a>
-                <a href="#contato" class="cta-btn secondary">Entre em Contato</a>
+                <a href="#projetos" class="cta-btn primary" data-key="cta-projects">Meus Projetos</a>
+                <a href="#contato" class="cta-btn secondary" data-key="cta-contact">Entre em Contato</a>
             </div>
             <div class="badges">
                 <span class="badge" data-key="badge-phd">🎓 Doutorando em Estatística - UFV</span>
@@ -1321,6 +1328,7 @@
             pt: {
                 'subtitle-1': 'Pesquisador em Genética & Estatística', 'subtitle-2': 'Data Scientist', 'subtitle-3': 'CEO & Cofundador - Conecta GEM', 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 Doutorando em Estatística - UFV', 'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM', 'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
+                'cta-projects': 'Meus Projetos', 'cta-contact': 'Entre em Contato',
                 'nav-about': 'Sobre', 'nav-services': 'Serviços', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
                 'about-title': 'Sobre Mim', 'about-p1': `Minha jornada acadêmica, iniciada na Agronomia pela UFV e aprofundada com mestrado e doutorado em Genética e Melhoramento, proporcionou-me uma base sólida para explorar a fronteira do conhecimento. Hoje, como doutorando em Estatística Aplicada e Biometria, busco integrar modelos avançados à pesquisa agronômica. Essa paixão por inovação culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>, liderando a missão de traduzir a ciência de dados em soluções práticas e inteligentes para o agronegócio.`, 'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`, 'about-p3': `Atuando no Laboratório de Bioinformática da UFV e como <strong>Coordenador Discente no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</strong>, tenho a oportunidade de colaborar em pesquisas de ponta e contribuir para a formação de novos cientistas, unindo esforços para avançar as fronteiras da biometria e da inteligência artificial aplicada à agropecuária.`,
                 'services-title': 'Como Posso Ajudar', 'service-title1': 'Consultoria em Dados e IA', 'service-desc1': 'Análise estratégica de dados, desenvolvimento de modelos de machine learning e implementação de soluções de IA para otimizar processos no agronegócio e na pesquisa.', 'service-title2': 'Colaboração Científica', 'service-desc2': 'Parcerias em projetos de pesquisa que envolvam genética, biometria e estatística aplicada, contribuindo com análises robustas e publicação de resultados de alto impacto.', 'service-title3': 'Capacitação e Treinamentos', 'service-desc3': 'Cursos e workshops customizados em R, Python, Software GENES e pipelines de análise de dados para equipes acadêmicas e corporativas, através da Conecta GEM.',
@@ -1339,6 +1347,7 @@
             en: {
                 'subtitle-1': 'Genetics & Statistics Researcher', 'subtitle-2': 'Data Scientist', 'subtitle-3': 'CEO & Co-founder - Conecta GEM', 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 PhD Candidate in Statistics - UFV', 'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM', 'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
+                'cta-projects': 'My Projects', 'cta-contact': 'Get in Touch',
                 'nav-about': 'About', 'nav-services': 'Services', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
                 'about-title': 'About Me', 'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`, 'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`, 'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
                 'services-title': 'How I Can Help', 'service-title1': 'Data & AI Consulting', 'service-desc1': 'Strategic data analysis, machine learning model development, and implementation of AI solutions to optimize processes in agribusiness and research.', 'service-title2': 'Scientific Collaboration', 'service-desc2': 'Partnerships in research projects involving genetics, biometrics, and applied statistics, contributing with robust analyses and high-impact publications.', 'service-title3': 'Training & Workshops', 'service-desc3': 'Customized courses and workshops in R, Python, GENES Software, and data analysis pipelines for academic and corporate teams, through Conecta GEM.',
@@ -1421,8 +1430,11 @@
             document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
             document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
             
-            document.querySelector('.lang-switch .lang-pt').classList.toggle('active', lang === 'pt');
-            document.querySelector('.lang-switch .lang-en').classList.toggle('active', lang === 'en');
+            const isPt = lang === 'pt';
+            document.querySelectorAll('.lang-switch, .lang-switch-fixed').forEach(button => {
+                button.querySelector('.lang-pt').classList.toggle('active', isPt);
+                button.querySelector('.lang-en').classList.toggle('active', !isPt);
+            });
             
             clearTimeout(subtitleTimeout);
             subtitleIndex = 0;
