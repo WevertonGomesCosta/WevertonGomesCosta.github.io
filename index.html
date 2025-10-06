@@ -191,16 +191,18 @@
         nav {
             position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
-            transition: padding 0.3s ease; /* Anima a altura da barra de navegação */
+            transition: padding 0.3s ease;
         }
         nav.scrolled {
-            padding: 8px 0; /* Diminui a altura ao rolar */
+            padding: 8px 0;
         }
         .nav-container { 
             max-width: 1200px; margin: 0 auto; display: flex; justify-content: center;
-            gap: 25px; padding: 0 20px; flex-wrap: wrap; 
-            position: relative; /* Contexto para o avatar posicionado absolutamente */
-            align-items: center; /* Alinha verticalmente os links e o avatar */
+            gap: 25px; 
+            padding: 0 80px; /* Adicionado padding para avatar e botão de idioma */
+            flex-wrap: wrap; 
+            position: relative;
+            align-items: center;
         }
         
         .nav-avatar {
@@ -352,7 +354,7 @@
 
         .scholar-chart-container {
             width: 100%;
-            min-height: 450px; /* Garante espaço para o gráfico carregar */
+            min-height: 450px;
             margin: 30px auto 0;
         }
 
@@ -370,7 +372,6 @@
         .feature-list li { display: flex; align-items: center; gap: 10px; }
         .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
         
-        /* --- ESTILOS DA NOVA SEÇÃO DE HABILIDADES --- */
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -426,7 +427,7 @@
         }
         .skill-bar {
             height: 100%;
-            width: 0; /* Largura inicial para animação */
+            width: 0;
             background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
             border-radius: 5px;
             transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
@@ -434,7 +435,6 @@
         .skill-item.visible .skill-bar {
             width: var(--proficiency-level);
         }
-        /* ------------------------------------------- */
 
         .contact-container {
             display: grid;
@@ -542,43 +542,65 @@
             width: 14px;
             height: 14px;
         }
+        
+        /* CORREÇÃO: Estilos do botão de idioma */
+        .lang-switch {
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
 
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            opacity: 0;
+            transform: translateY(-50%) scale(0);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 10;
+        }
 
+        .lang-switch .lang-pt.active, .lang-switch .lang-en.active {
+            color: var(--text);
+            font-weight: 700;
+        }
+        .lang-switch:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+        nav.scrolled .lang-switch {
+            opacity: 1;
+            transform: translateY(-50%) scale(1);
+        }
+        nav.scrolled .lang-switch:hover {
+             transform: translateY(-50%) scale(1.05);
+        }
+        
         @media (max-width: 768px) {
-            .nav-container { gap: 15px; }
+            .nav-container { 
+                gap: 15px;
+                padding: 0 15px; /* Ajuste de padding para mobile */
+                justify-content: center;
+            }
             .timeline::before { left: 20px; }
             .timeline-dot { left: 14px; }
             .timeline-item { padding-left: 50px; }
-            .nav-avatar { display: none; } /* Esconde o avatar na navegação em telas pequenas */
+            .nav-avatar { display: none; }
+            /* Esconde o botão se a tela for muito pequena para evitar quebra de layout */
+            @media (max-width: 480px) {
+                .lang-switch {
+                    display: none;
+                }
+            }
         }
 
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
-
-        .lang-switch {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1001;
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: top 0.3s ease, transform 0.3s ease;
-            font-weight: 500;
-        }
-        .lang-switch.in-nav {
-            top: 15px;
-        }
-        .lang-switch .lang-pt.active, .lang-switch .lang-en.active { color: var(--text); font-weight: 700; }
-        .lang-switch:hover {
-            background: var(--primary);
-            color: var(--dark);
-            transform: scale(1.05);
-        }
 
         .back-to-top {
             position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary);
@@ -713,16 +735,12 @@
 <body>
     <canvas id="particle-canvas"></canvas>
     <a href="#" class="back-to-top" aria-label="Voltar ao topo">↑</a>
-    <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
-        <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
-    </button>
     
     <header>
         <div class="hero-content">
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
             <p class="subtitle" id="subtitle"></p>
-            <!-- Botões de Ação -->
             <div class="hero-cta">
                 <a href="#projetos" class="cta-btn primary">Meus Projetos</a>
                 <a href="#contato" class="cta-btn secondary">Entre em Contato</a>
@@ -748,6 +766,10 @@
             <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
             <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
             <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
+            <!-- Botão de idioma movido para cá -->
+            <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
+                <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+            </button>
         </div>
     </nav>
 
@@ -773,7 +795,6 @@
             </div>
         </section>
 
-        <!-- NOVA SEÇÃO: SERVIÇOS -->
         <section id="servicos" class="section">
             <h2 class="reveal" data-key="services-title">Como Posso Ajudar</h2>
             <div class="grid stagger-children">
@@ -924,7 +945,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- NOVO CONTAINER DO GRÁFICO INTERATIVO -->
                 <div id="interactive-scholar-chart-container" class="scholar-chart-container reveal"></div>
                 <div class="scholar-link">
                     <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="link-btn" data-key="scholar-view-profile">Ver Perfil Completo
@@ -1035,7 +1055,6 @@
                 <aside class="contact-links-aside">
                     <h3 data-key="contact-other">Redes Sociais e Perfis</h3>
                     <div class="contact-grid">
-                        <!-- Botão para Baixar o Currículo -->
                         <a href="#" id="download-cv-btn" class="contact-link">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
                             <span data-key="download-cv">Baixar Currículo (PDF)</span>
@@ -1105,12 +1124,9 @@
     <script>
         // --- Lógica de Inicialização e Scripts ---
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Atualizar Ano e Data do Copyright ---
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
             document.getElementById('last-updated-date').textContent = "4 de outubro de 2025";
 
-
-            // --- Animações de Scroll ---
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1154,7 +1170,6 @@
             mutationObserver.observe(document.getElementById('projects-list'), { childList: true });
             mutationObserver.observe(document.getElementById('publicacoes-grid'), { childList: true });
 
-            // --- Lógica da Linha do Tempo Expansível ---
             const timeline = document.querySelector('.timeline');
             timeline.addEventListener('click', function(event) {
                 const button = event.target.closest('.toggle-details-btn');
@@ -1170,7 +1185,6 @@
                 }
             });
 
-            // --- Highlight do Link de Navegação Ativo ---
             const sections = document.querySelectorAll('main > section[id]');
             const navLinks = document.querySelectorAll('nav .nav-link');
             const navObserver = new IntersectionObserver((entries) => {
@@ -1189,7 +1203,6 @@
             }, { rootMargin: '-40% 0px -60% 0px' });
             sections.forEach(section => navObserver.observe(section));
 
-            // --- Card Hover Effect ---
             document.body.addEventListener('mousemove', e => {
                 const card = e.target.closest('.card');
                 if (card) {
@@ -1201,7 +1214,6 @@
                 }
             });
 
-            // --- Botão Voltar ao Topo ---
             const backToTopButton = document.querySelector('.back-to-top');
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 300) {
@@ -1211,7 +1223,6 @@
                 }
             });
 
-            // --- Lógica da Barra de Navegação com Avatar ---
             const nav = document.querySelector('nav');
             const header = document.querySelector('header');
             if (nav && header) {
@@ -1225,7 +1236,6 @@
                 }, { passive: true });
             }
             
-            // --- Copiar Email ---
             document.getElementById('copy-email-link').addEventListener('click', function(event) {
                 event.preventDefault();
                 const emailToCopy = 'wevertonufv@gmail.com';
@@ -1244,19 +1254,6 @@
                     toast.classList.remove('show');
                 }, 3000);
             });
-
-            // --- Language Switch Positioning ---
-            const langSwitch = document.querySelector('.lang-switch');
-            if (nav && langSwitch) {
-                const navTop = nav.offsetTop;
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY >= navTop) {
-                        langSwitch.classList.add('in-nav');
-                    } else {
-                        langSwitch.classList.remove('in-nav');
-                    }
-                }, { passive: true });
-            }
         });
     </script>
     
@@ -1264,176 +1261,46 @@
         // --- Lógica de Tradução e Conteúdo Dinâmico ---
         const translations = {
             pt: {
-                'subtitle-1': 'Pesquisador em Genética & Estatística',
-                'subtitle-2': 'Data Scientist',
-                'subtitle-3': 'CEO & Cofundador - Conecta GEM',
-                'subtitle-4': 'Machine Learning Expert',
+                'subtitle-1': 'Pesquisador em Genética & Estatística', 'subtitle-2': 'Data Scientist', 'subtitle-3': 'CEO & Cofundador - Conecta GEM', 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 Doutorando em Estatística - UFV', 'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM', 'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
                 'nav-about': 'Sobre', 'nav-services': 'Serviços', 'nav-publications': 'Publicações', 'nav-education': 'Formação', 'nav-experience': 'Experiência', 'nav-projects': 'Projetos', 'nav-skills': 'Habilidades', 'nav-contact': 'Contato',
-                'about-title': 'Sobre Mim',
-                'about-p1': `Minha jornada acadêmica, iniciada na Agronomia pela UFV e aprofundada com mestrado e doutorado em Genética e Melhoramento, proporcionou-me uma base sólida para explorar a fronteira do conhecimento. Hoje, como doutorando em Estatística Aplicada e Biometria, busco integrar modelos avançados à pesquisa agronômica. Essa paixão por inovação culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>, liderando a missão de traduzir a ciência de dados em soluções práticas e inteligentes para o agronegócio.`,
-                'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`,
-                'about-p3': `Atuando no Laboratório de Bioinformática da UFV e como <strong>Coordenador Discente no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</strong>, tenho a oportunidade de colaborar em pesquisas de ponta e contribuir para a formação de novos cientistas, unindo esforços para avançar as fronteiras da biometria e da inteligência artificial aplicada à agropecuária.`,
-                'services-title': 'Como Posso Ajudar',
-                'service-title1': 'Consultoria em Dados e IA', 'service-desc1': 'Análise estratégica de dados, desenvolvimento de modelos de machine learning e implementação de soluções de IA para otimizar processos no agronegócio e na pesquisa.',
-                'service-title2': 'Colaboração Científica', 'service-desc2': 'Parcerias em projetos de pesquisa que envolvam genética, biometria e estatística aplicada, contribuindo com análises robustas e publicação de resultados de alto impacto.',
-                'service-title3': 'Capacitação e Treinamentos', 'service-desc3': 'Cursos e workshops customizados em R, Python, Software GENES e pipelines de análise de dados para equipes acadêmicas e corporativas, através da Conecta GEM.',
-                'publications-title': 'Publicações e Citações',
-                'publications-intro': 'Minhas publicações refletem um compromisso contínuo com a inovação científica. Cada artigo representa um esforço para desenvolver e aplicar metodologias que não apenas avançam o conhecimento teórico, mas também oferecem soluções práticas e eficientes para os desafios do agronegócio.',
-                'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca',
-                'scholar-view-profile': 'Ver Perfil Completo →',
-                'metric-label-citations': 'Citações', 'metric-all': 'TODOS', 'metric-since': 'DESDE 2020', 'metric-label-h-index': 'Índice h', 'metric-label-i10-index': 'Índice i10',
-                'pub-read': 'Ver publicação →',
-                'education-title': 'Formação Acadêmica',
-                'edu-date1': '2023 - Presente', 'edu-title1': 'Doutorado em Estatística Aplicada e Biometria', 'edu-desc1': 'Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.',
-                'edu-date2': '2023 - Presente', 'edu-title2': 'Pós-Doutorado', 'edu-desc2': 'Desenvolvimento de análises estatísticas avançadas aplicadas ao melhoramento genético.',
-                'edu-date3': '2022 - 2023', 'edu-title3': 'Pós-Doutorado', 'edu-desc3': 'Estudos em seleção genômica ampla e modelos mistos aplicados à agricultura.',
-                'edu-title4': 'Pós-Doutorado', 'edu-desc4': 'Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.',
-                'edu-title5': 'Doutorado em Genética e Melhoramento', 'edu-desc5': 'Eficiência de técnicas de machine learning e redes neurais na predição genômica e identificação de marcadores.',
-                'edu-title6': 'Mestrado em Genética e Melhoramento', 'edu-desc6': 'Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais.',
-                'edu-title7': 'Graduação em Agronomia', 'edu-desc7': 'Estágio na EPAMIG com foco em planejamento experimental e análises estatísticas.',
-                'expertise-title': 'Áreas de Especialização',
-                'exp-title1': 'Genética Quantitativa', 'exp-desc1': 'Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.',
-                'exp-title2': 'Biometria Avançada', 'exp-desc2': 'Aplico modelagem estatística robusta e modelos mistos para extrair insights precisos e orientar decisões estratégicas.',
-                'exp-title3': 'Machine Learning & IA', 'exp-desc3': 'Utilizo algoritmos como Random Forest e redes neurais para criar modelos preditivos de alta performance na agricultura.',
-                'exp-title4': 'Pipelines Reprodutíveis', 'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.',
-                'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.',
-                'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
-                'projects-title': 'Projetos & Repositórios',
-                'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
-                'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Projetos em Destaque', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
-                'licae-desc': 'O LICAE é um laboratório multidisciplinar dedicado a propor, avaliar e aplicar técnicas de Inteligência Computacional e Aprendizado Estatístico para solucionar problemas complexos na Agropecuária. Nosso objetivo é aperfeiçoar e complementar as metodologias biométricas tradicionais, desenvolvendo projetos inovadores em áreas como Redes Neurais, Seleção Genômica e Random Forest.',
-                'licae-item1': 'Pesquisa em redes neurais e seleção genômica', 'licae-item2': 'Desenvolvimento de modelos preditivos', 'licae-item3': 'Colaboração em projetos multidisciplinares',
-                'conecta-desc': 'A Conecta GEM nasceu da paixão por compartilhar conhecimento. Somos uma iniciativa que oferece capacitação, consultorias e mentorias de excelência em estatística, genética e melhoramento. Com coordenadores especialistas e uma metodologia focada no aprendizado individual, já qualificamos mais de mil pessoas, conectando a teoria da universidade com a prática do mercado.',
-                'conecta-item1': 'Consultoria em biometria e IA',
-                'conecta-item2': 'Implementação de pipelines de seleção genômica',
-                'conecta-item3': 'Capacitação e treinamentos em R e Python',
-                'skills-title': 'Habilidades Técnicas',
-                'skills-cat-1': 'Linguagens & Desenvolvimento', 'skills-cat-2': 'Análise & Modelagem', 'skills-cat-3': 'Biometria', 'skills-cat-4': 'Ferramentas & Plataformas',
-                'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Genética Quantitativa',
-                'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Modelos Mistos & Biometria', 'skill-name-genomic-sel': 'Seleção Genômica',
-                'skill-name-multivariate': 'Análise Multivariada', 'skill-name-genes': 'Software GENES', 'skill-name-dataviz': 'Visualização de Dados', 'skill-name-git': 'Git & GitHub',
-                'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Aplicações Interativas (Shiny)', 'skill-name-eda': 'Análise Exploratória (EDA)', 'skill-name-bioinfo': 'Bioinformática',
-                'contact-title': 'Contato',
-                'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.',
-                'contact-other': 'Redes Sociais e Perfis',
-                'form-name': 'Nome', 'form-name-ph': 'Seu nome completo', 'form-name-error': 'Por favor, insira seu nome.',
-                'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com', 'form-email-error': 'Por favor, insira um email válido.',
-                'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem', 'form-subject-error': 'Por favor, insira um assunto.',
-                'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...', 'form-message-error': 'Por favor, escreva uma mensagem.',
-                'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Obrigado! Sua mensagem foi enviada.', 'formError': 'Ocorreu um erro. Tente novamente.',
-                'download-cv': 'Baixar Currículo (PDF)',
-                'fetching_repos': 'Buscando repositórios...',
-                'loaded_repos_cache': (c) => `Carregado ${c} repositórios (cache).`,
-                'found_repos': (c) => `Encontrados ${c} repositórios.`,
-                'fetch_error': 'Limite de requisições da API atingido. Exibindo projetos principais. Os dados serão atualizados em breve.',
-                'no_repos_found': 'Nenhum repositório encontrado.',
-                'open_btn': 'Abrir', 'copy_btn': 'Copiar link', 'copied_btn': 'Copiado!', 'no_description': 'Sem descrição.', 'updated_at': 'Atualizado:',
-                'chart-title': '<b>Evolução da Produção Científica e Impacto</b>', 'chart-xaxis-title': 'Ano de Publicação', 'chart-yaxis-title': 'Número de Citações Recebidas', 'chart-colorbar-title': 'Nº de Pubs',
-                'footer-license-text': 'Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.',
-                'footer-update-text': 'Última atualização:',
-                'footer-location': 'Viçosa - Minas Gerais - Brasil',
-                'tech-stack': 'Tecnologias',
-                'project-problem': 'O Problema',
-                'all-topics': 'Todos',
+                'about-title': 'Sobre Mim', 'about-p1': `Minha jornada acadêmica, iniciada na Agronomia pela UFV e aprofundada com mestrado e doutorado em Genética e Melhoramento, proporcionou-me uma base sólida para explorar a fronteira do conhecimento. Hoje, como doutorando em Estatística Aplicada e Biometria, busco integrar modelos avançados à pesquisa agronômica. Essa paixão por inovação culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>, liderando a missão de traduzir a ciência de dados em soluções práticas e inteligentes para o agronegócio.`, 'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`, 'about-p3': `Atuando no Laboratório de Bioinformática da UFV e como <strong>Coordenador Discente no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</strong>, tenho a oportunidade de colaborar em pesquisas de ponta e contribuir para a formação de novos cientistas, unindo esforços para avançar as fronteiras da biometria e da inteligência artificial aplicada à agropecuária.`,
+                'services-title': 'Como Posso Ajudar', 'service-title1': 'Consultoria em Dados e IA', 'service-desc1': 'Análise estratégica de dados, desenvolvimento de modelos de machine learning e implementação de soluções de IA para otimizar processos no agronegócio e na pesquisa.', 'service-title2': 'Colaboração Científica', 'service-desc2': 'Parcerias em projetos de pesquisa que envolvam genética, biometria e estatística aplicada, contribuindo com análises robustas e publicação de resultados de alto impacto.', 'service-title3': 'Capacitação e Treinamentos', 'service-desc3': 'Cursos e workshops customizados em R, Python, Software GENES e pipelines de análise de dados para equipes acadêmicas e corporativas, através da Conecta GEM.',
+                'publications-title': 'Publicações e Citações', 'publications-intro': 'Minhas publicações refletem um compromisso contínuo com a inovação científica. Cada artigo representa um esforço para desenvolver e aplicar metodologias que não apenas avançam o conhecimento teórico, mas também oferecem soluções práticas e eficientes para os desafios do agronegócio.', 'search-pub-placeholder': 'Buscar publicação...', 'clear-pub-search': 'Limpar busca', 'scholar-view-profile': 'Ver Perfil Completo →',
+                'metric-label-citations': 'Citações', 'metric-all': 'TODOS', 'metric-since': 'DESDE 2020', 'metric-label-h-index': 'Índice h', 'metric-label-i10-index': 'Índice i10', 'pub-read': 'Ver publicação →',
+                'education-title': 'Formação Acadêmica', 'edu-date1': '2023 - Presente', 'edu-title1': 'Doutorado em Estatística Aplicada e Biometria', 'edu-desc1': 'Aplicação de métodos estatísticos avançados e técnicas biométricas para desafios no melhoramento de plantas.', 'edu-date2': '2023 - Presente', 'edu-title2': 'Pós-Doutorado', 'edu-desc2': 'Desenvolvimento de análises estatísticas avançadas aplicadas ao melhoramento genético.', 'edu-date3': '2022 - 2023', 'edu-title3': 'Pós-Doutorado', 'edu-desc3': 'Estudos em seleção genômica ampla e modelos mistos aplicados à agricultura.', 'edu-title4': 'Pós-Doutorado', 'edu-desc4': 'Análises de GWS, GWAS e modelos mistos no projeto de melhoramento genético de mandioca.', 'edu-title5': 'Doutorado em Genética e Melhoramento', 'edu-desc5': 'Eficiência de técnicas de machine learning e redes neurais na predição genômica e identificação de marcadores.', 'edu-title6': 'Mestrado em Genética e Melhoramento', 'edu-desc6': 'Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais.', 'edu-title7': 'Graduação em Agronomia', 'edu-desc7': 'Estágio na EPAMIG com foco em planejamento experimental e análises estatísticas.',
+                'expertise-title': 'Áreas de Especialização', 'exp-title1': 'Genética Quantitativa', 'exp-desc1': 'Análise de variabilidade genética, GWS e GWAS para identificação de características de interesse agronômico.', 'exp-title2': 'Biometria Avançada', 'exp-desc2': 'Aplico modelagem estatística robusta e modelos mistos para extrair insights precisos e orientar decisões estratégicas.', 'exp-title3': 'Machine Learning & IA', 'exp-desc3': 'Utilizo algoritmos como Random Forest e redes neurais para criar modelos preditivos de alta performance na agricultura.', 'exp-title4': 'Pipelines Reprodutíveis', 'exp-desc4': 'Desenvolvimento de workflows automatizados em R e Python, versionamento com Git/GitHub e documentação técnica.', 'exp-title5': 'Melhoramento de Plantas', 'exp-desc5': 'Aplicação de técnicas avançadas de seleção genômica e análise de diversidade genética para otimização de cultivos.', 'exp-title7': 'Software GENES', 'exp-desc7': 'Análise de dados genéticos e estatísticos com modelos biométricos, cobrindo desde estatística experimental e biometria até análises multivariadas para estimação de parâmetros genéticos.',
+                'projects-title': 'Projetos & Repositórios', 'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.', 'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca', 'featured-title': 'Projetos em Destaque', 'show-more': 'Mostrar mais', 'show-less': 'Mostrar menos',
+                'licae-desc': 'O LICAE é um laboratório multidisciplinar dedicado a propor, avaliar e aplicar técnicas de Inteligência Computacional e Aprendizado Estatístico para solucionar problemas complexos na Agropecuária. Nosso objetivo é aperfeiçoar e complementar as metodologias biométricas tradicionais, desenvolvendo projetos inovadores em áreas como Redes Neurais, Seleção Genômica e Random Forest.', 'licae-item1': 'Pesquisa em redes neurais e seleção genômica', 'licae-item2': 'Desenvolvimento de modelos preditivos', 'licae-item3': 'Colaboração em projetos multidisciplinares',
+                'conecta-desc': 'A Conecta GEM nasceu da paixão por compartilhar conhecimento. Somos uma iniciativa que oferece capacitação, consultorias e mentorias de excelência em estatística, genética e melhoramento. Com coordenadores especialistas e uma metodologia focada no aprendizado individual, já qualificamos mais de mil pessoas, conectando a teoria da universidade com a prática do mercado.', 'conecta-item1': 'Consultoria em biometria e IA', 'conecta-item2': 'Implementação de pipelines de seleção genômica', 'conecta-item3': 'Capacitação e treinamentos em R e Python',
+                'skills-title': 'Habilidades Técnicas', 'skills-cat-1': 'Linguagens & Desenvolvimento', 'skills-cat-2': 'Análise & Modelagem', 'skills-cat-3': 'Biometria', 'skills-cat-4': 'Ferramentas & Plataformas', 'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Genética Quantitativa', 'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Modelos Mistos & Biometria', 'skill-name-genomic-sel': 'Seleção Genômica', 'skill-name-multivariate': 'Análise Multivariada', 'skill-name-genes': 'Software GENES', 'skill-name-dataviz': 'Visualização de Dados', 'skill-name-git': 'Git & GitHub', 'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Aplicações Interativas (Shiny)', 'skill-name-eda': 'Análise Exploratória (EDA)', 'skill-name-bioinfo': 'Bioinformática',
+                'contact-title': 'Contato', 'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.', 'contact-other': 'Redes Sociais e Perfis', 'form-name': 'Nome', 'form-name-ph': 'Seu nome completo', 'form-name-error': 'Por favor, insira seu nome.', 'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com', 'form-email-error': 'Por favor, insira um email válido.', 'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem', 'form-subject-error': 'Por favor, insira um assunto.', 'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...', 'form-message-error': 'Por favor, escreva uma mensagem.', 'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Obrigado! Sua mensagem foi enviada.', 'formError': 'Ocorreu um erro. Tente novamente.', 'download-cv': 'Baixar Currículo (PDF)',
+                'fetching_repos': 'Buscando repositórios...', 'loaded_repos_cache': (c) => `Carregado ${c} repositórios (cache).`, 'found_repos': (c) => `Encontrados ${c} repositórios.`, 'fetch_error': 'Limite de requisições da API atingido. Exibindo projetos principais. Os dados serão atualizados em breve.', 'no_repos_found': 'Nenhum repositório encontrado.', 'open_btn': 'Abrir', 'copy_btn': 'Copiar link', 'copied_btn': 'Copiado!', 'no_description': 'Sem descrição.', 'updated_at': 'Atualizado:',
+                'chart-title': '<b>Evolução da Produção Científica e Impacto</b>', 'chart-xaxis-title': 'Ano de Publicação', 'chart-yaxis-title': 'Número de Citações Recebidas', 'chart-colorbar-title': 'Nº de Pubs', 'footer-license-text': 'Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.', 'footer-update-text': 'Última atualização:', 'footer-location': 'Viçosa - Minas Gerais - Brasil', 'tech-stack': 'Tecnologias', 'project-problem': 'O Problema', 'all-topics': 'Todos',
             },
             en: {
-                'subtitle-1': 'Genetics & Statistics Researcher',
-                'subtitle-2': 'Data Scientist',
-                'subtitle-3': 'CEO & Co-founder - Conecta GEM',
-                'subtitle-4': 'Machine Learning Expert',
+                'subtitle-1': 'Genetics & Statistics Researcher', 'subtitle-2': 'Data Scientist', 'subtitle-3': 'CEO & Co-founder - Conecta GEM', 'subtitle-4': 'Machine Learning Expert',
                 'badge-phd': '🎓 PhD Candidate in Statistics - UFV', 'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM', 'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
                 'nav-about': 'About', 'nav-services': 'Services', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
-                'about-title': 'About Me',
-                'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`,
-                'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`,
-                'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
-                'services-title': 'How I Can Help',
-                'service-title1': 'Data & AI Consulting', 'service-desc1': 'Strategic data analysis, machine learning model development, and implementation of AI solutions to optimize processes in agribusiness and research.',
-                'service-title2': 'Scientific Collaboration', 'service-desc2': 'Partnerships in research projects involving genetics, biometrics, and applied statistics, contributing with robust analyses and high-impact publications.',
-                'service-title3': 'Training & Workshops', 'service-desc3': 'Customized courses and workshops in R, Python, GENES Software, and data analysis pipelines for academic and corporate teams, through Conecta GEM.',
-                'publications-title': 'Publications and Citations',
-                'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.',
-                'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search',
-                'scholar-view-profile': 'View Full Profile →',
-                'metric-label-citations': 'Citations', 'metric-all': 'ALL', 'metric-since': 'SINCE 2020', 'metric-label-h-index': 'h-index', 'metric-label-i10-index': 'i10-index',
-                'pub-read': 'View publication →',
-                'education-title': 'Education',
-                'edu-date1': '2023 - Present', 'edu-title1': 'PhD in Applied Statistics and Biometrics', 'edu-desc1': 'Application of advanced statistical methods and biometric techniques to challenges in plant breeding.',
-                'edu-date2': '2023 - Present', 'edu-title2': 'Postdoctoral Researcher', 'edu-desc2': 'Development of advanced statistical analyses applied to genetic improvement.',
-                'edu-date3': '2022 - 2023', 'edu-title3': 'Postdoctoral Researcher', 'edu-desc3': 'Studies in genome-wide selection and mixed models applied to agriculture.',
-                'edu-title4': 'Postdoctoral Researcher', 'edu-desc4': 'GWS, GWAS, and mixed model analyses in the cassava genetic improvement project.',
-                'edu-title5': 'PhD in Genetics and Plant Breeding', 'edu-desc5': 'Efficiency of machine learning techniques and neural networks in genomic prediction and marker identification.',
-                'edu-title6': 'MSc in Genetics and Plant Breeding', 'edu-desc6': 'Meta-analysis of parameter estimates in irrigated rice genotypes in Minas Gerais.',
-                'edu-title7': 'BSc in Agronomy', 'edu-desc7': 'Internship at EPAMIG focusing on experimental design and statistical analyses.',
-                'expertise-title': 'Areas of Expertise',
-                'exp-title1': 'Quantitative Genetics', 'exp-desc1': 'Analysis of genetic variability, GWS, and GWAS for identifying traits of agronomic interest.',
-                'exp-title2': 'Advanced Biometrics', 'exp-desc2': 'I apply robust statistical modeling and mixed models to extract precise insights and guide strategic decisions.',
-                'exp-title3': 'Machine Learning & AI', 'exp-desc3': 'I use algorithms like Random Forest and neural networks to create high-performance predictive models in agriculture.',
-                'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.',
-                'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.',
-                'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
-                'projects-title': 'Projects & Repositories',
-                'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.',
-                'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured Projects', 'show-more': 'Show more', 'show-less': 'Show less',
-                'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.',
-                'licae-item1': 'Research on neural networks and genomic selection', 'licae-item2': 'Development of predictive models', 'licae-item3': 'Collaboration in multidisciplinary projects',
-                'conecta-desc': 'At Conecta GEM, my mission is to serve as a bridge between academia and the market, translating cutting-edge research into AgTech solutions that generate real value for producers and companies in the sector.',
-                'conecta-item1': 'Consulting in biometrics and AI',
-                'conecta-item2': 'Implementation of genomic selection pipelines',
-                'conecta-item3': 'Training and workshops in R and Python',
-                'skills-title': 'Technical Skills',
-                'skills-cat-1': 'Languages & Development', 'skills-cat-2': 'Analysis & Modeling', 'skills-cat-3': 'Biometrics', 'skills-cat-4': 'Tools & Platforms',
-                'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Quantitative Genetics',
-                'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Mixed Models & Biometrics', 'skill-name-genomic-sel': 'Genomic Selection',
-                'skill-name-multivariate': 'Multivariate Analysis', 'skill-name-genes': 'GENES Software', 'skill-name-dataviz': 'Data Visualization', 'skill-name-git': 'Git & GitHub',
-                'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Interactive Apps (Shiny)', 'skill-name-eda': 'Exploratory Data Analysis (EDA)', 'skill-name-bioinfo': 'Bioinformatics',
-                'contact-title': 'Contact',
-                'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.',
-                'contact-other': 'Social Media and Profiles',
-                'form-name': 'Name', 'form-name-ph': 'Your full name', 'form-name-error': 'Please enter your name.',
-                'form-email': 'Email', 'form-email-ph': 'your.email@example.com', 'form-email-error': 'Please enter a valid email address.',
-                'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message', 'form-subject-error': 'Please enter a subject.',
-                'form-message': 'Message', 'form-message-ph': 'Write your message here...', 'form-message-error': 'Please write a message.',
-                'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Thank you! Your message has been sent.', 'formError': 'An error occurred. Please try again.',
-                'download-cv': 'Download CV (PDF)',
-                'fetching_repos': 'Fetching repositories...',
-                'loaded_repos_cache': (c) => `Loaded ${c} repositories (from cache).`,
-                'found_repos': (c) => `Found ${c} repositories.`,
-                'fetch_error': 'GitHub API rate limit reached. Displaying featured projects. Full data will be updated automatically later.',
-                'no_repos_found': 'No repositories found.',
-                'open_btn': 'Open', 'copy_btn': 'Copy link', 'copied_btn': 'Copied!', 'no_description': 'No description provided.', 'updated_at': 'Updated:',
-                'chart-title': '<b>Evolution of Scientific Production and Impact</b>', 'chart-xaxis-title': 'Year of Publication', 'chart-yaxis-title': 'Number of Citations Received', 'chart-colorbar-title': '# of Pubs',
-                'footer-license-text': 'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.',
-                'footer-update-text': 'Last updated:',
-                'footer-location': 'Viçosa - Minas Gerais - Brazil',
-                 'tech-stack': 'Tech Stack',
-                'project-problem': 'The Problem',
-                'all-topics': 'All',
+                'about-title': 'About Me', 'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`, 'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`, 'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
+                'services-title': 'How I Can Help', 'service-title1': 'Data & AI Consulting', 'service-desc1': 'Strategic data analysis, machine learning model development, and implementation of AI solutions to optimize processes in agribusiness and research.', 'service-title2': 'Scientific Collaboration', 'service-desc2': 'Partnerships in research projects involving genetics, biometrics, and applied statistics, contributing with robust analyses and high-impact publications.', 'service-title3': 'Training & Workshops', 'service-desc3': 'Customized courses and workshops in R, Python, GENES Software, and data analysis pipelines for academic and corporate teams, through Conecta GEM.',
+                'publications-title': 'Publications and Citations', 'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.', 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search', 'scholar-view-profile': 'View Full Profile →',
+                'metric-label-citations': 'Citations', 'metric-all': 'ALL', 'metric-since': 'SINCE 2020', 'metric-label-h-index': 'h-index', 'metric-label-i10-index': 'i10-index', 'pub-read': 'View publication →',
+                'education-title': 'Education', 'edu-date1': '2023 - Present', 'edu-title1': 'PhD in Applied Statistics and Biometrics', 'edu-desc1': 'Application of advanced statistical methods and biometric techniques to challenges in plant breeding.', 'edu-date2': '2023 - Present', 'edu-title2': 'Postdoctoral Researcher', 'edu-desc2': 'Development of advanced statistical analyses applied to genetic improvement.', 'edu-date3': '2022 - 2023', 'edu-title3': 'Postdoctoral Researcher', 'edu-desc3': 'Studies in genome-wide selection and mixed models applied to agriculture.', 'edu-title4': 'Postdoctoral Researcher', 'edu-desc4': 'GWS, GWAS, and mixed model analyses in the cassava genetic improvement project.', 'edu-title5': 'PhD in Genetics and Plant Breeding', 'edu-desc5': 'Efficiency of machine learning techniques and neural networks in genomic prediction and marker identification.', 'edu-title6': 'MSc in Genetics and Plant Breeding', 'edu-desc6': 'Meta-analysis of parameter estimates in irrigated rice genotypes in Minas Gerais.', 'edu-title7': 'BSc in Agronomy', 'edu-desc7': 'Internship at EPAMIG focusing on experimental design and statistical analyses.',
+                'expertise-title': 'Areas of Expertise', 'exp-title1': 'Quantitative Genetics', 'exp-desc1': 'Analysis of genetic variability, GWS, and GWAS for identifying traits of agronomic interest.', 'exp-title2': 'Advanced Biometrics', 'exp-desc2': 'I apply robust statistical modeling and mixed models to extract precise insights and guide strategic decisions.', 'exp-title3': 'Machine Learning & AI', 'exp-desc3': 'I use algorithms like Random Forest and neural networks to create high-performance predictive models in agriculture.', 'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.', 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.', 'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
+                'projects-title': 'Projects & Repositories', 'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.', 'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured Projects', 'show-more': 'Show more', 'show-less': 'Show less',
+                'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.', 'licae-item1': 'Research on neural networks and genomic selection', 'licae-item2': 'Development of predictive models', 'licae-item3': 'Collaboration in multidisciplinary projects',
+                'conecta-desc': 'At Conecta GEM, my mission is to serve as a bridge between academia and the market, translating cutting-edge research into AgTech solutions that generate real value for producers and companies in the sector.', 'conecta-item1': 'Consulting in biometrics and AI', 'conecta-item2': 'Implementation of genomic selection pipelines', 'conecta-item3': 'Training and workshops in R and Python',
+                'skills-title': 'Technical Skills', 'skills-cat-1': 'Languages & Development', 'skills-cat-2': 'Analysis & Modeling', 'skills-cat-3': 'Biometrics', 'skills-cat-4': 'Tools & Platforms', 'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Quantitative Genetics', 'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Mixed Models & Biometrics', 'skill-name-genomic-sel': 'Genomic Selection', 'skill-name-multivariate': 'Multivariate Analysis', 'skill-name-genes': 'GENES Software', 'skill-name-dataviz': 'Data Visualization', 'skill-name-git': 'Git & GitHub', 'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Interactive Apps (Shiny)', 'skill-name-eda': 'Exploratory Data Analysis (EDA)', 'skill-name-bioinfo': 'Bioinformatics',
+                'contact-title': 'Contact', 'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.', 'contact-other': 'Social Media and Profiles',
+                'form-name': 'Name', 'form-name-ph': 'Your full name', 'form-name-error': 'Please enter your name.', 'form-email': 'Email', 'form-email-ph': 'your.email@example.com', 'form-email-error': 'Please enter a valid email address.', 'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message', 'form-subject-error': 'Please enter a subject.', 'form-message': 'Message', 'form-message-ph': 'Write your message here...', 'form-message-error': 'Please write a message.', 'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Thank you! Your message has been sent.', 'formError': 'An error occurred. Please try again.', 'download-cv': 'Download CV (PDF)',
+                'fetching_repos': 'Fetching repositories...', 'loaded_repos_cache': (c) => `Loaded ${c} repositories (from cache).`, 'found_repos': (c) => `Found ${c} repositories.`, 'fetch_error': 'GitHub API rate limit reached. Displaying featured projects. Full data will be updated automatically later.', 'no_repos_found': 'No repositories found.', 'open_btn': 'Open', 'copy_btn': 'Copy link', 'copied_btn': 'Copied!', 'no_description': 'No description provided.', 'updated_at': 'Updated:',
+                'chart-title': '<b>Evolution of Scientific Production and Impact</b>', 'chart-xaxis-title': 'Year of Publication', 'chart-yaxis-title': 'Number of Citations Received', 'chart-colorbar-title': '# of Pubs', 'footer-license-text': 'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.', 'footer-update-text': 'Last updated:', 'footer-location': 'Viçosa - Minas Gerais - Brazil',
+                 'tech-stack': 'Tech Stack', 'project-problem': 'The Problem', 'all-topics': 'All',
             },
             pdf: {
-                pt: {
-                    'about-title': 'Sobre Mim',
-                    'services-title': 'Serviços & Consultoria',
-                    'skills-title': 'Habilidades Técnicas',
-                    'expertise-title': 'Áreas de Especialização',
-                    'education-title': 'Formação Acadêmica',
-                    'projects-title': 'Principais Projetos',
-                    'publications-title': 'Principais Publicações',
-                    'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.',
-                    'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.'
-                },
-                en: {
-                    'about-title': 'About Me',
-                    'services-title': 'Services & Consulting',
-                    'skills-title': 'Technical Skills',
-                    'expertise-title': 'Areas of Expertise',
-                    'education-title': 'Education',
-                    'projects-title': 'Main Projects',
-                    'publications-title': 'Main Publications',
-                    'projects-link': 'For more projects, visit my GitHub profile.',
-                    'publications-link': 'For more publications, visit my Google Scholar profile.'
-                }
+                pt: { 'about-title': 'Sobre Mim', 'services-title': 'Serviços & Consultoria', 'skills-title': 'Habilidades Técnicas', 'expertise-title': 'Áreas de Especialização', 'education-title': 'Formação Acadêmica', 'projects-title': 'Principais Projetos', 'publications-title': 'Principais Publicações', 'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.', 'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.' },
+                en: { 'about-title': 'About Me', 'services-title': 'Services & Consulting', 'skills-title': 'Technical Skills', 'expertise-title': 'Areas of Expertise', 'education-title': 'Education', 'projects-title': 'Main Projects', 'publications-title': 'Main Publications', 'projects-link': 'For more projects, visit my GitHub profile.', 'publications-link': 'For more publications, visit my Google Scholar profile.' }
             }
         };
 
@@ -1448,12 +1315,7 @@
             if (!subtitleEl) return;
             
             clearTimeout(subtitleTimeout);
-            const currentPhrases = [
-                translations[currentLang]['subtitle-1'],
-                translations[currentLang]['subtitle-2'],
-                translations[currentLang]['subtitle-3'],
-                translations[currentLang]['subtitle-4']
-            ].filter(Boolean);
+            const currentPhrases = [ translations[currentLang]['subtitle-1'], translations[currentLang]['subtitle-2'], translations[currentLang]['subtitle-3'], translations[currentLang]['subtitle-4'] ].filter(Boolean);
 
             if (currentPhrases.length === 0) return;
             const currentPhrase = currentPhrases[subtitleIndex];
@@ -1474,11 +1336,11 @@
 
             if (!isDeleting && charIndex === currentPhrase.length) {
                 isDeleting = true;
-                typeSpeed = 2000; // Pause at end
+                typeSpeed = 2000;
             } else if (isDeleting && charIndex === 0) {
                 isDeleting = false;
                 subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
-                typeSpeed = 500; // Pause before new phrase
+                typeSpeed = 500;
             }
             
             subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
@@ -1493,7 +1355,6 @@
                 const key = el.dataset.key;
                 const translation = translations[lang][key];
                 if (translation && typeof translation === 'function') {
-                    // Not used in this version, but good practice for keys that are functions
                 } else if (translation) {
                     el.innerHTML = translation;
                 }
@@ -1527,7 +1388,7 @@
             const GITHUB_USER = 'WevertonGomesCosta';
             const CACHE_KEY = 'gh_repos_cache_v8';
             const CACHE_TS_KEY = 'gh_repos_cache_ts_v8';
-            const CACHE_TTL = 1000 * 60 * 60 * 24; // Cache de 24 horas
+            const CACHE_TTL = 1000 * 60 * 60 * 24;
             const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
 
             const fallbackRepos = [
@@ -1550,8 +1411,7 @@
             function writeCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch (e) { console.warn('Falha ao escrever cache', e); } }
 
             async function fetchAllPages(url) {
-                let results = [];
-                let nextUrl = url;
+                let results = []; let nextUrl = url;
                 while (nextUrl) {
                     const response = await fetch(`${GITHUB_PROXY_URL}${encodeURIComponent(nextUrl)}`);
                     if (!response.ok) { throw new Error(`GitHub API request failed: ${response.status}`); }
@@ -1561,10 +1421,7 @@
                     nextUrl = null;
                     if (linkHeader) {
                         const nextLink = linkHeader.split(',').find(s => s.includes('rel="next"'));
-                        if (nextLink) {
-                            const match = nextLink.match(/<([^>]+)>/);
-                            if (match) nextUrl = match[1];
-                        }
+                        if (nextLink) { const match = nextLink.match(/<([^>]+)>/); if (match) nextUrl = match[1]; }
                     }
                 }
                 return results;
@@ -1582,74 +1439,34 @@
                 } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; allRepos = fallbackRepos; renderAll(); }
             }
             
-            function sortRepos(arr) { 
-                return [...arr].sort((a, b) => 
-                    b.stargazers_count - a.stargazers_count || 
-                    b.forks_count - a.forks_count ||
-                    new Date(b.updated_at) - new Date(a.updated_at)
-                ); 
-            }
+            function sortRepos(arr) { return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)); }
             
             function createCard(repo) {
-                const lang = currentLang;
-                const tags = [repo.language, ...(repo.topics || [])].filter(Boolean).map(t => t.toLowerCase().replace(/ /g, '-'));
+                const lang = currentLang; const tags = [repo.language, ...(repo.topics || [])].filter(Boolean).map(t => t.toLowerCase().replace(/ /g, '-'));
                 const cardHTML = `
-                    <div class="project-top">
-                        <h3>${escapeHtml(titleCase(repo.name))}</h3>
-                        <div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div>
-                    </div>
+                    <div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span class="badge">⭐ ${repo.stargazers_count}</span><span class="badge">🍴 ${repo.forks_count}</span></div></div>
                     <p class="project-desc">${escapeHtml(repo.description || translations[lang].no_description)}</p>
                     <div class="project-topics"></div>
-                    <div class="project-meta" style="margin-top: auto;">
-                        <span class="badge">${escapeHtml(repo.language || '—')}</span>
-                        <span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span>
-                    </div>
-                    <div class="actions">
-                        <a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a>
-                        <button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button>
-                    </div>
-                `;
-                const card = document.createElement('div');
-                card.className = 'project-card card';
-                card.setAttribute('role', 'listitem');
-                card.dataset.tags = tags.join(',');
-                card.innerHTML = cardHTML;
-
+                    <div class="project-meta" style="margin-top: auto;"><span class="badge">${escapeHtml(repo.language || '—')}</span><span class="small-muted">${translations[lang].updated_at} ${new Date(repo.updated_at).toLocaleDateString()}</span></div>
+                    <div class="actions"><a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[lang].open_btn}</a><button class="link-btn secondary" data-copy="${repo.html_url}">${translations[lang].copy_btn}</button></div>`;
+                const card = document.createElement('div'); card.className = 'project-card card'; card.setAttribute('role', 'listitem'); card.dataset.tags = tags.join(','); card.innerHTML = cardHTML;
                 const topicsContainer = card.querySelector('.project-topics');
-                if (topicsContainer && repo.topics && repo.topics.length > 0) {
-                    repo.topics.slice(0, 4).forEach(topic => { // Limita a 4 tópicos para não poluir
-                        const tag = document.createElement('span');
-                        tag.className = 'topic-tag';
-                        tag.textContent = topic;
-                        topicsContainer.appendChild(tag);
-                    });
-                }
-
+                if (topicsContainer && repo.topics && repo.topics.length > 0) { repo.topics.slice(0, 4).forEach(topic => { const tag = document.createElement('span'); tag.className = 'topic-tag'; tag.textContent = topic; topicsContainer.appendChild(tag); }); }
                 return card;
             }
             
             function render() {
-                listEl.innerHTML = ''; // Clear skeletons
-                const lang = currentLang; const filter = currentFilter.trim().toLowerCase();
+                listEl.innerHTML = ''; const lang = currentLang; const filter = currentFilter.trim().toLowerCase();
                 const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos;
-                const sorted = sortRepos(filtered);
-                const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
-                
+                const sorted = sortRepos(filtered); const toShow = filter ? sorted.length : Math.min(showingCount, sorted.length);
                 if (sorted.length === 0) { listEl.innerHTML = `<div class="project-card"><p class="project-desc">${translations[lang].no_repos_found}</p></div>`; } 
-                else { 
-                    sorted.slice(0, toShow).forEach(repo => { 
-                        const cardElement = createCard(repo);
-                        listEl.appendChild(cardElement); 
-                    }); 
-                }
+                else { sorted.slice(0, toShow).forEach(repo => { const cardElement = createCard(repo); listEl.appendChild(cardElement); }); }
                 shownCountEl.textContent = `${toShow} / ${sorted.length}`;
                 toggleBtn.classList.toggle('hidden', filter || toShow >= sorted.length);
                 toggleBtn.textContent = translations[lang][toShow >= sorted.length ? 'show-less' : 'show-more'];
             }
             
-            function renderAll() { 
-                render(); 
-            }
+            function renderAll() { render(); }
             function onCopy(e) { const url = e.target.getAttribute('data-copy'); navigator.clipboard.writeText(url).then(() => { const prev = e.target.textContent; e.target.textContent = translations[currentLang].copied_btn; setTimeout(() => e.target.textContent = prev, 1500); }); }
             function titleCase(str) { return (str || '').replace(/[-_]/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' '); }
             function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -1666,134 +1483,43 @@
             listEl.addEventListener('click', e => { if (e.target.matches('button[data-copy]')) onCopy(e); });
             
             fetchRepos();
-            return { 
-                renderAll,
-                get allRepos() { return allRepos; },
-                set showingCount(value) { showingCount = value; }
-            };
+            return { renderAll, get allRepos() { return allRepos; }, set showingCount(value) { showingCount = value; } };
         })();
     </script>
     <script>
         // --- Script para buscar publicações do Google Scholar e validação de formulário ---
         (function() {
-             // --- Lógica do Formulário de Contato com Validação ---
             const form = document.getElementById("contact-form");
             form.addEventListener("submit", async function handleSubmit(event) {
                 event.preventDefault();
                 const status = document.getElementById("form-status");
-                
-                if (!validateForm()) {
-                    status.textContent = '';
-                    return;
-                }
-
+                if (!validateForm()) { status.textContent = ''; return; }
                 const data = new FormData(event.target);
                 status.textContent = translations[currentLang].formSending;
                 status.style.color = 'var(--accent)';
-                
                 try {
-                    const response = await fetch(event.target.action, {
-                        method: form.method,
-                        body: data,
-                        headers: { 'Accept': 'application/json' }
-                    });
-                    
-                    if (response.ok) {
-                        status.textContent = translations[currentLang].formSuccess;
-                        status.style.color = 'var(--primary)';
-                        form.reset();
-                    } else {
-                        const responseData = await response.json();
-                        if (Object.hasOwn(responseData, 'errors')) {
-                            status.textContent = responseData["errors"].map(error => error["message"]).join(", ");
-                        } else {
-                            status.textContent = translations[currentLang].formError;
-                        }
-                        status.style.color = 'var(--error)';
-                    }
-                } catch (error) {
-                    status.textContent = translations[currentLang].formError;
-                    status.style.color = 'var(--error)';
-                }
+                    const response = await fetch(event.target.action, { method: form.method, body: data, headers: { 'Accept': 'application/json' } });
+                    if (response.ok) { status.textContent = translations[currentLang].formSuccess; status.style.color = 'var(--primary)'; form.reset(); } 
+                    else { const responseData = await response.json(); if (Object.hasOwn(responseData, 'errors')) { status.textContent = responseData["errors"].map(error => error["message"]).join(", "); } else { status.textContent = translations[currentLang].formError; } status.style.color = 'var(--error)'; }
+                } catch (error) { status.textContent = translations[currentLang].formError; status.style.color = 'var(--error)'; }
             });
 
             function validateForm() {
-                let isValid = true;
-                const name = document.getElementById('name');
-                const email = document.getElementById('email');
-                const subject = document.getElementById('subject');
-                const message = document.getElementById('message');
-
-                if (name.value.trim() === '') {
-                    showError(name, translations[currentLang]['form-name-error']);
-                    isValid = false;
-                } else {
-                    clearError(name);
-                }
-
-                if (!isValidEmail(email.value.trim())) {
-                    showError(email, translations[currentLang]['form-email-error']);
-                    isValid = false;
-                } else {
-                    clearError(email);
-                }
-
-                if (subject.value.trim() === '') {
-                    showError(subject, translations[currentLang]['form-subject-error']);
-                    isValid = false;
-                } else {
-                    clearError(subject);
-                }
-
-                if (message.value.trim() === '') {
-                    showError(message, translations[currentLang]['form-message-error']);
-                    isValid = false;
-                } else {
-                    clearError(message);
-                }
-
+                let isValid = true; const name = document.getElementById('name'); const email = document.getElementById('email'); const subject = document.getElementById('subject'); const message = document.getElementById('message');
+                if (name.value.trim() === '') { showError(name, translations[currentLang]['form-name-error']); isValid = false; } else { clearError(name); }
+                if (!isValidEmail(email.value.trim())) { showError(email, translations[currentLang]['form-email-error']); isValid = false; } else { clearError(email); }
+                if (subject.value.trim() === '') { showError(subject, translations[currentLang]['form-subject-error']); isValid = false; } else { clearError(subject); }
+                if (message.value.trim() === '') { showError(message, translations[currentLang]['form-message-error']); isValid = false; } else { clearError(message); }
                 return isValid;
             }
 
-            function showError(input, message) {
-                const formGroup = input.parentElement;
-                const errorDisplay = formGroup.querySelector('.error-message');
-                input.classList.add('error');
-                errorDisplay.textContent = message;
-                errorDisplay.style.display = 'block';
-            }
+            function showError(input, message) { const formGroup = input.parentElement; const errorDisplay = formGroup.querySelector('.error-message'); input.classList.add('error'); errorDisplay.textContent = message; errorDisplay.style.display = 'block'; }
+            function clearError(input) { const formGroup = input.parentElement; const errorDisplay = formGroup.querySelector('.error-message'); input.classList.remove('error'); errorDisplay.textContent = ''; errorDisplay.style.display = 'none'; }
+            function isValidEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
 
-            function clearError(input) {
-                const formGroup = input.parentElement;
-                const errorDisplay = formGroup.querySelector('.error-message');
-                input.classList.remove('error');
-                errorDisplay.textContent = '';
-                errorDisplay.style.display = 'none';
-            }
-
-            function isValidEmail(email) {
-                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(String(email).toLowerCase());
-            }
-
-            // --- Animação de Contagem ---
             function animateCountUp(el) {
-                const target = parseInt(el.textContent, 10);
-                if (isNaN(target)) return;
-                el.textContent = '0';
-                let current = 0;
-                const increment = Math.max(1, Math.ceil(target / 100));
-                const duration = 1500;
-                const stepTime = Math.abs(Math.floor(duration / (target/increment)));
-                
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        current = target;
-                        clearInterval(timer);
-                    }
-                    el.textContent = current;
-                }, stepTime);
+                const target = parseInt(el.textContent, 10); if (isNaN(target)) return; el.textContent = '0'; let current = 0; const increment = Math.max(1, Math.ceil(target / 100)); const duration = 1500; const stepTime = Math.abs(Math.floor(duration / (target/increment)));
+                const timer = setInterval(() => { current += increment; if (current >= target) { current = target; clearInterval(timer); } el.textContent = current; }, stepTime);
             }
 
             const metricsObserver = new IntersectionObserver((entries, observer) => {
@@ -1805,41 +1531,20 @@
                     }
                 });
             }, { threshold: 0.8 });
-            const metricsContainer = document.querySelector('.scholar-metrics');
-            if (metricsContainer) {
-                metricsObserver.observe(metricsContainer);
-            }
+            const metricsContainer = document.querySelector('.scholar-metrics'); if (metricsContainer) { metricsObserver.observe(metricsContainer); }
         })();
 
         window.scholarScript = (function() {
-            const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1";
-            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
-            const PROXY_URL = 'https://corsproxy.io/?';
-            const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
-            let allArticles = [];
-            let showingPubsCount = 3;
-            let citationGraphData = []; 
-            let activeYearFilter = null; 
+            const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1"; const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; const PROXY_URL = 'https://corsproxy.io/?'; const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
+            let allArticles = []; let showingPubsCount = 3; let citationGraphData = []; let activeYearFilter = null; 
 
             async function fetchFromSerpApi(params) {
-                const baseUrl = 'https://serpapi.com/search.json';
-                const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
-                const apiUrl = `${baseUrl}?${searchParams.toString()}`;
-                const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
-                
+                const baseUrl = 'https://serpapi.com/search.json'; const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY }); const apiUrl = `${baseUrl}?${searchParams.toString()}`; const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
                 try {
                     const res = await fetch(proxyRequestUrl);
-                    if (!res.ok) {
-                        const errorText = await res.text();
-                        console.error("Erro da API ou do Proxy:", errorText);
-                        if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
-                        throw new Error(`Falha na requisição. Status: ${res.status}.`);
-                    }
+                    if (!res.ok) { const errorText = await res.text(); console.error("Erro da API ou do Proxy:", errorText); if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg); throw new Error(`Falha na requisição. Status: ${res.status}.`); }
                     return await res.json();
-                } catch (error) {
-                    console.error("Erro ao buscar dados do Google Scholar:", error);
-                    throw error;
-                }
+                } catch (error) { console.error("Erro ao buscar dados do Google Scholar:", error); throw error; }
             }
             
             function renderInteractiveChart(graphData, articles) {
@@ -1848,174 +1553,52 @@
                 if (!container || typeof Plotly === 'undefined') return;
 
                 const yearlyData = {};
-                (graphData || []).forEach(item => {
-                    yearlyData[item.year] = { citations: item.citations || 0, pubs: 0, topPubTitle: '', topPubCites: -1 };
-                });
-
+                (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0, topPubTitle: '', topPubCites: -1 }; });
                 (articles || []).forEach(article => {
                     const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
                     if (yearMatches) {
                         const year = parseInt(yearMatches[yearMatches.length - 1]);
-                        if (year && yearlyData[year]) {
-                            yearlyData[year].pubs++;
-                            const cites = article.cited_by?.value || 0;
-                            if (cites > yearlyData[year].topPubCites) {
-                                yearlyData[year].topPubCites = cites;
-                                yearlyData[year].topPubTitle = article.title;
-                            }
-                        }
+                        if (year && yearlyData[year]) { yearlyData[year].pubs++; const cites = article.cited_by?.value || 0; if (cites > yearlyData[year].topPubCites) { yearlyData[year].topPubCites = cites; yearlyData[year].topPubTitle = article.title; } }
                     }
                 });
-
                 const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
-                
-                const years = sortedYears;
-                const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
-                const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
-                const maxPubs = Math.max(...pubCounts, 1);
-                const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); 
+                const years = sortedYears; const pubCounts = sortedYears.map(year => yearlyData[year].pubs || 0); const citCounts = sortedYears.map(year => yearlyData[year].citations || 0);
+                const maxPubs = Math.max(...pubCounts, 1); const scaledPubCounts = pubCounts.map(p => Math.max(10, (p / maxPubs) * 40)); 
+                const customData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0, topPub: yearlyData[year].topPubTitle || "N/A" }));
 
-                const customData = sortedYears.map(year => ({
-                    pubs: yearlyData[year].pubs || 0,
-                    topPub: yearlyData[year].topPubTitle || "N/A"
-                }));
-
-                const traceBubbles = {
-                    x: years,
-                    y: citCounts,
-                    customdata: customData,
-                    hovertemplate: 
-                        '<b>Ano: %{x}</b><br><br>' +
-                        'Citações recebidas: <b>%{y}</b><br>' +
-                        'Publicações no ano: <b>%{customdata.pubs}</b><br>' +
-                        '<extra></extra>',
-                    mode: 'markers',
-                    marker: {
-                        size: scaledPubCounts,
-                        color: pubCounts,
-                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']],
-                        showscale: true,
-                        colorbar: {
-                            title: translations[currentLang]['chart-colorbar-title'],
-                            thickness: 10,
-                            len: 0.9,
-                            x: 1.02,
-                            xanchor: 'left',
-                            tickfont: { color: 'var(--text-muted)' },
-                            titlefont: { color: 'var(--text-muted)' },
-                            outlinecolor: 'var(--border)',
-                        },
-                        line: {
-                            color: 'var(--primary-dark)',
-                            width: 1
-                        }
-                    },
-                    name: 'Impacto Anual'
-                };
-
-                const traceLine = {
-                    x: years,
-                    y: citCounts,
-                    type: 'scatter',
-                    mode: 'lines',
-                    line: {
-                        color: 'var(--accent)', 
-                        width: 2,
-                        shape: 'spline',
-                        smoothing: 0.7
-                    },
-                    hoverinfo: 'none',
-                    name: 'Tendência de Citações',
-                    showlegend: false
-                };
-                
+                const traceBubbles = { x: years, y: citCounts, customdata: customData, hovertemplate: '<b>Ano: %{x}</b><br><br>Citações recebidas: <b>%{y}</b><br>Publicações no ano: <b>%{customdata.pubs}</b><br><extra></extra>', mode: 'markers',
+                    marker: { size: scaledPubCounts, color: pubCounts, colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true,
+                        colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: 0.9, x: 1.02, xanchor: 'left', tickfont: { color: 'var(--text-muted)' }, titlefont: { color: 'var(--text-muted)' }, outlinecolor: 'var(--border)', },
+                        line: { color: 'var(--primary-dark)', width: 1 } }, name: 'Impacto Anual' };
+                const traceLine = { x: years, y: citCounts, type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none', name: 'Tendência de Citações', showlegend: false };
                 const data = [traceBubbles, traceLine];
-
+                
+                const isMobile = window.innerWidth < 768;
                 const layout = {
-                    title: {
-                        text: translations[currentLang]['chart-title'],
-                        x: 0.05,
-                        xanchor: 'left',
-                        y: 0.95,
-                        yanchor: 'top',
-                        font: { size: 18, color: 'var(--text)' }
-                    },
-                    paper_bgcolor: 'transparent',
-                    plot_bgcolor: 'transparent',
-                    font: { color: 'var(--text-muted)', family: 'inherit' },
-                    xaxis: { 
-                        title: translations[currentLang]['chart-xaxis-title'],
-                        gridcolor: 'var(--border)', 
-                        gridwidth: 1,
-                        griddash: 'dot',
-                        zeroline: false,
-                        showline: true,
-                        linecolor: 'var(--border)',
-                        type: 'category',
-                        tickangle: -45
-                    },
-                    yaxis: { 
-                        title: translations[currentLang]['chart-yaxis-title'], 
-                        gridcolor: 'var(--border)',
-                        gridwidth: 1,
-                        griddash: 'dot',
-                        zeroline: false,
-                        showline: true,
-                        linecolor: 'var(--border)',
-                    },
+                    title: { text: translations[currentLang]['chart-title'], x: 0.05, xanchor: 'left', y: 0.95, yanchor: 'top', font: { size: 18, color: 'var(--text)' } },
+                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
+                    xaxis: { title: translations[currentLang]['chart-xaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', type: 'category', tickangle: -45 },
+                    yaxis: { title: translations[currentLang]['chart-yaxis-title'], gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', },
                     legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1 },
-                    margin: { l: 80, r: 40, b: 80, t: 80 },
-                    hovermode: 'closest',
-                    showlegend: false,
-                    autosize: true
+                    margin: isMobile ? { l: 60, r: 20, b: 80, t: 80 } : { l: 80, r: 40, b: 80, t: 80 },
+                    hovermode: 'closest', showlegend: false, autosize: true
                 };
-
                 const config = { responsive: true, displaylogo: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-
                 Plotly.newPlot(containerId, data, layout, config);
                 
+                // CORREÇÃO: Adiciona listener para redimensionar o gráfico
+                window.addEventListener('resize', () => { Plotly.Plots.resize(containerId); });
+
                 const plotContainer = document.getElementById(containerId);
-                if (plotContainer) {
-                    plotContainer.addEventListener('mousemove', e => {
-                        const card = plotContainer.closest('.card');
-                        if (card) {
-                            const rect = card.getBoundingClientRect();
-                            const x = e.clientX - rect.left;
-                            const y = e.clientY - rect.top;
-                            card.style.setProperty('--mouse-x', `${x}px`);
-                            card.style.setProperty('--mouse-y', `${y}px`);
-                        }
-                    });
-                }
+                if (plotContainer) { plotContainer.addEventListener('mousemove', e => { const card = plotContainer.closest('.card'); if (card) { const rect = card.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; card.style.setProperty('--mouse-x', `${x}px`); card.style.setProperty('--mouse-y', `${y}px`); } }); }
                 
                 const chartDiv = document.getElementById(containerId);
                 chartDiv.on('plotly_click', function(data) {
                     if (data.points.length > 0) {
-                        const point = data.points[0];
-                        const yearClicked = parseInt(point.x);
-
-                        Plotly.animate(containerId, {
-                            data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }],
-                            traces: [0]
-                        }, {
-                            transition: { duration: 300, easing: 'cubic-in-out' },
-                            frame: { duration: 300 }
-                        });
-
-                        setTimeout(() => {
-                            Plotly.animate(containerId, {
-                                data: [{ 'marker.opacity': 1 }],
-                                traces: [0]
-                            }, {
-                                transition: { duration: 500 },
-                                frame: { duration: 500 }
-                            });
-                        }, 800);
-
-                        activeYearFilter = yearClicked;
-                        document.getElementById('publication-search').value = ''; 
-                        renderPublications();
-                        updateFilterUI();
+                        const point = data.points[0]; const yearClicked = parseInt(point.x);
+                        Plotly.animate(containerId, { data: [{ 'marker.opacity': years.map(y => y == yearClicked ? 1 : 0.3) }], traces: [0] }, { transition: { duration: 300, easing: 'cubic-in-out' }, frame: { duration: 300 } });
+                        setTimeout(() => { Plotly.animate(containerId, { data: [{ 'marker.opacity': 1 }], traces: [0] }, { transition: { duration: 500 }, frame: { duration: 500 } }); }, 800);
+                        activeYearFilter = yearClicked; document.getElementById('publication-search').value = ''; renderPublications(); updateFilterUI();
                     }
                 });
             }
@@ -2025,637 +1608,142 @@
                 try {
                     const profile = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID });
                     if (profile.error) throw new Error(profile.error);
-
                     const citedBy = profile.cited_by;
-
                     if (citedBy && citedBy.table && citedBy.table.length >= 3) {
-                        const citationsData = citedBy.table.find(item => item.citations)?.citations;
-                        const hIndexData = citedBy.table.find(item => item.h_index)?.h_index;
-                        const i10IndexData = citedBy.table.find(item => item.i10_index)?.i10_index;
-                        
-                        if (citationsData) {
-                            document.getElementById("cit-total").textContent = citationsData.all ?? '—';
-                            const sinceKey = Object.keys(citationsData).find(k => k.startsWith('since_'));
-                            document.getElementById("cit-period").textContent = sinceKey ? citationsData[sinceKey] : '—';
-                        }
-                        if (hIndexData) {
-                            document.getElementById("h-total").textContent = hIndexData.all ?? '—';
-                            const sinceKey = Object.keys(hIndexData).find(k => k.startsWith('since_'));
-                            document.getElementById("h-period").textContent = sinceKey ? hIndexData[sinceKey] : '—';
-                        }
-                        if (i10IndexData) {
-                            document.getElementById("i10-total").textContent = i10IndexData.all ?? '—';
-                            const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_'));
-                            document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—';
-                        }
-                    } else if (citedBy?.value) {
-                        document.getElementById("cit-total").textContent = citedBy.value ?? '—';
-                    } else {
-                        throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado.");
-                    }
-
-                    if (profile.author_url) {
-                        document.querySelector(".scholar-link a").href = profile.author_url;
-                    }
-                    if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) {
-                         citationGraphData = profile.cited_by.graph;
-                    }
+                        const citationsData = citedBy.table.find(item => item.citations)?.citations; const hIndexData = citedBy.table.find(item => item.h_index)?.h_index; const i10IndexData = citedBy.table.find(item => item.i10_index)?.i10_index;
+                        if (citationsData) { document.getElementById("cit-total").textContent = citationsData.all ?? '—'; const sinceKey = Object.keys(citationsData).find(k => k.startsWith('since_')); document.getElementById("cit-period").textContent = sinceKey ? citationsData[sinceKey] : '—'; }
+                        if (hIndexData) { document.getElementById("h-total").textContent = hIndexData.all ?? '—'; const sinceKey = Object.keys(hIndexData).find(k => k.startsWith('since_')); document.getElementById("h-period").textContent = sinceKey ? hIndexData[sinceKey] : '—'; }
+                        if (i10IndexData) { document.getElementById("i10-total").textContent = i10IndexData.all ?? '—'; const sinceKey = Object.keys(i10IndexData).find(k => k.startsWith('since_')); document.getElementById("i10-period").textContent = sinceKey ? i10IndexData[sinceKey] : '—'; }
+                    } else if (citedBy?.value) { document.getElementById("cit-total").textContent = citedBy.value ?? '—'; } 
+                    else { throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado."); }
+                    if (profile.author_url) { document.querySelector(".scholar-link a").href = profile.author_url; }
+                    if (profile.cited_by?.graph && Array.isArray(profile.cited_by.graph)) { citationGraphData = profile.cited_by.graph; }
                 } catch (e) {
                     console.error("Erro ao atualizar seção do Scholar:", e);
                     const scholarCard = document.querySelector(".scholar-summary-card");
-                    if (scholarCard && !scholarCard.querySelector('.scholar-error')) {
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'scholar-error';
-                        errorDiv.style.color = '#f44336';
-                        errorDiv.style.marginTop = '15px';
-                        errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`;
-                        scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv);
-                    }
+                    if (scholarCard && !scholarCard.querySelector('.scholar-error')) { const errorDiv = document.createElement('div'); errorDiv.className = 'scholar-error'; errorDiv.style.color = '#f44336'; errorDiv.style.marginTop = '15px'; errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`; scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv); }
                 }
             }
             
             function renderPublications(filter = '') {
-                const grid = document.getElementById("publicacoes-grid");
-                const toggleBtn = document.getElementById('pubs-toggle-more');
-                const shownCountEl = document.getElementById('pubs-shown-count');
-                grid.innerHTML = ""; 
-
+                const grid = document.getElementById("publicacoes-grid"); const toggleBtn = document.getElementById('pubs-toggle-more'); const shownCountEl = document.getElementById('pubs-shown-count'); grid.innerHTML = ""; 
                 let filteredByYear = allArticles;
-                if (activeYearFilter) {
-                    filteredByYear = allArticles.filter(art => {
-                        if (!art.publication) return false;
-                        const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g);
-                        if (yearMatches && yearMatches.length > 0) {
-                            const year = parseInt(yearMatches[yearMatches.length - 1]);
-                            return year === activeYearFilter;
-                        }
-                        return false;
-                    });
-                }
-                
+                if (activeYearFilter) { filteredByYear = allArticles.filter(art => { if (!art.publication) return false; const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g); if (yearMatches && yearMatches.length > 0) { const year = parseInt(yearMatches[yearMatches.length - 1]); return year === activeYearFilter; } return false; }); }
                 const lowerCaseFilter = filter.trim().toLowerCase();
-                
-                const filteredArticles = lowerCaseFilter 
-                    ? filteredByYear.filter(art => 
-                        (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
-                        (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
-                        (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
-                    )
-                    : filteredByYear;
-
+                const filteredArticles = lowerCaseFilter ? filteredByYear.filter(art => (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) || (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) || (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))) : filteredByYear;
                 const articlesToShow = filteredArticles.slice(0, showingPubsCount);
-
-                if (articlesToShow.length === 0) {
-                    grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
-                    shownCountEl.textContent = `0 / 0`;
-                    toggleBtn.classList.add('hidden');
-                    return;
-                }
-                
+                if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
                 articlesToShow.forEach((art) => {
-                    const card = document.createElement("div");
-                    card.className = "card reveal publication-card";
-                    const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
-                    card.innerHTML = `
-                        <h3>${art.title || 'Título indisponível'}</h3>
-                        <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
-                        <p>${art.snippet || ""}</p>
-                        <p class="citations">${citationText}</p>
-                        <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>
-                    `;
+                    const card = document.createElement("div"); card.className = "card reveal publication-card"; const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
+                    card.innerHTML = `<h3>${art.title || 'Título indisponível'}</h3><p class="publication-meta">${art.publication || 'Publicação indisponível'}</p><p>${art.snippet || ""}</p><p class="citations">${citationText}</p><a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>`;
                     grid.appendChild(card);
                 });
-                
                 shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
                 toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
                 toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
-
-                const revealObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.1 });
+                const revealObserver = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.1 });
                 grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             }
 
             async function fetchAllScholarArticles() {
-                let start = 0;
-                let allResults = [];
-                let hasMore = true;
-                const articlesPerPage = 20;
-
+                let start = 0; let allResults = []; let hasMore = true; const articlesPerPage = 20;
                 while (hasMore) {
                     try {
-                        const result = await fetchFromSerpApi({
-                            engine: 'google_scholar_author',
-                            author_id: SCHOLAR_USER_ID,
-                            hl: 'pt-BR',
-                            start: start,
-                            num: articlesPerPage
-                        });
-
-                        if (result.error) {
-                            if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
-                            throw new Error(result.error);
-                        }
-
+                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: articlesPerPage });
+                        if (result.error) { if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg); throw new Error(result.error); }
                         const articles = result.articles || [];
-                        if (articles.length === 0) {
-                            hasMore = false;
-                        } else {
-                            allResults = allResults.concat(articles);
-                            if (articles.length < articlesPerPage) {
-                                hasMore = false;
-                            } else {
-                                start += articlesPerPage;
-                            }
-                        }
-                    } catch(e) {
-                        console.error(`Erro ao buscar página de publicações (start=${start}):`, e);
-                        hasMore = false; 
-                        if (allResults.length === 0) throw e;
-                    }
+                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); if (articles.length < articlesPerPage) { hasMore = false; } else { start += articlesPerPage; } }
+                    } catch(e) { console.error(`Erro ao buscar página de publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
                 }
                 return allResults;
             }
 
             async function updateScholarPublications() {
-                const grid = document.getElementById("publicacoes-grid");
-                grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
-
+                const grid = document.getElementById("publicacoes-grid"); grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
                 try {
-                    allArticles = await fetchAllScholarArticles();
-                    allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
-                    renderPublications();
-                    renderInteractiveChart(citationGraphData, allArticles);
+                    allArticles = await fetchAllScholarArticles(); allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0)); renderPublications(); renderInteractiveChart(citationGraphData, allArticles);
                 } catch (e) {
-                    console.error("Erro ao atualizar publicações:", e);
-                    grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                    console.error("Erro ao atualizar publicações:", e); grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
                     document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: #f44336;">Erro ao carregar o gráfico: ${e.message}</div>`;
                 }
             }
 
             function updateFilterUI() {
-                const controlsContainer = document.querySelector('#publicacoes .controls');
-                let filterChip = document.getElementById('year-filter-chip');
-                
+                const controlsContainer = document.querySelector('#publicacoes .controls'); let filterChip = document.getElementById('year-filter-chip');
                 if (activeYearFilter) {
-                    if (!filterChip) {
-                        filterChip = document.createElement('div');
-                        filterChip.id = 'year-filter-chip';
-                        filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;';
-                        controlsContainer.appendChild(filterChip);
-                    }
-                    filterChip.innerHTML = `
-                        <span>Filtrando por: ${activeYearFilter}</span>
-                        <button style="background: none; border: none; color: var(--dark); font-size: 1.2rem; cursor: pointer; line-height: 1;">&times;</button>
-                    `;
-                    filterChip.querySelector('button').onclick = () => {
-                        activeYearFilter = null;
-                        renderPublications(document.getElementById('publication-search').value);
-                        updateFilterUI();
-                    };
-                } else {
-                    if (filterChip) {
-                        filterChip.remove();
-                    }
-                }
+                    if (!filterChip) { filterChip = document.createElement('div'); filterChip.id = 'year-filter-chip'; filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;'; controlsContainer.appendChild(filterChip); }
+                    filterChip.innerHTML = `<span>Filtrando por: ${activeYearFilter}</span><button style="background: none; border: none; color: var(--dark); font-size: 1.2rem; cursor: pointer; line-height: 1;">&times;</button>`;
+                    filterChip.querySelector('button').onclick = () => { activeYearFilter = null; renderPublications(document.getElementById('publication-search').value); updateFilterUI(); };
+                } else { if (filterChip) { filterChip.remove(); } }
             }
 
             document.addEventListener("DOMContentLoaded", () => {
-                updateScholarSection();
-                updateScholarPublications();
-
-                const pubSearchInput = document.getElementById('publication-search');
-                const pubClearBtn = document.getElementById('publication-clear-btn');
-                const pubToggleBtn = document.getElementById('pubs-toggle-more');
-                
+                updateScholarSection(); updateScholarPublications();
+                const pubSearchInput = document.getElementById('publication-search'); const pubClearBtn = document.getElementById('publication-clear-btn'); const pubToggleBtn = document.getElementById('pubs-toggle-more');
                 const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-
-                pubSearchInput.addEventListener('input', debounce(e => {
-                    showingPubsCount = 3; 
-                    renderPublications(e.target.value);
-                }));
-                
-                pubClearBtn.addEventListener('click', () => {
-                    pubSearchInput.value = '';
-                    showingPubsCount = 3;
-                    if (activeYearFilter) {
-                        activeYearFilter = null;
-                        updateFilterUI();
-                    }
-                    renderPublications();
-                    pubSearchInput.focus();
-                });
-
+                pubSearchInput.addEventListener('input', debounce(e => { showingPubsCount = 3; renderPublications(e.target.value); }));
+                pubClearBtn.addEventListener('click', () => { pubSearchInput.value = ''; showingPubsCount = 3; if (activeYearFilter) { activeYearFilter = null; updateFilterUI(); } renderPublications(); pubSearchInput.focus(); });
                 pubToggleBtn.addEventListener('click', () => {
                     const filter = pubSearchInput.value.trim().toLowerCase();
-
                     let baseArticleList = allArticles;
-                    if (activeYearFilter) {
-                         baseArticleList = allArticles.filter(art => {
-                            if (!art.publication) return false;
-                            const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g);
-                            if (yearMatches && yearMatches.length > 0) {
-                                const year = parseInt(yearMatches[yearMatches.length - 1]);
-                                return year === activeYearFilter;
-                            }
-                            return false;
-                        });
-                    }
-
-                    const filteredArticles = filter 
-                        ? baseArticleList.filter(art => 
-                            (art.title && art.title.toLowerCase().includes(filter)) ||
-                            (art.publication && art.publication.toLowerCase().includes(filter)) ||
-                            (art.snippet && art.snippet.toLowerCase().includes(filter))
-                          )
-                        : baseArticleList;
-                    
+                    if (activeYearFilter) { baseArticleList = allArticles.filter(art => { if (!art.publication) return false; const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g); if (yearMatches && yearMatches.length > 0) { const year = parseInt(yearMatches[yearMatches.length - 1]); return year === activeYearFilter; } return false; }); }
+                    const filteredArticles = filter ? baseArticleList.filter(art => (art.title && art.title.toLowerCase().includes(filter)) || (art.publication && art.publication.toLowerCase().includes(filter)) || (art.snippet && art.snippet.toLowerCase().includes(filter))) : baseArticleList;
                     showingPubsCount = Math.min(showingPubsCount + 3, filteredArticles.length);
                     renderPublications(pubSearchInput.value);
                 });
             });
 
-            return {
-                renderPublications,
-                renderChart: () => {
-                    renderInteractiveChart(citationGraphData, allArticles);
-                },
-                get allArticles() { return allArticles; },
-                set showingPubsCount(value) { showingPubsCount = value; }
-            };
+            return { renderPublications, renderChart: () => { renderInteractiveChart(citationGraphData, allArticles); }, get allArticles() { return allArticles; }, set showingPubsCount(value) { showingPubsCount = value; } };
         })();
     </script>
      <script>
         // --- Particle Background Script ---
         document.addEventListener('DOMContentLoaded', () => {
-            const canvas = document.getElementById('particle-canvas');
-            if (!canvas) return;
-
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            
-            function setCanvasSize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            class Particle {
-                constructor(x, y, directionX, directionY, size, color) {
-                    this.x = x;
-                    this.y = y;
-                    this.directionX = directionX;
-                    this.directionY = directionY;
-                    this.size = size;
-                    this.color = color;
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                    ctx.fillStyle = 'rgba(148, 163, 184, 0.1)';
-                    ctx.fill();
-                }
-                update() {
-                    if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-                    if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-                    this.x += this.directionX;
-                    this.y += this.directionY;
-                    this.draw();
-                }
-            }
-
-            function init() {
-                particles = [];
-                let density = (canvas.width * canvas.height) / 15000;
-                for (let i = 0; i < density && i < 120; i++) {
-                    let size = Math.random() * 2 + 1;
-                    let x = Math.random() * (innerWidth - size * 2) + size;
-                    let y = Math.random() * (innerHeight - size * 2) + size;
-                    let directionX = (Math.random() * .4) - .2;
-                    let directionY = (Math.random() * .4) - .2;
-                    particles.push(new Particle(x, y, directionX, directionY, size));
-                }
-            }
-
-            function connect() {
-                let opacityValue = 1;
-                for (let a = 0; a < particles.length; a++) {
-                    for (let b = a; b < particles.length; b++) {
-                        let distance = Math.sqrt(
-                            (particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)
-                            + (particles[a].y - particles[b].y) * (particles[a].y - particles[b].y)
-                        );
-                        if (distance < 120) {
-                            opacityValue = 1 - (distance / 120);
-                            ctx.strokeStyle = 'rgba(148, 163, 184, ' + opacityValue * 0.2 + ')';
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            ctx.moveTo(particles[a].x, particles[a].y);
-                            ctx.lineTo(particles[b].x, particles[b].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-            }
-
-            function animate() {
-                requestAnimationFrame(animate);
-                ctx.clearRect(0, 0, innerWidth, innerHeight);
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                }
-                connect();
-            }
-
-            window.addEventListener('resize', () => {
-                setCanvasSize();
-                init();
-            });
-
-            setCanvasSize();
-            init();
-            animate();
+            const canvas = document.getElementById('particle-canvas'); if (!canvas) return; const ctx = canvas.getContext('2d'); let particles = [];
+            function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            class Particle { constructor(x, y, dX, dY, s, c) { this.x = x; this.y = y; this.directionX = dX; this.directionY = dY; this.size = s; this.color = c; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX; if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY; this.x += this.directionX; this.y += this.directionY; this.draw(); } }
+            function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < density && i < 120; i++) { let size = Math.random() * 2 + 1; let x = Math.random() * (innerWidth - size * 2) + size; let y = Math.random() * (innerHeight - size * 2) + size; let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2; particles.push(new Particle(x, y, dX, dY, size)); } }
+            function connect() { let opacityValue = 1; for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (distance < 120) { opacityValue = 1 - (distance / 120); ctx.strokeStyle = `rgba(148, 163, 184, ${opacityValue * 0.2})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
+            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); for (let i = 0; i < particles.length; i++) { particles[i].update(); } connect(); }
+            window.addEventListener('resize', () => { setCanvasSize(); init(); }); setCanvasSize(); init(); animate();
         });
     </script>
 
-    <!-- SCRIPT PARA GERAR PDF ATUALIZADO -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const downloadBtn = document.getElementById('download-cv-btn');
-            if(downloadBtn) {
-                downloadBtn.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    generateCvPdf();
-                });
-            }
+            if(downloadBtn) { downloadBtn.addEventListener('click', (event) => { event.preventDefault(); generateCvPdf(); }); }
         });
 
         async function generateCvPdf() {
-            const button = document.getElementById('download-cv-btn');
-            const originalButtonHTML = button.innerHTML;
-            const toast = document.getElementById('toast-notification');
-            const { jsPDF } = window.jspdf;
-            const pdfTranslations = translations.pdf[currentLang];
-
-            // --- 1. Preparar UI ---
-            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Gerando...</span>`;
-            button.style.pointerEvents = 'none';
-            toast.textContent = 'Preparando seu currículo...';
-            toast.classList.add('show');
-
+            const button = document.getElementById('download-cv-btn'); const originalButtonHTML = button.innerHTML; const toast = document.getElementById('toast-notification'); const { jsPDF } = window.jspdf; const pdfTranslations = translations.pdf[currentLang];
+            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Gerando...</span>`; button.style.pointerEvents = 'none'; toast.textContent = 'Preparando seu currículo...'; toast.classList.add('show');
             try {
-                // --- 2. Inicializar PDF e definir layout ---
-                const doc = new jsPDF('p', 'pt', 'a4');
-                const page_width = doc.internal.pageSize.getWidth();
-                const margin = 40;
-                const max_width = page_width - margin * 2;
-                let y = margin;
-                const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
+                const doc = new jsPDF('p', 'pt', 'a4'); const page_width = doc.internal.pageSize.getWidth(); const margin = 40; const max_width = page_width - margin * 2; let y = margin; const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
+                const checkPageBreak = (neededHeight) => { if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) { doc.addPage(); y = margin; } };
+                const avatarImg = document.querySelector('.avatar'); let avatarDataUrl = null;
+                try { const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}`); const blob = await response.blob(); avatarDataUrl = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); }); } catch(e) { console.error("Não foi possível carregar a imagem do avatar:", e); }
+                if (avatarDataUrl) { doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100); }
+                doc.setFontSize(24); doc.setFont('helvetica', 'bold'); doc.text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
+                doc.setFontSize(11); doc.setFont('helvetica', 'normal'); doc.setTextColor(100); doc.text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
+                doc.setFontSize(10); doc.setTextColor(80); doc.text("Email: wevertonufv@gmail.com", margin + 115, y + 75); doc.text("LinkedIn: linkedin.com/in/wevertoncosta", margin + 115, y + 90); y += 120;
 
-                const checkPageBreak = (neededHeight) => {
-                    if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
-                        doc.addPage();
-                        y = margin;
-                    }
-                };
-                
-                // --- 3. Buscar e converter imagem do Avatar ---
-                const avatarImg = document.querySelector('.avatar');
-                let avatarDataUrl = null;
-                try {
-                    const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}`);
-                    const blob = await response.blob();
-                    avatarDataUrl = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(blob);
-                    });
-                } catch(e) {
-                    console.error("Não foi possível carregar a imagem do avatar:", e);
-                }
-                
-                // --- 4. Adicionar Cabeçalho ---
-                if (avatarDataUrl) {
-                    doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
-                }
-                
-                doc.setFontSize(24);
-                doc.setFont('helvetica', 'bold');
-                doc.text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
-                
-                doc.setFontSize(11);
-                doc.setFont('helvetica', 'normal');
-                doc.setTextColor(100);
-                doc.text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
+                const addSectionTitle = (title) => { checkPageBreak(40); y += 20; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(title.toUpperCase(), margin, y); y += 5; doc.setLineWidth(1.5); doc.line(margin, y, page_width - margin, y); y += 15; };
+                const addJustifiedText = (content) => { doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(80); const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width); const textHeight = lines.length * 12; checkPageBreak(textHeight); doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width }); y += textHeight + 5; };
+                const addBulletedList = (items) => { doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(80); items.forEach(item => { const text = `• ${item}`; const lines = doc.splitTextToSize(text, max_width - 10); const textHeight = lines.length * 12; checkPageBreak(textHeight); doc.text(lines, margin, y); y+= textHeight + 2; }); }
 
-                doc.setFontSize(10);
-                doc.setTextColor(80);
-                doc.text("Email: wevertonufv@gmail.com", margin + 115, y + 75);
-                doc.text("LinkedIn: linkedin.com/in/wevertoncosta", margin + 115, y + 90);
+                addSectionTitle(pdfTranslations['about-title']); const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join(' '); addJustifiedText(aboutText);
+                addSectionTitle(pdfTranslations['services-title']); document.querySelectorAll('#servicos .card').forEach(card => { const titleKey = card.querySelector('h3').dataset.key; const descKey = card.querySelector('p').dataset.key; const title = translations[currentLang][titleKey]; const desc = translations[currentLang][descKey]; checkPageBreak(40); doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(`• ${title}`, margin, y); y += 14; addJustifiedText(desc); y += 5; });
+                addSectionTitle(pdfTranslations['skills-title']); const skills = Array.from(document.querySelectorAll('#habilidades .skill-name')).map(el => translations[currentLang][el.dataset.key]); addBulletedList(skills); y+= 10;
+                addSectionTitle(pdfTranslations['expertise-title']); const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => { const titleKey = card.querySelector('h3').dataset.key; const descKey = card.querySelector('p').dataset.key; const title = translations[currentLang][titleKey]; const desc = translations[currentLang][descKey]; return `${title}: ${desc}`; }); addBulletedList(experiences); y+= 10;
+                addSectionTitle(pdfTranslations['education-title']); document.querySelectorAll('#formacao .timeline-item').forEach(item => { checkPageBreak(70); const date = item.querySelector('.timeline-date').textContent.trim(); const titleKey = item.querySelector('h3').dataset.key; const title = translations[currentLang][titleKey]; const institution = item.querySelector('p').textContent.trim(); const descriptionKey = item.querySelector('.timeline-details').dataset.key; const description = translations[currentLang][descriptionKey] || ''; doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(title, margin, y); y += 14; doc.setFontSize(10); doc.setFont('helvetica', 'italic'); doc.setTextColor(100); doc.text(date, margin, y); y += 14; doc.setFont('helvetica', 'normal'); doc.setTextColor(80); doc.text(institution, margin, y); y += 14; addJustifiedText(description); y += 15; });
+                doc.addPage(); y = margin;
+                addSectionTitle(pdfTranslations['projects-title']); if (window.githubScript && window.githubScript.allRepos.length > 0) { const topProjects = [...window.githubScript.allRepos].sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 3); topProjects.forEach(repo => { const title = repo.name.replace(/[-_]/g, ' '); const desc = repo.description || (currentLang === 'pt' ? 'Sem descrição.' : 'No description.'); checkPageBreak(50); doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(`• ${title}`, margin, y); y += 14; addJustifiedText(desc); y += 5; }); y += 15; doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(0, 0, 255); doc.textWithLink(pdfTranslations['projects-link'], margin, y, { url: 'https://github.com/WevertonGomesCosta' }); doc.setTextColor(80); y += 10; }
+                addSectionTitle(pdfTranslations['publications-title']); if (window.scholarScript && window.scholarScript.allArticles.length > 0) { const topArticles = window.scholarScript.allArticles.slice(0, 3); topArticles.forEach(art => { const title = `"${art.title}"`; const publication = art.publication || 'Publicação não especificada'; const citations = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : ''; checkPageBreak(60); doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); const titleLines = doc.splitTextToSize(title, max_width); doc.text(titleLines, margin, y); y += titleLines.length * 12; doc.setFont('helvetica', 'normal'); doc.setTextColor(100); doc.text(publication, margin, y); y += 12; if (citations) { doc.setFont('helvetica', 'italic'); doc.text(citations, margin, y); y += 12; } y += 10; }); y += 15; doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(0, 0, 255); if (scholarLink) { doc.textWithLink(pdfTranslations['publications-link'], margin, y, { url: scholarLink.href }); } doc.setTextColor(80); y += 10; }
 
-                y += 120;
-
-                // --- 5. Funções Auxiliares para Seções ---
-                const addSectionTitle = (title) => {
-                    checkPageBreak(40);
-                    y += 20;
-                    doc.setFontSize(14);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(0);
-                    doc.text(title.toUpperCase(), margin, y);
-                    y += 5;
-                    doc.setLineWidth(1.5);
-                    doc.line(margin, y, page_width - margin, y);
-                    y += 15;
-                };
-                
-                const addJustifiedText = (content) => {
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(80);
-                    const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width);
-                    const textHeight = lines.length * 12; 
-                    checkPageBreak(textHeight);
-                    doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width });
-                    y += textHeight + 5;
-                };
-
-                const addBulletedList = (items) => {
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(80);
-                    items.forEach(item => {
-                        const text = `• ${item}`;
-                        const lines = doc.splitTextToSize(text, max_width - 10); // leave space for bullet
-                        const textHeight = lines.length * 12;
-                        checkPageBreak(textHeight);
-                        doc.text(lines, margin, y);
-                        y+= textHeight + 2;
-                    });
-                }
-
-                // --- 6. Adicionar Seções do Currículo ---
-
-                addSectionTitle(pdfTranslations['about-title']);
-                const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join(' ');
-                addJustifiedText(aboutText);
-
-                addSectionTitle(pdfTranslations['services-title']);
-                document.querySelectorAll('#servicos .card').forEach(card => {
-                    const titleKey = card.querySelector('h3').dataset.key;
-                    const descKey = card.querySelector('p').dataset.key;
-                    const title = translations[currentLang][titleKey];
-                    const desc = translations[currentLang][descKey];
-
-                    checkPageBreak(40);
-                    doc.setFontSize(11);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(0);
-                    doc.text(`• ${title}`, margin, y);
-                    y += 14;
-                    addJustifiedText(desc);
-                    y += 5;
-                });
-
-                addSectionTitle(pdfTranslations['skills-title']);
-                const skills = Array.from(document.querySelectorAll('#habilidades .skill-name')).map(el => translations[currentLang][el.dataset.key]);
-                addBulletedList(skills);
-                y+= 10;
-
-                addSectionTitle(pdfTranslations['expertise-title']);
-                const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => {
-                     const titleKey = card.querySelector('h3').dataset.key;
-                     const descKey = card.querySelector('p').dataset.key;
-                     const title = translations[currentLang][titleKey];
-                     const desc = translations[currentLang][descKey];
-                     return `${title}: ${desc}`;
-                });
-                addBulletedList(experiences);
-                y+= 10;
-
-
-                addSectionTitle(pdfTranslations['education-title']);
-                document.querySelectorAll('#formacao .timeline-item').forEach(item => {
-                    checkPageBreak(70);
-                    const date = item.querySelector('.timeline-date').textContent.trim();
-                    const titleKey = item.querySelector('h3').dataset.key;
-                    const title = translations[currentLang][titleKey];
-                    const institution = item.querySelector('p').textContent.trim();
-                    const descriptionKey = item.querySelector('.timeline-details').dataset.key;
-                    const description = translations[currentLang][descriptionKey] || '';
-
-                    doc.setFontSize(11);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setTextColor(0);
-                    doc.text(title, margin, y);
-                    y += 14;
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setTextColor(100);
-                    doc.text(date, margin, y);
-                    y += 14;
-                    
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(80);
-                    doc.text(institution, margin, y);
-                    y += 14;
-
-                    addJustifiedText(description);
-                    y += 15;
-                });
-                
-                doc.addPage();
-                y = margin;
-                
-                addSectionTitle(pdfTranslations['projects-title']);
-                if (window.githubScript && window.githubScript.allRepos.length > 0) {
-                    const topProjects = [...window.githubScript.allRepos]
-                        .sort((a, b) => b.stargazers_count - a.stargazers_count)
-                        .slice(0, 3);
-                    
-                    topProjects.forEach(repo => {
-                        const title = repo.name.replace(/[-_]/g, ' ');
-                        const desc = repo.description || (currentLang === 'pt' ? 'Sem descrição.' : 'No description.');
-                        checkPageBreak(50);
-                        doc.setFontSize(11);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setTextColor(0);
-                        doc.text(`• ${title}`, margin, y);
-                        y += 14;
-                        addJustifiedText(desc);
-                        y += 5;
-                    });
-                     y += 15;
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setTextColor(0, 0, 255);
-                    doc.textWithLink(pdfTranslations['projects-link'], margin, y, { url: 'https://github.com/WevertonGomesCosta' });
-                    doc.setTextColor(80);
-                    y += 10;
-                }
-                
-                addSectionTitle(pdfTranslations['publications-title']);
-                if (window.scholarScript && window.scholarScript.allArticles.length > 0) {
-                    const topArticles = window.scholarScript.allArticles.slice(0, 3);
-                    
-                    topArticles.forEach(art => {
-                        const title = `"${art.title}"`;
-                        const publication = art.publication || 'Publicação não especificada';
-                        const citations = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : '';
-                        
-                        checkPageBreak(60);
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setTextColor(0);
-                        const titleLines = doc.splitTextToSize(title, max_width);
-                        doc.text(titleLines, margin, y);
-                        y += titleLines.length * 12;
-
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor(100);
-                        doc.text(publication, margin, y);
-                        y += 12;
-
-                        if (citations) {
-                            doc.setFont('helvetica', 'italic');
-                            doc.text(citations, margin, y);
-                            y += 12;
-                        }
-                        y += 10;
-                    });
-                    y += 15;
-                    doc.setFontSize(9);
-                    doc.setFont('helvetica', 'italic');
-                    doc.setTextColor(0, 0, 255);
-                    if (scholarLink) {
-                        doc.textWithLink(pdfTranslations['publications-link'], margin, y, { url: scholarLink.href });
-                    }
-                    doc.setTextColor(80);
-                    y += 10;
-                }
-
-                // --- 7. Salvar o PDF ---
-                doc.save('CV-Weverton_Gomes_da_Costa.pdf');
-                toast.textContent = 'Download do currículo iniciado!';
-
-            } catch (error) {
-                console.error('Erro ao gerar PDF:', error);
-                toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
-            } finally {
-                // --- 8. Restaurar UI ---
-                button.innerHTML = originalButtonHTML;
-                button.style.pointerEvents = 'auto';
-                setTimeout(() => toast.classList.remove('show'), 4000);
-            }
+                doc.save('CV-Weverton_Gomes_da_Costa.pdf'); toast.textContent = 'Download do currículo iniciado!';
+            } catch (error) { console.error('Erro ao gerar PDF:', error); toast.textContent = 'Ocorreu um erro ao gerar o PDF.'; } finally { button.innerHTML = originalButtonHTML; button.style.pointerEvents = 'auto'; setTimeout(() => toast.classList.remove('show'), 4000); }
         }
     </script>
 </body>
 </html>
-
-
