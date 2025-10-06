@@ -196,31 +196,33 @@
         nav.scrolled {
             padding: 8px 0;
         }
-        .nav-container { 
-            max-width: 1200px; margin: 0 auto; display: flex; justify-content: center;
-            gap: 25px; 
-            padding: 0 80px; /* Adicionado padding para avatar e botão de idioma */
-            flex-wrap: wrap; 
-            position: relative;
+       
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            padding: 0 20px;
             align-items: center;
         }
-        
+        .nav-col-left { justify-self: start; }
+        .nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
+        .nav-col-right { justify-self: end; }
+
         .nav-avatar {
             width: 45px;
             height: 45px;
             border-radius: 50%;
             border: 2px solid var(--primary);
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%) scale(0); 
+            transform: scale(0); 
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
             box-shadow: 0 0 10px var(--glow);
         }
 
         nav.scrolled .nav-avatar {
-            transform: translateY(-50%) scale(1); 
+            transform: scale(1); 
             opacity: 1;
         }
         
@@ -543,7 +545,47 @@
             height: 14px;
         }
         
-        /* CORREÇÃO: Estilos do botão de idioma */
+        /* Botão de idioma fixo (visível no topo) */
+        .lang-switch-fixed {
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+            line-height: 1;
+            white-space: nowrap;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            opacity: 1;
+            transform: scale(1);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            z-index: 1001;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+            visibility: visible;
+        }
+
+        .lang-switch-fixed .lang-pt.active, .lang-switch-fixed .lang-en.active {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .lang-switch-fixed:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        /* Esconde o botão fixo quando a página é rolada */
+        body.scrolled .lang-switch-fixed {
+            opacity: 0;
+            transform: scale(0.8);
+            visibility: hidden;
+        }
+        
+        /* Botão de idioma dentro da barra de navegação */
         .lang-switch {
             background: var(--bg-card);
             border: 1px solid var(--primary);
@@ -555,15 +597,9 @@
             font-weight: 500;
             line-height: 1;
             white-space: nowrap;
-
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            
             opacity: 0;
-            transform: translateY(-50%) scale(0);
+            transform: scale(0);
             transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 10;
         }
 
         .lang-switch .lang-pt.active, .lang-switch .lang-en.active {
@@ -576,26 +612,29 @@
             color: var(--dark);
         }
 
-        /* Estado após rolar: aparece, igual ao avatar */
         nav.scrolled .lang-switch {
             opacity: 1;
-            transform: translateY(-50%) scale(1);
+            transform: scale(1);
         }
         
         nav.scrolled .lang-switch:hover {
-             transform: translateY(-50%) scale(1.05);
+             transform: scale(1.05);
         }
         
-        @media (max-width: 768px) {
-            .nav-container { 
+        @media (max-width: 992px) {
+            .nav-container {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+            .nav-col-left, .nav-col-right {
+                display: none;
+            }
+            .nav-col-center {
                 gap: 15px;
-                padding: 0 15px; /* Ajuste de padding para mobile */
-                justify-content: center;
             }
             .timeline::before { left: 20px; }
             .timeline-dot { left: 14px; }
             .timeline-item { padding-left: 50px; }
-            .nav-avatar { display: none; }
         }
 
         .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
@@ -732,6 +771,9 @@
 </head>
 
 <body>
+    <button class="lang-switch-fixed" onclick="toggleLanguage()" title="Change language">
+        <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+    </button>
     <canvas id="particle-canvas"></canvas>
     <a href="#" class="back-to-top" aria-label="Voltar ao topo">↑</a>
     
@@ -756,19 +798,24 @@
 
     <nav>
         <div class="nav-container">
-            <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
-            <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
-            <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
-            <a href="#servicos" class="nav-link" data-key="nav-services">Serviços</a>
-            <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
-            <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
-            <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
-            <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
-            <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
-            <!-- Botão de idioma movido para cá -->
-            <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
-                <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
-            </button>
+            <div class="nav-col-left">
+                <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
+            </div>
+            <div class="nav-col-center">
+                <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
+                <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
+                <a href="#servicos" class="nav-link" data-key="nav-services">Serviços</a>
+                <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
+                <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
+                <a href="#publicacoes" class="nav-link" data-key="nav-publications">Publicações</a>
+                <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
+                <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
+            </div>
+            <div class="nav-col-right">
+                <button class="lang-switch" onclick="toggleLanguage()" title="Change language">
+                    <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -1224,13 +1271,16 @@
 
             const nav = document.querySelector('nav');
             const header = document.querySelector('header');
+            const body = document.body;
             if (nav && header) {
                 const scrollThreshold = header.offsetHeight - 100; 
                 window.addEventListener('scroll', () => {
                     if (window.scrollY > scrollThreshold) {
                         nav.classList.add('scrolled');
+                        body.classList.add('scrolled');
                     } else {
                         nav.classList.remove('scrolled');
+                        body.classList.remove('scrolled');
                     }
                 }, { passive: true });
             }
