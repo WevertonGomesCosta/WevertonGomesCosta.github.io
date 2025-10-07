@@ -391,11 +391,64 @@
         /* --- Estilos do Footer --- */
         footer { 
             background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border);
-            padding: 40px 20px; text-align: center; margin-top: 80px;
+            padding: 60px 20px 40px; text-align: left; margin-top: 80px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .footer-column h4 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .footer-column h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 40px;
+            height: 2px;
+            background: var(--primary);
+        }
+        .footer-column p, .footer-column ul li {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        .footer-column ul li a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-column ul li a:hover {
+            color: var(--primary);
+        }
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 30px;
+            margin-top: 30px;
+            text-align: center;
         }
         .footer-content { max-width: 1200px; margin: 0 auto; }
         .social-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
         .social-link { 
+
             width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 50%;
             color: var(--text-muted); text-decoration: none; transition: all 0.3s ease;
@@ -9490,40 +9543,69 @@ z"/>
     <!-- Rodapé -->
     <footer class="reveal">
         <div class="footer-content">
-            <div class="social-links">
-                <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
-                <a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener" class="social-link" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
-                <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="social-link" aria-label="Google Scholar">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
-                </a>
-                <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener" class="social-link" aria-label="Lattes">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M97.872 434.733c-46.338-94.949-73.906-152.29-73.906-153.713c0-2.322 2.831-2 30.672 3.46c48.965 9.614 75.126 12.326 118.735 12.342c57.697.016 104.68-9.122 141.185-27.484c19.311-9.715 30.925-18.327 40.437-29.993c11.716-14.378 15.48-24.28 15.615-40.947c.118-15.852-2.018-24.211-11.19-43.608c-3.63-7.665-6.817-16.463-7.122-19.55c-.475-4.968-.068-5.68 3.595-6.104c8.003-.948 47.507 37.403 62.055 60.241c25.076 39.386 27.111 81.993 5.884 123.195c-13.04 25.314-27.45 42.828-51.577 62.734c-40.099 33.062-86.708 56.086-151.069 74.635c-34.57 9.97-90.471 22.059-101.984 22.059c-2.44 0-7.02-8.003-21.296-37.283l-.034.015zm12.904-153.121c-45.016-5.832-82.79-10.903-83.96-11.275c-2-.644-9.155-24.516-13.191-43.947c-1.017-4.917-2.51-17.939-3.323-28.958c-3.63-49.17 7.069-83.166 35.74-113.735C94.583 31.985 198.516 25.694 315.777 67.37c20.582 7.325 28.755 12.411 24.975 15.581c-2.797 2.34-21.753 2.306-54.51-.102c-51.204-3.764-90.183 3.357-110.274 20.176c-30.588 25.602-25.924 81.724 13.53 162.682c4.273 8.766 8.58 17.345 9.563 19.09c2.29 4.019.628 7.75-3.357 7.563c-1.697-.081-39.915-4.912-84.929-10.746zm151.016-44.047c-35.928-6.46-68.227-28.74-78.654-54.222c-5.002-12.241-4.765-28.213.576-37.774c4.832-8.648 17.31-18.65 28.484-22.839c18.6-6.968 51.17-4.188 74.907 6.41c22.533 10.055 42.507 27.738 49.932 44.184c9.53 21.109 1.593 44.66-18.82 55.901c-13.531 7.443-39.827 11.326-56.443 8.341z"/></svg>
-                </a>
+             <div class="footer-grid">
+                <!-- Coluna 1: Sobre -->
+                <div class="footer-column">
+                    <h4>Weverton G. Costa</h4>
+                    <p data-key="footer-bio">Pesquisador, Data Scientist e CEO da Conecta GEM, apaixonado por aplicar IA para resolver desafios no agronegócio.</p>
+                </div>
+
+                <!-- Coluna 2: Navegação -->
+                <div class="footer-column">
+                    <h4 data-key="footer-nav">Navegação</h4>
+                    <ul>
+                        <li><a href="#sobre" data-key="nav-about">Sobre</a></li>
+                        <li><a href="#projetos" data-key="nav-projects">Projetos</a></li>
+                        <li><a href="#publicacoes" data-key="nav-publications">Publicações</a></li>
+                        <li><a href="#contato" data-key="nav-contact">Contato</a></li>
+                    </ul>
+                </div>
+
+                <!-- Coluna 3: Contato -->
+                <div class="footer-column">
+                    <h4 data-key="nav-contact">Contato</h4>
+                    <ul>
+                        <li><a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a></li>
+                        <li data-key="footer-location">Viçosa - Minas Gerais - Brasil</li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-license">
-                <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">
-                    <span class="cc-icons">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9 12c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 13c-2.97 0-5.56-1.61-6.97-4H18.97c-1.41 2.39-4 4-6.97 4z"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.99 11.99s-1.03 2.15-2.22 3.54c-1.17 1.36-2.5 2.47-3.77 2.47-1.29 0-2.3-.9-2.3-2.42 0-2.31 2.21-3.1 4.7-3.95 2.2-.75 2.8-.95 2.8-1.57 0-.54-.51-1.06-1.36-1.06-.92 0-1.52.53-1.69.79l-1.38-.94C12.45 8.2 13.5 7.5 14.89 7.5c1.6 0 2.87 1.15 2.87 2.58 0 1.59-.81 2.8-2.37 3.42-1.35.53-2.18.84-2.18 1.43 0 .41.33.74.83.74.53 0 1.15-.53 1.59-.98.6-.64 1.18-1.4 1.18-1.4l1.57.94zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                    </span>
-                    <span data-key="footer-license-text">Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.</span>
-                </a>
+            <div class="footer-bottom">
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg></a>
+                    <a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener" class="social-link" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
+                    <a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener" class="social-link" aria-label="Google Scholar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></svg>
+                    </a>
+                    <a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener" class="social-link" aria-label="Lattes">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M97.872 434.733c-46.338-94.949-73.906-152.29-73.906-153.713c0-2.322 2.831-2 30.672 3.46c48.965 9.614 75.126 12.326 118.735 12.342c57.697.016 104.68-9.122 141.185-27.484c19.311-9.715 30.925-18.327 40.437-29.993c11.716-14.378 15.48-24.28 15.615-40.947c.118-15.852-2.018-24.211-11.19-43.608c-3.63-7.665-6.817-16.463-7.122-19.55c-.475-4.968-.068-5.68 3.595-6.104c8.003-.948 47.507 37.403 62.055 60.241c25.076 39.386 27.111 81.993 5.884 123.195c-13.04 25.314-27.45 42.828-51.577 62.734c-40.099 33.062-86.708 56.086-151.069 74.635c-34.57 9.97-90.471 22.059-101.984 22.059c-2.44 0-7.02-8.003-21.296-37.283l-.034.015zm12.904-153.121c-45.016-5.832-82.79-10.903-83.96-11.275c-2-.644-9.155-24.516-13.191-43.947c-1.017-4.917-2.51-17.939-3.323-28.958c-3.63-49.17 7.069-83.166 35.74-113.735C94.583 31.985 198.516 25.694 315.777 67.37c20.582 7.325 28.755 12.411 24.975 15.581c-2.797 2.34-21.753 2.306-54.51-.102c-51.204-3.764-90.183 3.357-110.274 20.176c-30.588 25.602-25.924 81.724 13.53 162.682c4.273 8.766 8.58 17.345 9.563 19.09c2.29 4.019.628 7.75-3.357 7.563c-1.697-.081-39.915-4.912-84.929-10.746zm151.016-44.047c-35.928-6.46-68.227-28.74-78.654-54.222c-5.002-12.241-4.765-28.213.576-37.774c4.832-8.648 17.31-18.65 28.484-22.839c18.6-6.968 51.17-4.188 74.907 6.41c22.533 10.055 42.507 27.738 49.932 44.184c9.53 21.109 1.593 44.66-18.82 55.901c-13.531 7.443-39.827 11.326-56.443 8.341z"/></svg>
+                    </a>
+                </div>
+                <div class="footer-license">
+                    <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">
+                        <span class="cc-icons">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM9 12c0-1.66 1.34-3 3-3s3 1.34 3 3-1.34 3-3 3-3-1.34-3-3z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 13c-2.97 0-5.56-1.61-6.97-4H18.97c-1.41 2.39-4 4-6.97 4z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16.99 11.99s-1.03 2.15-2.22 3.54c-1.17 1.36-2.5 2.47-3.77 2.47-1.29 0-2.3-.9-2.3-2.42 0-2.31 2.21-3.1 4.7-3.95 2.2-.75 2.8-.95 2.8-1.57 0-.54-.51-1.06-1.36-1.06-.92 0-1.52.53-1.69.79l-1.38-.94C12.45 8.2 13.5 7.5 14.89 7.5c1.6 0 2.87 1.15 2.87 2.58 0 1.59-.81 2.8-2.37 3.42-1.35.53-2.18.84-2.18 1.43 0 .41.33.74.83.74.53 0 1.15-.53 1.59-.98.6-.64 1.18-1.4 1.18-1.4l1.57.94zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+                        </span>
+                        <span data-key="footer-license-text">Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.</span>
+                    </a>
+                </div>
+                <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
+                <div class="footer-update">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
+                        <path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
+                        <path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"/>
+                    </svg>
+                    <span><span data-key="footer-update-text">Última atualização:</span> <span id="last-updated-date"></span></span>
+                </div>
             </div>
-            <p>&copy; <span id="copyright-year">2025</span> Weverton Gomes da Costa</p>
-            <div class="footer-update">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-history" viewBox="0 0 16 16">
-                    <path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"/>
-                    <path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"/>
-                </svg>
-                <span><span data-key="footer-update-text">Última atualização:</span> <span id="last-updated-date"></span></span>
-            </div>
-            <p data-key="footer-location" style="font-size: 0.9rem; color: var(--text-muted); margin-top: 8px;">Viçosa - Minas Gerais - Brasil</p>
         </div>
     </footer>
 
     <!-- Elemento para Notificações (Toast) -->
     <div id="toast-notification"></div>
+
 
     <!-- Bloco de Scripts: Funcionalidades da página -->
     
@@ -9534,10 +9616,10 @@ z"/>
     <!-- Scripts Internos -->
     <script>
         // --- Lógica de Inicialização e Interatividade da UI ---
-        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', () => {
             // Atualiza o ano do copyright e a data da última atualização
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
-            document.getElementById('last-updated-date').textContent = "6 de outubro de 2025";
+            document.getElementById('last-updated-date').textContent = "7 de outubro de 2025";
 
             // Observador para animações de "revelar" ao rolar a página
             const revealObserver = new IntersectionObserver((entries, observer) => {
@@ -9685,30 +9767,21 @@ z"/>
                 'contact-title': 'Contato', 'contact-intro': 'Tem um projeto em mente, uma oportunidade de colaboração ou apenas quer trocar uma ideia? Vamos conversar.', 'contact-other': 'Redes Sociais e Perfis', 'form-name': 'Nome', 'form-name-ph': 'Seu nome completo', 'form-name-error': 'Por favor, insira seu nome.', 'form-email': 'Email', 'form-email-ph': 'seu.email@exemplo.com', 'form-email-error': 'Por favor, insira um email válido.', 'form-subject': 'Assunto', 'form-subject-ph': 'Assunto da mensagem', 'form-subject-error': 'Por favor, insira um assunto.', 'form-message': 'Mensagem', 'form-message-ph': 'Escreva sua mensagem aqui...', 'form-message-error': 'Por favor, escreva uma mensagem.', 'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Obrigado! Sua mensagem foi enviada.', 'formError': 'Ocorreu um erro. Tente novamente.', 'download-cv': 'Baixar Currículo (PDF)',
                 'fetching_repos': 'Buscando repositórios...', 'loaded_repos_cache': (c) => `Carregado ${c} repositórios (cache).`, 'found_repos': (c) => `Encontrados ${c} repositórios.`, 'fetch_error': 'Limite de requisições da API atingido. Exibindo projetos principais. Os dados serão atualizados em breve.', 'no_repos_found': 'Nenhum repositório encontrado.', 'open_btn': 'Abrir', 'copy_btn': 'Copiar link', 'copied_btn': 'Copiado!', 'no_description': 'Sem descrição.', 'updated_at': 'Atualizado:',
                 'chart-title': '<b>Evolução da Produção Científica e Impacto</b>', 'chart-title-mobile': '<b>Produção Científica e Impacto</b>', 'chart-xaxis-title': 'Ano de Publicação', 'chart-yaxis-title': 'Número de Citações Recebidas', 'chart-colorbar-title': 'Nº de Pubs', 'footer-license-text': 'Esta obra está licenciada com uma Licença Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional.', 'footer-update-text': 'Última atualização:', 'footer-location': 'Viçosa - Minas Gerais - Brasil', 'tech-stack': 'Tecnologias', 'project-problem': 'O Problema', 'all-topics': 'Todos',
+                'footer-bio': 'Pesquisador, Data Scientist e CEO da Conecta GEM, apaixonado por aplicar IA para resolver desafios no agronegócio.',
+                'footer-nav': 'Navegação',
             },
             en: {
                 'subtitle-1': 'Genetics & Statistics Researcher', 'subtitle-2': 'Data Scientist', 'subtitle-3': 'CEO & Co-founder - Conecta GEM', 'subtitle-4': 'Machine Learning Expert',
-                'badge-phd': '🎓 PhD Candidate in Statistics - UFV', 'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM', 'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq', 'badge-ml': '🤖 Machine Learning Expert',
-                'cta-projects': 'My Projects', 'cta-contact': 'Get in Touch',
-                'nav-about': 'About', 'nav-services': 'Services', 'nav-publications': 'Publications', 'nav-education': 'Education', 'nav-experience': 'Experience', 'nav-projects': 'Projects', 'nav-skills': 'Skills', 'nav-contact': 'Contact',
-                'about-title': 'About Me', 'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`, 'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`, 'about-p3': `Working at the UFV Bioinformatics Laboratory and as <strong>Student Coordinator at the Laboratory of Computational Intelligence and Statistical Learning (LICAE)</strong>, I have the opportunity to collaborate on cutting-edge research and contribute to the training of new scientists, joining efforts to advance the frontiers of biometrics and artificial intelligence applied to agriculture.`,
-                'services-title': 'How I Can Help', 'service-title1': 'Data & AI Consulting', 'service-desc1': 'Strategic data analysis, machine learning model development, and implementation of AI solutions to optimize processes in agribusiness and research.', 'service-title2': 'Scientific Collaboration', 'service-desc2': 'Partnerships in research projects involving genetics, biometrics, and applied statistics, contributing with robust analyses and high-impact publications.', 'service-title3': 'Training & Workshops', 'service-desc3': 'Customized courses and workshops in R, Python, GENES Software, and data analysis pipelines for academic and corporate teams, through Conecta GEM.',
-                'publications-title': 'Publications and Citations', 'publications-intro': 'My publications reflect an ongoing commitment to scientific innovation. Each article represents an effort to develop and apply methodologies that not only advance theoretical knowledge but also offer practical and efficient solutions to agribusiness challenges.', 'search-pub-placeholder': 'Search publication...', 'clear-pub-search': 'Clear search', 'scholar-view-profile': 'View Full Profile →',
-                'metric-label-citations': 'Citations', 'metric-all': 'ALL', 'metric-since': 'SINCE 2020', 'metric-label-h-index': 'h-index', 'metric-label-i10-index': 'i10-index', 'pub-read': 'View publication →',
-                'education-title': 'Education', 'edu-date1': '2023 - Present', 'edu-title1': 'PhD in Applied Statistics and Biometrics', 'edu-desc1': 'Application of advanced statistical methods and biometric techniques to challenges in plant breeding.', 'edu-date2': '2023 - Present', 'edu-title2': 'Postdoctoral Researcher', 'edu-desc2': 'Development of advanced statistical analyses applied to genetic improvement.', 'edu-date3': '2022 - 2023', 'edu-title3': 'Postdoctoral Researcher', 'edu-desc3': 'Studies in genome-wide selection and mixed models applied to agriculture.', 'edu-title4': 'Postdoctoral Researcher', 'edu-desc4': 'GWS, GWAS, and mixed model analyses in the cassava genetic improvement project.', 'edu-title5': 'PhD in Genetics and Plant Breeding', 'edu-desc5': 'Efficiency of machine learning techniques and neural networks in genomic prediction and marker identification.', 'edu-title6': 'MSc in Genetics and Plant Breeding', 'edu-desc6': 'Meta-analysis of parameter estimates in irrigated rice genotypes in Minas Gerais.', 'edu-title7': 'BSc in Agronomy', 'edu-desc7': 'Internship at EPAMIG focusing on experimental design and statistical analyses.',
-                'expertise-title': 'Areas of Expertise', 'exp-title1': 'Quantitative Genetics', 'exp-desc1': 'Analysis of genetic variability, GWS, and GWAS for identifying traits of agronomic interest.', 'exp-title2': 'Advanced Biometrics', 'exp-desc2': 'I apply robust statistical modeling and mixed models to extract precise insights and guide strategic decisions.', 'exp-title3': 'Machine Learning & AI', 'exp-desc3': 'I use algorithms like Random Forest and neural networks to create high-performance predictive models in agriculture.', 'exp-title4': 'Reproducible Pipelines', 'exp-desc4': 'Development of automated workflows in R and Python, version control with Git/GitHub, and technical documentation.', 'exp-title5': 'Plant Breeding', 'exp-desc5': 'Application of advanced genomic selection techniques and genetic diversity analysis for crop optimization.', 'exp-title7': 'GENES Software', 'exp-desc7': 'Analysis of genetic and statistical data with biometric models, covering experimental statistics, biometrics, and multivariate analyses for estimating genetic parameters.',
-                'projects-title': 'Projects & Repositories', 'projects-intro': 'Below are some of my public repositories on GitHub. They reflect my work in software development, analysis pipelines, and studies in applied machine learning, always focusing on creating reproducible and impactful tools for the scientific community and the market.', 'search-placeholder': 'Search repository...', 'clear-search': 'Clear search', 'featured-title': 'Featured Projects', 'show-more': 'Show more', 'show-less': 'Show less',
-                'licae-desc': 'As a LICAE researcher, my focus is on applying machine learning to optimize genomic selection, developing tools that accelerate genetic progress and support smarter decisions in the field.', 'licae-item1': 'Research on neural networks and genomic selection', 'licae-item2': 'Development of predictive models', 'licae-item3': 'Collaboration in multidisciplinary projects',
-                'conecta-desc': 'At Conecta GEM, my mission is to serve as a bridge between academia and the market, translating cutting-edge research into AgTech solutions that generate real value for producers and companies in the sector.', 'conecta-item1': 'Consulting in biometrics and AI', 'conecta-item2': 'Implementation of genomic selection pipelines', 'conecta-item3': 'Training and workshops in R and Python',
-                'skills-title': 'Technical Skills', 'skills-cat-1': 'Languages & Development', 'skills-cat-2': 'Analysis & Modeling', 'skills-cat-3': 'Biometrics', 'skills-cat-4': 'Tools & Platforms', 'skill-name-r': 'R', 'skill-name-python': 'Python', 'skill-name-html': 'HTML & CSS', 'skill-name-quant-gen': 'Quantitative Genetics', 'skill-name-ml': 'Machine Learning', 'skill-name-mixed-models': 'Mixed Models & Biometrics', 'skill-name-genomic-sel': 'Genomic Selection', 'skill-name-multivariate': 'Multivariate Analysis', 'skill-name-genes': 'GENES Software', 'skill-name-dataviz': 'Data Visualization', 'skill-name-git': 'Git & GitHub', 'skill-name-deep-learning': 'Deep Learning (Keras/TF)', 'skill-name-shiny': 'Interactive Apps (Shiny)', 'skill-name-eda': 'Exploratory Data Analysis (EDA)', 'skill-name-bioinfo': 'Bioinformatics',
-                'contact-title': 'Contact', 'contact-intro': 'Have a project in mind, a collaboration opportunity, or just want to connect? Let\'s talk.', 'contact-other': 'Social Media and Profiles',
-                'form-name': 'Name', 'form-name-ph': 'Your full name', 'form-name-error': 'Please enter your name.', 'form-email': 'Email', 'form-email-ph': 'your.email@example.com', 'form-email-error': 'Please enter a valid email address.', 'form-subject': 'Subject', 'form-subject-ph': 'Subject of the message', 'form-subject-error': 'Please enter a subject.', 'form-message': 'Message', 'form-message-ph': 'Write your message here...', 'form-message-error': 'Please write a message.', 'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Thank you! Your message has been sent.', 'formError': 'An error occurred. Please try again.', 'download-cv': 'Download CV (PDF)',
+<!-- ... existing code ... -->
                 'fetching_repos': 'Fetching repositories...', 'loaded_repos_cache': (c) => `Loaded ${c} repositories (from cache).`, 'found_repos': (c) => `Found ${c} repositories.`, 'fetch_error': 'GitHub API rate limit reached. Displaying featured projects. Full data will be updated automatically later.', 'no_repos_found': 'No repositories found.', 'open_btn': 'Open', 'copy_btn': 'Copy link', 'copied_btn': 'Copied!', 'no_description': 'No description provided.', 'updated_at': 'Updated:',
                 'chart-title': '<b>Evolution of Scientific Production and Impact</b>', 'chart-title-mobile': '<b>Scientific Production & Impact</b>', 'chart-xaxis-title': 'Year of Publication', 'chart-yaxis-title': 'Number of Citations Received', 'chart-colorbar-title': '# of Pubs', 'footer-license-text': 'This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.', 'footer-update-text': 'Last updated:', 'footer-location': 'Viçosa - Minas Gerais - Brazil',
                  'tech-stack': 'Tech Stack', 'project-problem': 'The Problem', 'all-topics': 'All',
+                 'footer-bio': 'Researcher, Data Scientist, and CEO of Conecta GEM, passionate about applying AI to solve challenges in agribusiness.',
+                 'footer-nav': 'Navigation',
             },
             pdf: {
                 pt: { 'about-title': 'Sobre Mim', 'services-title': 'Serviços & Consultoria', 'skills-title': 'Habilidades Técnicas', 'expertise-title': 'Áreas de Especialização', 'education-title': 'Formação Acadêmica', 'projects-title': 'Principais Projetos', 'publications-title': 'Principais Publicações', 'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.', 'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.' },
+
                 en: { 'about-title': 'About Me', 'services-title': 'Services & Consulting', 'skills-title': 'Technical Skills', 'expertise-title': 'Areas of Expertise', 'education-title': 'Education', 'projects-title': 'Main Projects', 'publications-title': 'Main Publications', 'projects-link': 'For more projects, visit my GitHub profile.', 'publications-link': 'For more publications, visit my Google Scholar profile.' }
             }
         };
