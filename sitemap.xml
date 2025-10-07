@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://wevertongomescosta.github.io/</loc>
-    <lastmod>2025-10-07</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
     <loc>https://wevertongomescosta.github.io/analisys-next-gen-2022/1_Trials-and-traits-2023.html</loc>
     <lastmod>2025-10-04</lastmod>
     <changefreq>yearly</changefreq>
@@ -25,7 +19,7 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/analisys-next-gen-2022/about</loc>
+    <loc>https://wevertongomescosta.github.io/analisys-next-gen-2022/about.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -37,13 +31,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/analisys-next-gen-2022/license</loc>
+    <loc>https://wevertongomescosta.github.io/analisys-next-gen-2022/license.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/about</loc>
+    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/about.html</loc>
     <lastmod>2025-10-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -55,25 +49,25 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/license</loc>
+    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/license.html</loc>
     <lastmod>2025-10-04</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/Preliminary-analysis</loc>
+    <loc>https://wevertongomescosta.github.io/bark-histometry-phloem-eucalyptus/Preliminary-analysis.html</loc>
     <lastmod>2025-10-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/about</loc>
+    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/about.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/CassavaBase_EMBRAPA</loc>
+    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/CassavaBase_EMBRAPA.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -85,25 +79,25 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/license</loc>
+    <loc>https://wevertongomescosta.github.io/cassavabaseembrapa/license.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/about</loc>
+    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/about.html</loc>
     <lastmod>2023-06-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/cap1</loc>
+    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/cap1.html</loc>
     <lastmod>2023-06-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/cap2</loc>
+    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/cap2.html</loc>
     <lastmod>2023-06-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -115,13 +109,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/license</loc>
+    <loc>https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/license.html</loc>
     <lastmod>2023-06-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genetic-Adaptability-Climate-Change/about</loc>
+    <loc>https://wevertongomescosta.github.io/Genetic-Adaptability-Climate-Change/about.html</loc>
     <lastmod>2025-09-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -133,13 +127,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genetic-Adaptability-Climate-Change/license</loc>
+    <loc>https://wevertongomescosta.github.io/Genetic-Adaptability-Climate-Change/license.html</loc>
     <lastmod>2025-09-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/about</loc>
+    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/about.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -151,25 +145,25 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/license</loc>
+    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/license.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/script</loc>
+    <loc>https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/script.html</loc>
     <lastmod>2025-10-03</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/about</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/about.html</loc>
     <lastmod>2025-03-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/Genomic-prediction</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/Genomic-prediction.html</loc>
     <lastmod>2025-03-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -181,67 +175,67 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/license</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/license.html</loc>
     <lastmod>2025-03-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/map</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/map.html</loc>
     <lastmod>2025-03-25</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/about</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/about.html</loc>
     <lastmod>2025-07-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/clone_selection</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/clone_selection.html</loc>
     <lastmod>2025-01-21</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS.html</loc>
     <lastmod>2025-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_BayesA</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_BayesA.html</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_BayesB</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_BayesB.html</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_G-BLUP</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_G-BLUP.html</loc>
     <lastmod>2025-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RF</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RF.html</loc>
     <lastmod>2025-01-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RKHS</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RKHS.html</loc>
     <lastmod>2025-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RR-BLUP</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/GWS_RR-BLUP.html</loc>
     <lastmod>2025-01-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -253,37 +247,37 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/license</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/license.html</loc>
     <lastmod>2025-07-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/mixed_models</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/mixed_models.html</loc>
     <lastmod>2025-01-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/phenotype</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/phenotype.html</loc>
     <lastmod>2025-01-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/about</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/about.html</loc>
     <lastmod>2023-10-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/genomicselection</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/genomicselection.html</loc>
     <lastmod>2022-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/genomicselection2</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/genomicselection2.html</loc>
     <lastmod>2022-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -295,13 +289,13 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/license</loc>
+    <loc>https://wevertongomescosta.github.io/Genomic-Selection_Course/license.html</loc>
     <lastmod>2023-10-28</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/about</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/about.html</loc>
     <lastmod>2024-03-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -313,49 +307,49 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/license</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/license.html</loc>
     <lastmod>2024-03-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/PCA</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/PCA.html</loc>
     <lastmod>2023-06-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/pre-requisitos</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/pre-requisitos.html</loc>
     <lastmod>2022-12-14</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/Tutorial</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/Tutorial.html</loc>
     <lastmod>2022-08-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/using-this-material</loc>
+    <loc>https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/using-this-material.html</loc>
     <lastmod>2023-06-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/about</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/about.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/gwas-GLM</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/gwas-GLM.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/GWAS</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/GWAS.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -367,25 +361,25 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/ld_decay</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/ld_decay.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/license</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/license.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/map</loc>
+    <loc>https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/map.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/about</loc>
+    <loc>https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/about.html</loc>
     <lastmod>2025-09-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -397,37 +391,37 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/license</loc>
+    <loc>https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/license.html</loc>
     <lastmod>2025-09-26</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/about</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/about.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gwas_dados_reais</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gwas_dados_reais.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gwas_dados_simulados</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gwas_dados_simulados.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gws_dados_reais</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gws_dados_reais.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gws_dados_simulados</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/gws_dados_simulados.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -439,19 +433,19 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/license</loc>
+    <loc>https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/license.html</loc>
     <lastmod>2025-07-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/about</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/about.html</loc>
     <lastmod>2023-05-09</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/analise-grafica</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/analise-grafica.html</loc>
     <lastmod>2023-05-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
@@ -463,26 +457,32 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/introducao-r</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/introducao-r.html</loc>
     <lastmod>2023-05-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/license</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/license.html</loc>
     <lastmod>2023-05-18</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/manipulacaodedados</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/manipulacaodedados.html</loc>
     <lastmod>2023-05-09</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/Tutorial</loc>
+    <loc>https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/Tutorial.html</loc>
     <lastmod>2023-05-08</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://wevertongomescosta.github.io/WevertonGomesCosta.github.io/</loc>
+    <lastmod>2025-10-07</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
