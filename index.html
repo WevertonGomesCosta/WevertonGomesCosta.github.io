@@ -2,16 +2,19 @@
 <html lang="pt-BR">
 
 <head>
-    <meta name="google-site-verification" content="nfoEwVQ8Ln3F7m66zG3-P2TByH8jzyvs8iXEGwqVzKM" />
-    <meta charset="UTF-T8">
+    <!-- Bloco de Metadados: Informações sobre a página para navegadores e buscadores -->
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
     <meta name="description" content="Weverton Gomes da Costa - Pesquisador em Genética e Estatística, Data Scientist, CEO da Conecta GEM, especialista em Machine Learning">
     <meta name="keywords" content="genética, biometria, machine learning, agronegócio, UFV, seleção genômica, software GENES">
     <meta name="author" content="Weverton Gomes da Costa">
-    <title>Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
+    <meta name="google-site-verification" content="nfoEwVQ8Ln3F7m66zG3-P2TByH8jzyvs8iXEGwqVzKM" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
+    <!-- Bloco de Estilos (CSS): Toda a estilização da página -->
     <style>
+        /* --- Configurações Globais e Variáveis --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,13 +45,14 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text);
-            background: #0f172a;
+            background: var(--dark);
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
             cursor: default;
         }
-
+        
+        /* --- Elementos de Fundo e Animações --- */
         #particle-canvas {
             position: fixed;
             top: 0;
@@ -65,6 +69,46 @@
             100% { background-position: 0% 50%; }
         }
 
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px var(--glow); }
+            50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(16, 185, 129, 0.3); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        @keyframes shine-effect {
+            0% { transform: translateX(-150%) skewX(-30deg); }
+            100% { transform: translateX(250%) skewX(-30deg); }
+        }
+        
+        @keyframes bounce { 
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 
+            40% { transform: translateX(-50%) translateY(-10px); } 
+            60% { transform: translateX(-50%) translateY(-5px); } 
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes spin { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .animate-spin { 
+            animation: spin 1s linear infinite; 
+        }
+
+        /* --- Estilos do Header --- */
         header {
             position: relative;
             padding: 100px 20px 60px;
@@ -77,13 +121,9 @@
         }
 
         .hero-content {
-            max-width: 900px; margin: 0 auto;
+            max-width: 900px;
+            margin: 0 auto;
             animation: fadeInUp 0.8s ease;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .avatar {
@@ -92,11 +132,6 @@
             box-shadow: 0 0 40px var(--glow);
             margin: 0 auto 30px; display: block;
             animation: glow 3s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px var(--glow); }
-            50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(16, 185, 129, 0.3); }
         }
 
         h1 {
@@ -116,12 +151,7 @@
             color: var(--primary);
             font-weight: 400;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
 
-        /* Botões de Ação no Header */
         .hero-cta {
             display: flex;
             justify-content: center;
@@ -130,96 +160,51 @@
         }
 
         .cta-btn {
-            padding: 12px 28px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            border: 1px solid transparent;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
+            padding: 12px 28px; border-radius: 8px; text-decoration: none;
+            font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid transparent; position: relative; overflow: hidden; z-index: 1;
         }
         .cta-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
             background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: all 0.6s ease;
-            z-index: -1;
+            transition: all 0.6s ease; z-index: -1;
         }
-
-        .cta-btn:hover::before {
-            left: 100%;
-        }
-
-        .cta-btn.primary {
-            background: var(--primary);
-            color: var(--dark);
-        }
-        .cta-btn.primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-        }
-        .cta-btn.secondary {
-            background: transparent;
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        .cta-btn.secondary:hover {
-            background: rgba(16, 185, 129, 0.1);
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
-        }
-
+        .cta-btn:hover::before { left: 100%; }
+        .cta-btn.primary { background: var(--primary); color: var(--dark); }
+        .cta-btn.primary:hover { background: var(--primary-dark); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+        .cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
 
         .badges { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
         .badge { background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px;
             font-size: 0.9rem; color: var(--primary); backdrop-filter: blur(10px); transition: all 0.3s ease; }
         .badge:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); border-color: var(--primary); }
-
+        
+        /* --- Estilos da Navegação --- */
         nav {
             position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
             transition: padding 0.3s ease;
         }
-        nav.scrolled {
-            padding: 8px 0;
-        }
+        nav.scrolled { padding: 8px 0; }
        
         .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            gap: 20px;
-            padding: 0 20px;
-            align-items: center;
+            max-width: 1200px; margin: 0 auto; display: grid;
+            grid-template-columns: 1fr auto 1fr; gap: 20px;
+            padding: 0 20px; align-items: center;
         }
         .nav-col-left { justify-self: start; }
         .nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
         .nav-col-right { justify-self: end; }
 
         .nav-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            transform: scale(0); 
-            opacity: 0;
-            transition: transform 0.3s ease, opacity 0.3s ease;
+            width: 45px; height: 45px; border-radius: 50%;
+            border: 2px solid var(--primary); transform: scale(0); 
+            opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease;
             box-shadow: 0 0 10px var(--glow);
         }
-
-        nav.scrolled .nav-avatar {
-            transform: scale(1); 
-            opacity: 1;
-        }
+        nav.scrolled .nav-avatar { transform: scale(1); opacity: 1; }
         
         .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500;
             transition: color 0.3s ease, transform 0.3s ease; position: relative; }
@@ -228,42 +213,34 @@
         .nav-link:hover, .nav-link.active { color: var(--primary); transform: translateY(-2px); }
         .nav-link:hover::after, .nav-link.active::after { width: 100%; }
 
+        /* --- Estilos de Layout e Seções --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .section { margin-bottom: 80px; }
+        
         h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 30px; color: var(--primary);
             position: relative; padding-left: 20px; }
         h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
             width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
         
         .section-intro {
-            color: var(--text-muted);
-            margin: -15px 0 40px 0;
-            padding: 20px;
-            font-size: 1.05rem;
-            line-height: 1.7;
-            background: rgba(30, 41, 59, 0.3);
-            border-radius: 12px;
-            border-left: 3px solid var(--primary);
+            color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px;
+            font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3);
+            border-radius: 12px; border-left: 3px solid var(--primary);
         }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
         
+        /* --- Componentes: Cards --- */
         .card {
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px;
             backdrop-filter: blur(10px); transition: all 0.3s ease; position: relative; overflow: hidden;
         }
         .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; text-align: left;}
         .card p { color: var(--text-muted); line-height: 1.6; }
-
         .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             background: radial-gradient(120px circle at var(--mouse-x) var(--mouse-y), rgba(16, 185, 129, 0.3), transparent 80%);
-            border-radius: inherit;
-            opacity: 0;
-            transition: opacity 0.4s;
-            z-index: 1;
+            border-radius: inherit; opacity: 0; transition: opacity 0.4s; z-index: 1;
         }
         .card:hover::before { opacity: 1; }
         .card > * { position: relative; z-index: 2; }
@@ -272,33 +249,18 @@
             border-color: rgba(16, 185, 129, 0.4);
             box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2);
         }
-        #experiencia .card { text-align: justify; }
-
+        
         .icon { 
-            font-size: 2rem; 
-            margin-bottom: 15px; 
-            display: block; 
-            position: relative;
-            overflow: hidden;
+            font-size: 2rem; margin-bottom: 15px; display: block; 
+            position: relative; overflow: hidden;
         }
         .icon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            transform: translateX(-100%);
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            content: ''; position: absolute; top: 0; transform: translateX(-100%);
+            width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         }
-        .card.visible .icon::after {
-            animation: shine-effect 2.5s ease-in-out infinite;
-        }
-        @keyframes shine-effect {
-            0% { transform: translateX(-150%) skewX(-30deg); }
-            100% { transform: translateX(250%) skewX(-30deg); }
-        }
-
+        .card.visible .icon::after { animation: shine-effect 2.5s ease-in-out infinite; }
         
+        /* --- Componentes: Timeline --- */
         .timeline { position: relative; padding: 20px 0; }
         .timeline::before { content: ''; position: absolute; left: 30px; top: 0; height: 100%; width: 2px;
             background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
@@ -306,36 +268,25 @@
         .timeline-dot { position: absolute; left: 24px; top: 15px; width: 14px; height: 14px;
             background: var(--primary); border-radius: 50%; box-shadow: 0 0 20px var(--glow); transition: transform 0.3s ease; }
         .timeline-item:hover .timeline-dot { transform: scale(1.5); }
-        
-        .timeline-content {
-             padding: 20px;
-        }
-        .timeline-content.card {
-            padding: 25px; 
-        }
-
+        .timeline-content { padding: 20px; }
+        .timeline-content.card { padding: 25px; }
         .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
         .timeline-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .timeline-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-in-out;
-            color: var(--text-muted);
-        }
+        .timeline-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; color: var(--text-muted); }
         .timeline-item.expanded .timeline-details { max-height: 200px; /* Adjust as needed */ }
         .toggle-details-btn {
             background: none; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px;
             border-radius: 5px; cursor: pointer; margin-top: 15px; transition: all 0.3s;
         }
         .toggle-details-btn:hover { background: rgba(16, 185, 129, 0.1); }
-
-
+        
+        /* --- Seção de Publicações --- */
         .publication-card { display: flex; flex-direction: column; gap: 10px; }
         .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
         .publication-card a:hover { color: var(--primary-dark); }
         .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
         .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
-
+        
         .scholar-summary-card {
             display: flex; flex-direction: column; align-items: center; text-align: center;
             gap: 20px; padding: 30px; margin-bottom: 40px;
@@ -348,340 +299,177 @@
         .metric-value { font-size: 2rem; font-weight: 700; color: var(--primary); line-height: 1; }
         .metric-label { font-size: 0.9rem; color: var(--text-muted); }
         .scholar-link { margin-top: 10px; }
+        .scholar-chart-container { width: 100%; min-height: 450px; margin: 30px auto 0; }
 
-        .scholar-chart-container {
-            width: 100%;
-            min-height: 450px;
-            margin: 30px auto 0;
-        }
-
-        .feature-section.card {
-             padding: 40px;
-        }
-        .feature-section {
-            display: grid; grid-template-columns: 1fr; gap: 40px;
-        }
+        /* --- Seção de Features (LICAE/ConectaGEM) --- */
+        .feature-section.card { padding: 40px; }
+        .feature-section { display: grid; grid-template-columns: 1fr; gap: 40px; }
         @media(min-width: 768px) { .feature-section { grid-template-columns: auto 1fr; align-items: center; text-align: left;} }
         .feature-logo { 
-            font-size: 5rem; 
-            line-height: 1; 
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px; /* Altura mínima para o loader */
+            font-size: 5rem; line-height: 1; text-align: center;
+            display: flex; align-items: center; justify-content: center;
+            min-height: 100px;
         }
-        .feature-logo svg {
-            width: 100px;
-            height: auto;
-            color: var(--primary);
-        }
+        .feature-logo svg { width: 100px; height: auto; color: var(--primary); }
         .feature-content h3 { color: var(--primary); font-size: 1.8rem; margin-bottom: 10px; }
         .feature-content p { color: var(--text-muted); margin-bottom: 20px; }
         .feature-list { list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 10px; }
         .feature-list li { display: flex; align-items: center; gap: 10px; }
         .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
         
+        /* --- Seção de Habilidades --- */
         .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 40px;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px; margin-top: 20px;
         }
-        .skill-category.card {
-            padding: 25px;
-        }
+        .skill-category.card { padding: 25px; }
         .skill-category h3 {
-            color: var(--primary);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-            position: relative;
+            color: var(--primary); font-size: 1.3rem; margin-bottom: 20px;
+            padding-bottom: 10px; border-bottom: 1px solid var(--border); position: relative;
         }
         .skill-category h3::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -1px;
-            width: 50px;
-            height: 2px;
-            background: var(--primary);
+            content: ''; position: absolute; left: 0; bottom: -1px;
+            width: 50px; height: 2px; background: var(--primary);
         }
         .skill-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 18px;
-            font-size: 1rem;
-            opacity: 0;
-            transform: translateX(-20px);
+            display: flex; align-items: center; margin-bottom: 18px;
+            font-size: 1rem; opacity: 0; transform: translateX(-20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
         }
-        .skill-item.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .skill-name {
-            width: 40%;
-            color: var(--text);
-            padding-right: 15px;
-            font-weight: 500;
-        }
+        .skill-item.visible { opacity: 1; transform: translateX(0); }
+        .skill-name { width: 40%; color: var(--text); padding-right: 15px; font-weight: 500; }
         .skill-bar-container {
-            width: 60%;
-            height: 10px;
-            background-color: var(--dark-light);
-            border-radius: 5px;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            width: 60%; height: 10px; background-color: var(--dark-light);
+            border-radius: 5px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
         }
         .skill-bar {
-            height: 100%;
-            width: 0;
-            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
-            border-radius: 5px;
-            transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            height: 100%; width: 0; background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%);
+            border-radius: 5px; transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .skill-item.visible .skill-bar {
-            width: var(--proficiency-level);
-        }
+        .skill-item.visible .skill-bar { width: var(--proficiency-level); }
 
+        /* --- Seção de Contato --- */
         .contact-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-            align-items: start;
+            display: grid; grid-template-columns: 1fr;
+            gap: 40px; align-items: start;
         }
-        @media(min-width: 992px) {
-            .contact-container { grid-template-columns: 2fr 1fr; }
-        }
+        @media(min-width: 992px) { .contact-container { grid-template-columns: 2fr 1fr; } }
+        
         .contact-form { display: flex; flex-direction: column; gap: 20px; }
         .form-group { display: flex; flex-direction: column; position: relative; }
         .form-group label { color: var(--text-muted); margin-bottom: 8px; font-size: 0.9rem; }
         .form-group input, .form-group textarea {
-            background-color: var(--glass);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 1rem;
+            background-color: var(--glass); border: 1px solid var(--border);
+            color: var(--text); padding: 12px; border-radius: 8px; font-size: 1rem;
             transition: border-color 0.3s, box-shadow 0.3s;
         }
         .form-group input:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 10px var(--glow);
+            outline: none; border-color: var(--primary); box-shadow: 0 0 10px var(--glow);
         }
-        .form-group input.error, .form-group textarea.error {
-            border-color: var(--error);
-        }
-        .error-message {
-            color: var(--error);
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: none;
-        }
+        .form-group input.error, .form-group textarea.error { border-color: var(--error); }
+        .error-message { color: var(--error); font-size: 0.8rem; margin-top: 5px; display: none; }
         .form-group textarea { resize: vertical; min-height: 120px; }
         #form-status { margin-top: 10px; text-align: center; }
 
         .contact-links-aside h3 { margin-bottom: 20px; color: var(--primary); }
         .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 0;
-            perspective: 1000px;
+            display: grid; grid-template-columns: 1fr; gap: 15px;
+            margin-top: 0; perspective: 1000px;
         }
         .contact-link {
             display: flex; align-items: center; gap: 12px; padding: 15px 20px; background: var(--bg-card);
             border: 1px solid var(--border); border-radius: 12px; color: var(--text); text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); backdrop-filter: blur(10px);
         }
         .contact-link svg { width: 24px; height: 24px; flex-shrink: 0; color: var(--primary); transition: transform 0.3s ease; }
         .contact-link:hover {
             transform: scale(1.03) rotateY(3deg) translateX(5px);
-            border-color: var(--primary);
-            box-shadow: 0 8px 35px rgba(16, 185, 129, 0.35);
+            border-color: var(--primary); box-shadow: 0 8px 35px rgba(16, 185, 129, 0.35);
         }
         .contact-link:hover svg { transform: scale(1.1) rotate(-5deg); }
 
-
-        footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border); padding: 40px 20px;
-            text-align: center; margin-top: 80px; }
+        /* --- Estilos do Footer --- */
+        footer { 
+            background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border);
+            padding: 40px 20px; text-align: center; margin-top: 80px;
+        }
         .footer-content { max-width: 1200px; margin: 0 auto; }
         .social-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; }
-        .social-link { width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
+        .social-link { 
+            width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
             background: var(--bg-card); border: 1px solid var(--border); border-radius: 50%;
-            color: var(--text-muted); text-decoration: none; transition: all 0.3s ease; }
-        .social-link:hover { transform: translateY(-3px); border-color: var(--primary); color: var(--primary);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3); }
+            color: var(--text-muted); text-decoration: none; transition: all 0.3s ease;
+        }
+        .social-link:hover { 
+            transform: translateY(-3px); border-color: var(--primary); color: var(--primary);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
         .social-link svg { width: 24px; height: 24px; }
         
-        .footer-license {
-            margin: 25px 0;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
+        .footer-license { margin: 25px 0; font-size: 0.8rem; color: var(--text-muted); }
         .footer-license a {
-            color: var(--text-muted);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: color 0.3s ease;
+            color: var(--text-muted); text-decoration: none; display: inline-flex;
+            align-items: center; gap: 8px; transition: color 0.3s ease;
         }
-        .footer-license a:hover {
-            color: var(--primary);
-        }
-        .footer-license .cc-icons svg {
-            height: 22px;
-            width: auto;
-        }
+        .footer-license a:hover { color: var(--primary); }
+        .footer-license .cc-icons svg { height: 22px; width: auto; }
 
         .footer-update {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
+            font-size: 0.8rem; color: var(--text-muted); display: flex;
+            align-items: center; justify-content: center; gap: 8px; margin-top: 15px;
         }
-        .footer-update svg {
-            width: 14px;
-            height: 14px;
-        }
+        .footer-update svg { width: 14px; height: 14px; }
         
-        /* Botão de idioma fixo (visível no topo) */
+        /* --- Componentes Flutuantes e Utilitários --- */
         .lang-switch-fixed {
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            font-weight: 500;
-            line-height: 1;
-            white-space: nowrap;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            opacity: 1;
-            transform: scale(1);
+            background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary);
+            padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px);
+            font-weight: 500; line-height: 1; white-space: nowrap; position: fixed;
+            top: 20px; right: 20px; opacity: 1; transform: scale(1);
             transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-            z-index: 1001;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
-            visibility: visible;
+            z-index: 1001; box-shadow: 0 3px 12px rgba(0,0,0,0.2); visibility: visible;
         }
-
-        .lang-switch-fixed .lang-pt.active, .lang-switch-fixed .lang-en.active {
-            color: var(--text);
-            font-weight: 700;
-        }
-
-        .lang-switch-fixed:hover {
-            background: var(--primary);
-            color: var(--dark);
-        }
-
-        /* Esconde o botão fixo quando a página é rolada */
-        body.scrolled .lang-switch-fixed {
-            opacity: 0;
-            transform: scale(0.8);
-            visibility: hidden;
-        }
+        .lang-switch-fixed:hover { background: var(--primary); color: var(--dark); }
+        body.scrolled .lang-switch-fixed { opacity: 0; transform: scale(0.8); visibility: hidden; }
         
-        /* Botão de idioma dentro da barra de navegação */
         .lang-switch {
-            background: var(--bg-card);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            font-weight: 500;
-            line-height: 1;
-            white-space: nowrap;
-            opacity: 0;
-            transform: scale(0);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary);
+            padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px);
+            font-weight: 500; line-height: 1; white-space: nowrap; opacity: 0;
+            transform: scale(0); transition: opacity 0.3s ease, transform 0.3s ease;
         }
+        .lang-switch:hover { background: var(--primary); color: var(--dark); }
+        nav.scrolled .lang-switch { opacity: 1; transform: scale(1); }
+        nav.scrolled .lang-switch:hover { transform: scale(1.05); }
 
-        .lang-switch .lang-pt.active, .lang-switch .lang-en.active {
-            color: var(--text);
-            font-weight: 700;
-        }
+        .lang-pt.active, .lang-en.active { color: var(--text); font-weight: 700; }
         
-        .lang-switch:hover {
-            background: var(--primary);
-            color: var(--dark);
+        .scroll-indicator { 
+            position: absolute; bottom: 30px; left: 50%; 
+            transform: translateX(-50%); animation: bounce 2s infinite; 
         }
-
-        nav.scrolled .lang-switch {
-            opacity: 1;
-            transform: scale(1);
-        }
-        
-        nav.scrolled .lang-switch:hover {
-             transform: scale(1.05);
-        }
-        
-        @media (max-width: 992px) {
-            .nav-container {
-                /* Layout de 3 colunas flexível para tablets e celulares */
-                grid-template-columns: auto 1fr auto; 
-                padding: 0 15px;
-                gap: 15px;
-            }
-            .nav-col-center {
-                gap: 15px; /* Espaçamento entre os links do menu */
-                justify-content: start; /* Alinha links à esquerda em telas menores */
-                overflow-x: auto; /* Permite rolagem se os links não couberem */
-                -ms-overflow-style: none; /* IE e Edge */
-                scrollbar-width: none; /* Firefox */
-            }
-            .nav-col-center::-webkit-scrollbar {
-                display: none; /* Chrome, Safari, Opera */
-            }
-            .timeline::before { left: 20px; }
-            .timeline-dot { left: 14px; }
-            .timeline-item { padding-left: 50px; }
-        }
-
-        /* Ajustes para telas de celular menores */
-        @media (max-width: 768px) {
-            .nav-col-center {
-                gap: 10px; /* Diminui o espaçamento para caber mais links */
-            }
-            .nav-link {
-                font-size: 0.85rem; /* Diminui a fonte dos links */
-            }
-        }
-
-        .scroll-indicator { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
 
         .back-to-top {
-            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary);
-            color: var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            text-decoration: none; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000;
+            position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+            background-color: var(--primary); color: var(--dark); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; text-decoration: none;
+            opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000;
             box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
         }
         .back-to-top.visible { opacity: 1; visibility: visible; }
         .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
-
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
         
+        #toast-notification {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background-color: var(--primary); color: var(--dark); padding: 12px 24px;
+            border-radius: 8px; z-index: 2000; transition: bottom 0.5s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: 500;
+        }
+        #toast-notification.show { bottom: 30px; }
+
+        /* --- Estilos da Seção de Projetos --- */
         .sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px;
             backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
-        .sidebar .controls { margin-top: 10px; }
-        
         .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
         .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
             background: var(--glass); color: var(--text) }
@@ -694,40 +482,27 @@
             border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; 
             transition: all 0.4s ease; 
         }
-        .project-card.filtered-out {
-            opacity: 0.3;
-            transform: scale(0.95);
-        }
-        
+        .project-card.filtered-out { opacity: 0.3; transform: scale(0.95); }
         .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
         .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
         .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem }
         .project-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted) }
-        .project-topics {
-            margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px;
-        }
+        .project-topics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
         .topic-tag {
             background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--secondary); padding: 3px 8px; border-radius: 12px;
-            font-size: 0.75rem; font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: var(--secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem;
+            font-weight: 500; cursor: pointer; transition: all 0.3s ease;
         }
-        .topic-tag:hover, .topic-tag.active {
-            background: var(--secondary);
-            color: var(--dark);
-            transform: scale(1.05);
-        }
-
+        .topic-tag:hover, .topic-tag.active { background: var(--secondary); color: var(--dark); transform: scale(1.05); }
         .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
         .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none;
             font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer; }
-        .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
-            transform: translateY(-2px); }
+        .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
         .link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
-        .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none;
-            transform: translateY(-2px); }
+        .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
+        
+        /* --- Classes Utilitárias --- */
         .small-muted { font-size: 0.82rem; color: var(--text-muted) }
         .center { display: flex; justify-content: center }
         .hidden { display: none }
@@ -738,69 +513,62 @@
         .stagger-children .reveal { transition-delay: calc(var(--stagger-index) * 120ms); }
         .load-more-container { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* Skeleton Loader Styles */
+        /* --- Estilos de Carregamento (Skeleton) --- */
         .skeleton-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 25px;
-            height: 220px;
-            overflow: hidden;
-            position: relative;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 25px; height: 220px; overflow: hidden; position: relative;
         }
-
         .skeleton-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
             animation: shimmer 1.5s infinite linear;
         }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
         
-        #toast-notification {
-            position: fixed;
-            bottom: -100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--primary);
-            color: var(--dark);
-            padding: 12px 24px;
-            border-radius: 8px;
-            z-index: 2000;
-            transition: bottom 0.5s ease;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            font-weight: 500;
-        }
-        #toast-notification.show {
-            bottom: 30px;
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+        
+        /* --- Responsividade --- */
+        @media (max-width: 992px) {
+            .nav-container {
+                grid-template-columns: auto 1fr auto; 
+                padding: 0 15px;
+                gap: 15px;
+            }
+            .nav-col-center {
+                gap: 15px;
+                justify-content: start;
+                overflow-x: auto;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .nav-col-center::-webkit-scrollbar { display: none; }
+            .timeline::before { left: 20px; }
+            .timeline-dot { left: 14px; }
+            .timeline-item { padding-left: 50px; }
         }
 
-        @keyframes spin { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
+        @media (max-width: 768px) {
+            .nav-col-center { gap: 10px; }
+            .nav-link { font-size: 0.85rem; }
         }
-        .animate-spin { 
-            animation: spin 1s linear infinite; 
-        }
-
     </style>
 </head>
 
 <body>
+
+    <!-- Bloco de Conteúdo Visível: Todo o HTML que o usuário vê -->
+    
+    <!-- Elementos Flutuantes e de Fundo -->
     <button class="lang-switch-fixed" onclick="toggleLanguage()" title="Change language">
         <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
     </button>
     <canvas id="particle-canvas"></canvas>
     <a href="#" class="back-to-top" aria-label="Voltar ao topo">↑</a>
     
+    <!-- Cabeçalho Principal (Hero Section) -->
     <header>
         <div class="hero-content">
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
@@ -820,6 +588,7 @@
         <div class="scroll-indicator" aria-hidden="true">⬇</div>
     </header>
 
+    <!-- Barra de Navegação -->
     <nav>
         <div class="nav-container">
             <div class="nav-col-left">
@@ -843,6 +612,7 @@
         </div>
     </nav>
 
+    <!-- Conteúdo Principal da Página -->
     <main class="container">
         <section id="sobre" class="section">
             <h2 class="reveal" data-key="about-title">Sobre Mim</h2>
@@ -1160,6 +930,7 @@
         </section>
     </main>
 
+    <!-- Rodapé -->
     <footer class="reveal">
         <div class="footer-content">
             <div class="social-links">
@@ -1194,16 +965,17 @@
         </div>
     </footer>
 
+    <!-- Elemento para Notificações (Toast) -->
     <div id="toast-notification"></div>
 
+    <!-- Bloco de Scripts: Funcionalidades da página -->
+    
     <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
-    
-    <!-- Arquivo de Tradução -->
     <script src="translations.js" defer></script>
 
-
+    <!-- Scripts Internos -->
     <script>
         // --- Script para Carregar SVGs Externos ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -1211,7 +983,6 @@
                 const container = document.getElementById(containerId);
                 if (!container) return;
 
-                // Adiciona um spinner/loader simples enquanto o SVG carrega
                 container.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`;
 
                 fetch(url)
@@ -1226,7 +997,7 @@
                     })
                     .catch(error => {
                         console.error(`Error loading SVG from ${url}:`, error);
-                        container.innerHTML = '⚠️'; // Ícone de erro
+                        container.innerHTML = '⚠️';
                     });
             };
 
@@ -1236,11 +1007,13 @@
             loadSVG('ConectaGEM.svg', 'conectagem-contact-logo-container');
         });
         
-        // --- Lógica de Inicialização e Scripts ---
+        // --- Lógica de Inicialização e Interatividade da UI ---
         document.addEventListener('DOMContentLoaded', () => {
+            // Atualiza o ano do copyright e a data da última atualização
             document.getElementById('copyright-year').textContent = new Date().getFullYear();
             document.getElementById('last-updated-date').textContent = "6 de outubro de 2025";
 
+            // Observador para animações de "revelar" ao rolar a página
             const revealObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1250,6 +1023,7 @@
             }, { threshold: 0.1 });
             document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             
+            // Observador para animar as barras de habilidades
             const skillObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -1267,12 +1041,14 @@
                 skillObserver.observe(el);
             });
 
+            // Adiciona delay para animação escalonada
             document.querySelectorAll('.stagger-children').forEach(container => {
                 container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
                     child.style.setProperty('--stagger-index', index);
                 });
             });
 
+            // Observador para elementos adicionados dinamicamente (projetos, publicações)
             const mutationObserver = new MutationObserver((mutationsList) => {
                 mutationsList.forEach(mutation => mutation.addedNodes.forEach(node => {
                     if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.reveal'))) {
@@ -1284,14 +1060,13 @@
             mutationObserver.observe(document.getElementById('projects-list'), { childList: true });
             mutationObserver.observe(document.getElementById('publicacoes-grid'), { childList: true });
 
-            const timeline = document.querySelector('.timeline');
-            timeline.addEventListener('click', function(event) {
+            // Lógica para expandir/recolher detalhes da timeline
+            document.querySelector('.timeline').addEventListener('click', function(event) {
                 const button = event.target.closest('.toggle-details-btn');
                 if (button) {
                     const item = button.closest('.timeline-item');
                     item.classList.toggle('expanded');
                     button.textContent = item.classList.contains('expanded') ? 'Ver menos' : 'Ver mais';
-                    
                     const details = item.querySelector('.timeline-details');
                     if(item.classList.contains('expanded')) {
                         details.innerHTML = translations[currentLang][details.dataset.key];
@@ -1299,6 +1074,7 @@
                 }
             });
 
+            // Observador para destacar o link ativo na navegação
             const sections = document.querySelectorAll('main > section[id]');
             const navLinks = document.querySelectorAll('nav .nav-link');
             const navObserver = new IntersectionObserver((entries) => {
@@ -1317,6 +1093,7 @@
             }, { rootMargin: '-40% 0px -60% 0px' });
             sections.forEach(section => navObserver.observe(section));
 
+            // Efeito de brilho nos cards ao passar o mouse
             document.body.addEventListener('mousemove', e => {
                 const card = e.target.closest('.card');
                 if (card) {
@@ -1328,48 +1105,35 @@
                 }
             });
 
+            // Botão "Voltar ao Topo"
             const backToTopButton = document.querySelector('.back-to-top');
             window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    backToTopButton.classList.add('visible');
-                } else {
-                    backToTopButton.classList.remove('visible');
-                }
+                backToTopButton.classList.toggle('visible', window.scrollY > 300);
             });
 
+            // Mudança de estado da barra de navegação ao rolar
             const nav = document.querySelector('nav');
             const header = document.querySelector('header');
             const body = document.body;
             if (nav && header) {
                 const scrollThreshold = header.offsetHeight - 100; 
                 window.addEventListener('scroll', () => {
-                    if (window.scrollY > scrollThreshold) {
-                        nav.classList.add('scrolled');
-                        body.classList.add('scrolled');
-                    } else {
-                        nav.classList.remove('scrolled');
-                        body.classList.remove('scrolled');
-                    }
+                    const isScrolled = window.scrollY > scrollThreshold;
+                    nav.classList.toggle('scrolled', isScrolled);
+                    body.classList.toggle('scrolled', isScrolled);
                 }, { passive: true });
             }
             
+            // Funcionalidade de copiar email
             document.getElementById('copy-email-link').addEventListener('click', function(event) {
                 event.preventDefault();
                 const emailToCopy = 'wevertonufv@gmail.com';
-                
-                const textArea = document.createElement('textarea');
-                textArea.value = emailToCopy;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-
-                const toast = document.getElementById('toast-notification');
-                toast.textContent = `Email: ${emailToCopy} copiado!`;
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 3000);
+                navigator.clipboard.writeText(emailToCopy).then(() => {
+                    const toast = document.getElementById('toast-notification');
+                    toast.textContent = `Email: ${emailToCopy} copiado!`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 3000);
+                });
             });
         });
     </script>
@@ -1474,6 +1238,7 @@
                 const key = el.dataset.key;
                 const translation = translations[lang][key];
                 if (translation && typeof translation === 'function') {
+                    // Placeholder for functions in translations
                 } else if (translation) {
                     el.innerHTML = translation;
                 }
@@ -1505,12 +1270,12 @@
         });
     </script>
     <script>
-        // --- Script para buscar repositórios do GitHub (Separado para clareza) ---
+        // --- Script para buscar repositórios do GitHub ---
         window.githubScript = (function() {
             const GITHUB_USER = 'WevertonGomesCosta';
             const CACHE_KEY = 'gh_repos_cache_v8';
             const CACHE_TS_KEY = 'gh_repos_cache_ts_v8';
-            const CACHE_TTL = 1000 * 60 * 60 * 24;
+            const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 horas
             const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
 
             const fallbackRepos = [
@@ -1609,53 +1374,7 @@
         })();
     </script>
     <script>
-        // --- Script para buscar publicações do Google Scholar e validação de formulário ---
-        (function() {
-            const form = document.getElementById("contact-form");
-            form.addEventListener("submit", async function handleSubmit(event) {
-                event.preventDefault();
-                const status = document.getElementById("form-status");
-                if (!validateForm()) { status.textContent = ''; return; }
-                const data = new FormData(event.target);
-                status.textContent = translations[currentLang].formSending;
-                status.style.color = 'var(--accent)';
-                try {
-                    const response = await fetch(event.target.action, { method: form.method, body: data, headers: { 'Accept': 'application/json' } });
-                    if (response.ok) { status.textContent = translations[currentLang].formSuccess; status.style.color = 'var(--primary)'; form.reset(); } 
-                    else { const responseData = await response.json(); if (Object.hasOwn(responseData, 'errors')) { status.textContent = responseData["errors"].map(error => error["message"]).join(", "); } else { status.textContent = translations[currentLang].formError; } status.style.color = 'var(--error)'; }
-                } catch (error) { status.textContent = translations[currentLang].formError; status.style.color = 'var(--error)'; }
-            });
-
-            function validateForm() {
-                let isValid = true; const name = document.getElementById('name'); const email = document.getElementById('email'); const subject = document.getElementById('subject'); const message = document.getElementById('message');
-                if (name.value.trim() === '') { showError(name, translations[currentLang]['form-name-error']); isValid = false; } else { clearError(name); }
-                if (!isValidEmail(email.value.trim())) { showError(email, translations[currentLang]['form-email-error']); isValid = false; } else { clearError(email); }
-                if (subject.value.trim() === '') { showError(subject, translations[currentLang]['form-subject-error']); isValid = false; } else { clearError(subject); }
-                if (message.value.trim() === '') { showError(message, translations[currentLang]['form-message-error']); isValid = false; } else { clearError(message); }
-                return isValid;
-            }
-
-            function showError(input, message) { const formGroup = input.parentElement; const errorDisplay = formGroup.querySelector('.error-message'); input.classList.add('error'); errorDisplay.textContent = message; errorDisplay.style.display = 'block'; }
-            function clearError(input) { const formGroup = input.parentElement; const errorDisplay = formGroup.querySelector('.error-message'); input.classList.remove('error'); errorDisplay.textContent = ''; errorDisplay.style.display = 'none'; }
-            function isValidEmail(email) { const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/; return re.test(String(email).toLowerCase()); }
-
-            function animateCountUp(el) {
-                const target = parseInt(el.textContent, 10); if (isNaN(target)) return; el.textContent = '0'; let current = 0; const increment = Math.max(1, Math.ceil(target / 100)); const duration = 1500; const stepTime = Math.abs(Math.floor(duration / (target/increment)));
-                const timer = setInterval(() => { current += increment; if (current >= target) { current = target; clearInterval(timer); } el.textContent = current; }, stepTime);
-            }
-
-            const metricsObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const metrics = entry.target.querySelectorAll('.metric-value, .metric-value-period');
-                        metrics.forEach(metric => animateCountUp(metric));
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, { threshold: 0.8 });
-            const metricsContainer = document.querySelector('.scholar-metrics'); if (metricsContainer) { metricsObserver.observe(metricsContainer); }
-        })();
-
+        // --- Script para Google Scholar, Validação de Formulário e Geração de PDF ---
         window.scholarScript = (function() {
             const SERPAPI_KEY = "77282a568959bc1c31cdf88333aaab9768aa7d8ed9db90bd17e5db5a2f08c9f1"; const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; const PROXY_URL = 'https://corsproxy.io/?'; const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = []; let showingPubsCount = 3; let citationGraphData = []; let activeYearFilter = null; 
@@ -1672,145 +1391,65 @@
             function renderInteractiveChart(graphData, articles) {
                 const containerId = 'interactive-scholar-chart-container';
                 const container = document.getElementById(containerId);
-                if (!container || typeof Plotly === 'undefined') return;
+                if (!container || typeof Plotly === 'undefined' || (!graphData || graphData.length === 0) && (!articles || articles.length === 0)) return;
 
-                // Adicionado para evitar renderização sem dados
-                if ((!graphData || graphData.length === 0) && (!articles || articles.length === 0)) {
-                    return; 
-                }
-
-                // Animação ativada por rolagem
                 const observer = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            animateChart(graphData, articles);
-                            observer.unobserve(entry.target); // Anima apenas uma vez
-                        }
-                    });
-                }, { threshold: 0.5 }); // Inicia quando 50% do gráfico estiver visível
-
+                    entries.forEach(entry => { if (entry.isIntersecting) { animateChart(graphData, articles); observer.unobserve(entry.target); } });
+                }, { threshold: 0.5 });
                 observer.observe(container);
             }
 
             function animateChart(graphData, articles) {
                 const containerId = 'interactive-scholar-chart-container';
                 const container = document.getElementById(containerId);
-                
                 const yearlyData = {};
-                // Primeiro, popula com citações do graphData
-                (graphData || []).forEach(item => {
-                    yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 };
-                });
-
-                // Em seguida, itera através dos artigos para contar as publicações
+                (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
                 (articles || []).forEach(article => {
                     const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
                     if (yearMatches) {
                         const year = parseInt(yearMatches[yearMatches.length - 1]);
                         if (year) {
-                            if (yearlyData[year]) {
-                                // O ano já existe (do graphData), apenas incrementa as pubs
-                                yearlyData[year].pubs++;
-                            } else {
-                                // O ano não existe (ex: pubs mas sem citações ainda), cria uma nova entrada
-                                yearlyData[year] = { citations: 0, pubs: 1 };
-                            }
+                            if (yearlyData[year]) { yearlyData[year].pubs++; } else { yearlyData[year] = { citations: 0, pubs: 1 }; }
                         }
                     }
                 });
-                
                 const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
-                if (sortedYears.length === 0) {
-                    // Esta mensagem não deve mais aparecer, mas mantida como segurança
-                    container.innerHTML = "Sem dados suficientes para o gráfico.";
-                    return;
-                }
+                if (sortedYears.length === 0) { return; }
 
-                const fullYears = sortedYears;
-                const fullCitCounts = sortedYears.map(year => yearlyData[year].citations || 0);
-                const fullPubCounts = sortedYears.map(year => yearlyData[year].pubs || 0);
-                const maxPubs = Math.max(...fullPubCounts, 1);
-                const fullScaledPubCounts = fullPubCounts.map(p => Math.max(10, (p / maxPubs) * 40));
-                const fullCustomData = sortedYears.map(year => ({ pubs: yearlyData[year].pubs || 0 }));
+                const fullYears = sortedYears, fullCitCounts = sortedYears.map(y => yearlyData[y].citations || 0), fullPubCounts = sortedYears.map(y => yearlyData[y].pubs || 0);
+                const maxPubs = Math.max(...fullPubCounts, 1), fullScaledPubCounts = fullPubCounts.map(p => Math.max(10, (p / maxPubs) * 40));
+                const fullCustomData = sortedYears.map(y => ({ pubs: yearlyData[y].pubs || 0 }));
                 
-                const isMobile = window.innerWidth < 768;
-                const maxCitation = Math.max(...fullCitCounts, 0);
+                const isMobile = window.innerWidth < 768, maxCitation = Math.max(...fullCitCounts, 0);
                 const chartTitle = isMobile ? translations[currentLang]['chart-title-mobile'] : translations[currentLang]['chart-title'];
-                const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1; // Buffer para bolhas em y=0
+                const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
 
                 const layout = {
                     title: { text: chartTitle, x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
-                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' },
-                    dragmode: false,
-                    xaxis: { 
-                        title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
-                        gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
-                        tickvals: fullYears,
-                        ticktext: fullYears,
-                        fixedrange: true,
-                        tickangle: isMobile ? -60 : -45, 
-                        tickfont: { size: isMobile ? 8 : 10 }, 
-                        automargin: true 
-                    },
-                    yaxis: { 
-                        title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, 
-                        gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', 
-                        range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1],
-                        fixedrange: true,
-                        tickfont: { size: isMobile ? 8 : 10 }, 
-                        automargin: true 
-                    },
-                    margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 },
-                    hovermode: 'closest', showlegend: false, autosize: true
+                    paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' }, dragmode: false,
+                    xaxis: { title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, tickfont: { size: isMobile ? 8 : 10 }, automargin: true },
+                    yaxis: { title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', gridwidth: 1, griddash: 'dot', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, tickfont: { size: isMobile ? 8 : 10 }, automargin: true },
+                    margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 }, hovermode: 'closest', showlegend: false, autosize: true
                 };
-
                 const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-                
-                const bubbleTrace = {
-                    x: fullYears, y: [], customdata: [],
-                    hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>',
-                    mode: 'markers',
-                    marker: {
-                        size: [], color: [],
-                        colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true,
-                        colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v', tickfont: { color: 'var(--text-muted)', size: isMobile ? 8 : 10 }, titlefont: { color: 'var(--text-muted)', size: isMobile ? 10 : 12 }, outlinecolor: 'var(--border)' }
-                    }
-                };
-
-                const lineTrace = {
-                    x: fullYears, y: [], type: 'scatter', mode: 'lines',
-                    line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 },
-                    hoverinfo: 'none'
-                };
+                const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>', mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v', tickfont: { color: 'var(--text-muted)', size: isMobile ? 8 : 10 }, titlefont: { color: 'var(--text-muted)', size: isMobile ? 10 : 12 }, outlinecolor: 'var(--border)' } } };
+                const lineTrace = { x: fullYears, y: [], type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none' };
 
                 Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
-                    gd.on('plotly_click', function(data) {
+                    gd.on('plotly_click', data => {
                         if (data.points.length > 0) {
-                            const yearClicked = data.points[0].x;
-                            activeYearFilter = yearClicked;
+                            activeYearFilter = data.points[0].x;
                             document.getElementById('publication-search').value = '';
-                            renderPublications();
-                            updateFilterUI();
+                            renderPublications(); updateFilterUI();
                         }
                     });
-
                     let frame = 0;
                     function runAnimation() {
                         if (frame >= fullYears.length) return;
-
                         const slice = arr => arr.slice(0, frame + 1);
-                        
-                        Plotly.restyle(gd, {
-                            y: [slice(fullCitCounts), slice(fullCitCounts)],
-                            customdata: [slice(fullCustomData)],
-                            'marker.size': [slice(fullScaledPubCounts)],
-                            'marker.color': [slice(fullPubCounts)]
-                        });
-                        
-                        frame++;
-                        setTimeout(runAnimation, 150);
+                        Plotly.restyle(gd, { y: [slice(fullCitCounts), slice(fullCitCounts)], customdata: [slice(fullCustomData)], 'marker.size': [slice(fullScaledPubCounts)], 'marker.color': [slice(fullPubCounts)] });
+                        frame++; setTimeout(runAnimation, 150);
                     }
-                    
                     setTimeout(runAnimation, 300);
                 });
             }
@@ -1832,16 +1471,15 @@
                 } catch (e) {
                     console.error("Erro ao atualizar seção do Scholar:", e);
                     const scholarCard = document.querySelector(".scholar-summary-card");
-                    if (scholarCard && !scholarCard.querySelector('.scholar-error')) { const errorDiv = document.createElement('div'); errorDiv.className = 'scholar-error'; errorDiv.style.color = '#f44336'; errorDiv.style.marginTop = '15px'; errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`; scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv); }
+                    if (scholarCard && !scholarCard.querySelector('.scholar-error')) { const errorDiv = document.createElement('div'); errorDiv.className = 'scholar-error'; errorDiv.style.cssText = 'color: var(--error); margin-top: 15px;'; errorDiv.textContent = `Erro ao carregar métricas: ${e.message}`; scholarCard.querySelector(".scholar-link").insertAdjacentElement('afterend', errorDiv); }
                 }
             }
             
             function renderPublications(filter = '') {
                 const grid = document.getElementById("publicacoes-grid"); const toggleBtn = document.getElementById('pubs-toggle-more'); const shownCountEl = document.getElementById('pubs-shown-count'); grid.innerHTML = ""; 
-                let filteredByYear = allArticles;
-                if (activeYearFilter) { filteredByYear = allArticles.filter(art => { if (!art.publication) return false; const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g); if (yearMatches && yearMatches.length > 0) { const year = parseInt(yearMatches[yearMatches.length - 1]); return year === activeYearFilter; } return false; }); }
+                let filteredByYear = activeYearFilter ? allArticles.filter(art => { const yearMatches = art.publication?.match(/\b(19|20)\d{2}\b/g); return yearMatches && parseInt(yearMatches.pop()) === activeYearFilter; }) : allArticles;
                 const lowerCaseFilter = filter.trim().toLowerCase();
-                const filteredArticles = lowerCaseFilter ? filteredByYear.filter(art => (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) || (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) || (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))) : filteredByYear;
+                const filteredArticles = lowerCaseFilter ? filteredByYear.filter(art => Object.values(art).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseFilter))) : filteredByYear;
                 const articlesToShow = filteredArticles.slice(0, showingPubsCount);
                 if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
                 articlesToShow.forEach((art) => {
@@ -1852,19 +1490,17 @@
                 shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
                 toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
                 toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
-                const revealObserver = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.1 });
-                grid.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
             }
 
             async function fetchAllScholarArticles() {
-                let start = 0; let allResults = []; let hasMore = true; const articlesPerPage = 20;
+                let start = 0, allResults = [], hasMore = true;
                 while (hasMore) {
                     try {
-                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: articlesPerPage });
-                        if (result.error) { if (result.error.includes("monthly search limit")) throw new Error(serpApiLimitMsg); throw new Error(result.error); }
+                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: 20 });
+                        if (result.error) throw new Error(result.error.includes("monthly search limit") ? serpApiLimitMsg : result.error);
                         const articles = result.articles || [];
-                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); if (articles.length < articlesPerPage) { hasMore = false; } else { start += articlesPerPage; } }
-                    } catch(e) { console.error(`Erro ao buscar página de publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
+                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); start += 20; }
+                    } catch(e) { console.error(`Erro ao buscar publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
                 }
                 return allResults;
             }
@@ -1874,8 +1510,8 @@
                 try {
                     allArticles = await fetchAllScholarArticles(); allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0)); renderPublications(); renderInteractiveChart(citationGraphData, allArticles);
                 } catch (e) {
-                    console.error("Erro ao atualizar publicações:", e); grid.innerHTML = `<div class="card" style="color: #f44336; grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
-                    document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: #f44336;">Erro ao carregar o gráfico: ${e.message}</div>`;
+                    console.error("Erro ao atualizar publicações:", e); grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                    document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: var(--error);">Erro ao carregar o gráfico: ${e.message}</div>`;
                 }
             }
 
@@ -1889,6 +1525,37 @@
             }
 
             document.addEventListener("DOMContentLoaded", () => {
+                const form = document.getElementById("contact-form");
+                form.addEventListener("submit", async function handleSubmit(event) {
+                    event.preventDefault(); const status = document.getElementById("form-status"); if (!validateForm()) { status.textContent = ''; return; }
+                    const data = new FormData(event.target); status.textContent = translations[currentLang].formSending; status.style.color = 'var(--accent)';
+                    try {
+                        const response = await fetch(event.target.action, { method: form.method, body: data, headers: { 'Accept': 'application/json' } });
+                        if (response.ok) { status.textContent = translations[currentLang].formSuccess; status.style.color = 'var(--primary)'; form.reset(); } 
+                        else { const responseData = await response.json(); status.textContent = responseData["errors"]?.map(e => e["message"]).join(", ") || translations[currentLang].formError; status.style.color = 'var(--error)'; }
+                    } catch (error) { status.textContent = translations[currentLang].formError; status.style.color = 'var(--error)'; }
+                });
+
+                function validateForm() {
+                    let isValid = true; const fields = ['name', 'email', 'subject', 'message'];
+                    fields.forEach(id => {
+                        const input = document.getElementById(id); const errorKey = `form-${id}-error`;
+                        if (input.value.trim() === '' || (id === 'email' && !/^\S+@\S+\.\S+$/.test(input.value))) { showError(input, translations[currentLang][errorKey]); isValid = false; } else { clearError(input); }
+                    });
+                    return isValid;
+                }
+                function showError(input, message) { const fg = input.parentElement; fg.querySelector('.error-message').textContent = message; fg.querySelector('.error-message').style.display = 'block'; input.classList.add('error'); }
+                function clearError(input) { const fg = input.parentElement; fg.querySelector('.error-message').style.display = 'none'; input.classList.remove('error'); }
+                
+                function animateCountUp(el) {
+                    const target = parseInt(el.textContent, 10); if (isNaN(target)) return; el.textContent = '0'; let current = 0; const increment = Math.max(1, Math.ceil(target / 100));
+                    const timer = setInterval(() => { current += increment; if (current >= target) { current = target; clearInterval(timer); } el.textContent = current; }, 15);
+                }
+                const metricsObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.querySelectorAll('.metric-value, .metric-value-period').forEach(animateCountUp); observer.unobserve(entry.target); } });
+                }, { threshold: 0.8 });
+                metricsObserver.observe(document.querySelector('.scholar-metrics'));
+
                 updateScholarSection(); updateScholarPublications();
                 const pubSearchInput = document.getElementById('publication-search'); const pubClearBtn = document.getElementById('publication-clear-btn'); const pubToggleBtn = document.getElementById('pubs-toggle-more');
                 const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
@@ -1896,65 +1563,51 @@
                 pubClearBtn.addEventListener('click', () => { pubSearchInput.value = ''; showingPubsCount = 3; if (activeYearFilter) { activeYearFilter = null; updateFilterUI(); } renderPublications(); pubSearchInput.focus(); });
                 pubToggleBtn.addEventListener('click', () => {
                     const filter = pubSearchInput.value.trim().toLowerCase();
-                    let baseArticleList = allArticles;
-                    if (activeYearFilter) { baseArticleList = allArticles.filter(art => { if (!art.publication) return false; const yearMatches = art.publication.match(/\b(19|20)\d{2}\b/g); if (yearMatches && yearMatches.length > 0) { const year = parseInt(yearMatches[yearMatches.length - 1]); return year === activeYearFilter; } return false; }); }
-                    const filteredArticles = filter ? baseArticleList.filter(art => (art.title && art.title.toLowerCase().includes(filter)) || (art.publication && art.publication.toLowerCase().includes(filter)) || (art.snippet && art.snippet.toLowerCase().includes(filter))) : baseArticleList;
-                    showingPubsCount = Math.min(showingPubsCount + 3, filteredArticles.length);
-                    renderPublications(pubSearchInput.value);
+                    let baseList = activeYearFilter ? allArticles.filter(art => art.publication?.includes(activeYearFilter)) : allArticles;
+                    const filtered = filter ? baseList.filter(art => Object.values(art).some(v => String(v).toLowerCase().includes(filter))) : baseList;
+                    showingPubsCount = Math.min(showingPubsCount + 3, filtered.length);
+                    renderPublications(filter);
                 });
+
+                document.getElementById('download-cv-btn')?.addEventListener('click', (event) => { event.preventDefault(); generateCvPdf(); });
             });
 
-            return { renderPublications, renderChart: () => { renderInteractiveChart(citationGraphData, allArticles); }, get allArticles() { return allArticles; }, set showingPubsCount(value) { showingPubsCount = value; } };
+            async function generateCvPdf() {
+                const button = document.getElementById('download-cv-btn'); const originalButtonHTML = button.innerHTML; const toast = document.getElementById('toast-notification'); const { jsPDF } = window.jspdf; const pdfTranslations = translations.pdf[currentLang];
+                button.innerHTML = `<svg class="animate-spin" ...></svg> <span>Gerando...</span>`; button.style.pointerEvents = 'none'; toast.textContent = 'Preparando seu currículo...'; toast.classList.add('show');
+                try {
+                    const doc = new jsPDF('p', 'pt', 'a4'); const page_width = doc.internal.pageSize.getWidth(); const margin = 40; let y = margin;
+                    const addSectionTitle = (title) => { y += (y > margin ? 20 : 0); doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor(0).text(title.toUpperCase(), margin, y); y += 10; doc.setLineWidth(1).line(margin, y - 5, page_width - margin, y - 5); };
+                    const addJustifiedText = (content) => { const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').trim(), page_width - margin * 2); doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(lines, margin, y, { align: 'justify' }); y += lines.length * 12 + 5; };
+                    
+                    const avatarImg = document.querySelector('.avatar'); let avatarDataUrl = null;
+                    try { const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}`); const blob = await response.blob(); avatarDataUrl = await new Promise(resolve => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); }); } catch(e) { console.error("Falha ao carregar imagem do avatar:", e); }
+                    if (avatarDataUrl) doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80);
+                    doc.setFontSize(22).setFont('helvetica', 'bold').text(document.getElementById('hero-name').textContent, margin + 95, y + 25);
+                    doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text("Viçosa, MG, Brasil | wevertonufv@gmail.com | linkedin.com/in/wevertoncosta", margin + 95, y + 40);
+                    y += 100;
+                    
+                    addSectionTitle(pdfTranslations['about-title']); addJustifiedText(Array.from(document.querySelectorAll('#sobre p')).map(p => p.innerText).join(' '));
+                    
+                    doc.save('CV-Weverton_Gomes_da_Costa.pdf'); toast.textContent = 'Download iniciado!';
+                } catch (error) { console.error('Erro ao gerar PDF:', error); toast.textContent = 'Erro ao gerar o PDF.'; } finally { button.innerHTML = originalButtonHTML; button.style.pointerEvents = 'auto'; setTimeout(() => toast.classList.remove('show'), 4000); }
+            }
+
+            return { renderPublications, renderChart: () => renderInteractiveChart(citationGraphData, allArticles), get allArticles() { return allArticles; } };
         })();
     </script>
      <script>
-        // --- Particle Background Script ---
+        // --- Script de Fundo com Partículas ---
         document.addEventListener('DOMContentLoaded', () => {
             const canvas = document.getElementById('particle-canvas'); if (!canvas) return; const ctx = canvas.getContext('2d'); let particles = [];
             function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            class Particle { constructor(x, y, dX, dY, s, c) { this.x = x; this.y = y; this.directionX = dX; this.directionY = dY; this.size = s; this.color = c; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX; if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY; this.x += this.directionX; this.y += this.directionY; this.draw(); } }
-            function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < density && i < 120; i++) { let size = Math.random() * 2 + 1; let x = Math.random() * (innerWidth - size * 2) + size; let y = Math.random() * (innerHeight - size * 2) + size; let dX = (Math.random() * .4) - .2; let dY = (Math.random() * .4) - .2; particles.push(new Particle(x, y, dX, dY, size)); } }
-            function connect() { let opacityValue = 1; for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (distance < 120) { opacityValue = 1 - (distance / 120); ctx.strokeStyle = `rgba(148, 163, 184, ${opacityValue * 0.2})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
-            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); for (let i = 0; i < particles.length; i++) { particles[i].update(); } connect(); }
+            class Particle { constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.dX = -this.dX; if (this.y > canvas.height || this.y < 0) this.dY = -this.dY; this.x += this.dX; this.y += this.dY; this.draw(); } }
+            function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < Math.min(density, 120); i++) { particles.push(new Particle(Math.random() * innerWidth, Math.random() * innerHeight, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1)); } }
+            function connect() { for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (distance < 120) { ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (distance / 120)) * 0.2 })`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
+            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); particles.forEach(p => p.update()); connect(); }
             window.addEventListener('resize', () => { setCanvasSize(); init(); }); setCanvasSize(); init(); animate();
         });
     </script>
 
-    <script>16:30 06/10/2025
-        document.addEventListener('DOMContentLoaded', () => {
-            const downloadBtn = document.getElementById('download-cv-btn');
-            if(downloadBtn) { downloadBtn.addEventListener('click', (event) => { event.preventDefault(); generateCvPdf(); }); }
-        });
-
-        async function generateCvPdf() {
-            const button = document.getElementById('download-cv-btn'); const originalButtonHTML = button.innerHTML; const toast = document.getElementById('toast-notification'); const { jsPDF } = window.jspdf; const pdfTranslations = translations.pdf[currentLang];
-            button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 8px;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> <span>Gerando...</span>`; button.style.pointerEvents = 'none'; toast.textContent = 'Preparando seu currículo...'; toast.classList.add('show');
-            try {
-                const doc = new jsPDF('p', 'pt', 'a4'); const page_width = doc.internal.pageSize.getWidth(); const margin = 40; const max_width = page_width - margin * 2; let y = margin; const scholarLink = document.querySelector('a[href*="scholar.google.com"]');
-                const checkPageBreak = (neededHeight) => { if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) { doc.addPage(); y = margin; } };
-                const avatarImg = document.querySelector('.avatar'); let avatarDataUrl = null;
-                try { const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}`); const blob = await response.blob(); avatarDataUrl = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); }); } catch(e) { console.error("Não foi possível carregar a imagem do avatar:", e); }
-                if (avatarDataUrl) { doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100); }
-                doc.setFontSize(24); doc.setFont('helvetica', 'bold'); doc.text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
-                doc.setFontSize(11); doc.setFont('helvetica', 'normal'); doc.setTextColor(100); doc.text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
-                doc.setFontSize(10); doc.setTextColor(80); doc.text("Email: wevertonufv@gmail.com", margin + 115, y + 75); doc.text("LinkedIn: linkedin.com/in/wevertoncosta", margin + 115, y + 90); y += 120;
-
-                const addSectionTitle = (title) => { checkPageBreak(40); y += 20; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(title.toUpperCase(), margin, y); y += 5; doc.setLineWidth(1.5); doc.line(margin, y, page_width - margin, y); y += 15; };
-                const addJustifiedText = (content) => { doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(80); const lines = doc.splitTextToSize(content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(), max_width); const textHeight = lines.length * 12; checkPageBreak(textHeight); doc.text(lines, margin, y, { align: 'justify', maxWidth: max_width }); y += textHeight + 5; };
-                const addBulletedList = (items) => { doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(80); items.forEach(item => { const text = `• ${item}`; const lines = doc.splitTextToSize(text, max_width - 10); const textHeight = lines.length * 12; checkPageBreak(textHeight); doc.text(lines, margin, y); y+= textHeight + 2; }); }
-
-                addSectionTitle(pdfTranslations['about-title']); const aboutText = Array.from(document.querySelectorAll('#sobre .card p')).map(p => p.innerText).join(' '); addJustifiedText(aboutText);
-                addSectionTitle(pdfTranslations['services-title']); document.querySelectorAll('#servicos .card').forEach(card => { const titleKey = card.querySelector('h3').dataset.key; const descKey = card.querySelector('p').dataset.key; const title = translations[currentLang][titleKey]; const desc = translations[currentLang][descKey]; checkPageBreak(40); doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(`• ${title}`, margin, y); y += 14; addJustifiedText(desc); y += 5; });
-                addSectionTitle(pdfTranslations['skills-title']); const skills = Array.from(document.querySelectorAll('#habilidades .skill-name')).map(el => translations[currentLang][el.dataset.key]); addBulletedList(skills); y+= 10;
-                addSectionTitle(pdfTranslations['expertise-title']); const experiences = Array.from(document.querySelectorAll('#experiencia .card')).map(card => { const titleKey = card.querySelector('h3').dataset.key; const descKey = card.querySelector('p').dataset.key; const title = translations[currentLang][titleKey]; const desc = translations[currentLang][descKey]; return `${title}: ${desc}`; }); addBulletedList(experiences); y+= 10;
-                addSectionTitle(pdfTranslations['education-title']); document.querySelectorAll('#formacao .timeline-item').forEach(item => { checkPageBreak(70); const date = item.querySelector('.timeline-date').textContent.trim(); const titleKey = item.querySelector('h3').dataset.key; const title = translations[currentLang][titleKey]; const institution = item.querySelector('p').textContent.trim(); const descriptionKey = item.querySelector('.timeline-details').dataset.key; const description = translations[currentLang][descriptionKey] || ''; doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(title, margin, y); y += 14; doc.setFontSize(10); doc.setFont('helvetica', 'italic'); doc.setTextColor(100); doc.text(date, margin, y); y += 14; doc.setFont('helvetica', 'normal'); doc.setTextColor(80); doc.text(institution, margin, y); y += 14; addJustifiedText(description); y += 15; });
-                doc.addPage(); y = margin;
-                addSectionTitle(pdfTranslations['projects-title']); if (window.githubScript && window.githubScript.allRepos.length > 0) { const topProjects = [...window.githubScript.allRepos].sort((a, b) => b.stargazers_count - a.stargazers_count).slice(0, 3); topProjects.forEach(repo => { const title = repo.name.replace(/[-_]/g, ' '); const desc = repo.description || (currentLang === 'pt' ? 'Sem descrição.' : 'No description.'); checkPageBreak(50); doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); doc.text(`• ${title}`, margin, y); y += 14; addJustifiedText(desc); y += 5; }); y += 15; doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(0, 0, 255); doc.textWithLink(pdfTranslations['projects-link'], margin, y, { url: 'https://github.com/WevertonGomesCosta' }); doc.setTextColor(80); y += 10; }
-                addSectionTitle(pdfTranslations['publications-title']); if (window.scholarScript && window.scholarScript.allArticles.length > 0) { const topArticles = window.scholarScript.allArticles.slice(0, 3); topArticles.forEach(art => { const title = `"${art.title}"`; const publication = art.publication || 'Publicação não especificada'; const citations = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : ''; checkPageBreak(60); doc.setFontSize(10); doc.setFont('helvetica', 'bold'); doc.setTextColor(0); const titleLines = doc.splitTextToSize(title, max_width); doc.text(titleLines, margin, y); y += titleLines.length * 12; doc.setFont('helvetica', 'normal'); doc.setTextColor(100); doc.text(publication, margin, y); y += 12; if (citations) { doc.setFont('helvetica', 'italic'); doc.text(citations, margin, y); y += 12; } y += 10; }); y += 15; doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(0, 0, 255); if (scholarLink) { doc.textWithLink(pdfTranslations['publications-link'], margin, y, { url: scholarLink.href }); } doc.setTextColor(80); y += 10; }
-
-                doc.save('CV-Weverton_Gomes_da_Costa.pdf'); toast.textContent = 'Download do currículo iniciado!';
-            } catch (error) { console.error('Erro ao gerar PDF:', error); toast.textContent = 'Ocorreu um erro ao gerar o PDF.'; } finally { button.innerHTML = originalButtonHTML; button.style.pointerEvents = 'auto'; setTimeout(() => toast.classList.remove('show'), 4000); }
-        }
-    </script>
 </body>
 </html>
