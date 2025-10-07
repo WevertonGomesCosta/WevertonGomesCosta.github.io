@@ -1,14 +1,16 @@
-# Carrega o pacote necessário para manipulação de XML
+# Carrega os pacotes necessários
 library(xml2)
+library(httr)
 
 # --- 1. Configurações ---
 base_url <- "https://wevertongomescosta.github.io"
 # Diretório onde estão todos os seus repositórios para o site
 root_dir <- "C:/Users/Weverton/OneDrive/GitHub" 
-# Nome do arquivo de saída com TODAS as URLs encontradas
-output_file <- "sitemap_completo.xml" 
+# Nomes dos arquivos de saída
+output_xml_file <- "sitemap.xml" 
+output_txt_file <- "sitemap.txt"
 
-# --- ETAPA A: GERAR LISTA DE URLs A PARTIR DOS ARQUIVOS ---
+# --- ETAPA A: ENCONTRAR E PROCESSAR ARQUIVOS HTML ---
 cat("--- Etapa A: Buscando arquivos HTML ---\n")
 
 html_files <- list.files(
@@ -22,8 +24,11 @@ html_files <- list.files(
 # Filtra arquivos indesejados (bibliotecas, outputs, READMEs, etc.)
 html_files <- html_files[!grepl("site_libs|output|renv", html_files, ignore.case = TRUE)]
 html_files <- html_files[!grepl("README\\.html$", html_files, ignore.case = TRUE)]
+# Filtra o repositório principal para excluir a URL raiz
+html_files <- html_files[!grepl("WevertonGomesCosta\\.github\\.io", html_files, ignore.case = TRUE)]
 
-cat(paste("Encontrados", length(html_files), "arquivos HTML relevantes.\n"))
+
+cat(paste("Encontrados", length(html_files), "arquivos HTML relevantes para verificação.\n"))
 
 root_dir_abs <- normalizePath(root_dir, winslash = "/")
 
@@ -37,41 +42,62 @@ candidate_urls <- lapply(html_files, function(file_path) {
     url <- paste0(base_url, "/", dirname(relative_path), "/")
     url <- gsub("/\\./$", "/", url)
   } else {
+    # Mantém a extensão .html
     url <- paste0(base_url, "/", relative_path)
   }
   
-  # Obtém a data da última modificação do arquivo
   lastmod <- format(file.info(file_path)$mtime, "%Y-%m-%d")
-  
   return(list(loc = url, lastmod = lastmod))
 })
 
-# --- ETAPA C (simplificada): GERAR O SITEMAP XML COMPLETO ---
-cat(paste("\n--- Gerando sitemap_completo.xml com", length(candidate_urls), "URLs ---\n"))
+# --- ETAPA B: VERIFICAR CADA URL E FILTRAR AS VÁLIDAS ---
+cat("\n--- Etapa B: Verificando a validade das URLs ---\n")
 
-# Cria o nó raiz <urlset>
-new_sitemap <- xml_new_root("urlset", xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9")
+valid_url_data <- list()
+total_urls <- length(candidate_urls)
 
-# Adiciona a página principal manualmente no topo
-url_node_home <- xml_add_child(new_sitemap, "url")
-xml_add_child(url_node_home, "loc", "https://wevertongomescosta.github.io/")
-xml_add_child(url_node_home, "lastmod", format(Sys.Date(), "%Y-%m-%d"))
-xml_add_child(url_node_home, "changefreq", "monthly")
-xml_add_child(url_node_home, "priority", "1.0")
-
-# Adiciona as outras URLs encontradas
-for (data in candidate_urls) {
-  if (data$loc == "https://wevertongomescosta.github.io/") {
-    next
-  }
+for (i in seq_along(candidate_urls)) {
+  data <- candidate_urls[[i]]
+  url <- data$loc
   
-  url_node <- xml_add_child(new_sitemap, "url")
+  cat(paste0("[", i, "/", total_urls, "] Verificando: ", url, " ... "))
+  
+  tryCatch({
+    response <- HEAD(url, timeout(5))
+    status <- status_code(response)
+    
+    if (status == 200) {
+      cat("OK (200)\n")
+      valid_url_data[[length(valid_url_data) + 1]] <- data
+    } else {
+      cat(paste("ERRO (", status, ")\n", sep = ""))
+    }
+  }, error = function(e) {
+    cat("FALHA NA CONEXÃO\n")
+  })
+}
+
+# --- ETAPA C: GERAR OS DOIS SITEMAPS FINAIS ---
+cat(paste("\n--- Etapa C: Gerando sitemaps com", length(valid_url_data), "URLs válidas ---\n"))
+
+# 1. Gerar sitemap.xml
+cat("Criando arquivo 'sitemap.xml'...\n")
+new_sitemap_xml <- xml_new_root("urlset", xmlns = "http://www.sitemaps.org/schemas/sitemap/0.9")
+
+# Adiciona as URLs válidas (a raiz já foi filtrada na busca de arquivos)
+for (data in valid_url_data) {
+  url_node <- xml_add_child(new_sitemap_xml, "url")
   xml_add_child(url_node, "loc", data$loc)
   xml_add_child(url_node, "lastmod", data$lastmod)
 }
+write_xml(new_sitemap_xml, file = output_xml_file, options = "format")
 
-# Salva o arquivo final
-write_xml(new_sitemap, file = output_file, options = "format")
+# 2. Gerar sitemap.txt
+cat("Criando arquivo 'sitemap.txt'...\n")
+# Extrai apenas as URLs (loc) da lista de dados válidos
+final_urls_txt <- sapply(valid_url_data, `[[`, "loc")
+writeLines(final_urls_txt, con = output_txt_file)
 
-cat(paste("\n✅ Sucesso! O arquivo '", output_file, "' foi criado.\n", sep = ""))
-cat("Próximo passo: execute o script 'verificar_sitemap.R'.\n")
+cat(paste("\n✅ Sucesso! Os arquivos '", output_xml_file, "' e '", output_txt_file, "' foram criados.\n", sep = ""))
+cat("Próximo passo: envie os arquivos para o GitHub.\n")
+
