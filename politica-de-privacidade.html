@@ -24,10 +24,11 @@
         .container {
             max-width: 800px;
             margin: 40px auto;
-            padding: 20px;
+            padding: 20px 40px; /* Aumentar padding horizontal */
             background: var(--dark-light);
             border-radius: 16px;
             border: 1px solid var(--border);
+            position: relative;
         }
         h1, h2 {
             color: var(--primary);
@@ -54,56 +55,177 @@
             margin-top: 30px;
             font-weight: bold;
         }
+        .lang-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--dark);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s;
+        }
+        .lang-switcher:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Política de Privacidade</h1>
-        <p><strong>Última atualização:</strong> <span id="update-date"></span></p>
+        <button class="lang-switcher" onclick="toggleLanguage()">
+            <span class="lang-en">Read in English</span>
+            <span class="lang-pt" style="display: none;">Ler em Português</span>
+        </button>
 
-        <h2>1. Introdução</h2>
-        <p>Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.</p>
+        <h1><span data-key="title">Política de Privacidade</span></h1>
+        <p><strong><span data-key="last-updated">Última atualização</span>:</strong> <span id="update-date"></span></p>
 
-        <h2>2. Coleta de Dados</h2>
-        <p>As únicas informações pessoais que coletamos são aquelas que você voluntariamente nos fornece através do formulário de contato. Isso inclui:</p>
+        <h2><span data-key="intro-title">1. Introdução</span></h2>
+        <p data-key="intro-p">Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.</p>
+
+        <h2><span data-key="collection-title">2. Coleta de Dados</span></h2>
+        <p data-key="collection-p1">As únicas informações pessoais que coletamos são aquelas que você voluntariamente nos fornece através do formulário de contato. Isso inclui:</p>
         <ul>
-            <li>Nome</li>
-            <li>Endereço de email</li>
-            <li>Assunto da mensagem</li>
-            <li>Conteúdo da mensagem</li>
+            <li data-key="collection-li1">Nome</li>
+            <li data-key="collection-li2">Endereço de email</li>
+            <li data-key="collection-li3">Assunto da mensagem</li>
+            <li data-key="collection-li4">Conteúdo da mensagem</li>
         </ul>
-        <p>Não utilizamos cookies para rastreamento ou coleta de dados de navegação.</p>
+        <p data-key="collection-p2">Não utilizamos cookies para rastreamento ou coleta de dados de navegação.</p>
 
-        <h2>3. Uso de Dados</h2>
-        <p>As informações fornecidas no formulário de contato são utilizadas exclusivamente para a finalidade de responder à sua solicitação ou mensagem. Seus dados não serão armazenados neste site, nem utilizados para fins de marketing ou compartilhados com terceiros, exceto o serviço de processamento de formulários.</p>
+        <h2><span data-key="usage-title">3. Uso de Dados</span></h2>
+        <p data-key="usage-p">As informações fornecidas no formulário de contato são utilizadas exclusivamente para a finalidade de responder à sua solicitação ou mensagem. Seus dados não serão armazenados neste site, nem utilizados para fins de marketing ou compartilhados com terceiros, exceto o serviço de processamento de formulários.</p>
 
-        <h2>4. Serviços de Terceiros</h2>
-        <p>Este site utiliza os seguintes serviços de terceiros:</p>
+        <h2><span data-key="services-title">4. Serviços de Terceiros</span></h2>
+        <p data-key="services-p">Este site utiliza os seguintes serviços de terceiros:</p>
         <ul>
-            <li><strong>Formspree:</strong> Para processar e encaminhar as mensagens enviadas através do formulário de contato para o meu email. A Formspree possui sua própria política de privacidade, que você pode consultar no site deles.</li>
-            <li><strong>GitHub Pages:</strong> Para a hospedagem deste site.</li>
-            <li><strong>Cloudflare (via GitHub Pages):</strong> Para otimização de desempenho e segurança.</li>
+            <li><strong>Formspree:</strong> <span data-key="services-li1">Para processar e encaminhar as mensagens enviadas através do formulário de contato para o meu email. A Formspree possui sua própria política de privacidade, que você pode consultar no site deles.</span></li>
+            <li><strong>GitHub Pages:</strong> <span data-key="services-li2">Para a hospedagem deste site.</span></li>
+            <li><strong>Cloudflare (via GitHub Pages):</strong> <span data-key="services-li3">Para otimização de desempenho e segurança.</span></li>
         </ul>
 
-        <h2>5. Segurança</h2>
-        <p>Embora nenhum método de transmissão pela Internet ou armazenamento eletrônico seja 100% seguro, tomamos precauções razoáveis para proteger suas informações. O tráfego deste site é protegido por HTTPS.</p>
+        <h2><span data-key="security-title">5. Segurança</span></h2>
+        <p data-key="security-p">Embora nenhum método de transmissão pela Internet ou armazenamento eletrônico seja 100% seguro, tomamos precauções razoáveis para proteger suas informações. O tráfego deste site é protegido por HTTPS.</p>
 
-        <h2>6. Seus Direitos</h2>
-        <p>Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
+        <h2><span data-key="rights-title">6. Seus Direitos</span></h2>
+        <p data-key="rights-p">Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
 
-        <h2>7. Alterações na Política</h2>
-        <p>Esta Política de Privacidade pode ser atualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para estar ciente de quaisquer alterações.</p>
+        <h2><span data-key="changes-title">7. Alterações na Política</span></h2>
+        <p data-key="changes-p">Esta Política de Privacidade pode ser atualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para estar ciente de quaisquer alterações.</p>
 
-        <h2>8. Contato</h2>
-        <p>Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
+        <h2><span data-key="contact-title">8. Contato</span></h2>
+        <p data-key="contact-p">Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
 
-        <a href="index.html" class="back-link">← Voltar ao site principal</a>
+        <a href="index.html" class="back-link"><span data-key="back-link">← Voltar ao site principal</span></a>
     </div>
 
     <script>
-        document.getElementById('update-date').textContent = new Date().toLocaleDateString('pt-BR', {
-            day: 'numeric', month: 'long', year: 'numeric'
+        const translations = {
+            pt: {
+                "title": "Política de Privacidade",
+                "last-updated": "Última atualização",
+                "intro-title": "1. Introdução",
+                "intro-p": "Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.",
+                "collection-title": "2. Coleta de Dados",
+                "collection-p1": "As únicas informações pessoais que coletamos são aquelas que você voluntariamente nos fornece através do formulário de contato. Isso inclui:",
+                "collection-li1": "Nome",
+                "collection-li2": "Endereço de email",
+                "collection-li3": "Assunto da mensagem",
+                "collection-li4": "Conteúdo da mensagem",
+                "collection-p2": "Não utilizamos cookies para rastreamento ou coleta de dados de navegação.",
+                "usage-title": "3. Uso de Dados",
+                "usage-p": "As informações fornecidas no formulário de contato são utilizadas exclusivamente para a finalidade de responder à sua solicitação ou mensagem. Seus dados não serão armazenados neste site, nem utilizados para fins de marketing ou compartilhados com terceiros, exceto o serviço de processamento de formulários.",
+                "services-title": "4. Serviços de Terceiros",
+                "services-p": "Este site utiliza os seguintes serviços de terceiros:",
+                "services-li1": "Para processar e encaminhar as mensagens enviadas através do formulário de contato para o meu email. A Formspree possui sua própria política de privacidade, que você pode consultar no site deles.",
+                "services-li2": "Para a hospedagem deste site.",
+                "services-li3": "Para otimização de desempenho e segurança.",
+                "security-title": "5. Segurança",
+                "security-p": "Embora nenhum método de transmissão pela Internet ou armazenamento eletrônico seja 100% seguro, tomamos precauções razoáveis para proteger suas informações. O tráfego deste site é protegido por HTTPS.",
+                "rights-title": "6. Seus Direitos",
+                "rights-p": "Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+                "changes-title": "7. Alterações na Política",
+                "changes-p": "Esta Política de Privacidade pode ser atualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para estar ciente de quaisquer alterações.",
+                "contact-title": "8. Contato",
+                "contact-p": "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+                "back-link": "← Voltar ao site principal",
+            },
+            en: {
+                "title": "Privacy Policy",
+                "last-updated": "Last updated",
+                "intro-title": "1. Introduction",
+                "intro-p": "This Privacy Policy describes how personal information is collected, used, and shared when you visit this website and use the contact form.",
+                "collection-title": "2. Data Collection",
+                "collection-p1": "The only personal information we collect is what you voluntarily provide through the contact form. This includes:",
+                "collection-li1": "Name",
+                "collection-li2": "Email address",
+                "collection-li3": "Message subject",
+                "collection-li4": "Message content",
+                "collection-p2": "We do not use cookies for tracking or collecting navigation data.",
+                "usage-title": "3. Use of Data",
+                "usage-p": "The information provided in the contact form is used exclusively for the purpose of responding to your request or message. Your data will not be stored on this site, used for marketing purposes, or shared with third parties, except for the form processing service.",
+                "services-title": "4. Third-Party Services",
+                "services-p": "This site uses the following third-party services:",
+                "services-li1": "To process and forward messages sent through the contact form to my email. Formspree has its own privacy policy, which you can consult on their website.",
+                "services-li2": "For hosting this site.",
+                "services-li3": "For performance and security optimization.",
+                "security-title": "5. Security",
+                "security-p": "Although no method of transmission over the Internet or electronic storage is 100% secure, we take reasonable precautions to protect your information. This site's traffic is protected by HTTPS.",
+                "rights-title": "6. Your Rights",
+                "rights-p": "You have the right to request information about the data you have provided and to ask for its deletion at any time by contacting us directly via email at <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+                "changes-title": "7. Changes to the Policy",
+                "changes-p": "This Privacy Policy may be updated periodically. We recommend that you review this page occasionally to be aware of any changes.",
+                "contact-title": "8. Contact",
+                "contact-p": "If you have any questions about this Privacy Policy, please contact us via email at <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+                "back-link": "← Back to main site",
+            }
+        };
+
+        let currentLang = 'pt';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+
+            const langMap = { pt: 'pt-BR', en: 'en' };
+            document.documentElement.lang = langMap[lang];
+
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.dataset.key;
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+
+            const isPt = lang === 'pt';
+            document.querySelector('.lang-en').style.display = isPt ? 'inline' : 'none';
+            document.querySelector('.lang-pt').style.display = isPt ? 'none' : 'inline';
+            
+            document.title = (lang === 'pt' ? 'Política de Privacidade' : 'Privacy Policy') + ' | Weverton Gomes da Costa';
+
+            updateDate();
+        }
+
+        function toggleLanguage() {
+            setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+        }
+
+        function updateDate() {
+            const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+            document.getElementById('update-date').textContent = new Date().toLocaleDateString(locale, {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+             updateDate();
         });
+
     </script>
 </body>
 </html>
