@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade | Weverton Gomes da Costa</title>
+    <style>
+        :root {
+            --primary: #10b981;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --border: rgba(148, 163, 184, 0.1);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background: var(--dark);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: var(--dark-light);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        h1, h2 {
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-top: 20px;
+        }
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.5rem; }
+        p, li {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Política de Privacidade</h1>
+        <p><strong>Última atualização:</strong> <span id="update-date"></span></p>
+
+        <h2>1. Introdução</h2>
+        <p>Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.</p>
+
+        <h2>2. Coleta de Dados</h2>
+        <p>As únicas informações pessoais que coletamos são aquelas que você voluntariamente nos fornece através do formulário de contato. Isso inclui:</p>
+        <ul>
+            <li>Nome</li>
+            <li>Endereço de email</li>
+            <li>Assunto da mensagem</li>
+            <li>Conteúdo da mensagem</li>
+        </ul>
+        <p>Não utilizamos cookies para rastreamento ou coleta de dados de navegação.</p>
+
+        <h2>3. Uso de Dados</h2>
+        <p>As informações fornecidas no formulário de contato são utilizadas exclusivamente para a finalidade de responder à sua solicitação ou mensagem. Seus dados não serão armazenados neste site, nem utilizados para fins de marketing ou compartilhados com terceiros, exceto o serviço de processamento de formulários.</p>
+
+        <h2>4. Serviços de Terceiros</h2>
+        <p>Este site utiliza os seguintes serviços de terceiros:</p>
+        <ul>
+            <li><strong>Formspree:</strong> Para processar e encaminhar as mensagens enviadas através do formulário de contato para o meu email. A Formspree possui sua própria política de privacidade, que você pode consultar no site deles.</li>
+            <li><strong>GitHub Pages:</strong> Para a hospedagem deste site.</li>
+            <li><strong>Cloudflare (via GitHub Pages):</strong> Para otimização de desempenho e segurança.</li>
+        </ul>
+
+        <h2>5. Segurança</h2>
+        <p>Embora nenhum método de transmissão pela Internet ou armazenamento eletrônico seja 100% seguro, tomamos precauções razoáveis para proteger suas informações. O tráfego deste site é protegido por HTTPS.</p>
+
+        <h2>6. Seus Direitos</h2>
+        <p>Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
+
+        <h2>7. Alterações na Política</h2>
+        <p>Esta Política de Privacidade pode ser atualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para estar ciente de quaisquer alterações.</p>
+
+        <h2>8. Contato</h2>
+        <p>Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href="mailto:wevertonufv@gmail.com">wevertonufv@gmail.com</a>.</p>
+
+        <a href="index.html" class="back-link">← Voltar ao site principal</a>
+    </div>
+
+    <script>
+        document.getElementById('update-date').textContent = new Date().toLocaleDateString('pt-BR', {
+            day: 'numeric', month: 'long', year: 'numeric'
+        });
+    </script>
+</body>
+</html>
+
