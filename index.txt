@@ -1005,7 +1005,7 @@
              <div class="footer-grid">
                 <!-- Coluna 1: Bio e Contato Direto -->
                 <div class="footer-column">
-                    <h4 data-key="nav-contact">Contato</h4>
+                    <h4 data-key="nav-contact">Weverton G. Costa</h4>
                     <p data-key="footer-bio"></p>
                     <ul style="margin-top: 15px;">
                          <li><a href="mailto:wevertonufv@gmail.com"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" /></svg>wevertonufv@gmail.com</a></li>
