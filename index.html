@@ -1074,20 +1074,20 @@
                 <div class="footer-column">
                     <h4 data-key="footer-sitemap">Mapa do Site</h4>
                     <ul>
-                        <li><a href="#sobre" data-key="nav-about">Sobre</a></li>
-                        <li><a href="#experiencia" data-key="nav-experience">Atuação</a></li>
-                        <li><a href="#servicos" data-key="nav-services">Serviços</a></li>
-                        <li><a href="#formacao" data-key="nav-education">Formação</a></li>
+                        <li><a href="index.html#sobre" data-key="nav-about">Sobre</a></li>
+                        <li><a href="index.html#experiencia" data-key="nav-experience">Experiência</a></li>
+                        <li><a href="index.html#servicos" data-key="nav-services">Serviços</a></li>
+                        <li><a href="index.html#formacao" data-key="nav-education">Formação</a></li>
                     </ul>
                 </div>
                 <!-- Coluna 5: Mapa do Site (Parte 2) -->
                 <div class="footer-column">
                     <h4 style="visibility: hidden;">&nbsp;</h4> <!-- Placeholder para alinhamento vertical -->
                     <ul>
-                        <li><a href="#projetos" data-key="nav-projects">Projetos</a></li>
-                        <li><a href="#publicacoes" data-key="nav-publications">Publicações</a></li>
-                        <li><a href="#habilidades" data-key="nav-skills">Habilidades</a></li>
-                        <li><a href="#contato" data-key="nav-contact">Contato</a></li>
+                        <li><a href="index.html#projetos" data-key="nav-projects">Projetos</a></li>
+                        <li><a href="index.html#publicacoes" data-key="nav-publications">Publicações</a></li>
+                        <li><a href="index.html#habilidades" data-key="nav-skills">Habilidades</a></li>
+                        <li><a href="index.html#contato" data-key="nav-contact">Contato</a></li>
                     </ul>
                 </div>
             </div>
@@ -1454,7 +1454,16 @@
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = []; let showingPubsCount = 3; let citationGraphData = []; let activeYearFilter = null; 
 
-            const normalizeTitle = (str) => (str || '').replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
+            const normalizeTitle = (str) => {
+                if (!str) return '';
+                return str
+                    .replace(/<[^>]+>/g, '') // Remove tags HTML
+                    .replace(/[\u2010-\u2015]/g, '-') // Normaliza hífens
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove pontuação (exceto hífens)
+                    .replace(/\s+/g, ' ') // Colapsa múltiplos espaços
+                    .trim();
+            };
 
             function animateCountUp(el) {
                 const target = parseInt(el.textContent, 10);
@@ -1803,4 +1812,3 @@
 
 </body>
 </html>
-

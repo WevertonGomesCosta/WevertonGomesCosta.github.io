@@ -2,153 +2,73 @@
 <html lang="pt-BR">
 
 <head>
-    <!-- Bloco de Metadados: Informações sobre a página para navegadores e buscadores -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Publicações | Weverton Gomes da Costa</title>
-    <meta name="description" id="meta-description" content="Explore todas as publicações científicas e artigos de Weverton Gomes da Costa.">
-    <meta name="keywords" id="meta-keywords" content="publicações, artigos, pesquisa, genética, biometria, machine learning">
+    <meta name="description" id="meta-description" content="Explore a lista completa de artigos e publicações científicas de Weverton Gomes da Costa.">
+    <meta name="keywords" id="meta-keywords" content="publicações, artigos, pesquisa, genética, biometria, machine learning, UFV">
     <meta name="author" content="Weverton Gomes da Costa">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
-
-    <!-- Bloco de Estilos (CSS): Toda a estilização da página -->
+    
+    <!-- Estilos da página (copiados de index.html para consistência) -->
     <style>
-        :root {
-            --primary: #10b981; --primary-dark: #059669; --secondary: #3b82f6; --dark: #0f172a; --dark-light: #1e293b; --text: #e2e8f0; --text-muted: #94a3b8; --accent: #f59e0b; --bg-card: rgba(30, 41, 59, 0.5); --border: rgba(148, 163, 184, 0.1); --glow: rgba(16, 185, 129, 0.5); --glass: rgba(255, 255, 255, 0.03); --error: #f44336;
-        }
+        /* --- Configurações Globais e Variáveis --- */
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --primary: #10b981; --primary-dark: #059669; --secondary: #3b82f6; --dark: #0f172a; --dark-light: #1e293b; --text: #e2e8f0; --text-muted: #94a3b8; --accent: #f59e0b; --bg-card: rgba(30, 41, 59, 0.5); --border: rgba(148, 163, 184, 0.1); --glow: rgba(16, 185, 129, 0.5); --glass: rgba(255, 255, 255, 0.03); --error: #f44336; }
         html { scroll-behavior: smooth; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: var(--text); background: var(--dark); min-height: 100vh; overflow-x: hidden; position: relative; cursor: default; }
         #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         
-        /* --- Navegação e Cabeçalho --- */
+        /* --- Navegação --- */
         nav { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 10px 0; }
         .nav-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 20px; gap: 15px; }
         .nav-brand { justify-self: start; }
         .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
-        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; }
+        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; transition: opacity 0.3s ease; }
         .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
         .nav-title-container { text-align: center; }
         .nav-title { font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0; }
         .nav-title::before { display: none; }
-        
         nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
-
         .lang-switch { background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
         .lang-switch:hover { background: var(--primary); color: var(--dark); }
         .lang-pt.active, .lang-en.active { color: var(--text); font-weight: 700; }
+        .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary); color: var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+        .back-to-top.visible { opacity: 1; visibility: visible; }
+        .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
 
-        /* --- Layout e Conteúdo Principal --- */
+        /* --- Conteúdo Principal --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .section { margin-bottom: 80px; }
         h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 30px; color: var(--primary); position: relative; padding-left: 20px; }
         h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
-        .section-intro { color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
-        
-        /* --- Seção de Publicações --- */
-        .sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
+        .section-intro { color: var(--text-muted); margin: 0 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
+        .publication-card { display: flex; flex-direction: column; gap: 10px; }
+        .publication-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
+        .publication-card > a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
+        .publication-card > a:hover { color: var(--primary-dark); }
+        .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
+        .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
+        .publication-doi { display: flex; align-items: center; gap: 8px; margin-top: 5px; margin-bottom: 5px; font-size: 0.9rem; }
+        .publication-doi img { width: 20px; height: 20px; }
+        .publication-doi a { color: var(--text-muted); text-decoration: none; word-break: break-all; transition: color 0.3s ease; }
+        .publication-doi a:hover { color: var(--primary); }
         .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
-        .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: var(--text) }
+        .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: var(--text); }
         .controls button { padding: 8px 10px; border-radius: 10px; border: none; background: var(--primary); color: #042017; cursor: pointer; }
-        .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px }
-        .publications-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 992px) {
-            .publications-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        .publication-card { 
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 12px; 
-            padding: 20px; 
-            border: 1px solid var(--border); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px;
-            transition: all 0.4s ease; 
-            backdrop-filter: blur(10px);
-        }
-        .publication-card:hover { 
-            transform: translateY(-5px); 
-            border-color: rgba(16, 185, 129, 0.4); 
-            box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); 
-        }
-        .publication-card h3 { 
-            margin: 0; 
-            font-size: 1.1rem; 
-            color: var(--primary); 
-            line-height: 1.4;
-        }
-        .publication-details {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            border-left: 2px solid var(--primary);
-            padding-left: 10px;
-            margin: 5px 0;
-        }
-        .publication-details span { display: block; }
-        .publication-details .pub-doi {
-            color: var(--secondary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .publication-details .pub-doi:hover {
-            text-decoration: underline;
-        }
-        .publication-snippet { 
-            margin: 5px 0; 
-            color: var(--text); 
-            font-style: italic; 
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-        .publication-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 10px;
-            border-top: 1px solid var(--border);
-        }
-        .publication-citations { 
-            font-size: 0.9rem; 
-            color: var(--accent); 
-            font-weight: bold; 
-        }
-        .publication-card .link-btn { 
-            color: var(--text); 
-            background-color: transparent;
-            border: 1px solid var(--primary);
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            text-decoration: none; 
-            font-weight: 500; 
-            transition: all 0.3s ease;
-            border-radius: 6px;
-        }
-        .publication-card .link-btn:hover { 
-            background-color: var(--primary);
-            color: var(--dark);
-        }
-        
-        /* --- Utilitários e Skeleton --- */
-        .skeleton-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; min-height: 220px; overflow: hidden; position: relative; }
-        .skeleton-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent); animation: shimmer 1.5s infinite linear; }
+        .skeleton-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; height: 220px; }
+        .small-muted { font-size: 0.9rem; color: var(--text-muted); }
         .cta-btn { padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); border: 1px solid transparent; }
         .cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
         .cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
         .back-to-home-container { margin-top: 40px; text-align: center; }
         .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); will-change: opacity, transform; }
         .reveal.visible { opacity: 1; transform: translateY(0); }
-        .stagger-children .reveal { transition-delay: calc(var(--stagger-index) * 120ms); }
-        .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary); color: var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
-        .back-to-top.visible { opacity: 1; visibility: visible; }
-        .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
-        
+
         /* --- Rodapé --- */
         footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border); padding: 60px 20px 40px; text-align: left; margin-top: 80px; }
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; }
@@ -172,12 +92,7 @@
         .footer-license a:hover { color: var(--primary); }
         .footer-update { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; }
         .footer-update svg { width: 14px; height: 14px; }
-
-        /* --- Scrollbar --- */
-        ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--dark); }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+        ::-webkit-scrollbar { width: 10px; } ::-webkit-scrollbar-track { background: var(--dark); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; } ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
     </style>
 </head>
 
@@ -205,29 +120,37 @@
     </nav>
 
     <main class="container">
-        <section id="todas-publicacoes" class="section">
+        <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="all-publications-title">Todas as Publicações</h2>
             <p class="section-intro reveal" data-key="all-publications-intro"></p>
             
-            <div class="sidebar reveal">
-                <div class="controls"><input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder"><button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search">Limpar</button></div>
-                <div class="meta" id="publications-meta"></div>
-                <div class="publications-grid stagger-children" id="publications-grid" role="list" style="margin-top: 20px;">
-                    <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
-                </div>
+            <div class="controls">
+                <input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder">
+                <button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search">Limpar</button>
             </div>
-            
+            <div class="small-muted" id="pubs-shown-count" style="margin: 15px 0;"></div>
+
+            <div class="grid" id="publicacoes-grid">
+                <!-- Skeletons de carregamento -->
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+
             <div class="back-to-home-container reveal">
                 <a href="index.html" class="cta-btn secondary" data-key="back-to-home">← Voltar para o Início</a>
             </div>
         </section>
     </main>
-    
+
     <footer class="reveal">
         <div class="footer-content">
              <div class="footer-grid">
                 <div class="footer-column">
-                    <h4>Weverton G. Costa</h4>
+                    <h4 data-key="footer-title">Weverton G. Costa</h4>
                     <p data-key="footer-bio"></p>
                     <ul style="margin-top: 15px;">
                          <li><a href="mailto:wevertonufv@gmail.com"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd"></path></svg>wevertonufv@gmail.com</a></li>
@@ -255,7 +178,7 @@
                     <h4 data-key="footer-sitemap">Mapa do Site</h4>
                     <ul>
                         <li><a href="index.html#sobre" data-key="nav-about">Sobre</a></li>
-                        <li><a href="index.html#experiencia" data-key="nav-experience">Experiência</a></li>
+                        <li><a href="index.html#experiencia" data-key="nav-experience">Atuação</a></li>
                         <li><a href="index.html#servicos" data-key="nav-services">Serviços</a></li>
                         <li><a href="index.html#formacao" data-key="nav-education">Formação</a></li>
                     </ul>
@@ -287,9 +210,8 @@
     <script src="translations.js"></script>
     <script src="SERPAPI_KEY.js"></script>
     <script>
-        // --- Lógica de Tradução e Inicialização da UI ---
+        // --- Lógica de Tradução Simplificada ---
         let currentLang = 'pt';
-
         function setLanguage(lang) {
             if (!translations[lang]) return;
             currentLang = lang;
@@ -298,34 +220,35 @@
             document.title = translations[lang]['publications-page-title'];
             document.querySelector('meta[name="description"]').setAttribute('content', translations[lang]['publications-meta-description']);
             document.querySelector('meta[name="keywords"]').setAttribute('content', translations[lang]['publications-meta-keywords']);
-            
+
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.dataset.key;
-                const translation = translations[lang][key];
-                if (translation) {
+                if (translations[lang][key]) {
+                    const translation = translations[lang][key];
                      if (typeof translation === 'function') {
-                        // A função será chamada no script principal para atualizar contagens
+                        // Funções de tradução não são necessárias nesta página
                     } else {
                         el.innerHTML = translation;
                     }
                 }
             });
-
             document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
             document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
-            document.querySelectorAll('[data-key-aria-label]').forEach(el => el.setAttribute('aria-label', translations[lang][el.dataset.keyAriaLabel]));
             
             const isPt = lang === 'pt';
             document.querySelectorAll('.lang-switch').forEach(button => {
                 button.querySelector('.lang-pt').classList.toggle('active', isPt);
                 button.querySelector('.lang-en').classList.toggle('active', !isPt);
             });
-            
-            if (window.scholarScript?.renderAll) window.scholarScript.renderAll();
+
+            // Re-renderizar publicações se já estiverem carregadas para atualizar textos como 'Ver publicação'
+            if (window.scholarScript?.allArticles.length > 0) {
+                window.scholarScript.renderPublications(document.getElementById('publication-search').value);
+            }
         }
-
+        
         window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
-
+        
         document.addEventListener('DOMContentLoaded', () => {
             setLanguage('pt');
             
@@ -336,6 +259,182 @@
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
             }, { threshold: 0.1 });
             document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        });
+    </script>
+    <script>
+        // --- Script para Google Scholar e ORCID (versão para a página 'Todas as Publicações') ---
+        window.scholarScript = (function() {
+            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
+            const ORCID_ID = "0000-0003-0742-5936";
+            const PROXY_URL = 'https://corsproxy.io/?';
+            const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As publicações não puderam ser atualizadas automaticamente.";
+            let allArticles = [];
+
+            const normalizeTitle = (str) => {
+                if (!str) return '';
+                return str
+                    .replace(/<[^>]+>/g, '') // Remove tags HTML
+                    .replace(/[\u2010-\u2015]/g, '-') // Normaliza hífens
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove pontuação (exceto hífens)
+                    .replace(/\s+/g, ' ') // Colapsa múltiplos espaços
+                    .trim();
+            };
+
+            async function fetchFromSerpApi(params) {
+                 if (typeof SERPAPI_KEY === 'undefined' || !SERPAPI_KEY) {
+                    throw new Error("Chave da API (SERPAPI_KEY) não configurada.");
+                }
+                const baseUrl = 'https://serpapi.com/search.json';
+                const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
+                const apiUrl = `${baseUrl}?${searchParams.toString()}`;
+                const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
+                const res = await fetch(proxyRequestUrl);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg);
+                    throw new Error(`Falha na requisição. Status: ${res.status}.`);
+                }
+                return await res.json();
+            }
+
+            function renderPublications(filter = '') {
+                const grid = document.getElementById("publicacoes-grid");
+                const shownCountEl = document.getElementById('pubs-shown-count');
+                grid.innerHTML = "";
+                const lowerCaseFilter = filter.trim().toLowerCase();
+                
+                const filteredArticles = lowerCaseFilter 
+                    ? allArticles.filter(art => 
+                        (art.title && normalizeTitle(art.title).includes(lowerCaseFilter)) ||
+                        (art.journalTitle && art.journalTitle.toLowerCase().includes(lowerCaseFilter)) ||
+                        (art.year && art.year.includes(lowerCaseFilter))
+                      )
+                    : allArticles;
+
+                if (filteredArticles.length === 0) {
+                    grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                    shownCountEl.textContent = translations[currentLang].showing_pubs(0, allArticles.length);
+                    return;
+                }
+
+                filteredArticles.forEach((art) => {
+                    const card = document.createElement("div");
+                    card.className = "card publication-card";
+
+                    const citationText = art.cited_by?.value ? `${translations[currentLang]['pub-cited-by']} ${art.cited_by.value} ${translations[currentLang]['pub-cited-by-times']}` : translations[currentLang]['pub-no-citation'];
+                    
+                    const publicationMetaHtml = `<p class="publication-meta">${translations[currentLang]['pub-published']}: ${art.year} ${translations[currentLang]['pub-in']} <em>${art.journalTitle || 'N/A'}</em></p>`;
+
+                    const doiHtml = art.doi ? `
+                        <div class="publication-doi">
+                             <a href="https://orcid.org/${ORCID_ID}" target="_blank" rel="noopener" title="Perfil ORCID">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/>
+                            </a>
+                            <a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a>
+                        </div>` : '';
+
+                    const publicationLink = art.doiLink || art.link;
+
+                    card.innerHTML = `
+                        <h3>${art.title.replace(/<[^>]+>/g, '')}</h3>
+                        ${doiHtml}
+                        ${publicationMetaHtml}
+                        <p class="citations">${citationText}</p>
+                        <a href="${publicationLink}" target="_blank" rel="noopener">${translations[currentLang]['pub-read']}</a>`;
+                    grid.appendChild(card);
+                });
+
+                shownCountEl.textContent = translations[currentLang].showing_pubs(filteredArticles.length, allArticles.length);
+            }
+            
+            async function fetchAllScholarArticles() {
+                let start = 0, allResults = [], hasMore = true;
+                while (hasMore) {
+                    try {
+                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: 20 });
+                        if (result.error) throw new Error(result.error.includes("monthly search limit") ? serpApiLimitMsg : result.error);
+                        const articles = result.articles || [];
+                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); start += 20; }
+                    } catch(e) { console.error(`Erro ao buscar publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
+                }
+                return allResults;
+            }
+            
+            async function fetchOrcidWorks() {
+                const API_URL = `https://pub.orcid.org/v3.0/${ORCID_ID}/works`;
+                const response = await fetch(`${PROXY_URL}${encodeURIComponent(API_URL)}`, { headers: { 'Accept': 'application/json' }});
+                if (!response.ok) throw new Error(`Falha ao buscar dados do ORCID. Status: ${response.status}`);
+                const data = await response.json();
+                const works = [];
+                data.group.forEach(item => {
+                    const workSummary = item['work-summary'][0];
+                    if (!workSummary || !workSummary.title?.title?.value) return;
+
+                    const title = workSummary.title.title.value;
+                    let doi = null, doiLink = null;
+                    const externalIds = workSummary['external-ids']?.['external-id'];
+                    if (externalIds) {
+                        const doiObject = externalIds.find(id => id['external-id-type'] === 'doi');
+                        if (doiObject) {
+                            doi = doiObject['external-id-value'];
+                            doiLink = doiObject['external-id-url']?.value || `https://doi.org/${doi}`;
+                        }
+                    }
+
+                    const pubDate = workSummary['publication-date'];
+                    const year = pubDate?.year?.value || '';
+                    
+                    works.push({
+                        title: title,
+                        doi: doi,
+                        doiLink: doiLink,
+                        year: year,
+                        journalTitle: workSummary['journal-title']?.value || '',
+                        link: workSummary.url?.value || doiLink,
+                    });
+                });
+                return works;
+            }
+
+            async function init() {
+                const grid = document.getElementById("publicacoes-grid");
+                try {
+                     const [orcidWorks, scholarArticles] = await Promise.all([
+                        fetchOrcidWorks(),
+                        fetchAllScholarArticles()
+                    ]);
+
+                    const scholarCitationsMap = new Map();
+                    scholarArticles.forEach(art => {
+                        const normalizedTitle = normalizeTitle(art.title);
+                        if (!scholarCitationsMap.has(normalizedTitle)) {
+                            scholarCitationsMap.set(normalizedTitle, { cited_by: art.cited_by, link: art.link });
+                        }
+                    });
+
+                    const mergedArticles = orcidWorks.map(work => {
+                        const normalizedTitle = normalizeTitle(work.title);
+                        const scholarData = scholarCitationsMap.get(normalizedTitle);
+                        return { ...work, cited_by: scholarData?.cited_by || null, link: scholarData?.link || work.link, };
+                    });
+
+                    allArticles = mergedArticles;
+                    allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
+                    
+                    renderPublications();
+
+                } catch (e) {
+                    console.error("Erro ao inicializar publicações:", e);
+                    grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                }
+            }
+            
+            return { init, renderPublications, get allArticles() { return allArticles; } };
+        })();
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            scholarScript.init();
             
             const backToTopButton = document.querySelector('.back-to-top');
             const nav = document.querySelector('nav');
@@ -344,173 +443,39 @@
                 backToTopButton.classList.toggle('visible', window.scrollY > 300);
             });
 
-            // Script de Fundo com Partículas
-            const canvas = document.getElementById('particle-canvas');
-            if (canvas) {
-                const ctx = canvas.getContext('2d'); let particles = [];
-                const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-                function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-                class Particle { constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.dX = -this.dX; if (this.y > canvas.height || this.y < 0) this.dY = -this.dY; this.x += this.dX; this.y += this.dY; this.draw(); } }
-                function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < Math.min(density, 120); i++) { particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1)); } }
-                function connect() { for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let d = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (d < 120) { ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (d / 120)) * 0.2 })`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
-                function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => p.update()); connect(); }
-                window.addEventListener('resize', debounce(() => { setCanvasSize(); init(); })); setCanvasSize(); init(); animate();
-            }
+            const pubSearchInput = document.getElementById('publication-search');
+            const pubClearBtn = document.getElementById('publication-clear-btn');
+            
+            const debounce = (fn, wait = 250) => {
+                let t;
+                return (...a) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, a), wait);
+                };
+            };
+
+            pubSearchInput.addEventListener('input', debounce(e => {
+                scholarScript.renderPublications(e.target.value);
+            }));
+
+            pubClearBtn.addEventListener('click', () => {
+                pubSearchInput.value = '';
+                scholarScript.renderPublications();
+                pubSearchInput.focus();
+            });
         });
-
-        // Script para buscar publicações do Google Scholar
-        window.scholarScript = (function() {
-            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; 
-            const PROXY_URL = 'https://corsproxy.io/?'; 
-            const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As publicações não puderam ser atualizadas automaticamente.";
-            let allArticles = []; 
-            let currentFilter = '';
-            const gridEl = document.getElementById('publications-grid'); 
-            const metaEl = document.getElementById('publications-meta'); 
-            const searchEl = document.getElementById('publication-search'); 
-            const clearBtn = document.getElementById('publication-clear-btn');
-            
-            async function fetchFromSerpApi(params) {
-                const baseUrl = 'https://serpapi.com/search.json'; 
-                const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY }); 
-                const apiUrl = `${baseUrl}?${searchParams.toString()}`; 
-                const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
-                try {
-                    const res = await fetch(proxyRequestUrl);
-                    if (!res.ok) { 
-                        const errorText = await res.text(); 
-                        if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg); 
-                        throw new Error(`Falha na requisição. Status: ${res.status}.`); 
-                    }
-                    return await res.json();
-                } catch (error) { 
-                    console.error("Erro ao buscar dados do Google Scholar:", error); 
-                    throw error; 
-                }
-            }
-            
-            async function fetchAllScholarArticles() {
-                // Adicione a chave 'fetching_pubs' ao seu arquivo translations.js se desejar traduzir esta mensagem
-                metaEl.textContent = translations[currentLang]?.fetching_pubs || 'Buscando publicações...';
-                let start = 0, allResults = [], hasMore = true;
-                while (hasMore) {
-                    try {
-                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: 20 });
-                        if (result.error) throw new Error(result.error.includes("monthly search limit") ? serpApiLimitMsg : result.error);
-                        const articles = result.articles || [];
-                        if (articles.length === 0) { 
-                            hasMore = false; 
-                        } else { 
-                            allResults = allResults.concat(articles); 
-                            start += 20; 
-                        }
-                    } catch(e) { 
-                        console.error(`Erro ao buscar publicações (start=${start}):`, e); 
-                        hasMore = false; 
-                        if (allResults.length === 0) throw e; 
-                    }
-                }
-                return allResults;
-            }
-
-            function createCard(art) {
-                const lang = currentLang;
-                const card = document.createElement("div");
-                card.className = "publication-card";
-
-                // --- Processamento de Dados ---
-                const citationCount = art.cited_by?.value || 0;
-                let citationText = lang === 'pt' ? 'Nenhuma citação ainda' : 'No citations yet';
-                if (citationCount > 0) {
-                    citationText = lang === 'pt' ? `Citado ${citationCount} vez${citationCount > 1 ? 'es' : ''}` : `Cited ${citationCount} time${citationCount > 1 ? 's' : ''}`;
-                }
-
-                let journal = lang === 'pt' ? 'Periódico não informado' : 'Journal not provided';
-                let pubYear = '';
-                if (art.publication) {
-                    const parts = art.publication.split(',');
-                    journal = parts[0].trim();
-                    if (parts.length > 1) {
-                        const yearMatch = parts[parts.length - 1].match(/\b(19|20)\d{2}\b/);
-                        if (yearMatch) pubYear = yearMatch[0];
-                    }
-                }
-                const publishedText = `${lang === 'pt' ? 'Publicado em' : 'Published in'} ${pubYear}`;
-                
-                // Link de busca para encontrar DOI e detalhes
-                const doiSearchUrl = `https://scholar.google.com/scholar?hl=pt&q=${encodeURIComponent(art.title)}`;
-                
-                const viewPubText = translations[lang]?.['pub-read'] || (lang === 'pt' ? 'Ver Publicação' : 'View Publication');
-
-                // --- Construção do HTML do Card ---
-                card.innerHTML = `
-                    <h3>${escapeHtml(art.title || 'Título indisponível')}</h3>
-                    
-                    <div class="publication-details">
-                        <span class="pub-journal">${escapeHtml(journal)}</span>
-                        ${pubYear ? `<span class="pub-date">${publishedText}</span>` : ''}
-                        <a href="${doiSearchUrl}" target="_blank" rel="noopener" class="pub-doi">${lang === 'pt' ? 'Buscar DOI & Detalhes' : 'Find DOI & Details'} →</a>
-                    </div>
-
-                    ${art.snippet ? `<p class="publication-snippet">"${escapeHtml(art.snippet)}"</p>` : ''}
-                    
-                    <div class="publication-footer">
-                        <p class="publication-citations">${citationText}</p>
-                        <a href="${art.link}" target="_blank" rel="noopener" class="link-btn">${viewPubText}</a>
-                    </div>
-                `;
-                return card;
-            }
-
-            function render() {
-                gridEl.innerHTML = ''; 
-                const filter = currentFilter.trim().toLowerCase();
-                
-                const filtered = filter 
-                    ? allArticles.filter(art => Object.values(art).some(val => typeof val === 'string' && val.toLowerCase().includes(filter))) 
-                    : allArticles;
-
-                const sorted = [...filtered].sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
-                
-                const noPubsFoundText = translations[currentLang]?.no_pubs_found || 'Nenhuma publicação encontrada.';
-                if (sorted.length === 0 && allArticles.length > 0) {
-                    gridEl.innerHTML = `<div class="publication-card" style="grid-column: 1 / -1;"><p>${noPubsFoundText}</p></div>`;
-                } else {
-                    sorted.forEach(art => gridEl.appendChild(createCard(art)));
-                }
-
-                // A função de tradução showing_pubs deve ser adicionada ao seu arquivo translations.js
-                // Exemplo: 'showing_pubs': (shown, total) => `Exibindo ${shown} de ${total} publicações.`
-                if(translations[currentLang]?.showing_pubs){
-                    metaEl.textContent = translations[currentLang].showing_pubs(sorted.length, allArticles.length);
-                } else {
-                    metaEl.textContent = `Exibindo ${sorted.length} de ${allArticles.length} publicações.`;
-                }
-            }
-
-            function renderAll() { render(); }
-            
-            async function init() {
-                gridEl.innerHTML = Array(6).fill('<div class="skeleton-card"></div>').join('');
-                try {
-                    allArticles = await fetchAllScholarArticles();
-                    render();
-                } catch (e) {
-                    console.error("Erro ao inicializar publicações:", e);
-                    const errorMsg = translations[currentLang]?.fetch_pub_error || 'Erro ao carregar publicações';
-                    gridEl.innerHTML = `<div class="publication-card" style="grid-column: 1 / -1; color: var(--error);">${errorMsg}: ${e.message}</div>`;
-                    metaEl.textContent = '';
-                }
-            }
-
-            function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]); }
-            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-            searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
-            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; render(); searchEl.focus(); });
-            
-            init();
-            return { renderAll };
-        })();
+    </script>
+    <script>
+        // --- Script de Fundo com Partículas ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('particle-canvas'); if (!canvas) return; const ctx = canvas.getContext('2d'); let particles = [];
+            function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            class Particle { constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.dX = -this.dX; if (this.y > canvas.height || this.y < 0) this.dY = -this.dY; this.x += this.dX; this.y += this.dY; this.draw(); } }
+            function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < Math.min(density, 120); i++) { particles.push(new Particle(Math.random() * innerWidth, Math.random() * innerHeight, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1)); } }
+            function connect() { for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let distance = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (distance < 120) { ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (distance / 120)) * 0.2 })`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
+            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, innerWidth, innerHeight); particles.forEach(p => p.update()); connect(); }
+            window.addEventListener('resize', () => { setCanvasSize(); init(); }); setCanvasSize(); init(); animate();
+        });
     </script>
 </body>
 </html>

@@ -5,9 +5,9 @@
     <!-- Bloco de Metadados: Informações sobre a página para navegadores e buscadores -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">Publicações | Weverton Gomes da Costa</title>
-    <meta name="description" id="meta-description" content="Explore todas as publicações científicas e artigos de Weverton Gomes da Costa.">
-    <meta name="keywords" id="meta-keywords" content="publicações, artigos, pesquisa, genética, biometria, machine learning">
+    <title id="page-title">Projetos | Weverton Gomes da Costa</title>
+    <meta name="description" id="meta-description" content="Explore todos os projetos e repositórios de Weverton Gomes da Costa, pesquisador e cientista de dados.">
+    <meta name="keywords" id="meta-keywords" content="projetos, github, portfólio, R, Python, machine learning, genética">
     <meta name="author" content="Weverton Gomes da Costa">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
@@ -29,13 +29,17 @@
         .nav-brand { justify-self: start; }
         .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
         .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
-        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; }
+        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; transition: opacity 0.3s ease; }
         .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
         .nav-title-container { text-align: center; }
         .nav-title { font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0; }
         .nav-title::before { display: none; }
         
-        nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
+        nav.scrolled .nav-title {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
         .lang-switch { background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
         .lang-switch:hover { background: var(--primary); color: var(--dark); }
@@ -48,24 +52,27 @@
         h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
         .section-intro { color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
         
-        /* --- Seção de Publicações --- */
+        /* --- Seção de Projetos --- */
         .sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
         .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
         .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: var(--text) }
         .controls button { padding: 8px 10px; border-radius: 10px; border: none; background: var(--primary); color: #042017; cursor: pointer; }
         .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px }
-        .publications-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 992px) {
-            .publications-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        .publication-card { background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 20px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 10px; transition: all 0.4s ease; }
-        .publication-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
-        .publication-card h3 { margin: 0; font-size: 1.1rem; color: var(--primary); }
-        .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
-        .publication-snippet { margin: 5px 0; color: var(--text); font-style: italic; }
-        .publication-citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; margin-top: auto; padding-top: 10px; }
-        .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: 10px; }
-        .publication-card a:hover { color: var(--primary-dark); }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .project-card { background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; transition: all 0.4s ease; }
+        .project-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
+        .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
+        .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
+        .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem; flex-grow: 1; }
+        .project-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted) }
+        .project-topics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .topic-tag { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+        .topic-tag:hover, .topic-tag.active { background: var(--secondary); color: var(--dark); transform: scale(1.05); }
+        .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
+        .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer; }
+        .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
+        .link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
+        .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
         
         /* --- Utilitários e Skeleton --- */
         .skeleton-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; min-height: 220px; overflow: hidden; position: relative; }
@@ -126,7 +133,7 @@
                 </a>
             </div>
             <div class="nav-title-container">
-                <h2 class="nav-title" data-key="all-publications-title"></h2>
+                <h2 class="nav-title" data-key="all-projects-title"></h2>
             </div>
             <div class="nav-actions">
                  <button class="lang-switch" onclick="toggleLanguage()" data-key-title="change-lang-title">
@@ -137,14 +144,14 @@
     </nav>
 
     <main class="container">
-        <section id="todas-publicacoes" class="section">
-            <h2 class="reveal" data-key="all-publications-title">Todas as Publicações</h2>
-            <p class="section-intro reveal" data-key="all-publications-intro"></p>
+        <section id="todos-projetos" class="section">
+            <h2 class="reveal" data-key="all-projects-title">Todos os Projetos & Repositórios</h2>
+            <p class="section-intro reveal" data-key="all-projects-intro"></p>
             
             <div class="sidebar reveal">
-                <div class="controls"><input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder"><button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search">Limpar</button></div>
-                <div class="meta" id="publications-meta"></div>
-                <div class="publications-grid stagger-children" id="publications-grid" role="list" style="margin-top: 20px;">
+                <div class="controls"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
+                <div class="meta" id="projects-meta"></div>
+                <div class="projects-grid stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
                     <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
                 </div>
             </div>
@@ -217,9 +224,7 @@
 
     <!-- Scripts -->
     <script src="translations.js"></script>
-    <script src="SERPAPI_KEY.js"></script>
     <script>
-        // --- Lógica de Tradução e Inicialização da UI ---
         let currentLang = 'pt';
 
         function setLanguage(lang) {
@@ -227,20 +232,13 @@
             currentLang = lang;
             document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
             
-            document.title = translations[lang]['publications-page-title'];
-            document.querySelector('meta[name="description"]').setAttribute('content', translations[lang]['publications-meta-description']);
-            document.querySelector('meta[name="keywords"]').setAttribute('content', translations[lang]['publications-meta-keywords']);
+            document.title = translations[lang]['projects-page-title'];
+            document.querySelector('meta[name="description"]').setAttribute('content', translations[lang]['projects-meta-description']);
+            document.querySelector('meta[name="keywords"]').setAttribute('content', translations[lang]['projects-meta-keywords']);
             
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.dataset.key;
-                const translation = translations[lang][key];
-                if (translation) {
-                     if (typeof translation === 'function') {
-                        // A função será chamada no script principal para atualizar contagens
-                    } else {
-                        el.innerHTML = translation;
-                    }
-                }
+                if (translations[lang][key]) el.innerHTML = translations[lang][key];
             });
 
             document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
@@ -253,7 +251,7 @@
                 button.querySelector('.lang-en').classList.toggle('active', !isPt);
             });
             
-            if (window.scholarScript?.renderAll) window.scholarScript.renderAll();
+            if (window.githubScript?.renderAll) window.githubScript.renderAll();
         }
 
         window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
@@ -279,92 +277,116 @@
             // Script de Fundo com Partículas
             const canvas = document.getElementById('particle-canvas');
             if (canvas) {
-                const ctx = canvas.getContext('2d'); let particles = [];
+                const ctx = canvas.getContext('2d');
+                let particles = [];
                 const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-                function setCanvasSize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-                class Particle { constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; } draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); } update() { if (this.x > canvas.width || this.x < 0) this.dX = -this.dX; if (this.y > canvas.height || this.y < 0) this.dY = -this.dY; this.x += this.dX; this.y += this.dY; this.draw(); } }
-                function init() { particles = []; let density = (canvas.width * canvas.height) / 15000; for (let i = 0; i < Math.min(density, 120); i++) { particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1)); } }
-                function connect() { for (let a = 0; a < particles.length; a++) { for (let b = a; b < particles.length; b++) { let d = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2); if (d < 120) { ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (d / 120)) * 0.2 })`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(particles[a].x, particles[a].y); ctx.lineTo(particles[b].x, particles[b].y); ctx.stroke(); } } } }
-                function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => p.update()); connect(); }
-                window.addEventListener('resize', debounce(() => { setCanvasSize(); init(); })); setCanvasSize(); init(); animate();
+
+                function setCanvasSize() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+
+                class Particle {
+                    constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; }
+                    draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); }
+                    update() {
+                        if (this.x > canvas.width || this.x < 0) this.dX = -this.dX;
+                        if (this.y > canvas.height || this.y < 0) this.dY = -this.dY;
+                        this.x += this.dX; this.y += this.dY;
+                        this.draw();
+                    }
+                }
+
+                function init() {
+                    particles = [];
+                    let density = (canvas.width * canvas.height) / 15000;
+                    for (let i = 0; i < Math.min(density, 120); i++) {
+                        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1));
+                    }
+                }
+
+                function connect() {
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            let d = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
+                            if (d < 120) {
+                                ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (d / 120)) * 0.2 })`;
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => p.update());
+                    connect();
+                }
+
+                window.addEventListener('resize', debounce(() => { setCanvasSize(); init(); }));
+                setCanvasSize();
+                init();
+                animate();
             }
         });
 
-        // Script para buscar publicações do Google Scholar
-        window.scholarScript = (function() {
-            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; const PROXY_URL = 'https://corsproxy.io/?'; const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As publicações não puderam ser atualizadas automaticamente.";
-            let allArticles = []; let currentFilter = '';
-            const gridEl = document.getElementById('publications-grid'); const metaEl = document.getElementById('publications-meta'); const searchEl = document.getElementById('publication-search'); const clearBtn = document.getElementById('publication-clear-btn');
-            
-            async function fetchFromSerpApi(params) {
-                const baseUrl = 'https://serpapi.com/search.json'; const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY }); const apiUrl = `${baseUrl}?${searchParams.toString()}`; const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
+        // Script para buscar repositórios do GitHub
+        window.githubScript = (function() {
+            const GITHUB_USER = 'WevertonGomesCosta'; const CACHE_KEY = 'gh_repos_cache_v9'; const CACHE_TS_KEY = 'gh_repos_cache_ts_v9'; const CACHE_TTL = 86400000; const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
+            let allRepos = []; let currentFilter = '';
+            const listEl = document.getElementById('projects-list'); const metaEl = document.getElementById('projects-meta'); const searchEl = document.getElementById('project-search'); const clearBtn = document.getElementById('clear-btn');
+            function readCache() { try { const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0); if (Date.now() - ts < CACHE_TTL) return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } catch (e) { console.warn('Falha ao ler cache', e); } return null; }
+            function writeCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch (e) { console.warn('Falha ao escrever cache', e); } }
+            async function fetchAllPages(url) { let r = [], n = url; while (n) { const t = await fetch(`${GITHUB_PROXY_URL}${encodeURIComponent(n)}`); if (!t.ok) throw new Error(`API do GitHub falhou: ${t.status}`); const a = await t.json(); r = r.concat(a); const e = t.headers.get("Link"); n = null; if (e) { const o = e.split(",").find(t => t.includes('rel="next"')); if (o) { const c = o.match(/<([^>]+)>/); if (c) n = c[1]; } } } return r; }
+            async function fetchRepos() {
+                metaEl.textContent = translations[currentLang].fetching_repos;
+                const cache = readCache();
+                if (cache && cache.length) { allRepos = cache; renderAll(); return; }
                 try {
-                    const res = await fetch(proxyRequestUrl);
-                    if (!res.ok) { const errorText = await res.text(); if (errorText.includes("monthly search limit")) throw new Error(serpApiLimitMsg); throw new Error(`Falha na requisição. Status: ${res.status}.`); }
-                    return await res.json();
-                } catch (error) { console.error("Erro ao buscar dados do Google Scholar:", error); throw error; }
+                    const data = await fetchAllPages(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100`);
+                    allRepos = data.map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [], has_pages: r.has_pages, homepage: r.homepage }));
+                    writeCache(allRepos);
+                    renderAll();
+                } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; renderAll(); }
             }
-            
-            async function fetchAllScholarArticles() {
-                metaEl.textContent = translations[currentLang].fetching_pubs;
-                let start = 0, allResults = [], hasMore = true;
-                while (hasMore) {
-                    try {
-                        const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: 20 });
-                        if (result.error) throw new Error(result.error.includes("monthly search limit") ? serpApiLimitMsg : result.error);
-                        const articles = result.articles || [];
-                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); start += 20; }
-                    } catch(e) { console.error(`Erro ao buscar publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
+            function sortRepos(arr) { return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)); }
+            function createCard(repo) {
+                const l = currentLang;
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.setAttribute('role', 'listitem');
+                // Prioriza a URL da homepage do repositório, depois verifica o GitHub Pages
+                const siteUrl = repo.homepage || (repo.has_pages ? `https://${GITHUB_USER}.github.io/${repo.name}/` : null);
+                const liveSiteText = l === 'pt' ? 'Ver Site' : 'View Site';
+                const repoText = l === 'pt' ? 'Repositório' : 'Repository';
+                let actionsHtml = '';
+                if (siteUrl) {
+                    actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${translations[l].live_site_btn || liveSiteText}</a>`;
+                    actionsHtml += `<a class="link-btn secondary" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
+                } else {
+                    actionsHtml += `<a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
                 }
-                return allResults;
-            }
-
-            function createCard(art) {
-                const lang = currentLang; const card = document.createElement("div"); card.className = "publication-card";
-                const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "";
-                card.innerHTML = `
-                    <h3>${escapeHtml(art.title || 'Título indisponível')}</h3>
-                    <p class="publication-meta">${escapeHtml(art.publication || 'Publicação indisponível')}</p>
-                    <p class="publication-snippet">${escapeHtml(art.snippet || "")}</p>
-                    <p class="publication-citations">${citationText}</p>
-                    <a href="${art.link}" target="_blank" rel="noopener">${translations[lang]['pub-read'] || 'Ver publicação →'}</a>`;
+                card.innerHTML = `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span>⭐ ${repo.stargazers_count}</span><span>🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[l].no_description)}</p><div class="project-topics"></div><div class="project-meta" style="margin-top: auto;"><span>${escapeHtml(repo.language || '—')}</span></div><div class="actions">${actionsHtml}</div>`;
+                const topics = card.querySelector('.project-topics');
+                if (topics && repo.topics?.length) repo.topics.slice(0, 4).forEach(t => { const tag = document.createElement('span'); tag.className = 'topic-tag'; tag.textContent = t; topics.appendChild(tag); });
                 return card;
             }
-
-            function render() {
-                gridEl.innerHTML = ''; const filter = currentFilter.trim().toLowerCase();
-                const filtered = filter ? allArticles.filter(art => Object.values(art).some(val => typeof val === 'string' && val.toLowerCase().includes(filter))) : allArticles;
-                const sorted = [...filtered].sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
-                if (sorted.length === 0 && allArticles.length > 0) {
-                    gridEl.innerHTML = `<div class="publication-card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found}</p></div>`;
-                } else {
-                    sorted.forEach(art => gridEl.appendChild(createCard(art)));
-                }
-                metaEl.textContent = translations[currentLang].showing_pubs(sorted.length, allArticles.length);
-            }
-
-            function renderAll() { render(); }
-            
-            async function init() {
-                gridEl.innerHTML = `<div class="skeleton-card"></div>`.repeat(6);
-                try {
-                    allArticles = await fetchAllScholarArticles();
-                    render();
-                } catch (e) {
-                    console.error("Erro ao inicializar publicações:", e);
-                    gridEl.innerHTML = `<div class="publication-card" style="grid-column: 1 / -1; color: var(--error);">${translations[currentLang].fetch_pub_error}: ${e.message}</div>`;
-                    metaEl.textContent = '';
-                }
-            }
-
+            function render() { listEl.innerHTML = ''; const filter = currentFilter.trim().toLowerCase(); const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos; const sorted = sortRepos(filtered); if (sorted.length === 0 && allRepos.length > 0) { listEl.innerHTML = `<div class="project-card" style="grid-column: 1 / -1;"><p class="project-desc">${translations[currentLang].no_repos_found}</p></div>`; } else { sorted.forEach(repo => listEl.appendChild(createCard(repo))); } metaEl.textContent = translations[currentLang].showing_repos(sorted.length, allRepos.length); }
+            function renderAll() { render(); metaEl.textContent = translations[currentLang].showing_repos(allRepos.length, allRepos.length); }
+            function titleCase(str) { return (str || '').replace(/[-_]/g, ' ').replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase()); }
             function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]); }
             const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
             searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
             clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; render(); searchEl.focus(); });
-            
-            init();
+            fetchRepos();
             return { renderAll };
         })();
     </script>
 </body>
 </html>
+

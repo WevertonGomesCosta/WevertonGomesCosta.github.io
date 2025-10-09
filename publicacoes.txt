@@ -18,43 +18,111 @@
         html { scroll-behavior: smooth; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: var(--text); background: var(--dark); min-height: 100vh; overflow-x: hidden; position: relative; cursor: default; }
         #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        
+        /* --- Navegação --- */
+        nav { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 10px 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 20px; gap: 15px; }
+        .nav-brand { justify-self: start; }
+        .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
+        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; transition: opacity 0.3s ease; }
+        .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
+        .nav-title-container { text-align: center; }
+        .nav-title { font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0; }
+        .nav-title::before { display: none; }
+        nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
+        .lang-switch { background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
+        .lang-switch:hover { background: var(--primary); color: var(--dark); }
+        .lang-pt.active, .lang-en.active { color: var(--text); font-weight: 700; }
+        .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary); color: var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+        .back-to-top.visible { opacity: 1; visibility: visible; }
+        .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
+
+        /* --- Conteúdo Principal --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .section { margin-bottom: 80px; }
         h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 30px; color: var(--primary); position: relative; padding-left: 20px; }
         h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
-        .section-intro { color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
+        .section-intro { color: var(--text-muted); margin: 0 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
         .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); transition: all 0.3s ease; position: relative; overflow: hidden; }
         .card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
         .publication-card { display: flex; flex-direction: column; gap: 10px; }
         .publication-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; }
-        .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
-        .publication-card a:hover { color: var(--primary-dark); }
+        .publication-card > a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
+        .publication-card > a:hover { color: var(--primary-dark); }
         .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
         .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
+        .publication-doi { display: flex; align-items: center; gap: 8px; margin-top: 5px; margin-bottom: 5px; font-size: 0.9rem; }
+        .publication-doi img { width: 20px; height: 20px; }
+        .publication-doi a { color: var(--text-muted); text-decoration: none; word-break: break-all; transition: color 0.3s ease; }
+        .publication-doi a:hover { color: var(--primary); }
         .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
         .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: var(--text); }
         .controls button { padding: 8px 10px; border-radius: 10px; border: none; background: var(--primary); color: #042017; cursor: pointer; }
         .skeleton-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; height: 220px; }
-        .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer; }
-        .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
         .small-muted { font-size: 0.9rem; color: var(--text-muted); }
-        .page-header { padding-top: 40px; padding-bottom: 20px; text-align: center; }
-        .page-header a { display: inline-flex; align-items: center; gap: 8px; color: var(--primary); text-decoration: none; font-weight: 500; margin-top: 20px; }
-        .page-header a:hover { color: var(--primary-dark); }
+        .cta-btn { padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); border: 1px solid transparent; }
+        .cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
+        .back-to-home-container { margin-top: 40px; text-align: center; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); will-change: opacity, transform; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- Rodapé --- */
+        footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border); padding: 60px 20px 40px; text-align: left; margin-top: 80px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
+        .footer-column h4 { color: var(--primary); margin-bottom: 15px; font-size: 1.1rem; position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .footer-column h4::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 40px; height: 2px; background: var(--primary); }
+        .footer-column p, .footer-column ul li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
+        .footer-column ul { list-style: none; padding: 0; }
+        .footer-column ul li { margin-bottom: 10px; }
+        .footer-column ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .footer-column ul li a:hover { color: var(--primary); }
+        .footer-column ul li a svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .footer-column ul li a .icon-img { width: 16px; height: 16px; flex-shrink: 0; background-color: var(--text-muted); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-position: center; mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; transition: background-color 0.3s ease; }
+        .footer-column ul li a:hover .icon-img { background-color: var(--primary); }
+        .icon-licae { -webkit-mask-image: url(LICAE.svg); mask-image: url(LICAE.svg); }
+        .icon-conectagem { -webkit-mask-image: url(ConectaGEM.svg); mask-image: url(ConectaGEM.svg); }
+        .footer-bottom { padding-top: 30px; margin-top: 30px; text-align: center; }
+        .footer-content { max-width: 1200px; margin: 0 auto; }
+        .footer-license { margin: 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+        .footer-license a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
+        .footer-license a:hover { color: var(--primary); }
+        .footer-update { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; }
+        .footer-update svg { width: 14px; height: 14px; }
         ::-webkit-scrollbar { width: 10px; } ::-webkit-scrollbar-track { background: var(--dark); } ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; } ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
     </style>
 </head>
 
 <body>
     <canvas id="particle-canvas"></canvas>
+    <a href="#" class="back-to-top" data-key-aria-label="back-to-top-label">↑</a>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
+                    <span class="nav-brand-text">Weverton G. Costa</span>
+                </a>
+            </div>
+            <div class="nav-title-container">
+                <h2 class="nav-title" data-key="all-publications-title"></h2>
+            </div>
+            <div class="nav-actions">
+                 <button class="lang-switch" onclick="toggleLanguage()" data-key-title="change-lang-title">
+                    <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <main class="container">
         <section id="publicacoes" class="section">
-            <header class="page-header">
-                <h2 data-key="all-publications-title">Todas as Publicações</h2>
-                <p class="section-intro" data-key="all-publications-intro"></p>
-                <a href="index.html" data-key="back-to-home">← Voltar para o Início</a>
-            </header>
+            <h2 class="reveal" data-key="all-publications-title">Todas as Publicações</h2>
+            <p class="section-intro reveal" data-key="all-publications-intro"></p>
             
             <div class="controls">
                 <input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder">
@@ -71,8 +139,72 @@
                 <div class="skeleton-card"></div>
                 <div class="skeleton-card"></div>
             </div>
+
+            <div class="back-to-home-container reveal">
+                <a href="index.html" class="cta-btn secondary" data-key="back-to-home">← Voltar para o Início</a>
+            </div>
         </section>
     </main>
+
+    <footer class="reveal">
+        <div class="footer-content">
+             <div class="footer-grid">
+                <div class="footer-column">
+                    <h4 data-key="footer-title">Weverton G. Costa</h4>
+                    <p data-key="footer-bio"></p>
+                    <ul style="margin-top: 15px;">
+                         <li><a href="mailto:wevertonufv@gmail.com"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd"></path></svg>wevertonufv@gmail.com</a></li>
+                         <li data-key="footer-location" style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); padding-top:10px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg> Viçosa - MG, Brasil</li>
+                    </ul>
+                </div>
+                 <div class="footer-column">
+                    <h4 data-key="footer-academic-profiles">Perfis Acadêmicos</h4>
+                     <ul>
+                        <li><a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M97.872 434.733c-46.338-94.949-73.906-152.29-73.906-153.713c0-2.322 2.831-2 30.672 3.46c48.965 9.614 75.126 12.326 118.735 12.342c57.697.016 104.68-9.122 141.185-27.484c19.311-9.715 30.925-18.327 40.437-29.993c11.716-14.378 15.48-24.28 15.615-40.947c.118-15.852-2.018-24.211-11.19-43.608c-3.63-7.665-6.817-16.463-7.122-19.55c-.475-4.968-.068-5.68 3.595-6.104c8.003-.948 47.507 37.403 62.055 60.241c25.076 39.386 27.111 81.993 5.884 123.195c-13.04 25.314-27.45 42.828-51.577 62.734c-40.099 33.062-86.708 56.086-151.069 74.635c-34.57 9.97-90.471 22.059-101.984 22.059c-2.44 0-7.02-8.003-21.296-37.283l-.034.015zm12.904-153.121c-45.016-5.832-82.79-10.903-83.96-11.275c-2-.644-9.155-24.516-13.191-43.947c-1.017-4.917-2.51-17.939-3.323-28.958c-3.63-49.17 7.069-83.166 35.74-113.735C94.583 31.985 198.516 25.694 315.777 67.37c20.582 7.325 28.755 12.411 24.975 15.581c-2.797 2.34-21.753 2.306-54.51-.102c-51.204-3.764-90.183 3.357-110.274 20.176c-30.588 25.602-25.924 81.724 13.53 162.682c4.273 8.766 8.58 17.345 9.563 19.09c2.29 4.019.628 7.75-3.357 7.563c-1.697-.081-39.915-4.912-84.929-10.746zm151.016-44.047c-35.928-6.46-68.227-28.74-78.654-54.222c-5.002-12.241-4.765-28.213.576-37.774c4.832-8.648 17.31-18.65 28.484-22.839c18.6-6.968 51.17-4.188 74.907 6.41c22.533 10.055 42.507 27.738 49.932 44.184c9.53 21.109 1.593 44.66-18.82 55.901c-13.531 7.443-39.827 11.326-56.443 8.341z"></path></svg>Lattes</a></li>
+                        <li><a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"></path></svg>Google Scholar</a></li>
+                        <li><a href="https://orcid.org/0000-003-0742-5936" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M336.62 194.538c-7.13-3.328-13.866-5.56-20.253-6.614c-6.365-1.095-16.574-1.612-30.71-1.612h-36.704v152.747h37.634c14.673 0 26.081-1.013 34.224-3.017c8.142-2.004 14.921-4.526 20.356-7.626a69.448 69.448 0 0 0 14.942-11.388c14.488-14.714 21.742-33.273 21.742-55.717c0-22.052-7.44-40.052-22.341-53.982c-5.498-5.166-11.822-9.444-18.89-12.793zM256 8C119.022 8 8 119.042 8 256s111.022 248 248 248s248-111.042 248-248S392.978 8 256 8m-82.336 357.513h-29.389V160.148h29.389zM158.95 138.696c-11.14 0-20.213-9.01-20.213-20.212c0-11.118 9.052-20.191 20.213-20.191c11.18 0 20.232 9.052 20.232 20.191a20.194 20.194 0 0 1-20.232 20.212m241.386 163.597c-5.29 12.545-12.834 23.581-22.65 33.088c-9.982 9.837-21.597 17.194-34.844 22.196c-7.75 3.017-14.839 5.063-21.307 6.117c-6.49 1.013-18.828 1.509-37.076 1.509h-64.956V160.148h69.233c27.962 0 50.034 4.154 66.32 12.545c16.265 8.37 29.181 20.728 38.792 36.972c9.61 16.265 14.425 34.018 14.425 53.196c.023 13.765-2.666 26.908-7.936 39.432z"></path></svg>ORCID</a></li>
+                    </ul>
+                 </div>
+                 <div class="footer-column">
+                    <h4 data-key="footer-professional-profiles">Redes e Perfis</h4>
+                     <ul>
+                        <li><a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a></li>
+                        <li><a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>LinkedIn</a></li>
+                        <li><a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" rel="noopener"><span class="icon-img icon-licae" aria-label="Logo LICAE"></span>LICAE/UFV</a></li>
+                        <li><a href="https://www.conectagem.com/sobre" target="_blank" rel="noopener"><span class="icon-img icon-conectagem" aria-label="Logo Conecta GEM"></span>Conecta GEM</a></li>
+                    </ul>
+                 </div>
+                <div class="footer-column">
+                    <h4 data-key="footer-sitemap">Mapa do Site</h4>
+                    <ul>
+                        <li><a href="index.html#sobre" data-key="nav-about">Sobre</a></li>
+                        <li><a href="index.html#experiencia" data-key="nav-experience">Atuação</a></li>
+                        <li><a href="index.html#servicos" data-key="nav-services">Serviços</a></li>
+                        <li><a href="index.html#formacao" data-key="nav-education">Formação</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 style="visibility: hidden;">&nbsp;</h4>
+                    <ul>
+                        <li><a href="index.html#projetos" data-key="nav-projects">Projetos</a></li>
+                        <li><a href="index.html#publicacoes" data-key="nav-publications">Publicações</a></li>
+                        <li><a href="index.html#habilidades" data-key="nav-skills">Habilidades</a></li>
+                        <li><a href="index.html#contato" data-key="nav-contact">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                 <div class="footer-license" style="margin-top: 20px;">
+                    <p><a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" data-key="footer-license-text-short">Licença CC BY-SA 4.0</a></p>
+                </div>
+                <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
+                <div class="footer-update">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"></path><path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"></path></svg>
+                    <span><span data-key="footer-update-text">Última atualização:</span> <span id="last-updated-date"></span></span>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Scripts -->
     <script src="translations.js"></script>
@@ -92,30 +224,67 @@
             document.querySelectorAll('[data-key]').forEach(el => {
                 const key = el.dataset.key;
                 if (translations[lang][key]) {
-                    el.innerHTML = translations[lang][key];
+                    const translation = translations[lang][key];
+                     if (typeof translation === 'function') {
+                        // Funções de tradução não são necessárias nesta página
+                    } else {
+                        el.innerHTML = translation;
+                    }
                 }
             });
             document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
             document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
             
+            const isPt = lang === 'pt';
+            document.querySelectorAll('.lang-switch').forEach(button => {
+                button.querySelector('.lang-pt').classList.toggle('active', isPt);
+                button.querySelector('.lang-en').classList.toggle('active', !isPt);
+            });
+
             // Re-renderizar publicações se já estiverem carregadas para atualizar textos como 'Ver publicação'
             if (window.scholarScript?.allArticles.length > 0) {
                 window.scholarScript.renderPublications(document.getElementById('publication-search').value);
             }
         }
         
-        // Simples troca de idioma (pode ser aprimorado com um botão de toggle nesta página se desejado)
-        document.addEventListener('DOMContentLoaded', () => setLanguage('pt'));
+        window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('pt');
+            
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            document.getElementById('last-updated-date').textContent = new Date(document.lastModified).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+        });
     </script>
     <script>
-        // --- Script para Google Scholar (versão para a página 'Todas as Publicações') ---
+        // --- Script para Google Scholar e ORCID (versão para a página 'Todas as Publicações') ---
         window.scholarScript = (function() {
             const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
+            const ORCID_ID = "0000-0003-0742-5936";
             const PROXY_URL = 'https://corsproxy.io/?';
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As publicações não puderam ser atualizadas automaticamente.";
             let allArticles = [];
 
+            const normalizeTitle = (str) => {
+                if (!str) return '';
+                return str
+                    .replace(/<[^>]+>/g, '') // Remove tags HTML
+                    .replace(/[\u2010-\u2015]/g, '-') // Normaliza hífens
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '') // Remove pontuação (exceto hífens)
+                    .replace(/\s+/g, ' ') // Colapsa múltiplos espaços
+                    .trim();
+            };
+
             async function fetchFromSerpApi(params) {
+                 if (typeof SERPAPI_KEY === 'undefined' || !SERPAPI_KEY) {
+                    throw new Error("Chave da API (SERPAPI_KEY) não configurada.");
+                }
                 const baseUrl = 'https://serpapi.com/search.json';
                 const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY });
                 const apiUrl = `${baseUrl}?${searchParams.toString()}`;
@@ -137,14 +306,14 @@
                 
                 const filteredArticles = lowerCaseFilter 
                     ? allArticles.filter(art => 
-                        (art.title && art.title.toLowerCase().includes(lowerCaseFilter)) ||
-                        (art.publication && art.publication.toLowerCase().includes(lowerCaseFilter)) ||
-                        (art.snippet && art.snippet.toLowerCase().includes(lowerCaseFilter))
+                        (art.title && normalizeTitle(art.title).includes(lowerCaseFilter)) ||
+                        (art.journalTitle && art.journalTitle.toLowerCase().includes(lowerCaseFilter)) ||
+                        (art.year && art.year.includes(lowerCaseFilter))
                       )
                     : allArticles;
 
                 if (filteredArticles.length === 0) {
-                    grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`;
+                    grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`;
                     shownCountEl.textContent = translations[currentLang].showing_pubs(0, allArticles.length);
                     return;
                 }
@@ -152,19 +321,33 @@
                 filteredArticles.forEach((art) => {
                     const card = document.createElement("div");
                     card.className = "card publication-card";
-                    const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
+
+                    const citationText = art.cited_by?.value ? `${translations[currentLang]['pub-cited-by']} ${art.cited_by.value} ${translations[currentLang]['pub-cited-by-times']}` : translations[currentLang]['pub-no-citation'];
+                    
+                    const publicationMetaHtml = `<p class="publication-meta">${translations[currentLang]['pub-published']}: ${art.year} ${translations[currentLang]['pub-in']} <em>${art.journalTitle || 'N/A'}</em></p>`;
+
+                    const doiHtml = art.doi ? `
+                        <div class="publication-doi">
+                             <a href="https://orcid.org/${ORCID_ID}" target="_blank" rel="noopener" title="Perfil ORCID">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/>
+                            </a>
+                            <a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a>
+                        </div>` : '';
+
+                    const publicationLink = art.doiLink || art.link;
+
                     card.innerHTML = `
-                        <h3>${art.title || 'Título indisponível'}</h3>
-                        <p class="publication-meta">${art.publication || 'Publicação indisponível'}</p>
-                        <p>${art.snippet || ""}</p>
+                        <h3>${art.title.replace(/<[^>]+>/g, '')}</h3>
+                        ${doiHtml}
+                        ${publicationMetaHtml}
                         <p class="citations">${citationText}</p>
-                        <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>`;
+                        <a href="${publicationLink}" target="_blank" rel="noopener">${translations[currentLang]['pub-read']}</a>`;
                     grid.appendChild(card);
                 });
 
                 shownCountEl.textContent = translations[currentLang].showing_pubs(filteredArticles.length, allArticles.length);
             }
-
+            
             async function fetchAllScholarArticles() {
                 let start = 0, allResults = [], hasMore = true;
                 while (hasMore) {
@@ -172,39 +355,93 @@
                         const result = await fetchFromSerpApi({ engine: 'google_scholar_author', author_id: SCHOLAR_USER_ID, hl: 'pt-BR', start: start, num: 20 });
                         if (result.error) throw new Error(result.error.includes("monthly search limit") ? serpApiLimitMsg : result.error);
                         const articles = result.articles || [];
-                        if (articles.length === 0) {
-                            hasMore = false;
-                        } else {
-                            allResults = allResults.concat(articles);
-                            start += 20;
-                        }
-                    } catch(e) {
-                        console.error(`Erro ao buscar publicações (start=${start}):`, e);
-                        hasMore = false;
-                        if (allResults.length === 0) throw e;
-                    }
+                        if (articles.length === 0) { hasMore = false; } else { allResults = allResults.concat(articles); start += 20; }
+                    } catch(e) { console.error(`Erro ao buscar publicações (start=${start}):`, e); hasMore = false; if (allResults.length === 0) throw e; }
                 }
                 return allResults;
+            }
+            
+            async function fetchOrcidWorks() {
+                const API_URL = `https://pub.orcid.org/v3.0/${ORCID_ID}/works`;
+                const response = await fetch(`${PROXY_URL}${encodeURIComponent(API_URL)}`, { headers: { 'Accept': 'application/json' }});
+                if (!response.ok) throw new Error(`Falha ao buscar dados do ORCID. Status: ${response.status}`);
+                const data = await response.json();
+                const works = [];
+                data.group.forEach(item => {
+                    const workSummary = item['work-summary'][0];
+                    if (!workSummary || !workSummary.title?.title?.value) return;
+
+                    const title = workSummary.title.title.value;
+                    let doi = null, doiLink = null;
+                    const externalIds = workSummary['external-ids']?.['external-id'];
+                    if (externalIds) {
+                        const doiObject = externalIds.find(id => id['external-id-type'] === 'doi');
+                        if (doiObject) {
+                            doi = doiObject['external-id-value'];
+                            doiLink = doiObject['external-id-url']?.value || `https://doi.org/${doi}`;
+                        }
+                    }
+
+                    const pubDate = workSummary['publication-date'];
+                    const year = pubDate?.year?.value || '';
+                    
+                    works.push({
+                        title: title,
+                        doi: doi,
+                        doiLink: doiLink,
+                        year: year,
+                        journalTitle: workSummary['journal-title']?.value || '',
+                        link: workSummary.url?.value || doiLink,
+                    });
+                });
+                return works;
             }
 
             async function init() {
                 const grid = document.getElementById("publicacoes-grid");
                 try {
-                    allArticles = await fetchAllScholarArticles();
+                     const [orcidWorks, scholarArticles] = await Promise.all([
+                        fetchOrcidWorks(),
+                        fetchAllScholarArticles()
+                    ]);
+
+                    const scholarCitationsMap = new Map();
+                    scholarArticles.forEach(art => {
+                        const normalizedTitle = normalizeTitle(art.title);
+                        if (!scholarCitationsMap.has(normalizedTitle)) {
+                            scholarCitationsMap.set(normalizedTitle, { cited_by: art.cited_by, link: art.link });
+                        }
+                    });
+
+                    const mergedArticles = orcidWorks.map(work => {
+                        const normalizedTitle = normalizeTitle(work.title);
+                        const scholarData = scholarCitationsMap.get(normalizedTitle);
+                        return { ...work, cited_by: scholarData?.cited_by || null, link: scholarData?.link || work.link, };
+                    });
+
+                    allArticles = mergedArticles;
                     allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
+                    
                     renderPublications();
+
                 } catch (e) {
                     console.error("Erro ao inicializar publicações:", e);
                     grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
                 }
             }
             
-            // Expõe a função de renderização e o array de artigos para uso externo (pela função de tradução)
             return { init, renderPublications, get allArticles() { return allArticles; } };
         })();
         
         document.addEventListener("DOMContentLoaded", () => {
             scholarScript.init();
+            
+            const backToTopButton = document.querySelector('.back-to-top');
+            const nav = document.querySelector('nav');
+            window.addEventListener('scroll', () => {
+                nav.classList.toggle('scrolled', window.scrollY > 50);
+                backToTopButton.classList.toggle('visible', window.scrollY > 300);
+            });
 
             const pubSearchInput = document.getElementById('publication-search');
             const pubClearBtn = document.getElementById('publication-clear-btn');
@@ -242,3 +479,4 @@
     </script>
 </body>
 </html>
+

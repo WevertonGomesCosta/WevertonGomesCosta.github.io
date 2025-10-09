@@ -286,6 +286,27 @@
         .publication-card > a:hover { color: var(--primary-dark); }
         .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
         .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
+        .publication-doi { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            margin-top: 5px; 
+            margin-bottom: 5px;
+            font-size: 0.9rem; 
+        }
+        .publication-doi img { 
+            width: 20px; 
+            height: 20px; 
+        }
+        .publication-doi a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            word-break: break-all;
+            transition: color 0.3s ease; 
+        }
+        .publication-doi a:hover { 
+            color: var(--primary); 
+        }
         
         .scholar-summary-card {
             display: flex; flex-direction: column; align-items: center; text-align: center;
@@ -486,6 +507,10 @@
         .icon-conectagem {
             -webkit-mask-image: url(ConectaGEM.svg);
             mask-image: url(ConectaGEM.svg);
+        }
+        .icon-doi {
+            -webkit-mask-image: url(https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg);
+            mask-image: url(https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg);
         }
         .footer-bottom {
             padding-top: 30px;
@@ -1419,6 +1444,7 @@
             return { renderAll, get allRepos() { return allRepos; }, set showingCount(value) { showingCount = value; } };
         })();
     </script>
+    <script src="SERPAPI_KEY.js"></script>
     <script>
         // --- Script para Google Scholar, ORCID, Validação de Formulário e Geração de PDF ---
         window.scholarScript = (function() {
@@ -1427,6 +1453,8 @@
             const PROXY_URL = 'https://corsproxy.io/?'; 
             const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = []; let showingPubsCount = 3; let citationGraphData = []; let activeYearFilter = null; 
+
+            const normalizeTitle = (str) => (str || '').replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
 
             function animateCountUp(el) {
                 const target = parseInt(el.textContent, 10);
@@ -1474,7 +1502,7 @@
                 const yearlyData = {};
                 (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
                 (articles || []).forEach(article => {
-                    const yearMatches = article.publication?.match(/\b(19|20)\d{2}\b/g);
+                    const yearMatches = (article.publication || '').match(/\b(19|20)\d{2}\b/g);
                     if (yearMatches) {
                         const year = parseInt(yearMatches[yearMatches.length - 1]);
                         if (year) {
@@ -1549,20 +1577,35 @@
             
             function renderPublications(filter = '') {
                 const grid = document.getElementById("publicacoes-grid"); const toggleBtn = document.getElementById('pubs-toggle-more'); const shownCountEl = document.getElementById('pubs-shown-count'); grid.innerHTML = ""; 
-                let filteredByYear = activeYearFilter ? allArticles.filter(art => { const yearMatches = art.publication?.match(/\b(19|20)\d{2}\b/g); return yearMatches && parseInt(yearMatches.pop()) === activeYearFilter; }) : allArticles;
+                let filteredByYear = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
                 const lowerCaseFilter = filter.trim().toLowerCase();
                 const filteredArticles = lowerCaseFilter ? filteredByYear.filter(art => Object.values(art).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseFilter))) : filteredByYear;
                 const articlesToShow = filteredArticles.slice(0, showingPubsCount);
-                if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
+
+                if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
                 
                 articlesToShow.forEach((art) => {
                     const card = document.createElement("div");
                     card.className = "card reveal publication-card";
-                    const citationText = art.cited_by?.value ? `${translations[currentLang]['pub-cited-by'] || 'Citado'} ${art.cited_by.value} ${translations[currentLang]['pub-cited-by-times'] || 'vezes'}` : translations[currentLang]['pub-no-citation'] || "Sem informações de citação";
 
-                    const doiHtml = art.doi ? `<div class="publication-doi" style="font-size: 0.9rem; margin-top: 10px;"><strong>DOI:</strong> <a href="${art.doiLink}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; word-break: break-all;">${art.doi}</a></div>` : '';
+                    const citationText = art.cited_by?.value ? `${translations[currentLang]['pub-cited-by']} ${art.cited_by.value} ${translations[currentLang]['pub-cited-by-times']}` : translations[currentLang]['pub-no-citation'];
+                    
+                    const publicationMetaHtml = `<p class="publication-meta">${translations[currentLang]['pub-published']}: ${art.year} ${translations[currentLang]['pub-in']} <em>${art.journalTitle}</em></p>`;
 
-                    card.innerHTML = `<h3>${art.title || 'Título indisponível'}</h3><p class="publication-meta">${art.publication || 'Publicação indisponível'}</p><p class="citations">${citationText}</p>${doiHtml}<a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>`;
+                    const doiHtml = art.doi ? `
+                        <div class="publication-doi">
+                            <a href="https://orcid.org/${ORCID_ID}" target="_blank" rel="noopener" title="Perfil ORCID">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/>
+                            </a>
+                            <a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a>
+                        </div>` : '';
+
+                    card.innerHTML = `
+                        <h3>${art.title.replace(/<[^>]+>/g, '')}</h3>
+                        ${doiHtml}
+                        ${publicationMetaHtml}
+                        <p class="citations">${citationText}</p>
+                        <a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read']}</a>`;
                     grid.appendChild(card);
                 });
 
@@ -1589,14 +1632,14 @@
                 const response = await fetch(`${PROXY_URL}${encodeURIComponent(API_URL)}`, { headers: { 'Accept': 'application/json' }});
                 if (!response.ok) throw new Error(`Falha ao buscar dados do ORCID. Status: ${response.status}`);
                 const data = await response.json();
-                const worksMap = new Map();
+                const works = [];
                 data.group.forEach(item => {
-                    const work = item['work-summary'][0];
-                    if (!work || !work.title?.title?.value) return;
-                    const title = work.title.title.value;
-                    const normalizedTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
-                    let doi = null; let doiLink = null;
-                    const externalIds = work['external-ids']?.['external-id'];
+                    const workSummary = item['work-summary'][0];
+                    if (!workSummary || !workSummary.title?.title?.value) return;
+
+                    const title = workSummary.title.title.value;
+                    let doi = null, doiLink = null;
+                    const externalIds = workSummary['external-ids']?.['external-id'];
                     if (externalIds) {
                         const doiObject = externalIds.find(id => id['external-id-type'] === 'doi');
                         if (doiObject) {
@@ -1604,31 +1647,61 @@
                             doiLink = doiObject['external-id-url']?.value || `https://doi.org/${doi}`;
                         }
                     }
-                    if(doi) worksMap.set(normalizedTitle, { doi, doiLink });
+
+                    const pubDate = workSummary['publication-date'];
+                    const year = pubDate?.year?.value || '';
+                    
+                    works.push({
+                        title: title,
+                        doi: doi,
+                        doiLink: doiLink,
+                        publication: `${workSummary['journal-title']?.value || ''}, ${year}`.replace(/, $/, ''),
+                        year: year,
+                        journalTitle: workSummary['journal-title']?.value || '',
+                        link: workSummary.url?.value || doiLink,
+                    });
                 });
-                return worksMap;
+                return works;
             }
 
             async function updateScholarPublications() {
-                const grid = document.getElementById("publicacoes-grid"); grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
+                const grid = document.getElementById("publicacoes-grid");
+                grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
                 try {
-                    const [scholarArticles, orcidWorksMap] = await Promise.all([
-                        fetchAllScholarArticles(),
-                        fetchOrcidWorks()
+                    const [orcidWorks, scholarArticles] = await Promise.all([
+                        fetchOrcidWorks(),
+                        fetchAllScholarArticles()
                     ]);
-                    const mergedArticles = scholarArticles.map(article => {
-                        const normalizedTitle = (article.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-                        const orcidData = orcidWorksMap.get(normalizedTitle);
-                        return orcidData ? { ...article, ...orcidData } : article;
+
+                    const scholarCitationsMap = new Map();
+                    scholarArticles.forEach(art => {
+                        const normalizedTitle = normalizeTitle(art.title);
+                        if (!scholarCitationsMap.has(normalizedTitle)) {
+                            scholarCitationsMap.set(normalizedTitle, { cited_by: art.cited_by, link: art.link });
+                        }
                     });
-                    
+
+                    const mergedArticles = orcidWorks.map(work => {
+                        const normalizedTitle = normalizeTitle(work.title);
+                        const scholarData = scholarCitationsMap.get(normalizedTitle);
+                        
+                        return {
+                            ...work,
+                            cited_by: scholarData?.cited_by || null,
+                            link: scholarData?.link || work.link, 
+                        };
+                    });
+
                     allArticles = mergedArticles;
                     allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
+                    
                     renderPublications();
-                    renderInteractiveChart(citationGraphData, allArticles);
+                    const articlesForChart = scholarArticles.length > 0 ? scholarArticles : mergedArticles;
+                    renderInteractiveChart(citationGraphData, articlesForChart);
 
                 } catch (e) {
-                    console.error("Erro ao atualizar publicações:", e); grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
+                    console.error("Erro ao atualizar publicações:", e);
+                    grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
                     document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: var(--error);">Erro ao carregar o gráfico: ${e.message}</div>`;
                 }
             }
@@ -1682,7 +1755,7 @@
                 pubClearBtn.addEventListener('click', () => { pubSearchInput.value = ''; showingPubsCount = 3; if (activeYearFilter) { activeYearFilter = null; updateFilterUI(); } renderPublications(); pubSearchInput.focus(); });
                 pubToggleBtn.addEventListener('click', () => {
                     const filter = pubSearchInput.value.trim().toLowerCase();
-                    let baseList = activeYearFilter ? allArticles.filter(art => art.publication?.includes(activeYearFilter)) : allArticles;
+                    let baseList = activeYearFilter ? allArticles.filter(art => (art.publication || '').includes(activeYearFilter)) : allArticles;
                     const filtered = filter ? baseList.filter(art => Object.values(art).some(v => String(v).toLowerCase().includes(filter))) : baseList;
                     showingPubsCount = Math.min(showingPubsCount + 3, filtered.length);
                     renderPublications(filter);
@@ -1730,3 +1803,4 @@
 
 </body>
 </html>
+
