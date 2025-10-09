@@ -3,10 +3,13 @@ const translations = {
         // --- Metadados e Títulos Globais ---
         'page-title': 'Weverton Gomes da Costa | Pesquisador & Data Scientist',
         'projects-page-title': 'Projetos | Weverton Gomes da Costa',
+        'publications-page-title': 'Publicações | Weverton Gomes da Costa',
         'meta-description': 'Weverton Gomes da Costa - Pesquisador em Genética e Estatística, Cientista de Dados, CEO da Conecta GEM, especialista em Machine Learning e Melhoramento Genético.',
         'projects-meta-description': 'Explore todos os projetos e repositórios de Weverton Gomes da Costa, pesquisador e cientista de dados.',
+        'publications-meta-description': 'Explore a lista completa de artigos e publicações científicas de Weverton Gomes da Costa.',
         'meta-keywords': 'genética, biometria, machine learning, agronegócio, UFV, seleção genômica, software GENES, R, Python, melhoramento de plantas',
         'projects-meta-keywords': 'projetos, github, portfólio, R, Python, machine learning, genética',
+        'publications-meta-keywords': 'publicações, artigos, pesquisa, genética, biometria, machine learning, UFV',
 
         // --- UI Global ---
         'change-lang-title': 'Mudar para Inglês',
@@ -14,6 +17,7 @@ const translations = {
         'nav-contact': 'Contato',
         'footer-title': 'Weverton G. Costa',
         'see-all-projects': 'Ver Todos os Projetos',
+        'see-all-publications': 'Ver Todas as Publicações',
 
         // --- Página Principal (index.html) ---
         'subtitle-1': 'Cientista de Dados | Machine Learning',
@@ -97,8 +101,11 @@ const translations = {
         'no_description': 'Sem descrição fornecida.', 'updated_at': 'Atualizado em',
         'all-projects-title': 'Todos os Projetos & Repositórios',
         'all-projects-intro': 'Explore a lista completa de todos os meus projetos e repositórios públicos. Use a busca abaixo para filtrar por nome, descrição, linguagem ou tópico.',
+        'all-publications-title': 'Todas as Publicações',
+        'all-publications-intro': 'Explore a lista completa de minhas publicações científicas. Use a busca abaixo para filtrar por título, periódico ou palavra-chave.',
         'back-to-home': '← Voltar para o Início',
         'showing_repos': (shown, total) => `Exibindo ${shown} de ${total} repositórios.`,
+        'showing_pubs': (shown, total) => `Exibindo ${shown} de ${total} publicações.`,
         'footer-bio': 'Cientista de dados apaixonado por aplicar estatística e IA para impulsionar a inovação no melhoramento genético e agronegócio.',
         'footer-sitemap': 'Mapa do Site',
         'footer-academic-profiles': 'Perfis Acadêmicos',
@@ -112,10 +119,13 @@ const translations = {
         // --- Global Meta & Titles ---
         'page-title': 'Weverton Gomes da Costa | Researcher & Data Scientist',
         'projects-page-title': 'Projects | Weverton Gomes da Costa',
+        'publications-page-title': 'Publications | Weverton Gomes da Costa',
         'meta-description': 'Weverton Gomes da Costa - Researcher in Genetics and Statistics, Data Scientist, CEO of Conecta GEM, specialist in Machine Learning and Plant Breeding.',
         'projects-meta-description': 'Explore all projects and repositories by Weverton Gomes da Costa, researcher and data scientist.',
+        'publications-meta-description': 'Explore the complete list of scientific articles and publications by Weverton Gomes da Costa.',
         'meta-keywords': 'genetics, biometrics, machine learning, agribusiness, UFV, genomic selection, GENES software, R, Python, plant breeding',
         'projects-meta-keywords': 'projects, github, portfolio, R, Python, machine learning, genetics',
+        'publications-meta-keywords': 'publications, articles, research, genetics, biometrics, machine learning, UFV',
 
         // --- Global UI ---
         'change-lang-title': 'Switch to Portuguese',
@@ -123,6 +133,7 @@ const translations = {
         'nav-contact': 'Contact',
         'footer-title': 'Weverton G. Costa',
         'see-all-projects': 'See All Projects',
+        'see-all-publications': 'See All Publications',
 
         // --- Main Page (index.html) ---
         'subtitle-1': 'Data Scientist | Machine Learning',
@@ -206,8 +217,11 @@ const translations = {
         'no_description': 'No description provided.', 'updated_at': 'Updated on',
         'all-projects-title': 'All Projects & Repositories',
         'all-projects-intro': 'Explore the complete list of all my public projects and repositories. Use the search below to filter by name, description, language, or topic.',
+        'all-publications-title': 'All Publications',
+        'all-publications-intro': 'Explore the complete list of my scientific publications. Use the search below to filter by title, journal, or keyword.',
         'back-to-home': '← Back to Home',
         'showing_repos': (shown, total) => `Showing ${shown} of ${total} repositories.`,
+        'showing_pubs': (shown, total) => `Showing ${shown} of ${total} publications.`,
         'footer-bio': 'A data scientist passionate about applying statistics and AI to drive innovation in genetic improvement and agribusiness.',
         'footer-sitemap': 'Sitemap',
         'footer-academic-profiles': 'Academic Profiles',
@@ -218,5 +232,3 @@ const translations = {
         'footer-location': 'Viçosa - MG, Brazil'
     }
 };
-
-
