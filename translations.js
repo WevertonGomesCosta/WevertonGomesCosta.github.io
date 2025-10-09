@@ -12,6 +12,7 @@ const translations = {
         'change-lang-title': 'Mudar para Inglês',
         'back-to-top-label': 'Voltar ao topo',
         'nav-contact': 'Contato',
+        'footer-title': 'Weverton G. Costa',
         'see-all-projects': 'Ver Todos os Projetos',
 
         // --- Página Principal (index.html) ---
@@ -120,6 +121,7 @@ const translations = {
         'change-lang-title': 'Switch to Portuguese',
         'back-to-top-label': 'Back to top',
         'nav-contact': 'Contact',
+        'footer-title': 'Weverton G. Costa',
         'see-all-projects': 'See All Projects',
 
         // --- Main Page (index.html) ---
@@ -216,4 +218,5 @@ const translations = {
         'footer-location': 'Viçosa - MG, Brazil'
     }
 };
+
 
