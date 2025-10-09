@@ -282,8 +282,8 @@
         
         /* --- Seção de Publicações --- */
         .publication-card { display: flex; flex-direction: column; gap: 10px; }
-        .publication-card a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
-        .publication-card a:hover { color: var(--primary-dark); }
+        .publication-card > a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px;}
+        .publication-card > a:hover { color: var(--primary-dark); }
         .publication-meta { font-size: 0.9rem; color: var(--text-muted); }
         .publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
         
@@ -1419,27 +1419,21 @@
             return { renderAll, get allRepos() { return allRepos; }, set showingCount(value) { showingCount = value; } };
         })();
     </script>
-    <script src="SERPAPI_KEY.js"></script>
     <script>
-        // --- Script para Google Scholar, Validação de Formulário e Geração de PDF ---
+        // --- Script para Google Scholar, ORCID, Validação de Formulário e Geração de PDF ---
         window.scholarScript = (function() {
-            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; const PROXY_URL = 'https://corsproxy.io/?'; const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
+            const SCHOLAR_USER_ID = "eJNKcHsAAAAJ"; 
+            const ORCID_ID = "0000-0003-0742-5936";
+            const PROXY_URL = 'https://corsproxy.io/?'; 
+            const serpApiLimitMsg = "Limite de buscas gratuitas do SerpApi atingido. As citações e publicações não puderam ser atualizadas automaticamente.";
             let allArticles = []; let showingPubsCount = 3; let citationGraphData = []; let activeYearFilter = null; 
 
             function animateCountUp(el) {
                 const target = parseInt(el.textContent, 10);
-                if (isNaN(target) || target === 0) {
-                    el.textContent = target;
-                    return;
-                }
-                const duration = 2000; // Duração total da animação em ms
-                const intervalTime = 20; // Intervalo entre atualizações em ms
-                const steps = duration / intervalTime;
-                const increment = target / steps;
+                if (isNaN(target) || target === 0) { el.textContent = target; return; }
+                const duration = 2000; const intervalTime = 20; const steps = duration / intervalTime; const increment = target / steps;
                 let current = 0;
-
                 el.textContent = '0';
-
                 const timer = setInterval(() => {
                     current += increment;
                     if (current >= target) {
@@ -1452,6 +1446,9 @@
             }
 
             async function fetchFromSerpApi(params) {
+                if (typeof SERPAPI_KEY === 'undefined' || !SERPAPI_KEY) {
+                    throw new Error("Chave da API (SERPAPI_KEY) não configurada.");
+                }
                 const baseUrl = 'https://serpapi.com/search.json'; const searchParams = new URLSearchParams({ ...params, api_key: SERPAPI_KEY }); const apiUrl = `${baseUrl}?${searchParams.toString()}`; const proxyRequestUrl = `${PROXY_URL}${encodeURIComponent(apiUrl)}`;
                 try {
                     const res = await fetch(proxyRequestUrl);
@@ -1539,7 +1536,6 @@
                     } else if (citedBy?.value) { document.getElementById("cit-total").textContent = citedBy.value ?? '—'; } 
                     else { throw new Error("Dados de citação ('cited_by') não encontrados ou em formato inesperado."); }
                     
-                    // Anima os números após serem preenchidos
                     document.querySelectorAll('.scholar-metrics .metric-value, .scholar-metrics .metric-value-period').forEach(animateCountUp);
 
                     if (profile.author_url) { document.querySelector(".scholar-link a").href = profile.author_url; }
@@ -1557,12 +1553,19 @@
                 const lowerCaseFilter = filter.trim().toLowerCase();
                 const filteredArticles = lowerCaseFilter ? filteredByYear.filter(art => Object.values(art).some(val => typeof val === 'string' && val.toLowerCase().includes(lowerCaseFilter))) : filteredByYear;
                 const articlesToShow = filteredArticles.slice(0, showingPubsCount);
-                if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_repos_found || 'Nenhuma publicação encontrada.'}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
+                if (articlesToShow.length === 0) { grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[currentLang].no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`; shownCountEl.textContent = `0 / 0`; toggleBtn.classList.add('hidden'); return; }
+                
                 articlesToShow.forEach((art) => {
-                    const card = document.createElement("div"); card.className = "card reveal publication-card"; const citationText = art.cited_by?.value ? `Citado ${art.cited_by.value} vezes` : "Sem informações de citação";
-                    card.innerHTML = `<h3>${art.title || 'Título indisponível'}</h3><p class="publication-meta">${art.publication || 'Publicação indisponível'}</p><p>${art.snippet || ""}</p><p class="citations">${citationText}</p><a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>`;
+                    const card = document.createElement("div");
+                    card.className = "card reveal publication-card";
+                    const citationText = art.cited_by?.value ? `${translations[currentLang]['pub-cited-by'] || 'Citado'} ${art.cited_by.value} ${translations[currentLang]['pub-cited-by-times'] || 'vezes'}` : translations[currentLang]['pub-no-citation'] || "Sem informações de citação";
+
+                    const doiHtml = art.doi ? `<div class="publication-doi" style="font-size: 0.9rem; margin-top: 10px;"><strong>DOI:</strong> <a href="${art.doiLink}" target="_blank" rel="noopener" style="color: var(--primary); text-decoration: none; word-break: break-all;">${art.doi}</a></div>` : '';
+
+                    card.innerHTML = `<h3>${art.title || 'Título indisponível'}</h3><p class="publication-meta">${art.publication || 'Publicação indisponível'}</p><p class="citations">${citationText}</p>${doiHtml}<a href="${art.link}" target="_blank" rel="noopener">${translations[currentLang]['pub-read'] || 'Ver publicação →'}</a>`;
                     grid.appendChild(card);
                 });
+
                 shownCountEl.textContent = `${articlesToShow.length} / ${filteredArticles.length}`;
                 toggleBtn.classList.toggle('hidden', articlesToShow.length >= filteredArticles.length);
                 toggleBtn.textContent = translations[currentLang][articlesToShow.length >= filteredArticles.length ? 'show-less' : 'show-more'];
@@ -1580,11 +1583,50 @@
                 }
                 return allResults;
             }
+            
+            async function fetchOrcidWorks() {
+                const API_URL = `https://pub.orcid.org/v3.0/${ORCID_ID}/works`;
+                const response = await fetch(`${PROXY_URL}${encodeURIComponent(API_URL)}`, { headers: { 'Accept': 'application/json' }});
+                if (!response.ok) throw new Error(`Falha ao buscar dados do ORCID. Status: ${response.status}`);
+                const data = await response.json();
+                const worksMap = new Map();
+                data.group.forEach(item => {
+                    const work = item['work-summary'][0];
+                    if (!work || !work.title?.title?.value) return;
+                    const title = work.title.title.value;
+                    const normalizedTitle = title.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    let doi = null; let doiLink = null;
+                    const externalIds = work['external-ids']?.['external-id'];
+                    if (externalIds) {
+                        const doiObject = externalIds.find(id => id['external-id-type'] === 'doi');
+                        if (doiObject) {
+                            doi = doiObject['external-id-value'];
+                            doiLink = doiObject['external-id-url']?.value || `https://doi.org/${doi}`;
+                        }
+                    }
+                    if(doi) worksMap.set(normalizedTitle, { doi, doiLink });
+                });
+                return worksMap;
+            }
 
             async function updateScholarPublications() {
                 const grid = document.getElementById("publicacoes-grid"); grid.innerHTML = `<div class="skeleton-card"></div>`.repeat(3);
                 try {
-                    allArticles = await fetchAllScholarArticles(); allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0)); renderPublications(); renderInteractiveChart(citationGraphData, allArticles);
+                    const [scholarArticles, orcidWorksMap] = await Promise.all([
+                        fetchAllScholarArticles(),
+                        fetchOrcidWorks()
+                    ]);
+                    const mergedArticles = scholarArticles.map(article => {
+                        const normalizedTitle = (article.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                        const orcidData = orcidWorksMap.get(normalizedTitle);
+                        return orcidData ? { ...article, ...orcidData } : article;
+                    });
+                    
+                    allArticles = mergedArticles;
+                    allArticles.sort((a, b) => (b.cited_by?.value || 0) - (a.cited_by?.value || 0));
+                    renderPublications();
+                    renderInteractiveChart(citationGraphData, allArticles);
+
                 } catch (e) {
                     console.error("Erro ao atualizar publicações:", e); grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações: ${e.message}</div>`;
                     document.getElementById('interactive-scholar-chart-container').innerHTML = `<div class="card" style="color: var(--error);">Erro ao carregar o gráfico: ${e.message}</div>`;
@@ -1642,7 +1684,7 @@
                     const filter = pubSearchInput.value.trim().toLowerCase();
                     let baseList = activeYearFilter ? allArticles.filter(art => art.publication?.includes(activeYearFilter)) : allArticles;
                     const filtered = filter ? baseList.filter(art => Object.values(art).some(v => String(v).toLowerCase().includes(filter))) : baseList;
-                    showingCount = Math.min(showingCount + 3, filtered.length);
+                    showingPubsCount = Math.min(showingPubsCount + 3, filtered.length);
                     renderPublications(filter);
                 });
 
@@ -1688,4 +1730,3 @@
 
 </body>
 </html>
-
