@@ -88,6 +88,8 @@ const translations = {
         'form-submit': 'Enviar Mensagem', 'formSending': 'Enviando...', 'formSuccess': 'Mensagem enviada com sucesso! Obrigado.', 'formError': 'Ocorreu um erro. Tente novamente.',
         'download-cv': 'Baixar Currículo (PDF)',
         'chart-title': 'Citações e Publicações por Ano', 'chart-title-mobile': 'Citações/Pubs por Ano', 'chart-xaxis-title': 'Ano', 'chart-yaxis-title': 'Número de Citações', 'chart-colorbar-title': 'Nº de Publicações',
+        
+        // --- Projetos ---
         'projects-title': 'Projetos & Repositórios',
         'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
         'search-placeholder': 'Buscar repositório...', 'clear-search': 'Limpar busca',
@@ -101,11 +103,26 @@ const translations = {
         'no_description': 'Sem descrição fornecida.', 'updated_at': 'Atualizado em',
         'all-projects-title': 'Todos os Projetos & Repositórios',
         'all-projects-intro': 'Explore a lista completa de todos os meus projetos e repositórios públicos. Use a busca abaixo para filtrar por nome, descrição, linguagem ou tópico.',
+        
+        // --- Publicações (Página e Busca) ---
         'all-publications-title': 'Todas as Publicações',
         'all-publications-intro': 'Explore a lista completa de minhas publicações científicas. Use a busca abaixo para filtrar por título, periódico ou palavra-chave.',
         'back-to-home': '← Voltar para o Início',
         'showing_repos': (shown, total) => `Exibindo ${shown} de ${total} repositórios.`,
         'showing_pubs': (shown, total) => `Exibindo ${shown} de ${total} publicações.`,
+        'advanced-search-toggle': 'Busca Avançada',
+        'search-journal-label': 'Periódico',
+        'search-journal-placeholder': 'Ex: Crop Science',
+        'search-year-start-label': 'De (Ano)',
+        'search-year-end-label': 'Até (Ano)',
+        'search-year-placeholder': 'Ex: 2020',
+        'search-btn': 'Buscar',
+        'clear-btn': 'Limpar Filtros',
+        'fetching_pubs': 'Buscando publicações...',
+        'no_pubs_found': 'Nenhuma publicação encontrada com os filtros aplicados.',
+        'fetch_pub_error': 'Erro ao carregar publicações',
+        
+        // --- Rodapé ---
         'footer-bio': 'Cientista de dados apaixonado por aplicar estatística e IA para impulsionar a inovação no melhoramento genético e agronegócio.',
         'footer-sitemap': 'Mapa do Site',
         'footer-academic-profiles': 'Perfis Acadêmicos',
@@ -204,6 +221,8 @@ const translations = {
         'form-submit': 'Send Message', 'formSending': 'Sending...', 'formSuccess': 'Message sent successfully! Thank you.', 'formError': 'An error occurred. Please try again.',
         'download-cv': 'Download CV (PDF)',
         'chart-title': 'Citations and Publications per Year', 'chart-title-mobile': 'Citations/Pubs per Year', 'chart-xaxis-title': 'Year', 'chart-yaxis-title': 'Number of Citations', 'chart-colorbar-title': 'Nº of Publications',
+
+        // --- Projects ---
         'projects-title': 'Projects & Repositories',
         'projects-intro': 'Here are some of my public projects on GitHub, including analysis codes, tutorials, and developed tools. Feel free to explore, use, and contribute.',
         'search-placeholder': 'Search repository...', 'clear-search': 'Clear search',
@@ -217,11 +236,26 @@ const translations = {
         'no_description': 'No description provided.', 'updated_at': 'Updated on',
         'all-projects-title': 'All Projects & Repositories',
         'all-projects-intro': 'Explore the complete list of all my public projects and repositories. Use the search below to filter by name, description, language, or topic.',
+
+        // --- Publications (Page & Search) ---
         'all-publications-title': 'All Publications',
         'all-publications-intro': 'Explore the complete list of my scientific publications. Use the search below to filter by title, journal, or keyword.',
         'back-to-home': '← Back to Home',
         'showing_repos': (shown, total) => `Showing ${shown} of ${total} repositories.`,
         'showing_pubs': (shown, total) => `Showing ${shown} of ${total} publications.`,
+        'advanced-search-toggle': 'Advanced Search',
+        'search-journal-label': 'Journal',
+        'search-journal-placeholder': 'E.g., Crop Science',
+        'search-year-start-label': 'From (Year)',
+        'search-year-end-label': 'To (Year)',
+        'search-year-placeholder': 'E.g., 2020',
+        'search-btn': 'Search',
+        'clear-btn': 'Clear Filters',
+        'fetching_pubs': 'Fetching publications...',
+        'no_pubs_found': 'No publications found with the applied filters.',
+        'fetch_pub_error': 'Error loading publications',
+
+        // --- Footer ---
         'footer-bio': 'A data scientist passionate about applying statistics and AI to drive innovation in genetic improvement and agribusiness.',
         'footer-sitemap': 'Sitemap',
         'footer-academic-profiles': 'Academic Profiles',
@@ -232,3 +266,4 @@ const translations = {
         'footer-location': 'Viçosa - MG, Brazil'
     }
 };
+
