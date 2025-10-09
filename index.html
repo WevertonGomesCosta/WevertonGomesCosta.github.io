@@ -587,7 +587,7 @@
         .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
         
         /* --- Classes Utilitárias --- */
-        .small-muted { font-size: 0.82rem; color: var(--text-muted) }
+        .small-muted { font-size: 0.9rem; color: var(--text-muted); padding-left: 20px; }
         .center { display: flex; justify-content: center }
         .hidden { display: none }
         .reveal { opacity: 0; transform: translateY(40px);
@@ -679,7 +679,7 @@
             </div>
             <div class="nav-col-center">
                 <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
-                <a href="#experiencia" class="nav-link" data-key="nav-experience">Experiência</a>
+                <a href="#experiencia" class="nav-link" data-key="nav-experience">Atuação</a>
                 <a href="#servicos" class="nav-link" data-key="nav-services">Serviços</a>
                 <a href="#formacao" class="nav-link" data-key="nav-education">Formação</a>
                 <a href="#projetos" class="nav-link" data-key="nav-projects">Projetos</a>
@@ -707,14 +707,14 @@
         </section>
 
         <section id="experiencia" class="section">
-            <h2 class="reveal" data-key="expertise-title">Áreas de Especialização</h2>
+            <h2 class="reveal" data-key="expertise-title">Áreas de Atuação</h2>
             <div class="grid stagger-children">
                  <div class="card reveal"><span class="icon" role="img" aria-label="DNA">🧬</span><h3 data-key="exp-title1">Genética Quantitativa</h3><p data-key="exp-desc1"></p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Gráfico">📊</span><h3 data-key="exp-title2">Biometria Avançada</h3><p data-key="exp-desc2"></p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Robô">🤖</span><h3 data-key="exp-title3">Machine Learning & IA</h3><p data-key="exp-desc3"></p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Ferramentas">🛠️</span><h3 data-key="exp-title4">Pipelines Reprodutíveis</h3><p data-key="exp-desc4"></p></div>
                 <div class="card reveal"><span class="icon" role="img" aria-label="Planta">🌱</span><h3 data-key="exp-title5">Melhoramento de Plantas</h3><p data-key="exp-desc5"></p></div>
-                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Software GENES</h3><p data-key="exp-desc7"></p></div>
+                <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Softwares e Ferramentas</h3><p data-key="exp-desc7"></p></div>
             </div>
         </section>
 
@@ -750,6 +750,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor1" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc1"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -761,6 +762,7 @@
                             <p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor2" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc2"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -772,6 +774,7 @@
                             <p>Universidade Federal de Viçosa (UFV) — CNPq</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor3" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc3"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -783,6 +786,7 @@
                             <p>EMBRAPA Mandioca e Fruticultura — CNPq</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor4" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc4"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -794,6 +798,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor5" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc5"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -805,6 +810,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor6" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc6"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -816,6 +822,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
+                    <p class="small-muted" data-key="edu-advisor7" style="margin-top: 5px;"></p>
                     <div class="timeline-details" data-key="edu-desc7"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -833,7 +840,13 @@
                     <div class="skeleton-card"></div>
                     <div class="skeleton-card"></div>
                 </div>
-                <div class="reveal load-more-container"><div class="small-muted" id="shown-count">—</div><div class="center"><button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button></div></div>
+                <div class="reveal load-more-container">
+                    <div class="small-muted" id="shown-count">—</div>
+                    <div class="center" style="display: flex; gap: 15px;">
+                        <button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button>
+                        <a href="projetos.html" class="link-btn secondary" data-key="see-all-projects"></a>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -923,10 +936,11 @@
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-grid">
                 <div class="skill-category reveal stagger-children card">
-                    <h3 data-key="skills-cat-1">Linguagens & Desenvolvimento</h3>
+                    <h3 data-key="skills-cat-1">Softwares</h3>
                     <div class="skill-item" data-level="98%"><span class="skill-name" data-key="skill-name-r">R</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="78%"><span class="skill-name" data-key="skill-name-python">Python</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
-                    <div class="skill-item" data-level="40%"><span class="skill-name" data-key="skill-name-html">HTML & CSS</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genes">Software GENES</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="92%"><span class="skill-name" data-key="skill-name-selegen">Software Selegen</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
                 <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-2">Análise & Modelagem</h3>
@@ -937,16 +951,16 @@
                 <div class="skill-category reveal stagger-children card">
                     <h3 data-key="skills-cat-3">Biometria</h3>
                     <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genomic-sel">Seleção Genômica</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
-                    <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-mixed-models">Modelos Mistos & Biometria</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-mixed-models">Modelos Mistos</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="88%"><span class="skill-name" data-key="skill-name-quant-gen">Genética Quantitativa</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="80%"><span class="skill-name" data-key="skill-name-bioinfo">Bioinformática</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
                 <div class="skill-category reveal stagger-children card">
-                    <h3 data-key="skills-cat-4">Ferramentas & Plataformas</h3>
-                    <div class="skill-item" data-level="95%"><span class="skill-name" data-key="skill-name-genes">Software GENES</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <h3 data-key="skills-cat-4">Desenvolvimento e Plataformas</h3>
                     <div class="skill-item" data-level="90%"><span class="skill-name" data-key="skill-name-dataviz">Visualização de Dados</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="65%"><span class="skill-name" data-key="skill-name-git">Git & GitHub</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                     <div class="skill-item" data-level="50%"><span class="skill-name" data-key="skill-name-shiny">Aplicações Interativas (Shiny)</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
+                    <div class="skill-item" data-level="40%"><span class="skill-name" data-key="skill-name-html">HTML & CSS</span><div class="skill-bar-container"><div class="skill-bar"></div></div></div>
                 </div>
             </div>
         </section>
@@ -1036,7 +1050,7 @@
                     <h4 data-key="footer-sitemap">Mapa do Site</h4>
                     <ul>
                         <li><a href="#sobre" data-key="nav-about">Sobre</a></li>
-                        <li><a href="#experiencia" data-key="nav-experience">Experiência</a></li>
+                        <li><a href="#experiencia" data-key="nav-experience">Atuação</a></li>
                         <li><a href="#servicos" data-key="nav-services">Serviços</a></li>
                         <li><a href="#formacao" data-key="nav-education">Formação</a></li>
                     </ul>
@@ -1674,5 +1688,4 @@
 
 </body>
 </html>
-
 

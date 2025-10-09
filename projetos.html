@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <!-- Bloco de Metadados: Informações sobre a página para navegadores e buscadores -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">Projetos | Weverton Gomes da Costa</title>
+    <meta name="description" id="meta-description" content="Explore todos os projetos e repositórios de Weverton Gomes da Costa, pesquisador e cientista de dados.">
+    <meta name="keywords" id="meta-keywords" content="projetos, github, portfólio, R, Python, machine learning, genética">
+    <meta name="author" content="Weverton Gomes da Costa">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
+
+    <!-- Bloco de Estilos (CSS): Toda a estilização da página -->
+    <style>
+        :root {
+            --primary: #10b981; --primary-dark: #059669; --secondary: #3b82f6; --dark: #0f172a; --dark-light: #1e293b; --text: #e2e8f0; --text-muted: #94a3b8; --accent: #f59e0b; --bg-card: rgba(30, 41, 59, 0.5); --border: rgba(148, 163, 184, 0.1); --glow: rgba(16, 185, 129, 0.5); --glass: rgba(255, 255, 255, 0.03); --error: #f44336;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: var(--text); background: var(--dark); min-height: 100vh; overflow-x: hidden; position: relative; cursor: default; }
+        #particle-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        
+        /* --- Navegação e Cabeçalho --- */
+        nav { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 10px 0; }
+        .nav-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 20px; gap: 15px; }
+        .nav-brand { justify-self: start; }
+        .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
+        .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; transition: opacity 0.3s ease; }
+        .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
+        .nav-title-container { text-align: center; }
+        .nav-title { font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0; }
+        .nav-title::before { display: none; }
+        
+        nav.scrolled .nav-title {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .lang-switch { background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
+        .lang-switch:hover { background: var(--primary); color: var(--dark); }
+        .lang-pt.active, .lang-en.active { color: var(--text); font-weight: 700; }
+
+        /* --- Layout e Conteúdo Principal --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .section { margin-bottom: 80px; }
+        h2 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 30px; color: var(--primary); position: relative; padding-left: 20px; }
+        h2::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 30px; background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%); }
+        .section-intro { color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem; line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px; border-left: 3px solid var(--primary); }
+        
+        /* --- Seção de Projetos --- */
+        .sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35); }
+        .controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+        .controls input { flex: 1; min-width: 150px; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass); color: var(--text) }
+        .controls button { padding: 8px 10px; border-radius: 10px; border: none; background: var(--primary); color: #042017; cursor: pointer; }
+        .meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .project-card { background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; transition: all 0.4s ease; }
+        .project-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
+        .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
+        .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
+        .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem; flex-grow: 1; }
+        .project-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted) }
+        .project-topics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+        .topic-tag { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); color: var(--secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+        .topic-tag:hover, .topic-tag.active { background: var(--secondary); color: var(--dark); transform: scale(1.05); }
+        .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
+        .link-btn { padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer; }
+        .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
+        .link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
+        .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
+        
+        /* --- Utilitários e Skeleton --- */
+        .skeleton-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; min-height: 220px; overflow: hidden; position: relative; }
+        .skeleton-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent); animation: shimmer 1.5s infinite linear; }
+        .cta-btn { padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); border: 1px solid transparent; }
+        .cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
+        .back-to-home-container { margin-top: 40px; text-align: center; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); will-change: opacity, transform; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .stagger-children .reveal { transition-delay: calc(var(--stagger-index) * 120ms); }
+        .back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background-color: var(--primary); color: var(--dark); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); }
+        .back-to-top.visible { opacity: 1; visibility: visible; }
+        .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
+        
+        /* --- Rodapé --- */
+        footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border); padding: 60px 20px 40px; text-align: left; margin-top: 80px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; }
+        @media (min-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
+        .footer-column h4 { color: var(--primary); margin-bottom: 15px; font-size: 1.1rem; position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+        .footer-column h4::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 40px; height: 2px; background: var(--primary); }
+        .footer-column p, .footer-column ul li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
+        .footer-column ul { list-style: none; padding: 0; }
+        .footer-column ul li { margin-bottom: 10px; }
+        .footer-column ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; display: flex; align-items: center; gap: 8px; }
+        .footer-column ul li a:hover { color: var(--primary); }
+        .footer-column ul li a svg { width: 16px; height: 16px; flex-shrink: 0; }
+        .footer-column ul li a .icon-img { width: 16px; height: 16px; flex-shrink: 0; background-color: var(--text-muted); -webkit-mask-size: contain; mask-size: contain; -webkit-mask-position: center; mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; transition: background-color 0.3s ease; }
+        .footer-column ul li a:hover .icon-img { background-color: var(--primary); }
+        .icon-licae { -webkit-mask-image: url(LICAE.svg); mask-image: url(LICAE.svg); }
+        .icon-conectagem { -webkit-mask-image: url(ConectaGEM.svg); mask-image: url(ConectaGEM.svg); }
+        .footer-bottom { padding-top: 30px; margin-top: 30px; text-align: center; }
+        .footer-content { max-width: 1200px; margin: 0 auto; }
+        .footer-license { margin: 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+        .footer-license a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
+        .footer-license a:hover { color: var(--primary); }
+        .footer-update { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; }
+        .footer-update svg { width: 14px; height: 14px; }
+
+        /* --- Scrollbar --- */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+    </style>
+</head>
+
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <a href="#" class="back-to-top" data-key-aria-label="back-to-top-label">↑</a>
+    
+    <nav>
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
+                    <span class="nav-brand-text">Weverton G. Costa</span>
+                </a>
+            </div>
+            <div class="nav-title-container">
+                <h2 class="nav-title" data-key="all-projects-title"></h2>
+            </div>
+            <div class="nav-actions">
+                 <button class="lang-switch" onclick="toggleLanguage()" data-key-title="change-lang-title">
+                    <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section id="todos-projetos" class="section">
+            <h2 class="reveal" data-key="all-projects-title">Todos os Projetos & Repositórios</h2>
+            <p class="section-intro reveal" data-key="all-projects-intro"></p>
+            
+            <div class="sidebar reveal">
+                <div class="controls"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
+                <div class="meta" id="projects-meta"></div>
+                <div class="projects-grid stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </div>
+            
+            <div class="back-to-home-container reveal">
+                <a href="index.html" class="cta-btn secondary" data-key="back-to-home">← Voltar para o Início</a>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="reveal">
+        <div class="footer-content">
+             <div class="footer-grid">
+                <div class="footer-column">
+                    <h4>Weverton G. Costa</h4>
+                    <p data-key="footer-bio"></p>
+                    <ul style="margin-top: 15px;">
+                         <li><a href="mailto:wevertonufv@gmail.com"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd"></path></svg>wevertonufv@gmail.com</a></li>
+                         <li data-key="footer-location" style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); padding-top:10px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg> Viçosa - MG, Brasil</li>
+                    </ul>
+                </div>
+                 <div class="footer-column">
+                    <h4 data-key="footer-academic-profiles">Perfis Acadêmicos</h4>
+                     <ul>
+                        <li><a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M97.872 434.733c-46.338-94.949-73.906-152.29-73.906-153.713c0-2.322 2.831-2 30.672 3.46c48.965 9.614 75.126 12.326 118.735 12.342c57.697.016 104.68-9.122 141.185-27.484c19.311-9.715 30.925-18.327 40.437-29.993c11.716-14.378 15.48-24.28 15.615-40.947c.118-15.852-2.018-24.211-11.19-43.608c-3.63-7.665-6.817-16.463-7.122-19.55c-.475-4.968-.068-5.68 3.595-6.104c8.003-.948 47.507 37.403 62.055 60.241c25.076 39.386 27.111 81.993 5.884 123.195c-13.04 25.314-27.45 42.828-51.577 62.734c-40.099 33.062-86.708 56.086-151.069 74.635c-34.57 9.97-90.471 22.059-101.984 22.059c-2.44 0-7.02-8.003-21.296-37.283l-.034.015zm12.904-153.121c-45.016-5.832-82.79-10.903-83.96-11.275c-2-.644-9.155-24.516-13.191-43.947c-1.017-4.917-2.51-17.939-3.323-28.958c-3.63-49.17 7.069-83.166 35.74-113.735C94.583 31.985 198.516 25.694 315.777 67.37c20.582 7.325 28.755 12.411 24.975 15.581c-2.797 2.34-21.753 2.306-54.51-.102c-51.204-3.764-90.183 3.357-110.274 20.176c-30.588 25.602-25.924 81.724 13.53 162.682c4.273 8.766 8.58 17.345 9.563 19.09c2.29 4.019.628 7.75-3.357 7.563c-1.697-.081-39.915-4.912-84.929-10.746zm151.016-44.047c-35.928-6.46-68.227-28.74-78.654-54.222c-5.002-12.241-4.765-28.213.576-37.774c4.832-8.648 17.31-18.65 28.484-22.839c18.6-6.968 51.17-4.188 74.907 6.41c22.533 10.055 42.507 27.738 49.932 44.184c9.53 21.109 1.593 44.66-18.82 55.901c-13.531 7.443-39.827 11.326-56.443 8.341z"></path></svg>Lattes</a></li>
+                        <li><a href="https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"></path></svg>Google Scholar</a></li>
+                        <li><a href="https://orcid.org/0000-003-0742-5936" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M336.62 194.538c-7.13-3.328-13.866-5.56-20.253-6.614c-6.365-1.095-16.574-1.612-30.71-1.612h-36.704v152.747h37.634c14.673 0 26.081-1.013 34.224-3.017c8.142-2.004 14.921-4.526 20.356-7.626a69.448 69.448 0 0 0 14.942-11.388c14.488-14.714 21.742-33.273 21.742-55.717c0-22.052-7.44-40.052-22.341-53.982c-5.498-5.166-11.822-9.444-18.89-12.793zM256 8C119.022 8 8 119.042 8 256s111.022 248 248 248s248-111.042 248-248S392.978 8 256 8m-82.336 357.513h-29.389V160.148h29.389zM158.95 138.696c-11.14 0-20.213-9.01-20.213-20.212c0-11.118 9.052-20.191 20.213-20.191c11.18 0 20.232 9.052 20.232 20.191a20.194 20.194 0 0 1-20.232 20.212m241.386 163.597c-5.29 12.545-12.834 23.581-22.65 33.088c-9.982 9.837-21.597 17.194-34.844 22.196c-7.75 3.017-14.839 5.063-21.307 6.117c-6.49 1.013-18.828 1.509-37.076 1.509h-64.956V160.148h69.233c27.962 0 50.034 4.154 66.32 12.545c16.265 8.37 29.181 20.728 38.792 36.972c9.61 16.265 14.425 34.018 14.425 53.196c.023 13.765-2.666 26.908-7.936 39.432z"></path></svg>ORCID</a></li>
+                    </ul>
+                 </div>
+                 <div class="footer-column">
+                    <h4 data-key="footer-professional-profiles">Redes e Perfis</h4>
+                     <ul>
+                        <li><a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>GitHub</a></li>
+                        <li><a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg>LinkedIn</a></li>
+                        <li><a href="https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/" target="_blank" rel="noopener"><span class="icon-img icon-licae" aria-label="Logo LICAE"></span>LICAE/UFV</a></li>
+                        <li><a href="https://www.conectagem.com/sobre" target="_blank" rel="noopener"><span class="icon-img icon-conectagem" aria-label="Logo Conecta GEM"></span>Conecta GEM</a></li>
+                    </ul>
+                 </div>
+                <div class="footer-column">
+                    <h4 data-key="footer-sitemap">Mapa do Site</h4>
+                    <ul>
+                        <li><a href="index.html#sobre" data-key="nav-about">Sobre</a></li>
+                        <li><a href="index.html#experiencia" data-key="nav-experience">Experiência</a></li>
+                        <li><a href="index.html#servicos" data-key="nav-services">Serviços</a></li>
+                        <li><a href="index.html#formacao" data-key="nav-education">Formação</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4 style="visibility: hidden;">&nbsp;</h4>
+                    <ul>
+                        <li><a href="index.html#projetos" data-key="nav-projects">Projetos</a></li>
+                        <li><a href="index.html#publicacoes" data-key="nav-publications">Publicações</a></li>
+                        <li><a href="index.html#habilidades" data-key="nav-skills">Habilidades</a></li>
+                        <li><a href="index.html#contato" data-key="nav-contact">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                 <div class="footer-license" style="margin-top: 20px;">
+                    <p><a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" data-key="footer-license-text-short">Licença CC BY-SA 4.0</a></p>
+                </div>
+                <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
+                <div class="footer-update">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.515 1.019A7 7 0 1 0 8 15a7 7 0 0 0 .515-13.981zM8 14a6 6 0 1 1 0-12 6 6 0 0 1 0 12z"></path><path d="M8.5 5.5a.5.5 0 0 0-1 0v2.5h-2a.5.5 0 0 0 0 1h2.5V5.5z"></path></svg>
+                    <span><span data-key="footer-update-text">Última atualização:</span> <span id="last-updated-date"></span></span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="translations.js"></script>
+    <script>
+        let currentLang = 'pt';
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+            
+            document.title = translations[lang]['projects-page-title'];
+            document.querySelector('meta[name="description"]').setAttribute('content', translations[lang]['projects-meta-description']);
+            document.querySelector('meta[name="keywords"]').setAttribute('content', translations[lang]['projects-meta-keywords']);
+            
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.dataset.key;
+                if (translations[lang][key]) el.innerHTML = translations[lang][key];
+            });
+
+            document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
+            document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
+            document.querySelectorAll('[data-key-aria-label]').forEach(el => el.setAttribute('aria-label', translations[lang][el.dataset.keyAriaLabel]));
+            
+            const isPt = lang === 'pt';
+            document.querySelectorAll('.lang-switch').forEach(button => {
+                button.querySelector('.lang-pt').classList.toggle('active', isPt);
+                button.querySelector('.lang-en').classList.toggle('active', !isPt);
+            });
+            
+            if (window.githubScript?.renderAll) window.githubScript.renderAll();
+        }
+
+        window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('pt');
+            
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            document.getElementById('last-updated-date').textContent = new Date(document.lastModified).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            
+            const backToTopButton = document.querySelector('.back-to-top');
+            const nav = document.querySelector('nav');
+            window.addEventListener('scroll', () => {
+                nav.classList.toggle('scrolled', window.scrollY > 50);
+                backToTopButton.classList.toggle('visible', window.scrollY > 300);
+            });
+
+            // Script de Fundo com Partículas
+            const canvas = document.getElementById('particle-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let particles = [];
+                const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
+
+                function setCanvasSize() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+
+                class Particle {
+                    constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; }
+                    draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); }
+                    update() {
+                        if (this.x > canvas.width || this.x < 0) this.dX = -this.dX;
+                        if (this.y > canvas.height || this.y < 0) this.dY = -this.dY;
+                        this.x += this.dX; this.y += this.dY;
+                        this.draw();
+                    }
+                }
+
+                function init() {
+                    particles = [];
+                    let density = (canvas.width * canvas.height) / 15000;
+                    for (let i = 0; i < Math.min(density, 120); i++) {
+                        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1));
+                    }
+                }
+
+                function connect() {
+                    for (let a = 0; a < particles.length; a++) {
+                        for (let b = a; b < particles.length; b++) {
+                            let d = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
+                            if (d < 120) {
+                                ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (d / 120)) * 0.2 })`;
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(particles[a].x, particles[a].y);
+                                ctx.lineTo(particles[b].x, particles[b].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => p.update());
+                    connect();
+                }
+
+                window.addEventListener('resize', debounce(() => { setCanvasSize(); init(); }));
+                setCanvasSize();
+                init();
+                animate();
+            }
+        });
+
+        // Script para buscar repositórios do GitHub
+        window.githubScript = (function() {
+            const GITHUB_USER = 'WevertonGomesCosta'; const CACHE_KEY = 'gh_repos_cache_v9'; const CACHE_TS_KEY = 'gh_repos_cache_ts_v9'; const CACHE_TTL = 86400000; const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
+            let allRepos = []; let currentFilter = '';
+            const listEl = document.getElementById('projects-list'); const metaEl = document.getElementById('projects-meta'); const searchEl = document.getElementById('project-search'); const clearBtn = document.getElementById('clear-btn');
+            function readCache() { try { const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0); if (Date.now() - ts < CACHE_TTL) return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } catch (e) { console.warn('Falha ao ler cache', e); } return null; }
+            function writeCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch (e) { console.warn('Falha ao escrever cache', e); } }
+            async function fetchAllPages(url) { let r = [], n = url; while (n) { const t = await fetch(`${GITHUB_PROXY_URL}${encodeURIComponent(n)}`); if (!t.ok) throw new Error(`API do GitHub falhou: ${t.status}`); const a = await t.json(); r = r.concat(a); const e = t.headers.get("Link"); n = null; if (e) { const o = e.split(",").find(t => t.includes('rel="next"')); if (o) { const c = o.match(/<([^>]+)>/); if (c) n = c[1]; } } } return r; }
+            async function fetchRepos() {
+                metaEl.textContent = translations[currentLang].fetching_repos;
+                const cache = readCache();
+                if (cache && cache.length) { allRepos = cache; renderAll(); return; }
+                try {
+                    const data = await fetchAllPages(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100`);
+                    allRepos = data.map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [], has_pages: r.has_pages, homepage: r.homepage }));
+                    writeCache(allRepos);
+                    renderAll();
+                } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; renderAll(); }
+            }
+            function sortRepos(arr) { return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)); }
+            function createCard(repo) {
+                const l = currentLang;
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.setAttribute('role', 'listitem');
+                // Prioriza a URL da homepage do repositório, depois verifica o GitHub Pages
+                const siteUrl = repo.homepage || (repo.has_pages ? `https://${GITHUB_USER}.github.io/${repo.name}/` : null);
+                const liveSiteText = l === 'pt' ? 'Ver Site' : 'View Site';
+                const repoText = l === 'pt' ? 'Repositório' : 'Repository';
+                let actionsHtml = '';
+                if (siteUrl) {
+                    actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${translations[l].live_site_btn || liveSiteText}</a>`;
+                    actionsHtml += `<a class="link-btn secondary" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
+                } else {
+                    actionsHtml += `<a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
+                }
+                card.innerHTML = `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span>⭐ ${repo.stargazers_count}</span><span>🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[l].no_description)}</p><div class="project-topics"></div><div class="project-meta" style="margin-top: auto;"><span>${escapeHtml(repo.language || '—')}</span></div><div class="actions">${actionsHtml}</div>`;
+                const topics = card.querySelector('.project-topics');
+                if (topics && repo.topics?.length) repo.topics.slice(0, 4).forEach(t => { const tag = document.createElement('span'); tag.className = 'topic-tag'; tag.textContent = t; topics.appendChild(tag); });
+                return card;
+            }
+            function render() { listEl.innerHTML = ''; const filter = currentFilter.trim().toLowerCase(); const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos; const sorted = sortRepos(filtered); if (sorted.length === 0 && allRepos.length > 0) { listEl.innerHTML = `<div class="project-card" style="grid-column: 1 / -1;"><p class="project-desc">${translations[currentLang].no_repos_found}</p></div>`; } else { sorted.forEach(repo => listEl.appendChild(createCard(repo))); } metaEl.textContent = translations[currentLang].showing_repos(sorted.length, allRepos.length); }
+            function renderAll() { render(); metaEl.textContent = translations[currentLang].showing_repos(allRepos.length, allRepos.length); }
+            function titleCase(str) { return (str || '').replace(/[-_]/g, ' ').replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase()); }
+            function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]); }
+            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
+            searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
+            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; render(); searchEl.focus(); });
+            fetchRepos();
+            return { renderAll };
+        })();
+    </script>
+</body>
+</html>
+
