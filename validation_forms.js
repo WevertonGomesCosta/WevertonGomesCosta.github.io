@@ -1,6 +1,8 @@
 /**
- * Este script lida com a validação do formulário de contato e o envio assíncrono.
- * Ele é executado quando o DOM está totalmente carregado.
+ * @file validation_forms.js
+ * @description Este script lida com a validação do formulário de contato e o envio assíncrono. Ele é executado quando o DOM está totalmente carregado.
+ * @author Weverton C.
+ * @version 2.2.0
  *
  * Dependências:
  * - Variáveis globais `translations` e `currentLang` para mensagens de texto.
