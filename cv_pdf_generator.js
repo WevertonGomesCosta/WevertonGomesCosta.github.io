@@ -1,4 +1,4 @@
-// --- Script para Geração de CV em PDF (Versão 7.0 - Estrutura Refatorada) ---
+// --- Script para Geração de CV em PDF (Versão 8.0 - Melhorias de Layout e Estrutura) ---
 
 (function() {
     /**
@@ -19,6 +19,7 @@
         const button = document.getElementById('download-cv-btn');
         const originalButtonHTML = button.innerHTML;
         const toast = document.getElementById('toast-notification');
+        const themeColor = '#10b981';
 
         // --- 1. Preparar UI ---
         button.innerHTML = `<svg class="animate-spin" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 6.87347L16.0659 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.25 12L17.75 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 17.1265L16.0659 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 17.75V19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 17.1265L7.9341 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.75 12L6.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 6.87347L7.9341 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> <span>Gerando...</span>`;
@@ -39,6 +40,7 @@
             const margin = 40;
             const max_width = page_width - margin * 2;
             let y = margin;
+            const item_gap = 15;
 
             const checkPageBreak = (neededHeight) => {
                 if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
@@ -63,13 +65,18 @@
 
             // --- 4. Adicionar Cabeçalho ---
             if (avatarDataUrl) {
-                doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80);
+                doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
             }
-            doc.setFontSize(22).setFont('helvetica', 'bold').setTextColor(0).text(document.getElementById('hero-name').textContent, margin + 95, y + 25);
-            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text("Viçosa - Minas Gerais - Brasil", margin + 95, y + 40);
-            doc.text("Email: wevertonufv@gmail.com", margin + 95, y + 55);
-            doc.setTextColor(40, 40, 255).textWithLink("LinkedIn: linkedin.com/in/wevertoncosta", margin + 95, y + 70, { url: 'https://linkedin.com/in/wevertoncosta' });
-            y += 105;
+            doc.setFontSize(22).setFont('helvetica', 'bold').setTextColor(0).text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
+            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
+            
+            doc.setFont('helvetica', 'bold').text("Email:", margin + 115, y + 70);
+            doc.setFont('helvetica', 'normal').text("wevertonufv@gmail.com", margin + 155, y + 70);
+
+            doc.setFont('helvetica', 'bold').text("LinkedIn:", margin + 115, y + 85);
+            doc.setFont('helvetica', 'normal').setTextColor(40, 40, 255).textWithLink("linkedin.com/in/wevertoncosta", margin + 165, y + 85, { url: 'https://linkedin.com/in/wevertoncosta' });
+            
+            y += 120;
 
             // --- 5. Funções Auxiliares para Seções ---
             const addSectionTitle = (title) => {
@@ -79,16 +86,16 @@
                 doc.text(title.toUpperCase(), margin, y);
                 y += 8;
                 doc.setLineWidth(1);
-                doc.setDrawColor('#10b981');
+                doc.setDrawColor(themeColor);
                 doc.line(margin, y, page_width - margin, y);
                 y += 20;
             };
 
             const addJustifiedText = (content, options = {}) => {
-                const { fontSize = 10, x = margin, width = max_width } = options;
+                const { fontSize = 10, x = margin, width = max_width, color = 80 } = options;
                 if (!content || content.trim() === "") return;
                 
-                doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(80);
+                doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
                 const cleanedContent = stripHtml(content).replace(/\s+/g, ' ').trim();
                 const lines = doc.splitTextToSize(cleanedContent, width);
                 const textHeight = lines.length * (fontSize * 1.2);
@@ -111,25 +118,36 @@
                 const title = card.querySelector('h3').innerText;
                 const description = card.querySelector('p').innerText;
                 checkPageBreak(50);
-                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(0);
+                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 doc.text(`• ${title}`, margin, y);
                 y += 15;
                 addJustifiedText(description, { x: margin + 10, width: max_width - 10 });
-                y += 8;
+                y += item_gap / 2;
             });
 
             // HABILIDADES
             addSectionTitle(pdfStrings['skills-title'] || 'HABILIDADES TÉCNICAS');
-            const skills = Array.from(document.querySelectorAll('.skill-name')).map(s => `• ${s.innerText.trim()}`);
-            const midpoint = Math.ceil(skills.length / 2);
-            const col1 = skills.slice(0, midpoint);
-            const col2 = skills.slice(midpoint);
-            const colHeight = Math.max(col1.length, col2.length) * 14;
-            checkPageBreak(colHeight);
-            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80);
-            doc.text(col1, margin, y);
-            doc.text(col2, page_width / 2, y);
-            y += colHeight;
+            const skillsElements = document.querySelectorAll('#habilidades .skill-name, #skills .skill-name');
+            if (skillsElements.length > 0) {
+                const skills = Array.from(skillsElements).map(s => `• ${s.innerText.trim()}`);
+                const half = Math.ceil(skills.length / 2);
+                const column1 = skills.slice(0, half);
+                const column2 = skills.slice(half);
+
+                const initialY = y;
+                const lineHeight = 14;
+                checkPageBreak(column1.length * lineHeight);
+
+                doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80);
+                doc.text(column1, margin, y);
+                
+                if (column2.length > 0) {
+                    doc.text(column2, margin + (max_width / 2), initialY);
+                }
+                
+                y += Math.max(column1.length, column2.length) * lineHeight + 10;
+            }
+            
 
             // ÁREAS DE ATUAÇÃO
             addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ESPECIALIZAÇÃO');
@@ -137,9 +155,9 @@
                  const title = `• ${card.querySelector('h3').innerText}:`;
                  const description = card.querySelector('p').innerText;
                  checkPageBreak(60);
-                 const initialY = y;
-                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(0);
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                  const titleLines = doc.splitTextToSize(title, max_width);
+                 const initialY = y;
                  doc.text(titleLines, margin, y);
                  y += titleLines.length * 12;
 
@@ -151,7 +169,7 @@
                      y = initialY;
                  }
                  addJustifiedText(description, { x: textX, width: textWidth });
-                 y += 10;
+                 y += item_gap;
             });
             
             // FORMAÇÃO
@@ -166,28 +184,29 @@
 
                 doc.setFontSize(11).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
                 y += 14;
-                doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text(date, margin, y);
+                doc.setFontSize(10).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
                 y += 14;
-                doc.setFont('helvetica', 'italic').text(institution, margin, y);
+                doc.setFont('helvetica', 'normal').setTextColor(100).text(date, margin, y);
                 y += 14;
+                
                 if(advisor){
                     const advisorLines = doc.splitTextToSize(stripHtml(advisor), max_width);
                     doc.setFont('helvetica', 'normal').text(advisorLines, margin, y);
                     y += advisorLines.length * 14;
                 }
                 addJustifiedText(details, { fontSize: 9 });
-                y += 5;
+                y += item_gap;
             });
 
             // PROJETOS
             addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
             (window.githubScript?.allRepos || []).slice(0, 3).forEach(repo => {
                  checkPageBreak(50);
-                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(0);
-                 doc.text(`• ${repo.name}`, margin, y);
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                 doc.text(`• ${repo.name.replace(/[-_]/g, ' ')}`, margin, y);
                  y += 15;
                  addJustifiedText(repo.description, { x: margin + 10, width: max_width - 10 });
-                 y += 8;
+                 y += item_gap / 2;
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
             doc.textWithLink("Para mais projetos, acesse meu perfil no GitHub.", margin, y, { url: 'https://github.com/WevertonGomesCosta' });
@@ -199,11 +218,14 @@
                 const citation = art.cited_by?.value ? `\nCitado ${art.cited_by.value} vezes` : '';
                 const fullText = `${art.publication}${citation}`;
                 checkPageBreak(60);
-                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(0);
-                doc.text(`• ${art.title}`, margin, y);
-                y += 15;
-                addJustifiedText(fullText, { x: margin + 10, width: max_width - 10 });
-                y += 8;
+                
+                const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
+                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                doc.text(titleLines, margin, y);
+                y += titleLines.length * 12 + 5;
+
+                addJustifiedText(fullText, { x: margin + 10, width: max_width - 10, fontSize: 9 });
+                y += item_gap / 2;
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
             doc.textWithLink("Para mais publicações, acesse meu perfil no Google Scholar.", margin, y, { url: 'https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ' });
