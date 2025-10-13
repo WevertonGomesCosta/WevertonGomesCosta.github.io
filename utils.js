@@ -2,7 +2,7 @@
  * @file utils.js
  * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário e busca de repositórios do GitHub.
  * @author Weverton C.
- * @version 6.0.0
+ * @version 7.0.0
  */
 
 // =================================================================================
@@ -236,12 +236,6 @@ const GithubReposModule = {
     config: {},
 
     // --- Funções Utilitárias ---
-    getFallbackRepos: () => [
-        { "name": "Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava", "html_url": "https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava", "description": "This website is a project for analysis of the Genomic Selection for Drought Tolerance Using Genome Wide GBS and/or DART in Cassava by EMBRAPA Mandioca.", "language": "R", "stargazers_count": 2, "forks_count": 0, "updated_at": "2022-10-20T17:47:16Z", "topics": ["cassava", "eda", "gblup", "genomic-selection", "mixed-models", "multi-environment", "rr-blup", "single-environment"] },
-        { "name": "Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "html_url": "https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow", "description": "Mask R-CNN for object detection and instance segmentation on Keras and TensorFlow", "language": "Python", "stargazers_count": 1, "forks_count": 1, "updated_at": "2022-12-01T14:00:58Z", "topics": [] },
-        { "name": "Integrating-nir-genomic-kernel", "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel", "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-08-29T17:16:37Z", "topics": [] },
-        { "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "html_url": "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro", "description": "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativos.", "language": "R", "stargazers_count": 0, "forks_count": 0, "updated_at": "2025-07-09T11:55:40Z", "topics": ["breeding", "coffee", "genetics", "machine-learning", "neural-network"] }
-    ],
     titleCase: (str) => !str ? '' : str.replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
 
@@ -308,7 +302,8 @@ const GithubReposModule = {
         } catch (err) {
             console.error("Falha ao buscar repositórios do GitHub:", err);
             this.updateMetaTextSafely('fetch_error', 'Erro ao buscar. Usando dados de fallback.');
-            this.state.allRepos = this.getFallbackRepos();
+            // MODIFICADO: Usa o fallback do novo arquivo global
+            this.state.allRepos = window.fallbackData?.githubRepos || [];
         } finally {
             this.state.isFetching = false;
             this.filterAndRender();
@@ -455,5 +450,21 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-});
 
+    // Inicializa o módulo do Scholar com configurações diferentes dependendo da página
+    if (document.getElementById('publicacoes-grid')) {
+        if (document.getElementById('interactive-scholar-chart-container')) {
+            // Página de Início (com métricas e gráfico)
+            ScholarModule.init({
+                isPaginated: true,
+                initialCount: 3,
+                incrementCount: 3
+            });
+        } else {
+            // Página de Publicações (lista completa)
+            ScholarModule.init({
+                isPaginated: false,
+            });
+        }
+    }
+});
