@@ -340,17 +340,7 @@
 
     <!-- Load the main script that contains all logic -->
     <script src="translations.js"></script>
-    <script src="particulas.js"></script>
-        <script>
-        // Manually update the dates on this page
-        document.getElementById('update-date').textContent = new Date().toLocaleDateString('pt-BR', {
-            day: 'numeric', month: 'long', year: 'numeric'
-        });
-        document.getElementById('copyright-year').textContent = new Date().getFullYear();
-        document.getElementById('last-updated-date').textContent = new Date(document.lastModified).toLocaleDateString('pt-BR', {
-            day: 'numeric', month: 'long', year: 'numeric'
-        });
-    </script>
+    <script src="utils.js"></script>
 </body>
 </html>
 
