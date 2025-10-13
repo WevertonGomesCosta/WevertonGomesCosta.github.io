@@ -2,8 +2,9 @@
  * @file utils.js
  * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário, 
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
+ * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 8.3.0
+ * @version 9.0.0
  */
 
 // =================================================================================
@@ -13,19 +14,13 @@ const PageSetup = {
     init() {
         this.updateDates();
     },
-
-    /**
-     * Atualiza dinamicamente as datas no rodapé da página.
-     */
     updateDates() {
         const copyrightYearEl = document.getElementById('copyright-year');
         if (copyrightYearEl) {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
-
         const lastUpdatedEl = document.getElementById('last-updated-date');
         if (lastUpdatedEl) {
-            // Usa a data do documento se disponível, senão a data atual como fallback.
             const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
             lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
                 day: 'numeric',
@@ -35,7 +30,6 @@ const PageSetup = {
         }
     }
 };
-
 
 // =================================================================================
 // Módulo: Fundo com Partículas
@@ -224,91 +218,22 @@ const ContactForm = {
     }
 };
 
-
 // =================================================================================
-// Módulo: Repositórios do GitHub
+// Módulo: Repositórios do GitHub (MODO FALLBACK)
 // =================================================================================
 const GithubReposModule = {
-    GITHUB_USER: 'WevertonGomesCosta',
-    CACHE_VERSION: 'v13',
-    GITHUB_PROXY_URL: 'https://corsproxy.io/?',
-    state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '', isFetching: false, lang: 'pt', translations: {} },
+    state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '', lang: 'pt', translations: {} },
     config: {},
     titleCase: (str) => !str ? '' : str.replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
-    readCache() {
-        try {
-            const CACHE_KEY = `gh_repos_cache_${this.CACHE_VERSION}`;
-            const CACHE_TS_KEY = `gh_repos_cache_ts_${this.CACHE_VERSION}`;
-            const CACHE_TTL = 1000 * 60 * 60 * 24;
-            const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0);
-            if (Date.now() - ts < CACHE_TTL) return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-        } catch (e) { console.warn('Falha ao ler cache de repositórios:', e); }
-        return null;
-    },
-    writeCache(data) {
-        try {
-            const CACHE_KEY = `gh_repos_cache_${this.CACHE_VERSION}`;
-            const CACHE_TS_KEY = `gh_repos_cache_ts_${this.CACHE_VERSION}`;
-            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-            localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
-        } catch (e) { console.warn('Falha ao escrever no cache de repositórios:', e); }
-    },
-    async fetchAllPages(url) {
-        let results = [], nextUrl = url;
-        while (nextUrl) {
-            const response = await fetch(`${this.GITHUB_PROXY_URL}${encodeURIComponent(nextUrl)}`);
-            if (!response.ok) throw new Error(`API do GitHub falhou: ${response.status}`);
-            const data = await response.json();
-            results = results.concat(data);
-            const linkHeader = response.headers.get('Link');
-            nextUrl = null;
-            if (linkHeader) {
-                const nextLink = linkHeader.split(',').find(s => s.includes('rel="next"'));
-                if (nextLink) {
-                    const match = nextLink.match(/<([^>]+)>/);
-                    if (match) nextUrl = match[1];
-                }
-            }
-        }
-        return results;
-    },
-    async fetchRepos() {
-        if (this.state.isFetching) return;
-        this.state.isFetching = true;
-        this.updateMetaTextSafely('fetching_repos', 'Buscando repositórios...');
-
-        const cachedRepos = this.readCache();
-        if (cachedRepos && cachedRepos.length > 0) {
-            this.state.allRepos = cachedRepos;
-            this.updateMetaTextSafely('loaded_repos_cache', `Carregado ${cachedRepos.length} repositórios do cache.`, cachedRepos.length);
-            this.state.isFetching = false;
-            this.filterAndRender();
-            return;
-        }
-
-        try {
-            const url = `https://api.github.com/users/${this.GITHUB_USER}/repos?per_page=100`;
-            const data = await this.fetchAllPages(url);
-            this.state.allRepos = data.map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [], has_pages: r.has_pages, homepage: r.homepage }));
-            this.writeCache(this.state.allRepos);
-            this.updateMetaTextSafely('found_repos', `Encontrado ${this.state.allRepos.length} repositórios.`, this.state.allRepos.length);
-        } catch (err) {
-            console.error("Falha ao buscar repositórios do GitHub:", err);
-            this.updateMetaTextSafely('fetch_error', 'Erro ao buscar. Usando dados de fallback.');
-            this.state.allRepos = window.fallbackData?.githubRepos || [];
-        } finally {
-            this.state.isFetching = false;
-            this.filterAndRender();
-        }
-    },
+    
     createCard(repo) {
         const card = document.createElement('div');
         card.className = 'project-card card';
         card.setAttribute('role', 'listitem');
         const { lang, translations } = this.state;
         const trans = translations[lang] || {};
-        const siteUrl = repo.homepage || (repo.has_pages ? `https://${this.GITHUB_USER}.github.io/${repo.name}/` : null);
+        const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
 
         let actionsHtml = '';
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${trans['repo-live-site'] || 'Ver Site'}</a>`;
@@ -346,7 +271,7 @@ const GithubReposModule = {
         const trans = this.state.translations[this.state.lang] || {};
         const reposToDisplay = this.state.filteredRepos.slice(0, this.state.showingCount);
 
-        if (reposToDisplay.length === 0 && !this.state.isFetching) {
+        if (reposToDisplay.length === 0) {
             this.config.listEl.innerHTML = `<div class="project-card"><p>${trans.no_repos_found || 'Nenhum repositório encontrado.'}</p></div>`;
         } else {
             reposToDisplay.forEach(repo => this.config.listEl.appendChild(this.createCard(repo)));
@@ -403,23 +328,24 @@ const GithubReposModule = {
         this.state.lang = window.currentLang || 'pt';
         this.state.translations = window.translations || { pt: {} };
 
+        // Carrega dados diretamente do fallback
+        this.state.allRepos = window.fallbackData?.githubRepos || [];
+        this.updateMetaTextSafely('loaded_repos_fallback', `Carregado ${this.state.allRepos.length} repositórios.`, this.state.allRepos.length);
+        this.filterAndRender();
+
         if (this.config.searchEl) this.config.searchEl.addEventListener('input', this.debounce(e => { this.state.currentFilter = e.target.value; this.filterAndRender(); }));
         if (this.config.clearBtnEl) this.config.clearBtnEl.addEventListener('click', () => { if (this.config.searchEl) this.config.searchEl.value = ''; this.state.currentFilter = ''; this.filterAndRender(); if (this.config.searchEl) this.config.searchEl.focus(); });
         if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); });
         
         window.githubScript_proj = { renderAll: this.reRenderWithCurrentLang.bind(this) };
-
-        this.fetchRepos();
     }
 };
 
-
 // =================================================================================
-// MÓDULO: GOOGLE SCHOLAR E PUBLICAÇÕES
+// MÓDULO: GOOGLE SCHOLAR E PUBLICAÇÕES (MODO FALLBACK)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
-    const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
     const initialPubsToShow = 3;
     let allArticles = [];
     let citationGraphData = [];
@@ -466,8 +392,7 @@ const scholarScript = (function() {
         }, 20);
     }
     
-    async function updateScholarMetrics() {
-        console.log("Forçando o uso de dados de fallback para métricas.");
+    function updateScholarMetrics() {
         if (window.fallbackData?.scholarData?.profile) {
             const { table, graph } = window.fallbackData.scholarData.profile.cited_by;
             UI.citTotal().textContent = table[0].citations.all;
@@ -622,16 +547,16 @@ const scholarScript = (function() {
         }
     }
 
-    async function initializePublications() {
+    function initializePublications() {
         const grid = UI.pubsGrid();
         if (!grid) return;
         grid.innerHTML = Array(isIndexPage ? 3 : 6).fill('<div class="skeleton-card"></div>').join('');
         
-        console.log("Forçando o uso de dados de fallback para publicações.");
         if (window.fallbackData?.scholarData?.articles) {
             allArticles = window.fallbackData.scholarData.articles;
         } else {
-            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">${translations[currentLang].fetch_pub_error}: Dados de fallback não encontrados.</div>`;
+            console.error("Dados de fallback para publicações não encontrados.");
+            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">${translations[currentLang].fetch_pub_error}</div>`;
             return;
         }
         renderPublications();
@@ -668,7 +593,7 @@ const scholarScript = (function() {
         }
     }
 
-    async function init() {
+    function init() {
         if (!document.getElementById('publicacoes-grid')) return; 
 
         isIndexPage = !!UI.chartContainer();
@@ -676,11 +601,10 @@ const scholarScript = (function() {
         
         attachEventListeners();
         
+        initializePublications();
         if (isIndexPage) {
-            await Promise.all([ updateScholarMetrics(), initializePublications() ]);
+            updateScholarMetrics();
             renderInteractiveChart(citationGraphData, allArticles);
-        } else {
-            await initializePublications();
         }
     }
     
@@ -689,7 +613,6 @@ const scholarScript = (function() {
         allArticles: () => allArticles 
     };
 })();
-
 
 // =================================================================================
 // MÓDULO: GERADOR DE CV EM PDF
@@ -792,7 +715,6 @@ const CvPdfGenerator = {
                 y += textHeight + 5;
             };
             
-            // --- SECTIONS ---
             addSectionTitle(pdfStrings['about-title'] || 'SOBRE MIM');
             addJustifiedText(langContent['about-p1']);
             addJustifiedText(langContent['about-p2']);
@@ -872,7 +794,6 @@ const CvPdfGenerator = {
                 y += item_gap;
             });
 
-            // MODIFICADO: Seção de Projetos com links
             addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
             (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
                 checkPageBreak(60);
@@ -898,11 +819,9 @@ const CvPdfGenerator = {
             doc.textWithLink("Para mais projetos, acesse a página de projetos do site.", margin, y, { url: projectsPageUrl });
             y += 20;
             
-            // MODIFICADO: Seção de Publicações com links DOI
             addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
             (scholarScript.allArticles() || []).slice(0, 3).forEach(art => {
                 checkPageBreak(80);
-            
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
                 doc.text(titleLines, margin, y);
@@ -930,7 +849,6 @@ const CvPdfGenerator = {
                     doc.textWithLink(art.doi, margin + 10 + doiLabelWidth, y, { url: art.doiLink });
                     y += 12;
                 }
-            
                 y += item_gap / 2; 
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
@@ -957,7 +875,6 @@ const CvPdfGenerator = {
         }
     }
 };
-
 
 // =================================================================================
 // Inicializador Global
