@@ -1223,4 +1223,3 @@ window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
 
 // --- Initialize the Application ---
 App.init();
-

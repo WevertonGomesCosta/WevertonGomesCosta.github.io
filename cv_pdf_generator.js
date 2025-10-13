@@ -258,4 +258,3 @@
         if (downloadBtn) downloadBtn.addEventListener('click', (e) => { e.preventDefault(); generateCvPdf(); });
     });
 })();
-
