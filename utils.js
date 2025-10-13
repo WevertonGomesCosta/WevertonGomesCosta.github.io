@@ -2,8 +2,39 @@
  * @file utils.js
  * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário e busca de repositórios do GitHub.
  * @author Weverton C.
- * @version 5.0.0
+ * @version 6.0.0
  */
+
+// =================================================================================
+// Módulo: Configurações Gerais da Página
+// =================================================================================
+const PageSetup = {
+    init() {
+        this.updateDates();
+    },
+
+    /**
+     * Atualiza dinamicamente as datas no rodapé da página.
+     */
+    updateDates() {
+        const copyrightYearEl = document.getElementById('copyright-year');
+        if (copyrightYearEl) {
+            copyrightYearEl.textContent = new Date().getFullYear();
+        }
+
+        const lastUpdatedEl = document.getElementById('last-updated-date');
+        if (lastUpdatedEl) {
+            // Usa a data do documento se disponível, senão a data atual como fallback.
+            const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
+            lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+    }
+};
+
 
 // =================================================================================
 // Módulo: Fundo com Partículas
@@ -403,6 +434,7 @@ const GithubReposModule = {
 // Inicializador Global
 // =================================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    PageSetup.init();
     ParticleBackground.init();
     ContactForm.init();
 
