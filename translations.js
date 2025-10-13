@@ -279,3 +279,90 @@ const translations = {
     }
 };
 
+        // --- Lógica de Tradução e Conteúdo Dinâmico ---
+        let currentLang = 'pt';
+        let subtitleTimeout;
+        let subtitleIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        
+        function typeAndEraseSubtitle() {
+            const subtitleEl = document.getElementById('subtitle');
+            if (!subtitleEl) return;
+            
+            clearTimeout(subtitleTimeout);
+            const currentPhrases = [ translations[currentLang]['subtitle-1'], translations[currentLang]['subtitle-2'], translations[currentLang]['subtitle-3'], translations[currentLang]['subtitle-4'] ].filter(Boolean);
+
+            if (currentPhrases.length === 0) return;
+            const currentPhrase = currentPhrases[subtitleIndex];
+            
+            let displayText;
+            let typeSpeed = 100;
+
+            if (isDeleting) {
+                displayText = currentPhrase.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50;
+            } else {
+                displayText = currentPhrase.substring(0, charIndex + 1);
+                charIndex++;
+            }
+            
+            subtitleEl.innerHTML = displayText;
+
+            if (!isDeleting && charIndex === currentPhrase.length) {
+                isDeleting = true;
+                typeSpeed = 2000;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
+                typeSpeed = 500;
+            }
+            
+            subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
+        }
+
+        function setLanguage(lang) {
+            if (!translations[lang]) return;
+            currentLang = lang;
+            document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+            
+            document.title = translations[lang]['page-title'];
+            document.querySelector('meta[name="description"]').setAttribute('content', translations[lang]['meta-description']);
+            document.querySelector('meta[name="keywords"]').setAttribute('content', translations[lang]['meta-keywords']);
+            
+            document.querySelectorAll('[data-key]').forEach(el => {
+                const key = el.dataset.key;
+                const translation = translations[lang][key];
+                if (translation && typeof translation === 'function') {
+                    // Placeholder for functions in translations
+                } else if (translation) {
+                    el.innerHTML = translation;
+                }
+            });
+
+            document.querySelectorAll('[data-key-placeholder]').forEach(el => el.placeholder = translations[lang][el.dataset.keyPlaceholder]);
+            document.querySelectorAll('[data-key-title]').forEach(el => el.title = translations[lang][el.dataset.keyTitle]);
+            document.querySelectorAll('[data-key-aria-label]').forEach(el => el.setAttribute('aria-label', translations[lang][el.dataset.keyAriaLabel]));
+            
+            const isPt = lang === 'pt';
+            document.querySelectorAll('.lang-switch, .lang-switch-fixed').forEach(button => {
+                button.querySelector('.lang-pt').classList.toggle('active', isPt);
+                button.querySelector('.lang-en').classList.toggle('active', !isPt);
+            });
+            
+            clearTimeout(subtitleTimeout);
+            subtitleIndex = 0;
+            charIndex = 0;
+            isDeleting = false;
+            typeAndEraseSubtitle();
+            
+            if (window.githubScript?.renderAll) window.githubScript.renderAll();
+            if (window.scholarScript?.renderChart) window.scholarScript.renderChart();
+        }
+
+        window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('pt');
+        });
