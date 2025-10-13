@@ -1,8 +1,9 @@
 /**
  * @file utils.js
- * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário e busca de repositórios do GitHub.
+ * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário, 
+ * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * @author Weverton C.
- * @version 7.0.0
+ * @version 8.3.0
  */
 
 // =================================================================================
@@ -228,18 +229,13 @@ const ContactForm = {
 // Módulo: Repositórios do GitHub
 // =================================================================================
 const GithubReposModule = {
-    // --- Configurações e Estado ---
     GITHUB_USER: 'WevertonGomesCosta',
     CACHE_VERSION: 'v13',
     GITHUB_PROXY_URL: 'https://corsproxy.io/?',
     state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '', isFetching: false, lang: 'pt', translations: {} },
     config: {},
-
-    // --- Funções Utilitárias ---
     titleCase: (str) => !str ? '' : str.replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
-
-    // --- Lógica de Cache ---
     readCache() {
         try {
             const CACHE_KEY = `gh_repos_cache_${this.CACHE_VERSION}`;
@@ -258,8 +254,6 @@ const GithubReposModule = {
             localStorage.setItem(CACHE_TS_KEY, String(Date.now()));
         } catch (e) { console.warn('Falha ao escrever no cache de repositórios:', e); }
     },
-
-    // --- Lógica da API ---
     async fetchAllPages(url) {
         let results = [], nextUrl = url;
         while (nextUrl) {
@@ -302,15 +296,12 @@ const GithubReposModule = {
         } catch (err) {
             console.error("Falha ao buscar repositórios do GitHub:", err);
             this.updateMetaTextSafely('fetch_error', 'Erro ao buscar. Usando dados de fallback.');
-            // MODIFICADO: Usa o fallback do novo arquivo global
             this.state.allRepos = window.fallbackData?.githubRepos || [];
         } finally {
             this.state.isFetching = false;
             this.filterAndRender();
         }
     },
-
-    // --- Renderização ---
     createCard(repo) {
         const card = document.createElement('div');
         card.className = 'project-card card';
@@ -394,8 +385,6 @@ const GithubReposModule = {
         this.state.translations = window.translations || { pt: {} };
         this.filterAndRender();
     },
-
-    // --- Inicialização ---
     init(userConfig) {
         const listEl = document.querySelector(userConfig.listSelector);
         if (!listEl) return;
@@ -418,12 +407,557 @@ const GithubReposModule = {
         if (this.config.clearBtnEl) this.config.clearBtnEl.addEventListener('click', () => { if (this.config.searchEl) this.config.searchEl.value = ''; this.state.currentFilter = ''; this.filterAndRender(); if (this.config.searchEl) this.config.searchEl.focus(); });
         if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); });
         
-        // Expor a função de re-renderização para o escopo global
         window.githubScript_proj = { renderAll: this.reRenderWithCurrentLang.bind(this) };
 
         this.fetchRepos();
     }
 };
+
+
+// =================================================================================
+// MÓDULO: GOOGLE SCHOLAR E PUBLICAÇÕES
+// =================================================================================
+const scholarScript = (function() {
+    'use strict';
+    const SCHOLAR_USER_ID = "eJNKcHsAAAAJ";
+    const initialPubsToShow = 3;
+    let allArticles = [];
+    let citationGraphData = [];
+    let showingPubsCount = initialPubsToShow;
+    let isIndexPage = false;
+    let activeYearFilter = null;
+
+    const UI = {
+        citTotal: () => document.getElementById("cit-total"),
+        citPeriod: () => document.getElementById("cit-period"),
+        hTotal: () => document.getElementById("h-total"),
+        hPeriod: () => document.getElementById("h-period"),
+        i10Total: () => document.getElementById("i10-total"),
+        i10Period: () => document.getElementById("i10-period"),
+        scholarMetrics: () => document.querySelectorAll('.scholar-metrics .metric-value, .scholar-metrics .metric-value-period'),
+        chartContainer: () => document.getElementById('interactive-scholar-chart-container'),
+        pubsGrid: () => document.getElementById("publicacoes-grid"),
+        pubSearchInput: () => document.getElementById('publication-search'),
+        pubClearBtn: () => document.getElementById('publication-clear-btn'),
+        pubsShownCount: () => document.getElementById('pubs-shown-count'),
+        pubsToggleBtn: () => document.getElementById('pubs-toggle-more'),
+    };
+
+    const normalizeTitle = (str) => {
+        if (!str) return '';
+        return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
+    };
+
+    function animateCountUp(el) {
+        if (!el) return;
+        const target = parseInt(el.textContent, 10);
+        if (isNaN(target)) return;
+        el.textContent = '0';
+        let current = 0;
+        const increment = Math.max(1, target / 100);
+        const interval = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                el.textContent = target;
+                clearInterval(interval);
+            } else {
+                el.textContent = Math.ceil(current);
+            }
+        }, 20);
+    }
+    
+    async function updateScholarMetrics() {
+        console.log("Forçando o uso de dados de fallback para métricas.");
+        if (window.fallbackData?.scholarData?.profile) {
+            const { table, graph } = window.fallbackData.scholarData.profile.cited_by;
+            UI.citTotal().textContent = table[0].citations.all;
+            UI.citPeriod().textContent = table[0].citations.since_2020;
+            UI.hTotal().textContent = table[1].h_index.all;
+            UI.hPeriod().textContent = table[1].h_index.since_2020;
+            UI.i10Total().textContent = table[2].i10_index.all;
+            UI.i10Period().textContent = table[2].i10_index.since_2020;
+            UI.scholarMetrics().forEach(animateCountUp);
+            citationGraphData = graph || [];
+        } else {
+             console.error("Dados de fallback para métricas não encontrados.");
+        }
+    }
+    
+    function renderPublications() {
+        const grid = UI.pubsGrid();
+        if (!grid) return;
+        const lang = window.currentLang || 'pt';
+        const searchFilter = (UI.pubSearchInput()?.value || '').trim().toLowerCase();
+        
+        let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
+        const filteredArticles = searchFilter ? baseList.filter(art => normalizeTitle(art.title).includes(searchFilter) || (art.journalTitle || '').toLowerCase().includes(searchFilter) || (art.year || '').includes(searchFilter)) : baseList;
+
+        const articlesToShow = isIndexPage ? filteredArticles.slice(0, showingPubsCount) : filteredArticles;
+        grid.innerHTML = "";
+        if (articlesToShow.length === 0) {
+            grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[lang].no_pubs_found}</p></div>`;
+        } else {
+            articlesToShow.forEach(art => grid.appendChild(createPublicationCard(art, lang)));
+        }
+        updatePubsCount(articlesToShow.length, filteredArticles.length);
+        updateToggleMoreButton(articlesToShow.length, filteredArticles.length);
+    }
+    
+    function createPublicationCard(art, lang) {
+        const card = document.createElement("div");
+        card.className = "card publication-card";
+        const citationText = art.cited_by?.value ? `${translations[lang]['pub-cited-by']} ${art.cited_by.value} ${translations[lang]['pub-cited-by-times']}` : translations[lang]['pub-no-citation'];
+        const doiHtml = art.doi ? `<div class="publication-doi"><a href="${art.doiLink}" target="_blank" rel="noopener" title="DOI: ${art.doi}"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/></a><a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a></div>` : '';
+        card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> ${doiHtml} <p class="publication-meta">${translations[lang]['pub-published']}: ${art.year} ${translations[lang]['pub-in']} <em>${art.journalTitle}</em></p><p class="citations">${citationText}</p><a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link">${translations[lang]['pub-read']}</a>`;
+        return card;
+    }
+
+    function _animateChart(graphData, articles) {
+        const containerId = 'interactive-scholar-chart-container';
+        const yearlyData = {};
+        
+        (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
+        (articles || []).forEach(article => {
+            const year = parseInt(article.year);
+            if (year) {
+                if (yearlyData[year]) { yearlyData[year].pubs++; } else { yearlyData[year] = { citations: 0, pubs: 1 }; }
+            }
+        });
+        
+        const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
+        if (sortedYears.length === 0) return;
+
+        const fullYears = sortedYears, fullCitCounts = sortedYears.map(y => yearlyData[y].citations || 0), fullPubCounts = sortedYears.map(y => yearlyData[y].pubs || 0);
+        const maxPubs = Math.max(...fullPubCounts, 1), fullScaledPubCounts = fullPubCounts.map(p => Math.max(10, (p / maxPubs) * 40));
+        const fullCustomData = sortedYears.map(y => ({ pubs: yearlyData[y].pubs || 0 }));
+        
+        const isMobile = window.innerWidth < 768, maxCitation = Math.max(...fullCitCounts, 0);
+        const chartTitle = isMobile ? translations[currentLang]['chart-title-mobile'] : translations[currentLang]['chart-title'];
+        const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
+
+        const layout = {
+            title: { text: chartTitle, x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
+            paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' }, dragmode: false,
+            xaxis: { title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
+            yaxis: { title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
+            margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 }, hovermode: 'closest', showlegend: false, autosize: true
+        };
+        const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
+        const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>', mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' } } };
+        const lineTrace = { x: fullYears, y: [], type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none' };
+
+        Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
+            gd.on('plotly_click', data => {
+                if (data.points.length > 0) {
+                    const clickedYear = data.points[0].x;
+                    activeYearFilter = (activeYearFilter === clickedYear) ? null : clickedYear;
+                    document.getElementById('publication-search').value = '';
+                    renderPublications(); 
+                    updateFilterUI();
+                }
+            });
+            let frame = 0;
+            function runAnimation() {
+                if (frame >= fullYears.length) return;
+                const slice = arr => arr.slice(0, frame + 1);
+                Plotly.restyle(gd, { y: [slice(fullCitCounts), slice(fullCitCounts)], customdata: [slice(fullCustomData)], 'marker.size': [slice(fullScaledPubCounts)], 'marker.color': [slice(fullPubCounts)] });
+                frame++; setTimeout(runAnimation, 150);
+            }
+            setTimeout(runAnimation, 300);
+        });
+    }
+
+    function renderInteractiveChart(graphData, articles) {
+        const container = UI.chartContainer();
+        if (!container) return;
+
+        if (typeof Plotly === 'undefined') {
+            setTimeout(() => renderInteractiveChart(graphData, articles), 250);
+            return;
+        }
+
+        if ((!graphData || graphData.length === 0) && (!articles || articles.length === 0)) {
+            container.innerHTML = `<div class="card" style="color: var(--text-muted);">${translations[currentLang]['chart-no-data'] || 'Dados para o gráfico não disponíveis.'}</div>`;
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => { if (entry.isIntersecting) { _animateChart(graphData, articles); obs.unobserve(entry.target); } });
+        }, { threshold: 0.5 });
+        observer.observe(container);
+    }
+    
+    function updateFilterUI() {
+        const controlsContainer = document.querySelector('#publicacoes .controls');
+        let filterChip = document.getElementById('year-filter-chip');
+        if (activeYearFilter) {
+            if (!filterChip) {
+                filterChip = document.createElement('div');
+                filterChip.id = 'year-filter-chip';
+                filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;';
+                controlsContainer.appendChild(filterChip);
+            }
+            filterChip.innerHTML = `<span>Filtrando por: ${activeYearFilter}</span><button style="background:none;border:none;color:var(--dark);font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>`;
+            filterChip.querySelector('button').onclick = () => {
+                activeYearFilter = null;
+                renderPublications();
+                updateFilterUI();
+            };
+        } else {
+            if (filterChip) filterChip.remove();
+        }
+    }
+
+    function updatePubsCount(shown, total) {
+        const countEl = UI.pubsShownCount();
+        if (countEl) countEl.textContent = translations[currentLang].showing_pubs(shown, total);
+    }
+    
+    function updateToggleMoreButton(shown, total) {
+        const toggleBtn = UI.pubsToggleBtn();
+        if (toggleBtn) {
+            const hasMore = shown < total;
+            toggleBtn.style.display = (isIndexPage && hasMore) ? 'inline-block' : 'none';
+            toggleBtn.textContent = hasMore ? translations[currentLang]['show-more'] : translations[currentLang]['show-less'];
+        }
+    }
+
+    async function initializePublications() {
+        const grid = UI.pubsGrid();
+        if (!grid) return;
+        grid.innerHTML = Array(isIndexPage ? 3 : 6).fill('<div class="skeleton-card"></div>').join('');
+        
+        console.log("Forçando o uso de dados de fallback para publicações.");
+        if (window.fallbackData?.scholarData?.articles) {
+            allArticles = window.fallbackData.scholarData.articles;
+        } else {
+            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">${translations[currentLang].fetch_pub_error}: Dados de fallback não encontrados.</div>`;
+            return;
+        }
+        renderPublications();
+    }
+    
+    function attachEventListeners() {
+        const searchInput = UI.pubSearchInput();
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                showingPubsCount = initialPubsToShow;
+                renderPublications();
+            });
+        }
+        
+        const clearBtn = UI.pubClearBtn();
+        if (clearBtn && searchInput) {
+            clearBtn.addEventListener('click', () => { 
+                searchInput.value = '';
+                showingPubsCount = initialPubsToShow;
+                if (activeYearFilter) {
+                    activeYearFilter = null;
+                    updateFilterUI();
+                }
+                renderPublications(); 
+            });
+        }
+        
+        const toggleBtn = UI.pubsToggleBtn();
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => { 
+                showingPubsCount += 3; 
+                renderPublications(); 
+            });
+        }
+    }
+
+    async function init() {
+        if (!document.getElementById('publicacoes-grid')) return; 
+
+        isIndexPage = !!UI.chartContainer();
+        if (!isIndexPage) showingPubsCount = Infinity;
+        
+        attachEventListeners();
+        
+        if (isIndexPage) {
+            await Promise.all([ updateScholarMetrics(), initializePublications() ]);
+            renderInteractiveChart(citationGraphData, allArticles);
+        } else {
+            await initializePublications();
+        }
+    }
+    
+    return { 
+        init, 
+        allArticles: () => allArticles 
+    };
+})();
+
+
+// =================================================================================
+// MÓDULO: GERADOR DE CV EM PDF
+// =================================================================================
+const CvPdfGenerator = {
+    init() {
+        const downloadBtn = document.getElementById('download-cv-btn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.generateCvPdf();
+            });
+        }
+    },
+
+    stripHtml(html) {
+        if (!html) return "";
+        let doc = new DOMParser().parseFromString(html, 'text/html');
+        return doc.body.textContent || "";
+    },
+
+    async generateCvPdf() {
+        const button = document.getElementById('download-cv-btn');
+        const originalButtonHTML = button.innerHTML;
+        const toast = document.getElementById('toast-notification');
+        const themeColor = '#10b981';
+
+        button.innerHTML = `<svg class="animate-spin" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 6.87347L16.0659 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.25 12L17.75 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 17.1265L16.0659 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 17.75V19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 17.1265L7.9341 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.75 12L6.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 6.87347L7.9341 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> <span>Gerando...</span>`;
+        button.disabled = true;
+        if (toast) {
+            toast.textContent = 'Preparando seu currículo...';
+            toast.classList.add('show');
+        }
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const langContent = translations[currentLang] || {};
+            const pdfStrings = langContent.pdf || {};
+
+            const doc = new jsPDF('p', 'pt', 'a4');
+            const page_width = doc.internal.pageSize.getWidth();
+            const margin = 40;
+            const max_width = page_width - margin * 2;
+            let y = margin;
+            const item_gap = 15;
+
+            const checkPageBreak = (neededHeight) => {
+                if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
+                    doc.addPage();
+                    y = margin;
+                }
+            };
+
+            let avatarDataUrl = null;
+            try {
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(document.querySelector('.avatar').src)}`);
+                const blob = await response.blob();
+                avatarDataUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.readAsDataURL(blob);
+                });
+            } catch (e) {
+                console.error("Não foi possível carregar a imagem do avatar:", e);
+            }
+
+            if (avatarDataUrl) {
+                doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
+            }
+            doc.setFontSize(22).setFont('helvetica', 'bold').setTextColor(0).text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
+            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
+            doc.setFont('helvetica', 'bold').text("Email:", margin + 115, y + 70);
+            doc.setFont('helvetica', 'normal').text("wevertonufv@gmail.com", margin + 155, y + 70);
+            doc.setFont('helvetica', 'bold').text("LinkedIn:", margin + 115, y + 85);
+            doc.setFont('helvetica', 'normal').setTextColor(40, 40, 255).textWithLink("linkedin.com/in/wevertoncosta", margin + 165, y + 85, { url: 'https://linkedin.com/in/wevertoncosta' });
+            y += 120;
+
+            const addSectionTitle = (title) => {
+                y += (y > margin + 20) ? 25 : 5;
+                checkPageBreak(40);
+                doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor('#0f172a');
+                doc.text(title.toUpperCase(), margin, y);
+                y += 8;
+                doc.setLineWidth(1);
+                doc.setDrawColor(themeColor);
+                doc.line(margin, y, page_width - margin, y);
+                y += 20;
+            };
+
+            const addJustifiedText = (content, options = {}) => {
+                const { fontSize = 10, x = margin, width = max_width, color = 80 } = options;
+                if (!content || content.trim() === "") return;
+                
+                doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
+                const cleanedContent = this.stripHtml(content).replace(/\s+/g, ' ').trim();
+                const lines = doc.splitTextToSize(cleanedContent, width);
+                const textHeight = lines.length * (fontSize * 1.2);
+                checkPageBreak(textHeight);
+                doc.text(lines, x, y, { align: 'justify', maxWidth: width });
+                y += textHeight + 5;
+            };
+            
+            // --- SECTIONS ---
+            addSectionTitle(pdfStrings['about-title'] || 'SOBRE MIM');
+            addJustifiedText(langContent['about-p1']);
+            addJustifiedText(langContent['about-p2']);
+            addJustifiedText(langContent['about-p3']);
+
+            addSectionTitle(pdfStrings['services-title'] || 'SERVIÇOS & CONSULTORIA');
+            document.querySelectorAll('#servicos .card').forEach(card => {
+                const title = card.querySelector('h3').innerText;
+                const description = card.querySelector('p').innerText;
+                checkPageBreak(50);
+                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                doc.text(`• ${title}`, margin, y);
+                y += 15;
+                addJustifiedText(description, { x: margin + 10, width: max_width - 10 });
+                y += item_gap / 2;
+            });
+
+            addSectionTitle(pdfStrings['skills-title'] || 'HABILIDADES TÉCNICAS');
+            const skillsElements = document.querySelectorAll('#habilidades .skill-name, #skills .skill-name');
+            if (skillsElements.length > 0) {
+                const skills = Array.from(skillsElements).map(s => `• ${s.innerText.trim()}`);
+                const half = Math.ceil(skills.length / 2);
+                const column1 = skills.slice(0, half);
+                const column2 = skills.slice(half);
+                const initialY = y;
+                const lineHeight = 14;
+                checkPageBreak(column1.length * lineHeight);
+                doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80);
+                doc.text(column1, margin, y);
+                if (column2.length > 0) {
+                    doc.text(column2, margin + (max_width / 2), initialY);
+                }
+                y += Math.max(column1.length, column2.length) * lineHeight + 10;
+            }
+            
+            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ESPECIALIZAÇÃO');
+            document.querySelectorAll('#experiencia .card').forEach(card => {
+                 const title = `• ${card.querySelector('h3').innerText}:`;
+                 const description = card.querySelector('p').innerText;
+                 checkPageBreak(60);
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                 const titleLines = doc.splitTextToSize(title, max_width);
+                 const initialY = y;
+                 doc.text(titleLines, margin, y);
+                 y += titleLines.length * 12;
+                 let textX = margin + 10;
+                 let textWidth = max_width - 10;
+                 if (titleLines.length === 1) {
+                     textX = margin + doc.getTextWidth(title) + 4;
+                     textWidth = max_width - (doc.getTextWidth(title) + 4);
+                     y = initialY;
+                 }
+                 addJustifiedText(description, { x: textX, width: textWidth });
+                 y += item_gap;
+            });
+            
+            addSectionTitle(pdfStrings['education-title'] || 'FORMAÇÃO ACADÊMICA');
+            document.querySelectorAll('#formacao .timeline-item').forEach(item => {
+                checkPageBreak(80);
+                const title = item.querySelector('h3').innerText;
+                const date = item.querySelector('.timeline-date').innerText;
+                const institution = item.querySelector('p:not(.small-muted)').innerText;
+                const advisor = item.querySelector('p.small-muted')?.innerHTML || '';
+                const details = item.querySelector('.timeline-details').innerText;
+                doc.setFontSize(11).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
+                y += 14;
+                doc.setFontSize(10).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
+                y += 14;
+                doc.setFont('helvetica', 'normal').setTextColor(100).text(date, margin, y);
+                y += 14;
+                if(advisor){
+                    const advisorLines = doc.splitTextToSize(this.stripHtml(advisor), max_width);
+                    doc.setFont('helvetica', 'normal').text(advisorLines, margin, y);
+                    y += advisorLines.length * 14;
+                }
+                addJustifiedText(details, { fontSize: 9 });
+                y += item_gap;
+            });
+
+            // MODIFICADO: Seção de Projetos com links
+            addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
+            (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
+                checkPageBreak(60);
+                const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
+                const linkUrl = repo.homepage || repo.html_url;
+                const linkText = repo.homepage ? '[Ver Site]' : '[Repositório]';
+
+                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                doc.text(repoTitle, margin, y);
+
+                if (linkUrl) {
+                    const titleWidth = doc.getTextWidth(repoTitle);
+                    doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
+                    doc.textWithLink(linkText, margin + titleWidth + 5, y, { url: linkUrl });
+                }
+                y += 15;
+
+                addJustifiedText(repo.description, { x: margin + 10, width: max_width - 10 });
+                y += item_gap / 2;
+            });
+            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
+            const projectsPageUrl = `${window.location.origin}/projetos.html`;
+            doc.textWithLink("Para mais projetos, acesse a página de projetos do site.", margin, y, { url: projectsPageUrl });
+            y += 20;
+            
+            // MODIFICADO: Seção de Publicações com links DOI
+            addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
+            (scholarScript.allArticles() || []).slice(0, 3).forEach(art => {
+                checkPageBreak(80);
+            
+                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
+                doc.text(titleLines, margin, y);
+                y += titleLines.length * 12 + 5;
+            
+                doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
+                const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`;
+                const metaLines = doc.splitTextToSize(metaText, max_width - 10);
+                doc.text(metaLines, margin + 10, y);
+                y += metaLines.length * 12 + 5;
+            
+                if (art.cited_by?.value) {
+                    doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(100);
+                    const citationText = `Citado ${art.cited_by.value} vezes`;
+                    doc.text(citationText, margin + 10, y);
+                    y += 12;
+                }
+
+                if (art.doi && art.doiLink) {
+                    doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
+                    const doiLabel = "DOI: ";
+                    doc.text(doiLabel, margin + 10, y);
+                    const doiLabelWidth = doc.getTextWidth(doiLabel);
+                    doc.setTextColor(40, 40, 255);
+                    doc.textWithLink(art.doi, margin + 10 + doiLabelWidth, y, { url: art.doiLink });
+                    y += 12;
+                }
+            
+                y += item_gap / 2; 
+            });
+            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
+            const publicationsPageUrl = `${window.location.origin}/publicacoes.html`;
+            doc.textWithLink("Para mais publicações, acesse a página de publicações do site.", margin, y, { url: publicationsPageUrl });
+            y += 20;
+
+            doc.save('CV-Weverton_Gomes_da_Costa.pdf');
+            if (toast) {
+                toast.textContent = 'Download iniciado!';
+                toast.style.backgroundColor = '';
+            }
+
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            if (toast) {
+                toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
+                toast.style.backgroundColor = '#f44336';
+            }
+        } finally {
+            button.innerHTML = originalButtonHTML;
+            button.disabled = false;
+            setTimeout(() => { if (toast) toast.classList.remove('show'); }, 3000);
+        }
+    }
+};
+
 
 // =================================================================================
 // Inicializador Global
@@ -432,38 +966,20 @@ document.addEventListener("DOMContentLoaded", () => {
     PageSetup.init();
     ParticleBackground.init();
     ContactForm.init();
+    CvPdfGenerator.init();
+    scholarScript.init();
 
-    // Inicializa o módulo do GitHub com configurações diferentes dependendo da página
     if (document.getElementById('projects-list')) {
         if (document.getElementById('toggle-more')) {
-            // Página Principal
             GithubReposModule.init({
                 listSelector: '#projects-list', metaSelector: '#projects-meta', searchSelector: '#project-search',
                 clearBtnSelector: '#clear-btn', loadMoreBtnSelector: '#toggle-more', shownCountSelector: '#shown-count',
                 isPaginated: true, initialCount: 3, incrementCount: 3
             });
         } else {
-            // Página de Projetos
             GithubReposModule.init({
                 listSelector: '#projects-list', metaSelector: '#projects-meta', searchSelector: '#project-search',
                 clearBtnSelector: '#clear-btn', isPaginated: false
-            });
-        }
-    }
-
-    // Inicializa o módulo do Scholar com configurações diferentes dependendo da página
-    if (document.getElementById('publicacoes-grid')) {
-        if (document.getElementById('interactive-scholar-chart-container')) {
-            // Página de Início (com métricas e gráfico)
-            ScholarModule.init({
-                isPaginated: true,
-                initialCount: 3,
-                incrementCount: 3
-            });
-        } else {
-            // Página de Publicações (lista completa)
-            ScholarModule.init({
-                isPaginated: false,
             });
         }
     }
