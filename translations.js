@@ -1,11 +1,8 @@
 /**
  * @file translations.js
- * @description Main script for UI interactivity, animations, dynamic content handling, and internationalization (i18n).
- * @author Weverton C.
- * @version 2.2.0
+ * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
  */
 
-// --- Internationalization and Content Management ---
 const translations = {
     pt: {
         // --- Metadados e Títulos Globais ---
@@ -23,12 +20,34 @@ const translations = {
         'privacy-meta-keywords': 'política de privacidade, dados, segurança, contato, formspree',
 
         // --- UI Global ---
-        'change-lang-title': 'Mudar para Inglês',
         'back-to-top-label': 'Voltar ao topo',
-        'nav-contact': 'Contato',
         'footer-title': 'Weverton G. Costa',
+
+        // --- Botões e Ações ---
+        'change-lang-title': 'Mudar para Inglês',
+        'cta-projects': 'Meus Projetos',
+        'cta-contact': 'Entre em Contato',
+        'clear-search': 'Limpar busca',
+        'clear-pub-search': 'Limpar busca de publicações',
+        'clear-btn': 'Limpar',
+        'show-more': 'Mostrar mais',
+        'show-less': 'Mostrar menos',
         'see-all-projects': 'Ver Todos os Projetos',
         'see-all-publications': 'Ver Todas as Publicações',
+        'scholar-view-profile': 'Ver Perfil Completo',
+        'search-btn': 'Buscar',
+        'toggle-details-more': 'Ver mais',
+        'toggle-details-less': 'Ver menos',
+        'form-submit': 'Enviar Mensagem',
+        'download-cv': 'Baixar Currículo (PDF)',
+        'contact-email-text': 'Email',
+        'back-to-home': '← Voltar para o Início',
+        'pub-read': 'Ver publicação →',
+        'repo-live-site': 'Ver Site',
+        'repo-view-repo': 'Repositório',
+        'open_btn': 'Ver no GitHub',
+        'copy_btn': 'Copiar Link',
+        'copied_btn': 'Copiado!',
 
         // --- Página Principal (index.html) ---
         'subtitle-1': 'Cientista de Dados | Machine Learning',
@@ -39,8 +58,6 @@ const translations = {
         'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM',
         'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq',
         'badge-ml': '🤖 Machine Learning Expert',
-        'cta-projects': 'Meus Projetos',
-        'cta-contact': 'Entre em Contato',
         'nav-about': 'Sobre',
         'nav-experience': 'Atuação',
         'nav-services': 'Serviços',
@@ -48,6 +65,7 @@ const translations = {
         'nav-projects': 'Projetos',
         'nav-publications': 'Publicações',
         'nav-skills': 'Habilidades',
+        'nav-contact': 'Contato',
         'about-title': 'Sobre Mim',
         'about-p1': `Minha jornada acadêmica, iniciada na Agronomia pela UFV e aprofundada com mestrado e doutorado em Genética e Melhoramento, proporcionou-me uma base sólida para explorar a fronteira do conhecimento. Hoje, como doutorando em Estatística Aplicada e Biometria, busco integrar modelos avançados à pesquisa agronômica. Essa paixão por inovação culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>, liderando a missão de traduzir a ciência de dados em soluções práticas e inteligentes para o agronegócio.`,
         'about-p2': `Minha expertise abrange desde a genética quantitativa e seleção genômica até a aplicação de <strong>machine learning</strong> e <strong>redes neurais</strong> para resolver desafios complexos no melhoramento vegetal. Com domínio de softwares como GENES, R e Python, desenvolvo pipelines de análise que garantem precisão e reprodutibilidade, sempre com o objetivo de gerar impacto real no campo e na academia.`,
@@ -62,14 +80,11 @@ const translations = {
         'publications-title': 'Publicações e Citações',
         'publications-intro': 'Minha produção científica reflete meu compromisso com a pesquisa de ponta. Abaixo estão algumas das minhas publicações mais relevantes, métricas de citação do Google Scholar e seus respectivos DOIs obtidos via ORCID.',
         'search-pub-placeholder': 'Buscar por título, periódico...',
-        'clear-pub-search': 'Limpar busca de publicações',
-        'scholar-view-profile': 'Ver Perfil Completo',
         'metric-label-citations': 'Citações',
         'metric-all': 'TODOS',
         'metric-since': 'DESDE 2020',
         'metric-label-h-index': 'Índice h',
         'metric-label-i10-index': 'Índice i10',
-        'pub-read': 'Ver publicação →',
         'pub-cited-by': 'Citado',
         'pub-cited-by-times': 'vezes',
         'pub-no-citation': 'Sem dados de citação',
@@ -77,8 +92,6 @@ const translations = {
         'pub-in': 'em',
         'pub-doi': 'DOI',
         'education-title': 'Formação Acadêmica',
-        'toggle-details-more': 'Ver mais',
-        'toggle-details-less': 'Ver menos',
         'edu-date1': '2023 - Presente',
         'edu-title1': 'Doutorado em Estatística Aplicada e Biometria',
         'edu-desc1': 'Foco em aprimorar conhecimentos em métodos estatísticos avançados e técnicas biométricas.',
@@ -159,11 +172,9 @@ const translations = {
         'form-message': 'Mensagem',
         'form-message-ph': 'Digite sua mensagem aqui...',
         'form-message-error': 'Por favor, insira sua mensagem.',
-        'form-submit': 'Enviar Mensagem',
         'formSending': 'Enviando...',
         'formSuccess': 'Mensagem enviada com sucesso! Obrigado.',
         'formError': 'Ocorreu um erro. Tente novamente.',
-        'download-cv': 'Baixar Currículo (PDF)',
         'chart-title': 'Citações e Publicações por Ano',
         'chart-title-mobile': 'Citações/Pubs por Ano',
         'chart-xaxis-title': 'Ano',
@@ -174,17 +185,11 @@ const translations = {
         'projects-title': 'Projetos & Repositórios',
         'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
         'search-placeholder': 'Buscar repositório...',
-        'clear-search': 'Limpar busca',
-        'show-more': 'Mostrar mais',
-        'show-less': 'Mostrar menos',
         'fetching_repos': 'Buscando repositórios no GitHub...',
         'loaded_repos_cache': (n) => `Carregados ${n} repositórios do cache.`,
         'found_repos': (n) => `Encontrados ${n} repositórios.`,
         'fetch_error': 'Erro ao buscar. Usando dados de fallback.',
         'no_repos_found': 'Nenhum repositório encontrado com este filtro.',
-        'open_btn': 'Ver no GitHub',
-        'copy_btn': 'Copiar Link',
-        'copied_btn': 'Copiado!',
         'no_description': 'Sem descrição fornecida.',
         'updated_at': 'Atualizado em',
         'all-projects-title': 'Todos os Projetos & Repositórios',
@@ -193,7 +198,6 @@ const translations = {
         // --- Publicações (Página e Busca) ---
         'all-publications-title': 'Todas as Publicações',
         'all-publications-intro': 'Explore a lista completa de minhas publicações científicas. Use a busca abaixo para filtrar por título, periódico ou palavra-chave.',
-        'back-to-home': '← Voltar para o Início',
         'showing_repos': (shown, total) => `Exibindo ${shown} de ${total} repositórios.`,
         'showing_pubs': (shown, total) => `Exibindo ${shown} de ${total} publicações.`,
         'advanced-search-toggle': 'Busca Avançada',
@@ -202,8 +206,6 @@ const translations = {
         'search-year-start-label': 'De (Ano)',
         'search-year-end-label': 'Até (Ano)',
         'search-year-placeholder': 'Ex: 2020',
-        'search-btn': 'Buscar',
-        'clear-btn': 'Limpar Filtros',
         'fetching_pubs': 'Buscando publicações...',
         'no_pubs_found': 'Nenhuma publicação encontrada com os filtros aplicados.',
         'fetch_pub_error': 'Erro ao carregar publicações',
@@ -247,9 +249,16 @@ const translations = {
         'privacy-contact-p': "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
         'privacy-back-link': "← Voltar ao site principal",
 
-        // --- Seção de PDF ---
         'pdf': {
             'about-title': 'SOBRE MIM',
+            'services-title': 'COMO POSSO AJUDAR',
+            'skills-title': 'HABILIDADES TÉCNICAS',
+            'expertise-title': 'ÁREAS DE ATUAÇÃO',
+            'education-title': 'FORMAÇÃO ACADÊMICA',
+            'projects-title': 'PRINCIPAIS PROJETOS',
+            'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.',
+            'publications-title': 'PRINCIPAIS PUBLICAÇÕES',
+            'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.'
         }
     },
     en: {
@@ -268,12 +277,34 @@ const translations = {
         'privacy-meta-keywords': 'privacy policy, data, security, contact, formspree',
 
         // --- Global UI ---
-        'change-lang-title': 'Switch to Portuguese',
         'back-to-top-label': 'Back to top',
-        'nav-contact': 'Contact',
         'footer-title': 'Weverton G. Costa',
+
+        // --- Buttons & Actions ---
+        'change-lang-title': 'Switch to Portuguese',
+        'cta-projects': 'My Projects',
+        'cta-contact': 'Get in Touch',
+        'clear-search': 'Clear search',
+        'clear-pub-search': 'Clear publication search',
+        'clear-btn': 'Clear',
+        'show-more': 'Show more',
+        'show-less': 'Show less',
         'see-all-projects': 'See All Projects',
         'see-all-publications': 'See All Publications',
+        'scholar-view-profile': 'View Full Profile',
+        'search-btn': 'Search',
+        'toggle-details-more': 'Show more',
+        'toggle-details-less': 'Show less',
+        'form-submit': 'Send Message',
+        'download-cv': 'Download CV (PDF)',
+        'contact-email-text': 'Email',
+        'back-to-home': '← Back to Home',
+        'pub-read': 'Read publication →',
+        'repo-live-site': 'View Site',
+        'repo-view-repo': 'Repository',
+        'open_btn': 'View on GitHub',
+        'copy_btn': 'Copy Link',
+        'copied_btn': 'Copied!',
 
         // --- Main Page (index.html) ---
         'subtitle-1': 'Data Scientist | Machine Learning',
@@ -284,8 +315,6 @@ const translations = {
         'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM',
         'badge-postdoc1': '🔬 Post-Doc FAPEMIG/CNPq',
         'badge-ml': '🤖 Machine Learning Expert',
-        'cta-projects': 'My Projects',
-        'cta-contact': 'Get in Touch',
         'nav-about': 'About',
         'nav-experience': 'Practice',
         'nav-services': 'Services',
@@ -293,6 +322,7 @@ const translations = {
         'nav-projects': 'Projects',
         'nav-publications': 'Publications',
         'nav-skills': 'Skills',
+        'nav-contact': 'Contact',
         'about-title': 'About Me',
         'about-p1': `My academic journey, which began in Agronomy at UFV and deepened with a Master's and PhD in Genetics and Plant Breeding, provided me with a solid foundation to explore the frontier of knowledge. Today, as a PhD candidate in Applied Statistics and Biometrics, I seek to integrate advanced models into agricultural research. This passion for innovation culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>, leading our mission to translate data science into practical and intelligent solutions for agribusiness.`,
         'about-p2': `My expertise ranges from quantitative genetics and genomic selection to the application of <strong>machine learning</strong> and <strong>neural networks</strong> to solve complex challenges in plant breeding. With proficiency in software like GENES, R, and Python, I develop analysis pipelines that ensure precision and reproducibility, always aiming to generate real impact in the field and in academia.`,
@@ -307,14 +337,11 @@ const translations = {
         'publications-title': 'Publications and Citations',
         'publications-intro': 'My scientific output reflects my commitment to cutting-edge research. Below are some of my most relevant publications, citation metrics from Google Scholar, and their respective DOIs obtained via ORCID.',
         'search-pub-placeholder': 'Search by title, journal...',
-        'clear-pub-search': 'Clear publication search',
-        'scholar-view-profile': 'View Full Profile',
         'metric-label-citations': 'Citations',
         'metric-all': 'ALL',
         'metric-since': 'SINCE 2020',
         'metric-label-h-index': 'h-index',
         'metric-label-i10-index': 'i10-index',
-        'pub-read': 'Read publication →',
         'pub-cited-by': 'Cited by',
         'pub-cited-by-times': 'times',
         'pub-no-citation': 'No citation data',
@@ -322,8 +349,6 @@ const translations = {
         'pub-in': 'in',
         'pub-doi': 'DOI',
         'education-title': 'Academic Background',
-        'toggle-details-more': 'Show more',
-        'toggle-details-less': 'Show less',
         'edu-date1': '2023 - Present',
         'edu-title1': 'PhD in Applied Statistics and Biometrics',
         'edu-desc1': 'Focus on enhancing knowledge in advanced statistical methods and biometric techniques.',
@@ -404,11 +429,9 @@ const translations = {
         'form-message': 'Message',
         'form-message-ph': 'Type your message here...',
         'form-message-error': 'Please enter your message.',
-        'form-submit': 'Send Message',
         'formSending': 'Sending...',
         'formSuccess': 'Message sent successfully! Thank you.',
         'formError': 'An error occurred. Please try again.',
-        'download-cv': 'Download CV (PDF)',
         'chart-title': 'Citations and Publications per Year',
         'chart-title-mobile': 'Citations/Pubs per Year',
         'chart-xaxis-title': 'Year',
@@ -419,17 +442,11 @@ const translations = {
         'projects-title': 'Projects & Repositories',
         'projects-intro': 'Here are some of my public projects on GitHub, including analysis codes, tutorials, and developed tools. Feel free to explore, use, and contribute.',
         'search-placeholder': 'Search repository...',
-        'clear-search': 'Clear search',
-        'show-more': 'Show more',
-        'show-less': 'Show less',
         'fetching_repos': 'Fetching repositories from GitHub...',
         'loaded_repos_cache': (n) => `Loaded ${n} repositories from cache.`,
         'found_repos': (n) => `Found ${n} repositories.`,
         'fetch_error': 'Fetch error. Using fallback data.',
         'no_repos_found': 'No repositories found with this filter.',
-        'open_btn': 'View on GitHub',
-        'copy_btn': 'Copy Link',
-        'copied_btn': 'Copied!',
         'no_description': 'No description provided.',
         'updated_at': 'Updated on',
         'all-projects-title': 'All Projects & Repositories',
@@ -438,7 +455,6 @@ const translations = {
         // --- Publications (Page & Search) ---
         'all-publications-title': 'All Publications',
         'all-publications-intro': 'Explore the complete list of my scientific publications. Use the search below to filter by title, journal, or keyword.',
-        'back-to-home': '← Back to Home',
         'showing_repos': (shown, total) => `Showing ${shown} of ${total} repositories.`,
         'showing_pubs': (shown, total) => `Showing ${shown} of ${total} publications.`,
         'advanced-search-toggle': 'Advanced Search',
@@ -447,8 +463,6 @@ const translations = {
         'search-year-start-label': 'From (Year)',
         'search-year-end-label': 'To (Year)',
         'search-year-placeholder': 'E.g., 2020',
-        'search-btn': 'Search',
-        'clear-btn': 'Clear Filters',
         'fetching_pubs': 'Fetching publications...',
         'no_pubs_found': 'No publications found with the applied filters.',
         'fetch_pub_error': 'Error loading publications',
@@ -495,6 +509,14 @@ const translations = {
         // --- PDF Section ---
         'pdf': {
             'about-title': 'ABOUT ME',
+            'services-title': 'HOW I CAN HELP',
+            'skills-title': 'TECHNICAL SKILLS',
+            'expertise-title': 'AREAS OF PRACTICE',
+            'education-title': 'ACADEMIC BACKGROUND',
+            'projects-title': 'MAIN PROJECTS',
+            'projects-link': 'For more projects, visit my GitHub profile.',
+            'publications-title': 'MAIN PUBLICATIONS',
+            'publications-link': 'For more publications, visit my Google Scholar profile.'
         }
     }
 };
@@ -524,6 +546,11 @@ const App = {
                 scholarScript.init();
             }
 
+            // Initialize GitHub module only on the projects page
+            if (document.body.id === 'page-projects') {
+                this.githubModule.init();
+            }
+
             // Set the initial language for the page
             setLanguage('pt');
         });
@@ -544,6 +571,14 @@ const App = {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric'
+            });
+        }
+        
+        const updateDateEl = document.getElementById('update-date');
+        if (updateDateEl) {
+             // The privacy policy page uses the current date for its "last updated" field
+             updateDateEl.textContent = new Date().toLocaleDateString('pt-BR', {
+                day: 'numeric', month: 'long', year: 'numeric'
             });
         }
     },
@@ -655,17 +690,25 @@ const App = {
         const body = document.body;
         const backToTopButton = document.querySelector('.back-to-top');
         
-        if (nav && header) {
-            const scrollThreshold = header.offsetHeight - 100;
-            window.addEventListener('scroll', () => {
-                const isScrolled = window.scrollY > scrollThreshold;
-                nav.classList.toggle('scrolled', isScrolled);
-                body.classList.toggle('scrolled', isScrolled);
-                if (backToTopButton) {
-                    backToTopButton.classList.toggle('visible', window.scrollY > 300);
+        // A more generic scroll handler for UI elements that change on scroll
+        window.addEventListener('scroll', () => {
+            const isScrolled = window.scrollY > 50;
+            if (nav) {
+                // Logic for the main page's header
+                if (header) {
+                    const scrollThreshold = header.offsetHeight - 100;
+                    const isHeaderScrolled = window.scrollY > scrollThreshold;
+                    nav.classList.toggle('scrolled', isHeaderScrolled);
+                    if(body) body.classList.toggle('scrolled', isHeaderScrolled);
+                } else { // Logic for other pages
+                    nav.classList.toggle('scrolled', isScrolled);
                 }
-            }, { passive: true });
-        }
+            }
+            if (backToTopButton) {
+                backToTopButton.classList.toggle('visible', window.scrollY > 300);
+            }
+        }, { passive: true });
+
 
         // --- Mousemove Event for Card Shine Effect ---
         document.body.addEventListener('mousemove', e => {
@@ -739,7 +782,6 @@ const App = {
         }
     },
 
-
     /**
      * Handles the CV download request, checking for required dependencies.
      * @param {Event} event - The click event object.
@@ -794,59 +836,287 @@ const App = {
             clearTimeout(timeout);
             timeout = setTimeout(() => fn.apply(this, args), wait);
         };
+    },
+
+    // --- GitHub Module for Projects Page ---
+    githubModule: {
+        // --- Configuration and Constants ---
+        GITHUB_USER: 'WevertonGomesCosta',
+        CACHE_KEY: 'gh_repos_cache_v11',
+        CACHE_TS_KEY: 'gh_repos_cache_ts_v11',
+        CACHE_TTL: 1000 * 60 * 60 * 24, // 24 hours
+        GITHUB_PROXY_URL: '[https://corsproxy.io/](https://corsproxy.io/)?',
+        
+        // --- DOM Selectors ---
+        listEl: null,
+        metaEl: null,
+        searchEl: null,
+        clearBtn: null,
+        
+        // --- Application State ---
+        allRepos: [],
+        currentFilter: '',
+
+        /**
+         * Initializes the GitHub module.
+         */
+        init() {
+            this.listEl = document.getElementById('projects-list');
+            this.metaEl = document.getElementById('projects-meta');
+            this.searchEl = document.getElementById('project-search');
+            this.clearBtn = document.getElementById('clear-btn');
+            
+            if (!this.listEl || !this.metaEl || !this.searchEl || !this.clearBtn) {
+                console.error("GitHub module elements not found.");
+                return;
+            }
+            
+            this.setupEventListeners();
+            this.fetchRepos();
+        },
+
+        /**
+         * Reads repositories from cache if valid.
+         */
+        readCache() {
+            try {
+                const cachedTimestamp = Number(localStorage.getItem(this.CACHE_TS_KEY) || 0);
+                if (Date.now() - cachedTimestamp < this.CACHE_TTL) {
+                    return JSON.parse(localStorage.getItem(this.CACHE_KEY) || '[]');
+                }
+            } catch (e) {
+                console.warn('Failed to read repository cache.', e);
+            }
+            return null;
+        },
+
+        /**
+         * Writes repository data to localStorage.
+         */
+        writeCache(data) {
+            try {
+                localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(this.CACHE_TS_KEY, String(Date.now()));
+            } catch (e) {
+                console.warn('Failed to write to repository cache.', e);
+            }
+        },
+
+        /**
+         * Fetches all pages from the GitHub API.
+         */
+        async fetchAllPages(url) {
+            let results = [];
+            let nextUrl = url;
+            while (nextUrl) {
+                const response = await fetch(`${this.GITHUB_PROXY_URL}${encodeURIComponent(nextUrl)}`);
+                if (!response.ok) throw new Error(`GitHub API request failed: ${response.status}`);
+                const data = await response.json();
+                results = results.concat(data);
+
+                const linkHeader = response.headers.get('Link');
+                nextUrl = null;
+                if (linkHeader) {
+                    const nextLink = linkHeader.split(',').find(s => s.includes('rel="next"'));
+                    if (nextLink) {
+                        const match = nextLink.match(/<([^>]+)>/);
+                        if (match) nextUrl = match[1];
+                    }
+                }
+            }
+            return results;
+        },
+
+        /**
+         * Orchestrates fetching repositories, using cache first.
+         */
+        async fetchRepos() {
+            this.metaEl.textContent = translations[currentLang].fetching_repos;
+            const cachedRepos = this.readCache();
+
+            if (cachedRepos && cachedRepos.length > 0) {
+                this.allRepos = cachedRepos;
+                this.render();
+                return;
+            }
+
+            try {
+                const data = await this.fetchAllPages(`https://api.github.com/users/${this.GITHUB_USER}/repos?per_page=100`);
+                this.allRepos = data.map(repo => ({
+                    name: repo.name,
+                    html_url: repo.html_url,
+                    description: repo.description || '',
+                    language: repo.language || '',
+                    stargazers_count: repo.stargazers_count || 0,
+                    forks_count: repo.forks_count || 0,
+                    updated_at: repo.updated_at,
+                    topics: repo.topics || [],
+                    has_pages: repo.has_pages,
+                    homepage: repo.homepage
+                }));
+                this.writeCache(this.allRepos);
+                this.render();
+            } catch (err) {
+                console.error("Failed to fetch from GitHub:", err);
+                this.metaEl.textContent = translations[currentLang].fetch_error;
+                // Optionally, define fallback repos in translations or here
+            }
+        },
+
+        /**
+         * Renders project cards based on the current state.
+         */
+        render() {
+            this.listEl.innerHTML = '';
+            const filter = this.currentFilter.trim().toLowerCase();
+
+            const filtered = filter ?
+                this.allRepos.filter(r =>
+                    r.name.toLowerCase().includes(filter) ||
+                    (r.description || '').toLowerCase().includes(filter) ||
+                    (r.language || '').toLowerCase().includes(filter) ||
+                    r.topics.some(t => t.toLowerCase().includes(filter))
+                ) :
+                this.allRepos;
+
+            const sorted = this.sortRepos(filtered);
+
+            if (sorted.length === 0) {
+                this.listEl.innerHTML = `<div class="project-card" style="grid-column: 1 / -1;"><p class="project-desc">${translations[currentLang].no_repos_found}</p></div>`;
+            } else {
+                sorted.forEach(repo => {
+                    const cardElement = this.createCard(repo);
+                    this.listEl.appendChild(cardElement);
+                });
+            }
+            
+            this.metaEl.textContent = translations[currentLang].showing_repos(sorted.length, this.allRepos.length);
+        },
+
+        /**
+         * Creates an HTML card element for a repository.
+         */
+        createCard(repo) {
+            const card = document.createElement('div');
+            card.className = 'project-card reveal'; // Add reveal for animation
+            card.setAttribute('role', 'listitem');
+            
+            const siteUrl = repo.homepage || (repo.has_pages ? `https://${this.GITHUB_USER}.github.io/${repo.name}/` : null);
+            let actionsHtml = '';
+            
+            if (siteUrl) {
+                actionsHtml = `
+                    <a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${translations[currentLang]['repo-live-site']}</a>
+                    <a class="link-btn secondary" href="${repo.html_url}" target="_blank" rel="noopener">${translations[currentLang]['repo-view-repo']}</a>
+                `;
+            } else {
+                actionsHtml = `<a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[currentLang]['repo-view-repo']}</a>`;
+            }
+
+            card.innerHTML = `
+                <div class="project-top">
+                    <h3>${this.escapeHtml(this.titleCase(repo.name))}</h3>
+                    <div class="project-meta">
+                        <span>⭐ ${repo.stargazers_count}</span>
+                        <span>🍴 ${repo.forks_count}</span>
+                    </div>
+                </div>
+                <p class="project-desc">${this.escapeHtml(repo.description || translations[currentLang].no_description)}</p>
+                <div class="project-topics"></div>
+                <div class="project-meta" style="margin-top: auto;">
+                    <span>${this.escapeHtml(repo.language || '—')}</span>
+                </div>
+                <div class="actions">${actionsHtml}</div>
+            `;
+            
+            const topicsContainer = card.querySelector('.project-topics');
+            if (repo.topics && repo.topics.length > 0) {
+                repo.topics.slice(0, 4).forEach(topic => {
+                    const tag = document.createElement('span');
+                    tag.className = 'topic-tag';
+                    tag.textContent = topic;
+                    topicsContainer.appendChild(tag);
+                });
+            }
+
+            return card;
+        },
+
+        /**
+         * Sets up event listeners for the projects page.
+         */
+        setupEventListeners() {
+            this.searchEl.addEventListener('input', App.debounce(e => {
+                this.currentFilter = e.target.value;
+                this.render();
+            }));
+
+            this.clearBtn.addEventListener('click', () => {
+                this.searchEl.value = '';
+                this.currentFilter = '';
+                this.render();
+                this.searchEl.focus();
+            });
+        },
+        
+        // --- Utility Functions ---
+        sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
+        titleCase: (str) => (str || '').replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
+        escapeHtml: (s) => (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m])
     }
 };
+
 
 // --- Translation and Dynamic Content Functions ---
 
 /**
- * Animates the main subtitle with a typing and deleting effect.
- */
+  * Animates the main subtitle with a typing and deleting effect.
+  */
 function typeAndEraseSubtitle() {
-    const subtitleEl = document.getElementById('subtitle');
-    if (!subtitleEl) return;
+      const subtitleEl = document.getElementById('subtitle');
+      if (!subtitleEl) return;
 
-    clearTimeout(subtitleTimeout);
-    const currentPhrases = [
-        translations[currentLang]['subtitle-1'],
-        translations[currentLang]['subtitle-2'],
-        translations[currentLang]['subtitle-3'],
-        translations[currentLang]['subtitle-4']
-    ].filter(Boolean);
+      clearTimeout(subtitleTimeout);
+      const currentPhrases = [
+            translations[currentLang]['subtitle-1'],
+            translations[currentLang]['subtitle-2'],
+            translations[currentLang]['subtitle-3'],
+            translations[currentLang]['subtitle-4']
+      ].filter(Boolean);
 
-    if (currentPhrases.length === 0) return;
-    const currentPhrase = currentPhrases[subtitleIndex];
+      if (currentPhrases.length === 0) return;
+      const currentPhrase = currentPhrases[subtitleIndex];
 
-    let displayText;
-    let typeSpeed = 100;
+      let displayText;
+      let typeSpeed = 100;
 
-    if (isDeleting) {
-        displayText = currentPhrase.substring(0, charIndex - 1);
-        charIndex--;
-        typeSpeed = 50;
-    } else {
-        displayText = currentPhrase.substring(0, charIndex + 1);
-        charIndex++;
-    }
+      if (isDeleting) {
+            displayText = currentPhrase.substring(0, charIndex - 1);
+            charIndex--;
+            typeSpeed = 50;
+      } else {
+            displayText = currentPhrase.substring(0, charIndex + 1);
+            charIndex++;
+      }
 
-    subtitleEl.innerHTML = displayText;
+      subtitleEl.innerHTML = displayText;
 
-    if (!isDeleting && charIndex === currentPhrase.length) {
-        isDeleting = true;
-        typeSpeed = 2000; // Pause before starting to delete
-    } else if (isDeleting && charIndex === 0) {
-        isDeleting = false;
-        subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
-        typeSpeed = 500; // Pause before typing the new phrase
-    }
+      if (!isDeleting && charIndex === currentPhrase.length) {
+            isDeleting = true;
+            typeSpeed = 2000; // Pause before starting to delete
+      } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
+            typeSpeed = 500; // Pause before typing the new phrase
+      }
 
-    subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
+      subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
 }
 
 /**
- * Sets the page language and updates all textual content.
- * @param {string} lang - The language code to set ('pt' or 'en').
- */
+  * Sets the page language and updates all textual content.
+  * @param {string} lang - The language code to set ('pt' or 'en').
+  */
 function setLanguage(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
@@ -889,10 +1159,19 @@ function setLanguage(lang) {
         const key = el.dataset.key;
         const translation = translations[lang][key];
         if (translation) {
-            // Check if the translation is a function (for dynamic text)
             if (typeof translation === 'function') {
-                // This is a placeholder; you'd need a specific way to call these
-                // For now, we'll skip functions to avoid errors.
+                 // Special handling for dynamic text functions
+                 // This assumes the function takes numbers and returns a string
+                 try {
+                    // We need to know what values to pass, for now, this is a placeholder
+                    // A better implementation would store the latest values somewhere accessible
+                    if (key === 'showing_repos' && App.githubModule.allRepos.length > 0) {
+                        const filteredCount = App.githubModule.listEl.children.length;
+                        el.textContent = translation(filteredCount, App.githubModule.allRepos.length);
+                    } else if (key === 'showing_pubs') {
+                        // Similar logic for publications would go here
+                    }
+                 } catch (e) { console.warn(`Could not execute translation function for key: ${key}`, e)}
             } else {
                 el.innerHTML = translation;
             }
@@ -932,7 +1211,9 @@ function setLanguage(lang) {
     }
     
     // --- Refresh external scripts if they depend on language ---
-    if (window.githubScript?.renderAll) window.githubScript.renderAll();
+    if (window.githubScript_proj?.renderAll) {
+        window.githubScript_proj.renderAll();
+    }
     if (window.scholarScript?.renderChart) window.scholarScript.renderChart();
 }
 
