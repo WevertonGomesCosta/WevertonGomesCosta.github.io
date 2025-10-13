@@ -2,7 +2,7 @@
  * @file fallback-data.js
  * @description Contém dados estáticos de fallback para os repositórios do GitHub e publicações do Scholar.
  * Este arquivo deve ser carregado ANTES de utils.js para que o objeto `fallbackData` esteja disponível globalmente.
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 window.fallbackData = {
@@ -204,6 +204,15 @@ window.fallbackData = {
                     { citations: { all: 148, since_2020: 145 } },
                     { h_index: { all: 7, since_2020: 7 } },
                     { i10_index: { all: 5, since_2020: 5 } }
+                ],
+                graph: [
+                    { year: 2019, citations: 3 },
+                    { year: 2020, citations: 6 },
+                    { year: 2021, citations: 18 },
+                    { year: 2022, citations: 19 },
+                    { year: 2023, citations: 28 },
+                    { year: 2024, citations: 38 },
+                    { year: 2025, citations: 36 }
                 ]
             }
         },
@@ -440,6 +449,15 @@ window.fallbackData = {
                 year: "2017",
                 journalTitle: "",
                 link: null,
+                cited_by: { value: 0 }
+            },
+            {
+                title: "Linking bark anatomy to Eucalyptus Physiological Disorder (EPD) in commercial clones",
+                doi: "10.31421/ijhs/31/2025/15419",
+                doiLink: "https://doi.org/10.31421/ijhs/31/2025/15419",
+                year: "2025",
+                journalTitle: "International Journal of Horticultural Science",
+                link: "https://doi.org/10.31421/ijhs/31/2025/15419",
                 cited_by: { value: 0 }
             }
         ]
