@@ -223,7 +223,142 @@
     </footer>
 
     <!-- Scripts -->
+        <script>
+        // --- Lógica de Inicialização e Interatividade da UI ---
+            document.addEventListener('DOMContentLoaded', () => {
+            // Atualiza o ano do copyright e a data da última atualização
+            document.getElementById('copyright-year').textContent = new Date().getFullYear();
+            document.getElementById('last-updated-date').textContent = new Date(document.lastModified).toLocaleDateString('pt-BR', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+
+            // Observador para animações de "revelar" ao rolar a página
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+            
+            // Observador para animar as barras de habilidades
+            const skillObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        const level = entry.target.dataset.level;
+                        const bar = entry.target.querySelector('.skill-bar');
+                        if (bar && level) {
+                            bar.style.setProperty('--proficiency-level', level);
+                        }
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            document.querySelectorAll('.skill-item').forEach(el => {
+                skillObserver.observe(el);
+            });
+
+            // Adiciona delay para animação escalonada
+            document.querySelectorAll('.stagger-children').forEach(container => {
+                container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
+                    child.style.setProperty('--stagger-index', index);
+                });
+            });
+
+            // Observador para elementos adicionados dinamicamente (projetos, publicações)
+            const mutationObserver = new MutationObserver((mutationsList) => {
+                mutationsList.forEach(mutation => mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.reveal'))) {
+                        if (!node.classList.contains('reveal')) node.classList.add('reveal');
+                        revealObserver.observe(node);
+                    }
+                }));
+            });
+            mutationObserver.observe(document.getElementById('projects-list'), { childList: true });
+            mutationObserver.observe(document.getElementById('publicacoes-grid'), { childList: true });
+
+            // Lógica para expandir/recolher detalhes da timeline
+            document.querySelector('.timeline').addEventListener('click', function(event) {
+                const button = event.target.closest('.toggle-details-btn');
+                if (button) {
+                    const item = button.closest('.timeline-item');
+                    item.classList.toggle('expanded');
+                    button.textContent = item.classList.contains('expanded') ? 'Ver menos' : 'Ver mais';
+                    const details = item.querySelector('.timeline-details');
+                    if(item.classList.contains('expanded')) {
+                        details.innerHTML = translations[currentLang][details.dataset.key];
+                    }
+                }
+            });
+
+            // Observador para destacar o link ativo na navegação
+            const sections = document.querySelectorAll('main > section[id]');
+            const navLinks = document.querySelectorAll('nav .nav-link');
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            const href = link.getAttribute('href');
+                            if (href === `#${id}` || (id === 'licae-conecta' && (href === '#conecta' || href === '#licae'))) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-40% 0px -60% 0px' });
+            sections.forEach(section => navObserver.observe(section));
+
+            // Efeito de brilho nos cards ao passar o mouse
+            document.body.addEventListener('mousemove', e => {
+                const card = e.target.closest('.card');
+                if (card) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                }
+            });
+
+            // Botão "Voltar ao Topo"
+            const backToTopButton = document.querySelector('.back-to-top');
+            window.addEventListener('scroll', () => {
+                backToTopButton.classList.toggle('visible', window.scrollY > 300);
+            });
+
+            // Mudança de estado da barra de navegação ao rolar
+            const nav = document.querySelector('nav');
+            const header = document.querySelector('header');
+            const body = document.body;
+            if (nav && header) {
+                const scrollThreshold = header.offsetHeight - 100; 
+                window.addEventListener('scroll', () => {
+                    const isScrolled = window.scrollY > scrollThreshold;
+                    nav.classList.toggle('scrolled', isScrolled);
+                    body.classList.toggle('scrolled', isScrolled);
+                }, { passive: true });
+            }
+            
+            // Funcionalidade de copiar email
+            document.getElementById('copy-email-link').addEventListener('click', function(event) {
+                event.preventDefault();
+                const emailToCopy = 'wevertonufv@gmail.com';
+                navigator.clipboard.writeText(emailToCopy).then(() => {
+                    const toast = document.getElementById('toast-notification');
+                    toast.textContent = `Email: ${emailToCopy} copiado!`;
+                    toast.classList.add('show');
+                    setTimeout(() => toast.classList.remove('show'), 3000);
+                });
+            });
+        });
+    </script>
     <script src="translations.js"></script>
+    <script src="particulas.js"></script>
+    
     <script>
         let currentLang = 'pt';
 
@@ -251,7 +386,7 @@
                 button.querySelector('.lang-en').classList.toggle('active', !isPt);
             });
             
-            if (window.githubScript?.renderAll) window.githubScript.renderAll();
+            if (window.githubScript_proj?.renderAll) window.githubScript_proj.renderAll();
         }
 
         window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
@@ -273,120 +408,8 @@
                 nav.classList.toggle('scrolled', window.scrollY > 50);
                 backToTopButton.classList.toggle('visible', window.scrollY > 300);
             });
-
-            // Script de Fundo com Partículas
-            const canvas = document.getElementById('particle-canvas');
-            if (canvas) {
-                const ctx = canvas.getContext('2d');
-                let particles = [];
-                const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-
-                function setCanvasSize() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                }
-
-                class Particle {
-                    constructor(x, y, dX, dY, s) { this.x = x; this.y = y; this.dX = dX; this.dY = dY; this.size = s; }
-                    draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'; ctx.fill(); }
-                    update() {
-                        if (this.x > canvas.width || this.x < 0) this.dX = -this.dX;
-                        if (this.y > canvas.height || this.y < 0) this.dY = -this.dY;
-                        this.x += this.dX; this.y += this.dY;
-                        this.draw();
-                    }
-                }
-
-                function init() {
-                    particles = [];
-                    let density = (canvas.width * canvas.height) / 15000;
-                    for (let i = 0; i < Math.min(density, 120); i++) {
-                        particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, (Math.random() * .4) - .2, (Math.random() * .4) - .2, Math.random() * 2 + 1));
-                    }
-                }
-
-                function connect() {
-                    for (let a = 0; a < particles.length; a++) {
-                        for (let b = a; b < particles.length; b++) {
-                            let d = Math.sqrt((particles[a].x - particles[b].x) ** 2 + (particles[a].y - particles[b].y) ** 2);
-                            if (d < 120) {
-                                ctx.strokeStyle = `rgba(148, 163, 184, ${ (1 - (d / 120)) * 0.2 })`;
-                                ctx.lineWidth = 1;
-                                ctx.beginPath();
-                                ctx.moveTo(particles[a].x, particles[a].y);
-                                ctx.lineTo(particles[b].x, particles[b].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                }
-
-                function animate() {
-                    requestAnimationFrame(animate);
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    particles.forEach(p => p.update());
-                    connect();
-                }
-
-                window.addEventListener('resize', debounce(() => { setCanvasSize(); init(); }));
-                setCanvasSize();
-                init();
-                animate();
-            }
         });
-
-        // Script para buscar repositórios do GitHub
-        window.githubScript = (function() {
-            const GITHUB_USER = 'WevertonGomesCosta'; const CACHE_KEY = 'gh_repos_cache_v9'; const CACHE_TS_KEY = 'gh_repos_cache_ts_v9'; const CACHE_TTL = 86400000; const GITHUB_PROXY_URL = 'https://corsproxy.io/?';
-            let allRepos = []; let currentFilter = '';
-            const listEl = document.getElementById('projects-list'); const metaEl = document.getElementById('projects-meta'); const searchEl = document.getElementById('project-search'); const clearBtn = document.getElementById('clear-btn');
-            function readCache() { try { const ts = Number(localStorage.getItem(CACHE_TS_KEY) || 0); if (Date.now() - ts < CACHE_TTL) return JSON.parse(localStorage.getItem(CACHE_KEY) || '[]'); } catch (e) { console.warn('Falha ao ler cache', e); } return null; }
-            function writeCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); localStorage.setItem(CACHE_TS_KEY, String(Date.now())); } catch (e) { console.warn('Falha ao escrever cache', e); } }
-            async function fetchAllPages(url) { let r = [], n = url; while (n) { const t = await fetch(`${GITHUB_PROXY_URL}${encodeURIComponent(n)}`); if (!t.ok) throw new Error(`API do GitHub falhou: ${t.status}`); const a = await t.json(); r = r.concat(a); const e = t.headers.get("Link"); n = null; if (e) { const o = e.split(",").find(t => t.includes('rel="next"')); if (o) { const c = o.match(/<([^>]+)>/); if (c) n = c[1]; } } } return r; }
-            async function fetchRepos() {
-                metaEl.textContent = translations[currentLang].fetching_repos;
-                const cache = readCache();
-                if (cache && cache.length) { allRepos = cache; renderAll(); return; }
-                try {
-                    const data = await fetchAllPages(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100`);
-                    allRepos = data.map(r => ({ name: r.name, html_url: r.html_url, description: r.description || '', language: r.language || '', stargazers_count: r.stargazers_count || 0, forks_count: r.forks_count || 0, updated_at: r.updated_at, topics: r.topics || [], has_pages: r.has_pages, homepage: r.homepage }));
-                    writeCache(allRepos);
-                    renderAll();
-                } catch (err) { console.error("Falha ao buscar no GitHub:", err); metaEl.textContent = translations[currentLang].fetch_error; renderAll(); }
-            }
-            function sortRepos(arr) { return [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)); }
-            function createCard(repo) {
-                const l = currentLang;
-                const card = document.createElement('div');
-                card.className = 'project-card';
-                card.setAttribute('role', 'listitem');
-                // Prioriza a URL da homepage do repositório, depois verifica o GitHub Pages
-                const siteUrl = repo.homepage || (repo.has_pages ? `https://${GITHUB_USER}.github.io/${repo.name}/` : null);
-                const liveSiteText = l === 'pt' ? 'Ver Site' : 'View Site';
-                const repoText = l === 'pt' ? 'Repositório' : 'Repository';
-                let actionsHtml = '';
-                if (siteUrl) {
-                    actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${translations[l].live_site_btn || liveSiteText}</a>`;
-                    actionsHtml += `<a class="link-btn secondary" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
-                } else {
-                    actionsHtml += `<a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[l].repo_btn || repoText}</a>`;
-                }
-                card.innerHTML = `<div class="project-top"><h3>${escapeHtml(titleCase(repo.name))}</h3><div class="project-meta"><span>⭐ ${repo.stargazers_count}</span><span>🍴 ${repo.forks_count}</span></div></div><p class="project-desc">${escapeHtml(repo.description || translations[l].no_description)}</p><div class="project-topics"></div><div class="project-meta" style="margin-top: auto;"><span>${escapeHtml(repo.language || '—')}</span></div><div class="actions">${actionsHtml}</div>`;
-                const topics = card.querySelector('.project-topics');
-                if (topics && repo.topics?.length) repo.topics.slice(0, 4).forEach(t => { const tag = document.createElement('span'); tag.className = 'topic-tag'; tag.textContent = t; topics.appendChild(tag); });
-                return card;
-            }
-            function render() { listEl.innerHTML = ''; const filter = currentFilter.trim().toLowerCase(); const filtered = filter ? allRepos.filter(r => r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) || (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))) : allRepos; const sorted = sortRepos(filtered); if (sorted.length === 0 && allRepos.length > 0) { listEl.innerHTML = `<div class="project-card" style="grid-column: 1 / -1;"><p class="project-desc">${translations[currentLang].no_repos_found}</p></div>`; } else { sorted.forEach(repo => listEl.appendChild(createCard(repo))); } metaEl.textContent = translations[currentLang].showing_repos(sorted.length, allRepos.length); }
-            function renderAll() { render(); metaEl.textContent = translations[currentLang].showing_repos(allRepos.length, allRepos.length); }
-            function titleCase(str) { return (str || '').replace(/[-_]/g, ' ').replace(/\w\S*/g, (t) => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase()); }
-            function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]); }
-            const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-            searchEl.addEventListener('input', debounce(e => { currentFilter = e.target.value; render(); }));
-            clearBtn.addEventListener('click', () => { searchEl.value = ''; currentFilter = ''; render(); searchEl.focus(); });
-            fetchRepos();
-            return { renderAll };
-        })();
     </script>
+    <script src="busca_github.js"></script>
 </body>
 </html>
-
