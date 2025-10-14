@@ -329,7 +329,11 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
     padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
-#page-projects .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+#page-projects .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); /* Valor mínimo diminuído */
+    gap: 20px;
+}
 #page-projects .project-card {
     background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
     border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; transition: all 0.4s ease;
