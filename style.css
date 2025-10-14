@@ -405,3 +405,35 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ---
+5. RESPONSIVIDADE (MEDIA QUERIES) - ADICIONADO
+--- */
+
+@media (max-width: 768px) {
+    /* Ajusta a grade da navegação para melhor espaçamento em telas menores */
+    body:not(#page-home) .nav-container {
+        grid-template-columns: auto 1fr auto; /* Colunas se ajustam ao conteúdo */
+        gap: 15px;
+        padding: 0 15px;
+    }
+
+    /* Reduz o tamanho do avatar para ocupar menos espaço */
+    body:not(#page-home) .nav-avatar {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Reduz o tamanho da fonte do nome e do título da página */
+    body:not(#page-home) .nav-brand-text,
+    body:not(#page-home) .nav-title {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Em telas muito pequenas, esconde o nome, deixando apenas o avatar */
+    body:not(#page-home) .nav-brand-text {
+        display: none;
+    }
+}
