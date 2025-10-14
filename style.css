@@ -331,8 +331,9 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
 }
 #page-projects .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); /* Valor mínimo diminuído */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
+    justify-content: center; /* Linha adicionada para centralizar os cards */
 }
 #page-projects .project-card {
     background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
