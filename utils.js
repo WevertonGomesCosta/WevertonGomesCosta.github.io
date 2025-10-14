@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 9.3.0
+ * @version 9.9.0
  */
 
 // =================================================================================
@@ -13,20 +13,33 @@
 const PageSetup = {
     init() {
         this.updateDates();
+        // Expõe a função de atualização para que possa ser chamada ao trocar de idioma
+        window.pageSetupScript = { renderAll: this.updateDates.bind(this) };
     },
     updateDates() {
+        // Atualiza o ano do copyright
         const copyrightYearEl = document.getElementById('copyright-year');
         if (copyrightYearEl) {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
+
+        // CORREÇÃO: Lógica de tradução para a data de "Última Atualização"
         const lastUpdatedEl = document.getElementById('last-updated-date');
         if (lastUpdatedEl) {
             const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
-            lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
+            const lang = window.currentLang || 'pt';
+            const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
+            
+            const dateString = lastModifiedDate.toLocaleDateString(locale, {
                 day: 'numeric',
                 month: 'long',
                 year: 'numeric'
             });
+            
+            // Pega o prefixo (Ex: "Última atualização:") do arquivo de traduções
+            const prefix = translations[lang]['last-updated-prefix'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
+            
+            lastUpdatedEl.innerHTML = `<span data-key="last-updated-prefix">${prefix}</span> ${dateString}`;
         }
     }
 };
@@ -235,12 +248,12 @@ const GithubReposModule = {
         const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
 
         let actionsHtml = '';
-        if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${trans['repo-live-site'] || 'Ver Site'}</a>`;
-        actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener">${trans['repo-view-repo'] || 'Repositório'}</a>`;
+        if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
+        actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener" data-key="repo-view-repo">${trans['repo-view-repo'] || 'Repositório'}</a>`;
         
         let metaBottomHtml = `<span class="badge">${repo.language || '—'}</span>`;
         if (this.config.isPaginated) {
-            metaBottomHtml += `<span class="small-muted">${trans.updated_at || 'Atualizado em'} ${new Date(repo.updated_at).toLocaleDateString()}</span>`;
+            metaBottomHtml += `<span class="small-muted"><span data-key="updated_at">${trans.updated_at || 'Atualizado em'}</span> ${new Date(repo.updated_at).toLocaleDateString()}</span>`;
         }
 
         card.innerHTML = `
@@ -271,10 +284,13 @@ const GithubReposModule = {
         const reposToDisplay = this.state.filteredRepos.slice(0, this.state.showingCount);
 
         if (reposToDisplay.length === 0) {
-            this.config.listEl.innerHTML = `<div class="project-card"><p>${trans.no_repos_found || 'Nenhum repositório encontrado.'}</p></div>`;
+            this.config.listEl.innerHTML = `<div class="project-card"><p data-key="no_repos_found">${trans.no_repos_found || 'Nenhum repositório encontrado.'}</p></div>`;
         } else {
             reposToDisplay.forEach(repo => this.config.listEl.appendChild(this.createCard(repo)));
         }
+        
+        if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
+        if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
 
         if (this.config.shownCountEl) this.config.shownCountEl.textContent = `${reposToDisplay.length} / ${this.state.filteredRepos.length}`;
         if (this.config.loadMoreBtnEl) {
@@ -366,18 +382,12 @@ const scholarScript = (function() {
         return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
     };
 
-    // MODIFICADO: Função de animação agora aceita uma velocidade
     function animateCountUp(el) {
         if (!el) return;
         const target = parseInt(el.dataset.target, 10);
         if (isNaN(target)) return;
-
-        // Define a velocidade baseada no ID do elemento
-        let speed = 20; // Velocidade padrão para citações
-        if (el.id.includes('h-') || el.id.includes('i10-')) {
-            speed = 70; // Velocidade mais lenta para os índices
-        }
-
+        let speed = 20;
+        if (el.id.includes('h-') || el.id.includes('i10-')) speed = 70;
         el.textContent = '0';
         let current = 0;
         const increment = Math.max(1, Math.ceil(target / 100));
@@ -389,7 +399,7 @@ const scholarScript = (function() {
             } else {
                 el.textContent = Math.ceil(current);
             }
-        }, speed); // Usa a velocidade definida
+        }, speed);
     }
     
     function setScholarMetrics() {
@@ -423,7 +433,7 @@ const scholarScript = (function() {
         const articlesToShow = isIndexPage ? filteredArticles.slice(0, showingPubsCount) : filteredArticles;
         grid.innerHTML = "";
         if (articlesToShow.length === 0) {
-            grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${trans.no_pubs_found}</p></div>`;
+            grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p data-key="no_pubs_found">${trans.no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`;
         } else {
             articlesToShow.forEach(art => grid.appendChild(createPublicationCard(art)));
         }
@@ -435,14 +445,26 @@ const scholarScript = (function() {
         const card = document.createElement("div");
         card.className = "card publication-card";
         const trans = translations[currentLang] || {};
-        const citationText = art.cited_by?.value ? `${trans['pub-cited-by']} ${art.cited_by.value} ${trans['pub-cited-by-times']}` : trans['pub-no-citation'];
+        
+        const citationText = art.cited_by?.value ? `${trans['pub-cited-by'] || 'Citado'} ${art.cited_by.value} ${trans['pub-cited-by-times'] || 'vezes'}` : (trans['pub-no-citation'] || 'Nenhuma citação');
+        const publishedText = `${trans['pub-published'] || 'Publicado'}: ${art.year} ${trans['pub-in'] || 'em'} <em>${art.journalTitle || 'N/A'}</em>`;
+        const readText = trans['pub-read'] || 'Ler publicação';
+        
         const doiHtml = art.doi ? `<div class="publication-doi"><a href="${art.doiLink}" target="_blank" rel="noopener" title="DOI: ${art.doi}"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/></a><a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a></div>` : '';
-        card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> ${doiHtml} <p class="publication-meta">${trans['pub-published']}: ${art.year} ${trans['pub-in']} <em>${art.journalTitle}</em></p><p class="citations">${citationText}</p><a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link">${trans['pub-read']}</a>`;
+        
+        card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> 
+            ${doiHtml} 
+            <p class="publication-meta">${publishedText}</p>
+            <p class="citations">${citationText}</p>
+            <a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link" data-key="pub-read">${readText}</a>`;
         return card;
     }
 
     function _animateChart(graphData, articles) {
         const containerId = 'interactive-scholar-chart-container';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
         const trans = translations[currentLang] || {};
         const yearlyData = {};
         
@@ -454,7 +476,7 @@ const scholarScript = (function() {
             }
         });
         
-        const sortedYears = Object.keys(yearlyData).filter(year => yearlyData[year].pubs > 0 || yearlyData[year].citations > 0).sort((a, b) => a - b);
+        const sortedYears = Object.keys(yearlyData).sort((a, b) => a - b);
         if (sortedYears.length === 0) return;
 
         const fullYears = sortedYears, fullCitCounts = sortedYears.map(y => yearlyData[y].citations || 0), fullPubCounts = sortedYears.map(y => yearlyData[y].pubs || 0);
@@ -462,20 +484,22 @@ const scholarScript = (function() {
         const fullCustomData = sortedYears.map(y => ({ pubs: yearlyData[y].pubs || 0 }));
         
         const isMobile = window.innerWidth < 768, maxCitation = Math.max(...fullCitCounts, 0);
-        const chartTitle = isMobile ? trans['chart-title-mobile'] : trans['chart-title'];
+        const chartTitle = isMobile ? (trans['chart-title-mobile'] || 'Citações/Ano') : (trans['chart-title'] || 'Citações por Ano');
         const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
+        const hoverTemplate = `<b>${trans['chart-hover-year'] || 'Ano'}: %{x}</b><br>${trans['chart-hover-citations'] || 'Citações'}: <b>%{y}</b><br>${trans['chart-hover-pubs'] || 'Publicações'}: <b>%{customdata.pubs}</b><extra></extra>`;
 
         const layout = {
             title: { text: chartTitle, x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
             paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' }, dragmode: false,
-            xaxis: { title: { text: trans['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
-            yaxis: { title: { text: trans['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
+            xaxis: { title: { text: trans['chart-xaxis-title'] || 'Ano de Publicação', font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
+            yaxis: { title: { text: trans['chart-yaxis-title'] || 'Número de Citações', font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
             margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 }, hovermode: 'closest', showlegend: false, autosize: true
         };
         const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-        const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>', mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: trans['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' } } };
+        const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: hoverTemplate, mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: trans['chart-colorbar-title'] || 'Pubs', thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' } } };
         const lineTrace = { x: fullYears, y: [], type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none' };
 
+        container.innerHTML = '';
         Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
             gd.on('plotly_click', data => {
                 if (data.points.length > 0) {
@@ -513,6 +537,7 @@ const scholarScript = (function() {
     
     function updateFilterUI() {
         const controlsContainer = document.querySelector('#publicacoes .controls');
+        if (!controlsContainer) return;
         let filterChip = document.getElementById('year-filter-chip');
         if (activeYearFilter) {
             if (!filterChip) {
@@ -543,23 +568,8 @@ const scholarScript = (function() {
             const hasMore = shown < total;
             const trans = translations[currentLang] || {};
             toggleBtn.style.display = (isIndexPage && hasMore) ? 'inline-block' : 'none';
-            toggleBtn.textContent = hasMore ? trans['show-more'] : trans['show-less'];
+            toggleBtn.textContent = trans['show-more'] || 'Ver mais';
         }
-    }
-
-    function initializePublications() {
-        const grid = UI.pubsGrid();
-        if (!grid) return;
-        grid.innerHTML = Array(isIndexPage ? 3 : 6).fill('<div class="skeleton-card"></div>').join('');
-        
-        if (window.fallbackData?.scholarData?.articles) {
-            allArticles = window.fallbackData.scholarData.articles;
-        } else {
-            console.error("Dados de fallback para publicações não encontrados.");
-            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações.</div>`;
-            return;
-        }
-        renderPublications();
     }
     
     function attachEventListeners() {
@@ -587,27 +597,37 @@ const scholarScript = (function() {
         const toggleBtn = UI.pubsToggleBtn();
         if (toggleBtn) {
             toggleBtn.addEventListener('click', () => { 
-                showingPubsCount += 3; 
+                showingPubsCount = allArticles.length;
                 renderPublications(); 
             });
         }
     }
 
     function reRenderWithCurrentLang() {
-        if(isIndexPage) {
+        const trans = translations[currentLang] || {};
+        const clearBtn = UI.pubClearBtn();
+        
+        if (clearBtn) {
+            clearBtn.textContent = trans['clear-btn'] || 'Limpar';
+        }
+        
+        if (isIndexPage) {
             renderInteractiveChart(citationGraphData, allArticles);
         }
+        
         renderPublications();
     }
 
-    async function init() {
+    function init() {
         if (!document.getElementById('publicacoes-grid')) return;
 
         isIndexPage = !!UI.chartContainer();
         if (!isIndexPage) showingPubsCount = Infinity;
+        
+        allArticles = window.fallbackData?.scholarData?.articles || [];
 
         attachEventListeners();
-        await initializePublications();
+        renderPublications();
 
         if (isIndexPage) {
             const metricsCard = document.querySelector('.scholar-summary-card');
@@ -621,7 +641,7 @@ const scholarScript = (function() {
                             observer.unobserve(entry.target);
                         }
                     });
-                }, { threshold: 0.3 }); 
+                }, { threshold: 0.1 }); 
 
                 metricsObserver.observe(metricsCard);
             } else {
@@ -630,6 +650,8 @@ const scholarScript = (function() {
                 renderInteractiveChart(citationGraphData, allArticles);
             }
         }
+        
+        window.scholarScript = { renderAll: reRenderWithCurrentLang };
     }
     
     return { 
@@ -893,25 +915,47 @@ const CvPdfGenerator = {
 // =================================================================================
 // Inicializador Global
 // =================================================================================
-document.addEventListener("DOMContentLoaded", () => {
+
+function initializePageComponents() {
     PageSetup.init();
     ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
-    scholarScript.init(); // Este init agora configura o observer
+    
+    scholarScript.init();
 
     if (document.getElementById('projects-list')) {
-        if (document.getElementById('toggle-more')) {
-            GithubReposModule.init({
-                listSelector: '#projects-list', metaSelector: '#projects-meta', searchSelector: '#project-search',
-                clearBtnSelector: '#clear-btn', loadMoreBtnSelector: '#toggle-more', shownCountSelector: '#shown-count',
-                isPaginated: true, initialCount: 3, incrementCount: 3
-            });
-        } else {
-            GithubReposModule.init({
-                listSelector: '#projects-list', metaSelector: '#projects-meta', searchSelector: '#project-search',
-                clearBtnSelector: '#clear-btn', isPaginated: false
-            });
-        }
+        GithubReposModule.init({
+            listSelector: '#projects-list',
+            metaSelector: '#projects-meta',
+            searchSelector: '#project-search',
+            clearBtnSelector: '#clear-btn',
+            loadMoreBtnSelector: document.getElementById('toggle-more') ? '#toggle-more' : undefined,
+            shownCountSelector: '#shown-count',
+            isPaginated: !!document.getElementById('toggle-more'),
+            initialCount: 3,
+            incrementCount: 3
+        });
     }
-});
+}
+
+function waitForFallbackDataAndInitialize() {
+    if (window.fallbackData) {
+        initializePageComponents();
+    } else {
+        let attempts = 0;
+        const interval = setInterval(() => {
+            attempts++;
+            if (window.fallbackData) {
+                clearInterval(interval);
+                initializePageComponents();
+            } else if (attempts > 50) { 
+                clearInterval(interval);
+                console.error("Os dados de fallback (fallback-data.js) não foram carregados a tempo.");
+                initializePageComponents(); 
+            }
+        }, 100);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", waitForFallbackDataAndInitialize);

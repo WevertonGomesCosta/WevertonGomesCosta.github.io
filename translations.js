@@ -2,7 +2,7 @@
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
  * A lógica de busca de dados foi removida e centralizada em utils.js (modo fallback).
- * @version 2.6.0
+ * @version 2.9.0
  */
 
 const translations = {
@@ -166,8 +166,12 @@ const translations = {
         'no_pubs_found': 'Nenhuma publicação encontrada com os filtros aplicados.',
         'footer-bio': 'Cientista de dados apaixonado por aplicar estatística e IA para impulsionar a inovação no melhoramento genético e agronegócio.',
         'footer-sitemap': 'Mapa do Site', 'footer-academic-profiles': 'Perfis Acadêmicos', 'footer-professional-profiles': 'Redes e Perfis',
-        'footer-license-text-short': 'Licença CC BY-SA 4.0', 'privacy-policy': 'Política de Privacidade', 'footer-update-text': 'Última atualização:', 'footer-location': 'Viçosa - MG, Brasil',
-        'privacy-title': "Política de Privacidade", 'privacy-last-updated': "Última atualização", 'privacy-intro-title': "1. Introdução", 'privacy-intro-p': "Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.",
+        'footer-license-text-short': 'Licença CC BY-SA 4.0', 'privacy-policy': 'Política de Privacidade', 
+        'footer-update-text': 'Última atualização', // CORREÇÃO: Removido ":"
+        'footer-location': 'Viçosa - MG, Brasil',
+        'privacy-title': "Política de Privacidade", 
+        'privacy-last-updated': "Última atualização", // CORREÇÃO: Removido ":"
+        'privacy-intro-title': "1. Introdução", 'privacy-intro-p': "Esta Política de Privacidade descreve como as informações pessoais são coletadas, usadas e compartilhadas quando você visita este site e utiliza o formulário de contato.",
         'privacy-collection-title': "2. Coleta de Dados", 'privacy-collection-p1': "As únicas informações pessoais que coletamos são aquelas que você voluntariamente nos fornece através do formulário de contato. Isso inclui:", 'privacy-collection-li1': "Nome", 'privacy-collection-li2': "Endereço de email", 'privacy-collection-li3': "Assunto da mensagem", 'privacy-collection-li4': "Conteúdo da mensagem", 'privacy-collection-p2': "Não utilizamos cookies para rastreamento ou coleta de dados de navegação.",
         'privacy-usage-title': "3. Uso de Dados", 'privacy-usage-p': "As informações fornecidas no formulário de contato são utilizadas exclusivamente para a finalidade de responder à sua solicitação ou mensagem. Seus dados não serão armazenados neste site, nem utilizados para fins de marketing ou compartilhados com terceiros, exceto o serviço de processamento de formulários.",
         'privacy-services-title': "4. Serviços de Terceiros", 'privacy-services-p': "Este site utiliza os seguintes serviços de terceiros:", 'privacy-services-li1': "Para processar e encaminhar as mensagens enviadas através do formulário de contato para o meu email. A Formspree possui sua própria política de privacidade, que você pode consultar no site deles.", 'privacy-services-li2': "Para a hospedagem deste site.", 'privacy-services-li3': "Para otimização de desempenho e segurança.",
@@ -292,8 +296,12 @@ const translations = {
         'no_pubs_found': 'No publications found with the applied filters.',
         'footer-bio': 'A data scientist passionate about applying statistics and AI to drive innovation in genetic improvement and agribusiness.',
         'footer-sitemap': 'Sitemap', 'footer-academic-profiles': 'Academic Profiles', 'footer-professional-profiles': 'Networks & Profiles',
-        'footer-license-text-short': 'License CC BY-SA 4.0', 'privacy-policy': 'Privacy Policy', 'footer-update-text': 'Last updated:', 'footer-location': 'Viçosa - MG, Brazil',
-        "privacy-title": "Privacy Policy", "privacy-last-updated": "Last updated", "privacy-intro-title": "1. Introduction", "privacy-intro-p": "This Privacy Policy describes how personal information is collected, used, and shared when you visit this website and use the contact form.",
+        'footer-license-text-short': 'License CC BY-SA 4.0', 'privacy-policy': 'Privacy Policy', 
+        'footer-update-text': 'Last updated', // CORRECTION: Removed ":"
+        'footer-location': 'Viçosa - MG, Brazil',
+        "privacy-title": "Privacy Policy", 
+        "privacy-last-updated": "Last updated", // CORRECTION: Removed ":"
+        "privacy-intro-title": "1. Introduction", "privacy-intro-p": "This Privacy Policy describes how personal information is collected, used, and shared when you visit this website and use the contact form.",
         "privacy-collection-title": "2. Data Collection", "privacy-collection-p1": "The only personal information we collect is what you voluntarily provide through the contact form. This includes:", "privacy-collection-li1": "Name", "privacy-collection-li2": "Email address", "privacy-collection-li3": "Message subject", "privacy-collection-li4": "Message content", "privacy-collection-p2": "We do not use cookies for tracking or collecting navigation data.",
         "privacy-usage-title": "3. Use of Data", "privacy-usage-p": "The information provided in the contact form is used exclusively for the purpose of responding to your request or message. Your data will not be stored on this site, used for marketing purposes, or shared with third parties, except for the form processing service.",
         "privacy-services-title": "4. Third-Party Services", "privacy-services-p": "This site uses the following third-party services:", "privacy-services-li1": "To process and forward messages sent through the contact form to my email. Formspree has its own privacy policy, which you can consult on their website.", "privacy-services-li2": "For hosting this site.", "privacy-services-li3": "For performance and security optimization.",
@@ -329,21 +337,23 @@ const App = {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
 
-        const lastUpdatedEl = document.getElementById('last-updated-date');
-        if (lastUpdatedEl) {
-            const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
-            lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
-                day: 'numeric', month: 'long', year: 'numeric'
-            });
-        }
-        
-        const updateDateEl = document.getElementById('update-date');
-        if (updateDateEl) {
-             updateDateEl.textContent = new Date().toLocaleDateString('pt-BR', {
-                day: 'numeric', month: 'long', year: 'numeric'
-            });
-        }
+        const setDate = (elementId) => {
+            const el = document.getElementById(elementId);
+            if (el) {
+                const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
+                const locale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
+                el.textContent = lastModifiedDate.toLocaleDateString(locale, {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+            }
+        };
+
+        setDate('last-updated-date');
+        setDate('update-date');
     },
+
 
     initScrollAnimations() {
         const revealObserver = new IntersectionObserver((entries) => {
@@ -561,7 +571,6 @@ function setLanguage(lang) {
     });
 
     const isPt = lang === 'pt';
-    // CORRIGIDO: Seletor agora inclui a classe .lang-switch do menu
     document.querySelectorAll('.lang-switcher, .lang-switch-fixed, .lang-switch').forEach(button => {
         button.querySelector('.lang-pt')?.classList.toggle('active', isPt);
         button.querySelector('.lang-en')?.classList.toggle('active', !isPt);
@@ -573,6 +582,7 @@ function setLanguage(lang) {
         typeAndEraseSubtitle();
     }
     
+    App.updateFooterInfo();
     if (window.githubScript?.renderAll) window.githubScript.renderAll();
     if (window.scholarScript?.renderAll) window.scholarScript.renderAll();
 }
