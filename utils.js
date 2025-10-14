@@ -778,9 +778,12 @@ const scholarScript = (function() {
         window.scholarScript = { renderAll: reRenderWithCurrentLang };
     }
     
+// Em utils.js, dentro de scholarScript - CORRIGIDO
+
     return { 
         init, 
-        renderAll: reRenderWithCurrentLang
+        renderAll: reRenderWithCurrentLang,
+        allArticles: () => allArticles // <-- ADICIONE ESTA LINHA
     };
 })();
 
@@ -797,11 +800,13 @@ const CvPdfGenerator = {
             });
         }
     },
+
     stripHtml(html) {
         if (!html) return "";
         let doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
     },
+
     async generateCvPdf() {
         const button = document.getElementById('download-cv-btn');
         const originalButtonHTML = button.innerHTML;
@@ -843,7 +848,9 @@ const CvPdfGenerator = {
                     reader.onloadend = () => resolve(reader.result);
                     reader.readAsDataURL(blob);
                 });
-            } catch (e) { console.error("Não foi possível carregar a imagem do avatar:", e); }
+            } catch (e) {
+                console.error("Não foi possível carregar a imagem do avatar:", e);
+            }
 
             if (avatarDataUrl) {
                 doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
@@ -871,6 +878,7 @@ const CvPdfGenerator = {
             const addJustifiedText = (content, options = {}) => {
                 const { fontSize = 10, x = margin, width = max_width, color = 80 } = options;
                 if (!content || content.trim() === "") return;
+                
                 doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
                 const cleanedContent = this.stripHtml(content).replace(/\s+/g, ' ').trim();
                 const lines = doc.splitTextToSize(cleanedContent, width);
@@ -880,6 +888,7 @@ const CvPdfGenerator = {
                 y += textHeight + 5;
             };
             
+            // --- SECTIONS ---
             addSectionTitle(pdfStrings['about-title'] || 'SOBRE MIM');
             addJustifiedText(langContent['about-p1']);
             addJustifiedText(langContent['about-p2']);
@@ -915,7 +924,7 @@ const CvPdfGenerator = {
                 y += Math.max(column1.length, column2.length) * lineHeight + 10;
             }
             
-            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ATUAÇÃO');
+            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ESPECIALIZAÇÃO');
             document.querySelectorAll('#experiencia .card').forEach(card => {
                  const title = `• ${card.querySelector('h3').innerText}:`;
                  const description = card.querySelector('p').innerText;
@@ -959,20 +968,24 @@ const CvPdfGenerator = {
                 y += item_gap;
             });
 
+            // MODIFICADO: Seção de Projetos com links
             addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
             (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
                 checkPageBreak(60);
                 const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
                 const linkUrl = repo.homepage || repo.html_url;
                 const linkText = repo.homepage ? '[Ver Site]' : '[Repositório]';
+
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 doc.text(repoTitle, margin, y);
+
                 if (linkUrl) {
                     const titleWidth = doc.getTextWidth(repoTitle);
                     doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
                     doc.textWithLink(linkText, margin + titleWidth + 5, y, { url: linkUrl });
                 }
                 y += 15;
+
                 addJustifiedText(repo.description, { x: margin + 10, width: max_width - 10 });
                 y += item_gap / 2;
             });
@@ -981,24 +994,29 @@ const CvPdfGenerator = {
             doc.textWithLink("Para mais projetos, acesse a página de projetos do site.", margin, y, { url: projectsPageUrl });
             y += 20;
             
+            // MODIFICADO: Seção de Publicações com links DOI
             addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
             (scholarScript.allArticles() || []).slice(0, 3).forEach(art => {
                 checkPageBreak(80);
+            
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
                 doc.text(titleLines, margin, y);
                 y += titleLines.length * 12 + 5;
+            
                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
                 const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`;
                 const metaLines = doc.splitTextToSize(metaText, max_width - 10);
                 doc.text(metaLines, margin + 10, y);
                 y += metaLines.length * 12 + 5;
+            
                 if (art.cited_by?.value) {
                     doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(100);
                     const citationText = `Citado ${art.cited_by.value} vezes`;
                     doc.text(citationText, margin + 10, y);
                     y += 12;
                 }
+
                 if (art.doi && art.doiLink) {
                     doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
                     const doiLabel = "DOI: ";
@@ -1008,6 +1026,7 @@ const CvPdfGenerator = {
                     doc.textWithLink(art.doi, margin + 10 + doiLabelWidth, y, { url: art.doiLink });
                     y += 12;
                 }
+            
                 y += item_gap / 2; 
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
@@ -1044,7 +1063,6 @@ function initializePageComponents() {
     ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
-    
     scholarScript.init();
 
     if (document.getElementById('projects-list')) {
