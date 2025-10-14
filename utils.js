@@ -492,8 +492,10 @@ const scholarScript = (function() {
         const isMobile = window.innerWidth < 768;
         const maxCitation = Math.max(...chartData.map(d => d.citations), 0);
         const maxPubs = Math.max(...chartData.map(d => d.pubs), 1);
+        const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
 
         const scaledPubSizes = chartData.map(d => Math.max(8, (d.pubs / maxPubs) * 40));
+        const finalYValues = chartData.map(d => d.citations);
 
         const hoverTemplate = `<b>${trans['chart-hover-year'] || 'Ano'}: %{x}</b><br>` +
                               `${trans['chart-hover-citations'] || 'Citações'}: <b>%{y}</b><br>` +
@@ -518,7 +520,7 @@ const scholarScript = (function() {
             yaxis: {
                 title: { text: trans['chart-yaxis-title'] || 'Número de Citações', font: { size: isMobile ? 11 : 12 } },
                 gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)',
-                range: [maxCitation > 5 ? -maxCitation * 0.1 : -1, maxCitation === 0 ? 10 : maxCitation * 1.15],
+                range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.15],
                 fixedrange: true, automargin: true
             },
             margin: { l: isMobile ? 50 : 60, r: isMobile ? 20 : 40, b: isMobile ? 120 : 80, t: 60, pad: 4 },
@@ -528,16 +530,21 @@ const scholarScript = (function() {
         };
 
         const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
+        
+        // --- Animação ---
+        // 1. Definir o estado inicial dos dados (no fundo do gráfico)
+        const initialYValues = Array(sortedYears.length).fill(yAxisMin);
 
         const bubbleTrace = {
             x: chartData.map(d => d.year),
-            y: chartData.map(d => d.citations),
+            y: initialYValues, // Inicia no fundo
             customdata: chartData,
             hovertemplate: hoverTemplate,
             mode: 'markers',
             marker: {
                 size: scaledPubSizes,
                 color: chartData.map(d => d.pubs),
+                opacity: 0, // Inicia invisível
                 colorscale: [['0.0', 'rgba(16, 185, 129, 0.4)'], ['1.0', 'rgba(16, 185, 129, 1.0)']],
                 showscale: true,
                 line: { color: 'rgba(11, 110, 78, 0.6)', width: 1 },
@@ -554,13 +561,15 @@ const scholarScript = (function() {
 
         const lineTrace = {
             x: chartData.map(d => d.year),
-            y: chartData.map(d => d.citations),
+            y: initialYValues, // Inicia no fundo
             type: 'scatter', mode: 'lines',
             line: { color: 'var(--accent)', width: 2.5, shape: 'spline', smoothing: 0.8 },
             hoverinfo: 'none'
         };
 
         container.innerHTML = '';
+        
+        // 2. Plotar o gráfico no estado inicial
         Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
             gd.on('plotly_click', data => {
                 if (data.points.length > 0) {
@@ -572,9 +581,21 @@ const scholarScript = (function() {
                     updateFilterUI();
                 }
             });
+
+            // 3. Animar para o estado final
+            Plotly.animate(containerId, {
+                data: [
+                    { y: finalYValues, marker: { opacity: 1 } },
+                    { y: finalYValues }
+                ],
+                traces: [0, 1], // Animar ambos os traços (bolhas e linha)
+                layout: {}
+            }, {
+                transition: { duration: 1500, easing: 'cubic-in-out' },
+                frame: { duration: 1500, redraw: false }
+            });
         });
     }
-
 
     function renderInteractiveChart(graphData, articles) {
         const container = UI.chartContainer();
@@ -653,7 +674,10 @@ const scholarScript = (function() {
         const loadMoreBtn = UI.pubsLoadMoreBtn();
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', () => { 
-                const filteredTotal = allArticles.filter(art => !activeYearFilter || art.year === activeYearFilter.toString()).length;
+                const searchFilter = (UI.pubSearchInput()?.value || '').trim().toLowerCase();
+                let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
+                const filteredTotal = searchFilter ? baseList.filter(art => normalizeTitle(art.title).includes(searchFilter) || (art.journalTitle || '').toLowerCase().includes(searchFilter) || (art.year || '').includes(searchFilter)).length : baseList.length;
+
                 showingPubsCount = Math.min(showingPubsCount + pubsPerLoad, filteredTotal);
                 renderPublications(); 
             });
