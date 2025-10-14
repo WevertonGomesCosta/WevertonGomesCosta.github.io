@@ -2,7 +2,7 @@
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
  * A lógica de busca de dados foi removida e centralizada em utils.js (modo fallback).
- * @version 2.3.0
+ * @version 2.4.0
  */
 
 const translations = {
@@ -305,7 +305,6 @@ const translations = {
         'pdf': { 'about-title': 'ABOUT ME', 'services-title': 'HOW I CAN HELP', 'skills-title': 'TECHNICAL SKILLS', 'expertise-title': 'AREAS OF PRACTICE', 'education-title': 'ACADEMIC BACKGROUND', 'projects-title': 'MAIN PROJECTS', 'publications-title': 'MAIN PUBLICATIONS' }
     }
 };
-
 let currentLang = 'pt';
 let subtitleTimeout;
 let subtitleIndex = 0;
@@ -374,23 +373,22 @@ const App = {
         sections.forEach(section => navObserver.observe(section));
     },
     
-    // MODIFICADO: Lógica do botão de tradução corrigida aqui
+    // ADICIONADO: Lógica para o botão "Ver mais" e copiar email
     initEventListeners() {
         const nav = document.querySelector('nav');
         const header = document.querySelector('header');
-        const body = document.body; // Seleciona o body
+        const body = document.body;
         const backToTopButton = document.querySelector('.back-to-top');
         
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
             
             if (nav) {
-                if (header) { // Lógica específica para o index.html
+                if (header) { 
                     const isHeaderScrolled = scrollY > header.offsetHeight - 100;
                     nav.classList.toggle('scrolled', isHeaderScrolled);
-                    // Adiciona/remove a classe 'scrolled' no body para esconder o botão flutuante
                     body.classList.toggle('scrolled', isHeaderScrolled);
-                } else { // Lógica para outras páginas
+                } else { 
                     nav.classList.toggle('scrolled', scrollY > 50);
                 }
             }
@@ -409,6 +407,58 @@ const App = {
                 card.style.setProperty('--mouse-y', `${y}px`);
             }
         });
+
+        // Event listener para a timeline (botão "Ver mais")
+        const timeline = document.querySelector('.timeline');
+        if (timeline) {
+            timeline.addEventListener('click', this.handleTimelineToggle.bind(this));
+        }
+        
+        // Event listener para copiar email
+        const copyEmailLink = document.getElementById('copy-email-link');
+        if (copyEmailLink) {
+            copyEmailLink.addEventListener('click', this.handleEmailCopy.bind(this));
+        }
+    },
+
+    // ADICIONADO: Função que manipula o clique no "Ver mais"
+    handleTimelineToggle(event) {
+        const button = event.target.closest('.toggle-details-btn');
+        if (!button) return;
+
+        const item = button.closest('.timeline-item');
+        item.classList.toggle('expanded');
+        
+        const moreText = translations[currentLang]['toggle-details-more'] || 'Ver mais';
+        const lessText = translations[currentLang]['toggle-details-less'] || 'Ver menos';
+        
+        button.textContent = item.classList.contains('expanded') ? lessText : moreText;
+        
+        const details = item.querySelector('.timeline-details');
+        if (item.classList.contains('expanded') && details.dataset.key) {
+            details.innerHTML = translations[currentLang][details.dataset.key] || '';
+        }
+    },
+
+    // ADICIONADO: Função para copiar email
+    handleEmailCopy(event) {
+        event.preventDefault();
+        const emailToCopy = 'wevertonufv@gmail.com';
+        navigator.clipboard.writeText(emailToCopy).then(() => {
+            this.showToast(`Email: ${emailToCopy} copiado!`);
+        }).catch(err => {
+            console.error('Failed to copy email: ', err);
+            this.showToast('Falha ao copiar o email.');
+        });
+    },
+
+    showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        if (toast) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
     },
 };
 
