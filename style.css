@@ -444,9 +444,13 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
 }
 
 /* Metadados */
+/* Em style.css - CORRIGIDO */
 #page-projects .project-meta {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: row; é o padrão, então não precisa declarar */
+    flex-direction: row;  /* Adicionado para clareza */
+    flex-wrap: wrap;      /* Adicionado para quebrar a linha se não houver espaço */
+    align-items: center;  /* Adicionado para alinhar verticalmente */
     gap: 12px;
     margin-top: auto;
     padding-top: 12px;
