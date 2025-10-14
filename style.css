@@ -329,11 +329,24 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
     padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
+/* NOVO CÓDIGO PARA O GRID DINÂMICO */
 #page-projects .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    justify-content: center; /* Linha adicionada para centralizar os cards */
+    /* Para telas grandes (desktops): 3 colunas */
+    grid-template-columns: repeat(3, 1fr);
+}
+/* Para telas médias (tablets): 2 colunas */
+@media (max-width: 1024px) {
+    #page-projects .projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* Para telas pequenas (celulares): 1 coluna */
+@media (max-width: 768px) {
+    #page-projects .projects-grid {
+        grid-template-columns: 1fr;
+    }
 }
 #page-projects .project-card {
     background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
