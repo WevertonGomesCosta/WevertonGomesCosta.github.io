@@ -351,10 +351,10 @@ const GithubReposModule = {
 const scholarScript = (function() {
     'use strict';
     const initialPubsToShow = 3;
-    const pubsPerLoad = 3; // Quantidade a ser carregada por clique
+    const pubsPerLoad = 3;
     let allArticles = [];
     let citationGraphData = [];
-    let showingPubsCount = 0; // Inicia com 0 para carregar o primeiro lote
+    let showingPubsCount = 0;
     let isIndexPage = false;
     let activeYearFilter = null;
 
@@ -371,7 +371,7 @@ const scholarScript = (function() {
         pubSearchInput: () => document.getElementById('publication-search'),
         pubClearBtn: () => document.getElementById('publication-clear-btn'),
         pubsShownCount: () => document.getElementById('pubs-shown-count'),
-        pubsLoadMoreBtn: () => document.getElementById('pubs-toggle-more'), // Renomeado para clareza
+        pubsLoadMoreBtn: () => document.getElementById('pubs-toggle-more'),
     };
 
     const normalizeTitle = (str) => {
@@ -379,48 +379,33 @@ const scholarScript = (function() {
         return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
     };
 
-    /**
-     * Anima a contagem de um número de 0 até o valor alvo com um efeito suave.
-     * @param {HTMLElement} el - O elemento cujo texto será animado.
-     */
     function animateCountUp(el) {
         if (!el) return;
         const target = parseInt(el.dataset.target, 10);
-        
         if (isNaN(target)) {
             el.textContent = el.dataset.target || '0';
             return;
         }
-
-        const duration = 2000; // Duração da animação em milissegundos
-        const easeOutQuint = t => 1 - Math.pow(1 - t, 5); // Easing: começa rápido, termina devagar
+        const duration = 2000;
+        const easeOutQuint = t => 1 - Math.pow(1 - t, 5);
         let startTime = null;
 
         function animationStep(timestamp) {
-            if (!startTime) {
-                startTime = timestamp;
-            }
-
+            if (!startTime) startTime = timestamp;
             const elapsed = timestamp - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const easedProgress = easeOutQuint(progress);
-            
             const currentValue = Math.floor(easedProgress * target);
-
-            // Usa toLocaleString para formatar o número (ex: 1,234)
             el.textContent = currentValue.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
-
             if (progress < 1) {
                 requestAnimationFrame(animationStep);
             } else {
-                // Garante que o valor final seja exatamente o alvo e formatado
                 el.textContent = target.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
             }
         }
-
         requestAnimationFrame(animationStep);
     }
-    
+
     function setScholarMetrics() {
         if (window.fallbackData?.scholarData?.profile) {
             const { table, graph } = window.fallbackData.scholarData.profile.cited_by;
@@ -435,7 +420,7 @@ const scholarScript = (function() {
              console.error("Dados de fallback para métricas não encontrados.");
         }
     }
-    
+
     function startMetricsAnimation() {
         UI.scholarMetrics().forEach(animateCountUp);
     }
@@ -480,88 +465,116 @@ const scholarScript = (function() {
     }
 
     function _animateChart(graphData, articles) {
-            const containerId = 'interactive-scholar-chart-container';
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            const trans = translations[currentLang] || {};
-            const yearlyData = {};
-            
-            (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
-            (articles || []).forEach(article => {
-                const year = parseInt(article.year);
-                if (year) {
-                    if (yearlyData[year]) { yearlyData[year].pubs++; } else { yearlyData[year] = { citations: 0, pubs: 1 }; }
+        const containerId = 'interactive-scholar-chart-container';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const trans = translations[currentLang] || {};
+        const yearlyData = {};
+
+        (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
+        (articles || []).forEach(article => {
+            const year = parseInt(article.year, 10);
+            if (year && yearlyData[year]) {
+                yearlyData[year].pubs++;
+            }
+        });
+
+        const sortedYears = Object.keys(yearlyData).map(Number).sort((a, b) => a - b);
+        if (sortedYears.length === 0) return;
+
+        const chartData = sortedYears.map(year => ({
+            year: year,
+            citations: yearlyData[year].citations || 0,
+            pubs: yearlyData[year].pubs || 0
+        }));
+
+        const isMobile = window.innerWidth < 768;
+        const maxCitation = Math.max(...chartData.map(d => d.citations), 0);
+        const maxPubs = Math.max(...chartData.map(d => d.pubs), 1);
+
+        const scaledPubSizes = chartData.map(d => Math.max(8, (d.pubs / maxPubs) * 40));
+
+        const hoverTemplate = `<b>${trans['chart-hover-year'] || 'Ano'}: %{x}</b><br>` +
+                              `${trans['chart-hover-citations'] || 'Citações'}: <b>%{y}</b><br>` +
+                              `${trans['chart-hover-pubs'] || 'Publicações'}: <b>%{customdata.pubs}</b><extra></extra>`;
+
+        const layout = {
+            title: {
+                text: isMobile ? (trans['chart-title-mobile'] || 'Citações/Ano') : (trans['chart-title'] || 'Citações por Ano'),
+                x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top',
+                font: { size: isMobile ? 16 : 18, color: 'var(--text)' }
+            },
+            paper_bgcolor: 'transparent',
+            plot_bgcolor: 'transparent',
+            font: { color: 'var(--text-muted)', family: 'inherit' },
+            dragmode: false,
+            xaxis: {
+                title: { text: trans['chart-xaxis-title'] || 'Ano de Publicação', font: { size: isMobile ? 11 : 12 } },
+                gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)',
+                tickvals: sortedYears, ticktext: sortedYears,
+                fixedrange: true, tickangle: isMobile ? -60 : 0, automargin: true
+            },
+            yaxis: {
+                title: { text: trans['chart-yaxis-title'] || 'Número de Citações', font: { size: isMobile ? 11 : 12 } },
+                gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)',
+                range: [maxCitation > 5 ? -maxCitation * 0.1 : -1, maxCitation === 0 ? 10 : maxCitation * 1.15],
+                fixedrange: true, automargin: true
+            },
+            margin: { l: isMobile ? 50 : 60, r: isMobile ? 20 : 40, b: isMobile ? 120 : 80, t: 60, pad: 4 },
+            hovermode: 'closest',
+            showlegend: false,
+            autosize: true
+        };
+
+        const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
+
+        const bubbleTrace = {
+            x: chartData.map(d => d.year),
+            y: chartData.map(d => d.citations),
+            customdata: chartData,
+            hovertemplate: hoverTemplate,
+            mode: 'markers',
+            marker: {
+                size: scaledPubSizes,
+                color: chartData.map(d => d.pubs),
+                colorscale: [['0.0', 'rgba(16, 185, 129, 0.4)'], ['1.0', 'rgba(16, 185, 129, 1.0)']],
+                showscale: true,
+                line: { color: 'rgba(11, 110, 78, 0.6)', width: 1 },
+                colorbar: {
+                    title: trans['chart-colorbar-title'] || 'Publicações',
+                    thickness: 10,
+                    len: isMobile ? 0.8 : 0.9,
+                    x: isMobile ? 0.5 : 1.05, xanchor: isMobile ? 'center' : 'left',
+                    y: isMobile ? -0.4 : 0.5, yanchor: isMobile ? 'bottom' : 'middle',
+                    orientation: isMobile ? 'h' : 'v'
+                }
+            }
+        };
+
+        const lineTrace = {
+            x: chartData.map(d => d.year),
+            y: chartData.map(d => d.citations),
+            type: 'scatter', mode: 'lines',
+            line: { color: 'var(--accent)', width: 2.5, shape: 'spline', smoothing: 0.8 },
+            hoverinfo: 'none'
+        };
+
+        container.innerHTML = '';
+        Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
+            gd.on('plotly_click', data => {
+                if (data.points.length > 0) {
+                    const clickedYear = data.points[0].x;
+                    activeYearFilter = (activeYearFilter === clickedYear) ? null : clickedYear;
+                    document.getElementById('publication-search').value = '';
+                    showingPubsCount = initialPubsToShow;
+                    renderPublications();
+                    updateFilterUI();
                 }
             });
-            
-            const sortedYears = Object.keys(yearlyData).sort((a, b) => a - b);
-            if (sortedYears.length === 0) return;
-        
-            const fullYears = sortedYears, fullCitCounts = sortedYears.map(y => yearlyData[y].citations || 0), fullPubCounts = sortedYears.map(y => yearlyData[y].pubs || 0);
-            const maxPubs = Math.max(...fullPubCounts, 1), fullScaledPubCounts = fullPubCounts.map(p => Math.max(10, (p / maxPubs) * 40));
-            const fullCustomData = sortedYears.map(y => ({ pubs: yearlyData[y].pubs || 0 }));
-            
-            const isMobile = window.innerWidth < 768, maxCitation = Math.max(...fullCitCounts, 0);
-            const chartTitle = isMobile ? (trans['chart-title-mobile'] || 'Citações/Ano') : (trans['chart-title'] || 'Citações por Ano');
-            const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
-            const hoverTemplate = `<b>${trans['chart-hover-year'] || 'Ano'}: %{x}</b><br>${trans['chart-hover-citations'] || 'Citações'}: <b>%{y}</b><br>${trans['chart-hover-pubs'] || 'Publicações'}: <b>%{customdata.pubs}</b><extra></extra>`;
-        
-            const layout = {
-                title: { text: chartTitle, x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
-                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' }, dragmode: false,
-                xaxis: { title: { text: trans['chart-xaxis-title'] || 'Ano de Publicação', font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
-                yaxis: { title: { text: trans['chart-yaxis-title'] || 'Número de Citações', font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
-                margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 140 : 80, t: 80 }, hovermode: 'closest', showlegend: false, autosize: true
-            };
-            const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-        
-            const bubbleTrace = { 
-                x: fullYears, y: Array(fullYears.length).fill(yAxisMin),
-                customdata: fullCustomData, hovertemplate: hoverTemplate, mode: 'markers',
-                marker: { 
-                    size: fullScaledPubCounts, 
-                    color: fullPubCounts, 
-                    opacity: 0,
-                    colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], 
-                    showscale: true,
-                    colorbar: { title: trans['chart-colorbar-title'] || 'Pubs', thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.45 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' }
-                } 
-            };
-            const lineTrace = { 
-                x: fullYears, y: Array(fullYears.length).fill(yAxisMin),
-                type: 'scatter', mode: 'lines',
-                line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, 
-                hoverinfo: 'none' 
-            };
-        
-            container.innerHTML = '';
-        
-            Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
-                gd.on('plotly_click', data => {
-                    if (data.points.length > 0) {
-                        const clickedYear = data.points[0].x;
-                        activeYearFilter = (activeYearFilter === clickedYear) ? null : clickedYear;
-                        document.getElementById('publication-search').value = '';
-                        showingPubsCount = initialPubsToShow;
-                        renderPublications(); 
-                        updateFilterUI();
-                    }
-                });
-        
-                Plotly.animate(containerId, {
-                    data: [
-                        { y: fullCitCounts, marker: { opacity: 1 } },
-                        { y: fullCitCounts }
-                    ],
-                    traces: [0, 1],
-                    layout: {}
-                }, {
-                    transition: { duration: 1500, easing: 'cubic-in-out' },
-                    frame: { duration: 1500 }
-                });
-            });
-        }
+        });
+    }
+
 
     function renderInteractiveChart(graphData, articles) {
         const container = UI.chartContainer();
@@ -585,10 +598,10 @@ const scholarScript = (function() {
             if (!filterChip) {
                 filterChip = document.createElement('div');
                 filterChip.id = 'year-filter-chip';
-                filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;';
+                filterChip.style.cssText = 'background: var(--primary); color: var(--dark); padding: 8px 12px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; margin-top: 10px;';
                 controlsContainer.appendChild(filterChip);
             }
-            filterChip.innerHTML = `<span>Filtrando por: ${activeYearFilter}</span><button style="background:none;border:none;color:var(--dark);font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>`;
+            filterChip.innerHTML = `<span>${translations[currentLang].filtering_by || 'Filtrando por'}: ${activeYearFilter}</span><button style="background:none;border:none;color:var(--dark);font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>`;
             filterChip.querySelector('button').onclick = () => {
                 activeYearFilter = null;
                 showingPubsCount = initialPubsToShow;
@@ -640,7 +653,8 @@ const scholarScript = (function() {
         const loadMoreBtn = UI.pubsLoadMoreBtn();
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', () => { 
-                showingPubsCount = Math.min(showingPubsCount + pubsPerLoad, allArticles.length);
+                const filteredTotal = allArticles.filter(art => !activeYearFilter || art.year === activeYearFilter.toString()).length;
+                showingPubsCount = Math.min(showingPubsCount + pubsPerLoad, filteredTotal);
                 renderPublications(); 
             });
         }
@@ -649,16 +663,14 @@ const scholarScript = (function() {
     function reRenderWithCurrentLang() {
         const trans = translations[currentLang] || {};
         const clearBtn = UI.pubClearBtn();
-        
-        if (clearBtn) {
-            clearBtn.textContent = trans['clear-btn'] || 'Limpar';
-        }
+        if (clearBtn) clearBtn.textContent = trans['clear-btn'] || 'Limpar';
         
         if (isIndexPage) {
             renderInteractiveChart(citationGraphData, allArticles);
         }
         
         renderPublications();
+        updateFilterUI(); 
     }
 
     function init() {
@@ -666,15 +678,9 @@ const scholarScript = (function() {
         if (!grid) return;
 
         isIndexPage = !!UI.chartContainer();
-        
+        allArticles = window.fallbackData?.scholarData?.articles || [];
         showingPubsCount = isIndexPage ? initialPubsToShow : allArticles.length;
         
-        allArticles = window.fallbackData?.scholarData?.articles || [];
-
-        if (!isIndexPage) {
-            showingPubsCount = allArticles.length;
-        }
-
         attachEventListeners();
         renderPublications();
 
@@ -690,8 +696,7 @@ const scholarScript = (function() {
                             observer.unobserve(entry.target);
                         }
                     });
-                }, { threshold: 0.1 }); 
-
+                }, { threshold: 0.1 });
                 metricsObserver.observe(metricsCard);
             } else {
                 setScholarMetrics();
@@ -705,7 +710,6 @@ const scholarScript = (function() {
     
     return { 
         init, 
-        allArticles: () => allArticles,
         renderAll: reRenderWithCurrentLang
     };
 })();
