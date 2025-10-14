@@ -2,7 +2,7 @@
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
  * A lógica de busca de dados foi removida e centralizada em utils.js (modo fallback).
- * @version 2.2.0
+ * @version 2.3.0
  */
 
 const translations = {
@@ -322,8 +322,6 @@ const App = {
         });
     },
 
-    // Dentro do objeto App no arquivo translations.js
-    
     initScrollAnimations() {
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -332,37 +330,31 @@ const App = {
                 }
             });
         }, { threshold: 0.1 });
-    
+
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-    
-        // CORREÇÃO: Lógica completa para o observer de habilidades
+
         const skillObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
-                    
-                    // --- LINHAS ADICIONADAS ---
                     const level = entry.target.dataset.level;
                     const bar = entry.target.querySelector('.skill-bar');
                     if (bar && level) {
                         bar.style.setProperty('--proficiency-level', level);
                     }
-                    // --- FIM DAS LINHAS ADICIONADAS ---
-    
-                    observer.unobserve(entry.target); // Anima só uma vez
+                    observer.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.5 });
-    
+
         document.querySelectorAll('.skill-item').forEach(el => skillObserver.observe(el));
-        // Fim da correção
-    
+
         document.querySelectorAll('.stagger-children').forEach(container => {
             container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
                 child.style.setProperty('--stagger-index', index);
             });
         });
-    
+
         const sections = document.querySelectorAll('main > section[id]');
         const navLinks = document.querySelectorAll('nav .nav-link');
         const navObserver = new IntersectionObserver((entries) => {
@@ -378,33 +370,32 @@ const App = {
                 }
             });
         }, { rootMargin: '-40% 0px -60% 0px' });
-    
+
         sections.forEach(section => navObserver.observe(section));
     },
     
+    // MODIFICADO: Lógica do botão de tradução corrigida aqui
     initEventListeners() {
         const nav = document.querySelector('nav');
         const header = document.querySelector('header');
+        const body = document.body; // Seleciona o body
         const backToTopButton = document.querySelector('.back-to-top');
-        const langSwitchFixed = document.querySelector('.lang-switch-fixed'); // Botão flutuante
-
+        
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
-            const isScrolled = scrollY > 50;
             
             if (nav) {
-                if (header) {
-                    nav.classList.toggle('scrolled', scrollY > header.offsetHeight - 100);
-                } else {
-                    nav.classList.toggle('scrolled', isScrolled);
+                if (header) { // Lógica específica para o index.html
+                    const isHeaderScrolled = scrollY > header.offsetHeight - 100;
+                    nav.classList.toggle('scrolled', isHeaderScrolled);
+                    // Adiciona/remove a classe 'scrolled' no body para esconder o botão flutuante
+                    body.classList.toggle('scrolled', isHeaderScrolled);
+                } else { // Lógica para outras páginas
+                    nav.classList.toggle('scrolled', scrollY > 50);
                 }
             }
             if (backToTopButton) {
                 backToTopButton.classList.toggle('visible', scrollY > 300);
-            }
-            // CORREÇÃO: Adicionada lógica para o botão de tradução flutuante
-            if(langSwitchFixed) {
-                langSwitchFixed.classList.toggle('visible', scrollY > 300);
             }
         }, { passive: true });
 

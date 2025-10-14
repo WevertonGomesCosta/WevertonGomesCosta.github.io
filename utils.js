@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 9.1.0
+ * @version 9.3.0
  */
 
 // =================================================================================
@@ -366,13 +366,21 @@ const scholarScript = (function() {
         return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
     };
 
+    // MODIFICADO: Função de animação agora aceita uma velocidade
     function animateCountUp(el) {
         if (!el) return;
-        const target = parseInt(el.textContent, 10);
+        const target = parseInt(el.dataset.target, 10);
         if (isNaN(target)) return;
+
+        // Define a velocidade baseada no ID do elemento
+        let speed = 20; // Velocidade padrão para citações
+        if (el.id.includes('h-') || el.id.includes('i10-')) {
+            speed = 70; // Velocidade mais lenta para os índices
+        }
+
         el.textContent = '0';
         let current = 0;
-        const increment = Math.max(1, target / 100);
+        const increment = Math.max(1, Math.ceil(target / 100));
         const interval = setInterval(() => {
             current += increment;
             if (current >= target) {
@@ -381,23 +389,26 @@ const scholarScript = (function() {
             } else {
                 el.textContent = Math.ceil(current);
             }
-        }, 20);
+        }, speed); // Usa a velocidade definida
     }
     
-    function updateScholarMetrics() {
+    function setScholarMetrics() {
         if (window.fallbackData?.scholarData?.profile) {
             const { table, graph } = window.fallbackData.scholarData.profile.cited_by;
-            UI.citTotal().textContent = table[0].citations.all;
-            UI.citPeriod().textContent = table[0].citations.since_2020;
-            UI.hTotal().textContent = table[1].h_index.all;
-            UI.hPeriod().textContent = table[1].h_index.since_2020;
-            UI.i10Total().textContent = table[2].i10_index.all;
-            UI.i10Period().textContent = table[2].i10_index.since_2020;
-            UI.scholarMetrics().forEach(animateCountUp);
+            UI.citTotal().dataset.target = table[0].citations.all;
+            UI.citPeriod().dataset.target = table[0].citations.since_2020;
+            UI.hTotal().dataset.target = table[1].h_index.all;
+            UI.hPeriod().dataset.target = table[1].h_index.since_2020;
+            UI.i10Total().dataset.target = table[2].i10_index.all;
+            UI.i10Period().dataset.target = table[2].i10_index.since_2020;
             citationGraphData = graph || [];
         } else {
              console.error("Dados de fallback para métricas não encontrados.");
         }
+    }
+    
+    function startMetricsAnimation() {
+        UI.scholarMetrics().forEach(animateCountUp);
     }
     
     function renderPublications() {
@@ -497,10 +508,7 @@ const scholarScript = (function() {
             container.innerHTML = `<div class="card" style="color: var(--text-muted);">${translations[currentLang]['chart-no-data'] || 'Dados para o gráfico não disponíveis.'}</div>`;
             return;
         }
-        const observer = new IntersectionObserver((entries, obs) => {
-            entries.forEach(entry => { if (entry.isIntersecting) { _animateChart(graphData, articles); obs.unobserve(entry.target); } });
-        }, { threshold: 0.5 });
-        observer.observe(container);
+        _animateChart(graphData, articles);
     }
     
     function updateFilterUI() {
@@ -592,18 +600,35 @@ const scholarScript = (function() {
         renderPublications();
     }
 
-    function init() {
-        if (!document.getElementById('publicacoes-grid')) return; 
+    async function init() {
+        if (!document.getElementById('publicacoes-grid')) return;
 
         isIndexPage = !!UI.chartContainer();
         if (!isIndexPage) showingPubsCount = Infinity;
-        
+
         attachEventListeners();
-        
-        initializePublications();
+        await initializePublications();
+
         if (isIndexPage) {
-            updateScholarMetrics();
-            renderInteractiveChart(citationGraphData, allArticles);
+            const metricsCard = document.querySelector('.scholar-summary-card');
+            if (metricsCard) {
+                const metricsObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setScholarMetrics();
+                            startMetricsAnimation();
+                            renderInteractiveChart(citationGraphData, allArticles);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.3 }); 
+
+                metricsObserver.observe(metricsCard);
+            } else {
+                setScholarMetrics();
+                startMetricsAnimation();
+                renderInteractiveChart(citationGraphData, allArticles);
+            }
         }
     }
     
@@ -745,7 +770,7 @@ const CvPdfGenerator = {
                 y += Math.max(column1.length, column2.length) * lineHeight + 10;
             }
             
-            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ESPECIALIZAÇÃO');
+            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ATUAÇÃO');
             document.querySelectorAll('#experiencia .card').forEach(card => {
                  const title = `• ${card.querySelector('h3').innerText}:`;
                  const description = card.querySelector('p').innerText;
@@ -873,7 +898,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
-    scholarScript.init();
+    scholarScript.init(); // Este init agora configura o observer
 
     if (document.getElementById('projects-list')) {
         if (document.getElementById('toggle-more')) {
