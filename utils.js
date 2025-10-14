@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 10.0.0
+ * @version 10.1.0
  */
 
 // =================================================================================
@@ -271,7 +271,7 @@ const GithubReposModule = {
         const msg = trans.showing_repos(this.state.filteredRepos.length, this.state.allRepos.length);
         this.config.metaEl.textContent = msg;
     },
-    sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
+    sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(b.updated_at)),
     render() {
         if (!this.config.listEl) return;
         this.config.listEl.innerHTML = '';
@@ -351,9 +351,10 @@ const GithubReposModule = {
 const scholarScript = (function() {
     'use strict';
     const initialPubsToShow = 3;
+    const pubsPerLoad = 3; // Quantidade a ser carregada por clique
     let allArticles = [];
     let citationGraphData = [];
-    let showingPubsCount = initialPubsToShow;
+    let showingPubsCount = 0; // Inicia com 0 para carregar o primeiro lote
     let isIndexPage = false;
     let activeYearFilter = null;
 
@@ -370,7 +371,7 @@ const scholarScript = (function() {
         pubSearchInput: () => document.getElementById('publication-search'),
         pubClearBtn: () => document.getElementById('publication-clear-btn'),
         pubsShownCount: () => document.getElementById('pubs-shown-count'),
-        pubsToggleBtn: () => document.getElementById('pubs-toggle-more'),
+        pubsLoadMoreBtn: () => document.getElementById('pubs-toggle-more'), // Renomeado para clareza
     };
 
     const normalizeTitle = (str) => {
@@ -426,7 +427,7 @@ const scholarScript = (function() {
         let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
         const filteredArticles = searchFilter ? baseList.filter(art => normalizeTitle(art.title).includes(searchFilter) || (art.journalTitle || '').toLowerCase().includes(searchFilter) || (art.year || '').includes(searchFilter)) : baseList;
 
-        const articlesToShow = isIndexPage ? filteredArticles.slice(0, showingPubsCount) : filteredArticles;
+        const articlesToShow = filteredArticles.slice(0, showingPubsCount);
         grid.innerHTML = "";
         if (articlesToShow.length === 0) {
             grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p data-key="no_pubs_found">${trans.no_pubs_found || 'Nenhuma publicação encontrada.'}</p></div>`;
@@ -434,7 +435,7 @@ const scholarScript = (function() {
             articlesToShow.forEach(art => grid.appendChild(createPublicationCard(art)));
         }
         updatePubsCount(articlesToShow.length, filteredArticles.length);
-        updateToggleMoreButton(articlesToShow.length, filteredArticles.length);
+        updateLoadMoreButton(articlesToShow.length, filteredArticles.length);
     }
     
     function createPublicationCard(art) {
@@ -502,6 +503,7 @@ const scholarScript = (function() {
                     const clickedYear = data.points[0].x;
                     activeYearFilter = (activeYearFilter === clickedYear) ? null : clickedYear;
                     document.getElementById('publication-search').value = '';
+                    showingPubsCount = initialPubsToShow; // Reinicia a contagem ao filtrar
                     renderPublications(); 
                     updateFilterUI();
                 }
@@ -545,6 +547,7 @@ const scholarScript = (function() {
             filterChip.innerHTML = `<span>Filtrando por: ${activeYearFilter}</span><button style="background:none;border:none;color:var(--dark);font-size:1.2rem;cursor:pointer;line-height:1;">&times;</button>`;
             filterChip.querySelector('button').onclick = () => {
                 activeYearFilter = null;
+                showingPubsCount = initialPubsToShow;
                 renderPublications();
                 updateFilterUI();
             };
@@ -558,13 +561,15 @@ const scholarScript = (function() {
         if (countEl) countEl.textContent = translations[currentLang].showing_pubs(shown, total);
     }
     
-    function updateToggleMoreButton(shown, total) {
-        const toggleBtn = UI.pubsToggleBtn();
-        if (toggleBtn) {
+    // CORREÇÃO: Nome da função e lógica
+    function updateLoadMoreButton(shown, total) {
+        const loadMoreBtn = UI.pubsLoadMoreBtn();
+        if (loadMoreBtn) {
             const hasMore = shown < total;
             const trans = translations[currentLang] || {};
-            toggleBtn.style.display = (isIndexPage && hasMore) ? 'inline-block' : 'none';
-            toggleBtn.textContent = trans['show-more'] || 'Ver mais';
+            // Mostra o botão apenas se houver mais itens para carregar
+            loadMoreBtn.style.display = hasMore ? 'inline-block' : 'none';
+            loadMoreBtn.textContent = trans['show-more'] || 'Ver mais';
         }
     }
     
@@ -572,7 +577,7 @@ const scholarScript = (function() {
         const searchInput = UI.pubSearchInput();
         if (searchInput) {
             searchInput.addEventListener('input', () => {
-                showingPubsCount = initialPubsToShow;
+                showingPubsCount = initialPubsToShow; // Reinicia a contagem na busca
                 renderPublications();
             });
         }
@@ -590,10 +595,12 @@ const scholarScript = (function() {
             });
         }
         
-        const toggleBtn = UI.pubsToggleBtn();
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => { 
-                showingPubsCount = allArticles.length;
+        // CORREÇÃO: Lógica do botão "Mostrar mais"
+        const loadMoreBtn = UI.pubsLoadMoreBtn();
+        if (loadMoreBtn) {
+            loadMoreBtn.addEventListener('click', () => { 
+                // Adiciona 'pubsPerLoad' à contagem, sem ultrapassar o total
+                showingPubsCount = Math.min(showingPubsCount + pubsPerLoad, allArticles.length);
                 renderPublications(); 
             });
         }
@@ -615,12 +622,21 @@ const scholarScript = (function() {
     }
 
     function init() {
-        if (!document.getElementById('publicacoes-grid')) return;
+        // Apenas executa se o container de publicações existir
+        const grid = UI.pubsGrid();
+        if (!grid) return;
 
         isIndexPage = !!UI.chartContainer();
-        if (!isIndexPage) showingPubsCount = Infinity;
+        
+        // Se não for a página index, mostra tudo. Se for, começa com o lote inicial.
+        showingPubsCount = isIndexPage ? initialPubsToShow : allArticles.length;
         
         allArticles = window.fallbackData?.scholarData?.articles || [];
+
+        // Na página de publicações, que não é a index, a contagem inicial é infinita (mostra tudo)
+        if (!isIndexPage) {
+            showingPubsCount = allArticles.length;
+        }
 
         attachEventListeners();
         renderPublications();
@@ -640,7 +656,7 @@ const scholarScript = (function() {
                 }, { threshold: 0.1 }); 
 
                 metricsObserver.observe(metricsCard);
-            } else {
+            } else { // Se não houver card, carrega imediatamente
                 setScholarMetrics();
                 startMetricsAnimation();
                 renderInteractiveChart(citationGraphData, allArticles);
