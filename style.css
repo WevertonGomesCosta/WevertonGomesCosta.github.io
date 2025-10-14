@@ -1,8 +1,42 @@
+/*
+=================================================================
+TOC (Table of Contents):
+=================================================================
+0.  DESIGN SYSTEM & GLOBAIS
+    0.1. Variáveis de Cor e Tema
+    0.2. Reset e Configurações Globais
+    0.3. Estilos da Barra de Rolagem
+    0.4. Animações e Efeitos Visuais Globais
+
+1.  LAYOUT & TIPOGRAFIA COMUM
+    1.1. Contêineres e Seções Principais
+    1.2. Tipografia (Títulos, Parágrafos, Links)
+    1.3. Elementos de UI Comuns (Intro Box)
+
+2.  COMPONENTES REUTILIZÁVEIS
+    2.1. Navegação (Estilos Base e Comuns)
+    2.2. Botões (CTA, Idioma, Links)
+    2.3. Controles (Filtros e Inputs)
+    2.4. Rodapé (Footer)
+    2.5. Botão "Voltar ao Topo"
+
+3.  ESTILOS ESPECÍFICOS POR PÁGINA
+    3.1. Página: Home (#page-home)
+    3.2. Páginas Internas (Não-Home)
+    3.3. Página: Projetos (#page-projects)
+    3.4. Página: Publicações (#page-publications)
+    3.5. Página: Política de Privacidade (#page-privacy)
+
+4.  ANIMAÇÕES (KEYFRAMES)
+=================================================================
+*/
+
+
 /* ---
-Design System e Estilos Globais Comuns
+0. DESIGN SYSTEM & GLOBAIS
 --- */
 
-/* --- Variáveis de Cor e Tema --- */
+/* 0.1. Variáveis de Cor e Tema */
 :root {
     --primary: #10b981;
     --primary-dark: #059669;
@@ -19,7 +53,7 @@ Design System e Estilos Globais Comuns
     --error: #f44336;
 }
 
-/* --- Reset e Configurações Globais --- */
+/* 0.2. Reset e Configurações Globais */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -41,7 +75,13 @@ body {
     cursor: default;
 }
 
-/* --- Animações e Efeitos Visuais --- */
+/* 0.3. Estilos da Barra de Rolagem */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+/* 0.4. Animações e Efeitos Visuais Globais */
 #particle-canvas {
     position: fixed; top: 0; left: 0; width: 100%;
     height: 100%; z-index: -1; pointer-events: none;
@@ -53,102 +93,20 @@ body {
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* --- Barra de Rolagem --- */
-::-webkit-scrollbar { width: 10px; }
-::-webkit-scrollbar-track { background: var(--dark); }
-::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 5px; }
-::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
-
 
 /* ---
-Componentes Comuns (Navegação, Rodapé, Botões)
+1. LAYOUT & TIPOGRAFIA COMUM
 --- */
 
-/* --- Navegação (Padrão para todas as páginas) --- */
-nav {
-    position: sticky; top: 0; background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
-    z-index: 1000; padding: 15px 0; transition: padding 0.3s ease;
-}
-nav.scrolled { padding: 8px 0; }
-.nav-container {
-    max-width: 1200px; margin: 0 auto; display: grid;
-    grid-template-columns: 1fr auto 1fr; gap: 20px;
-    padding: 0 20px; align-items: center;
-}
-
-/* --- Navegação Específica: Página Index --- */
-#page-index .nav-container { grid-template-columns: 1fr auto 1fr; }
-#page-index .nav-col-left { justify-self: start; }
-#page-index .nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
-#page-index .nav-col-right { justify-self: end; }
-#page-index .nav-avatar {
-    width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary);
-    transform: scale(0); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease;
-    box-shadow: 0 0 10px var(--glow);
-}
-nav.scrolled #page-index .nav-avatar { transform: scale(1); opacity: 1; }
-#page-index .nav-link {
-    color: var(--text-muted); text-decoration: none; font-weight: 500;
-    transition: color 0.3s ease, transform 0.3s ease; position: relative;
-}
-#page-index .nav-link::after {
-    content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
-    background: var(--primary); transition: width 0.3s ease;
-}
-#page-index .nav-link:hover, #page-index .nav-link.active { color: var(--primary); transform: translateY(-2px); }
-#page-index .nav-link:hover::after, #page-index .nav-link.active::after { width: 100%; }
-
-/* --- Navegação Específica: Outras Páginas (Projetos, Publicações, etc.) --- */
-body:not(#page-index) .nav-brand { justify-self: start; }
-body:not(#page-index) .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-body:not(#page-index) .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
-body:not(#page-index) .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; }
-body:not(#page-index) .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
-body:not(#page-index) .nav-title-container { text-align: center; }
-body:not(#page-index) .nav-title {
-    font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden;
-    transform: translateY(-10px); transition: all 0.3s ease; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0;
-}
-body:not(#page-index) nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
-
-/* --- Botão de Idioma (Comum a todas as Navs) --- */
-.lang-switcher {
-    background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary);
-    padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px);
-    font-weight: 500; line-height: 1; white-space: nowrap;
-    transition: background 0.3s, color 0.3s, opacity 0.3s, transform 0.3s;
-}
-.lang-switcher:hover { background: var(--primary); color: var(--dark); }
-.lang-switcher .lang-pt.active, .lang-switcher .lang-en.active { color: var(--text); font-weight: 700; }
-
-/* --- Layout Principal e Tipografia Comum --- */
+/* 1.1. Contêineres e Seções Principais */
 .container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
 .section { margin-bottom: 80px; }
+
+/* 1.2. Tipografia (Títulos, Parágrafos, Links) */
 p, li { color: var(--text-muted); font-size: 1.05rem; }
 a { color: var(--primary); text-decoration: none; transition: color 0.3s; }
 a:hover { text-decoration: underline; }
-.section-intro {
-    color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem;
-    line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px;
-    border-left: 3px solid var(--primary);
-}
 
-/* --- Botões de Ação (CTA) e Botão Voltar --- */
-.cta-btn {
-    padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;
-    transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    border: 1px solid transparent; position: relative; overflow: hidden; z-index: 1; display: inline-block;
-}
-.cta-btn.primary { background: var(--primary); color: var(--dark); }
-.cta-btn.primary:hover { background: var(--primary-dark); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
-.cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
-.cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
-.back-to-home-container { margin-top: 40px; text-align: center; }
-
-
-/* --- Títulos de Conteúdo (Padrão para todas as páginas) --- */
 .container h1 {
     font-size: 2rem; color: var(--primary); border-bottom: 1px solid var(--border);
     padding-bottom: 15px; margin-bottom: 30px;
@@ -163,63 +121,55 @@ a:hover { text-decoration: underline; }
     border-radius: 2px;
 }
 
-/* ---
-ESTILOS ESPECÍFICOS DA PÁGINA INDEX
---- */
+/* 1.3. Elementos de UI Comuns (Intro Box) */
+.section-intro {
+    color: var(--text-muted); margin: -15px 0 40px 0; padding: 20px; font-size: 1.05rem;
+    line-height: 1.7; background: rgba(30, 41, 59, 0.3); border-radius: 12px;
+    border-left: 3px solid var(--primary);
+}
 
-#page-index header {
-    position: relative; padding: 100px 20px 60px; text-align: center;
-    background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 60%),
-    linear-gradient(270deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
-    background-size: 200% 200%; border-bottom: 1px solid var(--border);
-    animation: animated-gradient 15s ease-infinite;
-}
-#page-index .hero-content { max-width: 900px; margin: 0 auto; animation: fadeInUp 0.8s ease; }
-#page-index .avatar {
-    width: 280px; height: 280px; border-radius: 50%; border: 4px solid var(--primary);
-    box-shadow: 0 0 40px var(--glow); margin: 0 auto 30px; display: block;
-    animation: glow 3s ease-in-out infinite;
-}
-/* Reseta o estilo de H1 do container para o H1 específico do Hero */
-#page-index header h1 {
-    font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; margin-bottom: 10px;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-    border-bottom: none; padding-bottom: 0;
-}
-#page-index .subtitle {
-    font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-muted);
-    margin-bottom: 25px; font-weight: 300; height: 1.6em; min-height: 1.6em;
-}
-#page-index .subtitle::after {
-    content: '▋'; animation: blink 0.7s infinite;
-    color: var(--primary); font-weight: 400;
-}
-#page-index .hero-cta { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-#page-index .badges { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
-#page-index .badge {
-    background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px;
-    border-radius: 20px; font-size: 0.9rem; color: var(--primary);
-    backdrop-filter: blur(10px); transition: all 0.3s ease;
-}
-#page-index .badge:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); border-color: var(--primary); }
-
-@keyframes animated-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@keyframes glow { 0%, 100% { box-shadow: 0 0 20px var(--glow); } 50% { box-shadow: 0 0 40px var(--glow); } }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ---
-ESTILOS ESPECÍFICOS DE OUTRAS PÁGINAS
+2. COMPONENTES REUTILIZÁVEIS
 --- */
 
-/* --- Página: Política de Privacidade (Layout) --- */
-#page-privacy .container {
-    max-width: 800px; margin: 60px auto; padding: 40px;
-    background: var(--dark-light); border-radius: 16px; border: 1px solid var(--border);
+/* 2.1. Navegação (Estilos Base e Comuns) */
+nav {
+    position: sticky; top: 0; background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
+    z-index: 1000; padding: 15px 0; transition: padding 0.3s ease;
+}
+nav.scrolled { padding: 8px 0; }
+
+.nav-container {
+    max-width: 1200px; margin: 0 auto; display: grid;
+    grid-template-columns: 1fr auto 1fr; gap: 20px;
+    padding: 0 20px; align-items: center;
 }
 
-/* --- Filtros (Controles) para Projetos e Publicações --- */
+/* 2.2. Botões (CTA, Idioma, Links) */
+.cta-btn {
+    padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600;
+    transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid transparent; position: relative; overflow: hidden; z-index: 1; display: inline-block;
+}
+.cta-btn.primary { background: var(--primary); color: var(--dark); }
+.cta-btn.primary:hover { background: var(--primary-dark); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+.cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
+.cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
+
+.lang-switcher {
+    background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary);
+    padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px);
+    font-weight: 500; line-height: 1; white-space: nowrap;
+    transition: background 0.3s, color 0.3s, opacity 0.3s, transform 0.3s;
+}
+.lang-switcher:hover { background: var(--primary); color: var(--dark); }
+.lang-switcher .lang-pt.active, .lang-switcher .lang-en.active { color: var(--text); font-weight: 700; }
+
+.back-to-home-container { margin-top: 40px; text-align: center; }
+
+/* 2.3. Controles (Filtros e Inputs) */
 .controls {
     display: flex; gap: 12px; align-items: center;
     margin-bottom: 25px; flex-wrap: wrap;
@@ -235,7 +185,146 @@ ESTILOS ESPECÍFICOS DE OUTRAS PÁGINAS
 }
 .controls button:hover { background: var(--primary-dark); }
 
-/* --- Página: Projetos (Layout) --- */
+/* 2.4. Rodapé (Footer) */
+footer {
+    background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border);
+    padding: 60px 20px 40px; text-align: left; margin-top: 80px;
+}
+.footer-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto;
+}
+.footer-column h4 {
+    color: var(--primary); margin-bottom: 15px; font-size: 1.1rem;
+    position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.footer-column h4::after {
+    content: ''; position: absolute; left: 0; bottom: -1px;
+    width: 40px; height: 2px; background: var(--primary);
+}
+.footer-column p, .footer-column ul li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
+.footer-column ul { list-style: none; padding: 0; }
+.footer-column ul li { margin-bottom: 10px; }
+.footer-column ul li a {
+    color: var(--text-muted); text-decoration: none; transition: color 0.3s ease;
+    display: flex; align-items: center; gap: 8px;
+}
+.footer-column ul li a:hover { color: var(--primary); }
+.footer-column ul li a svg { width: 16px; height: 16px; flex-shrink: 0; }
+.footer-column ul li a .icon-img {
+    width: 16px; height: 16px; flex-shrink: 0; background-color: var(--text-muted);
+    -webkit-mask-size: contain; mask-size: contain; -webkit-mask-position: center;
+    mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    transition: background-color 0.3s ease;
+}
+.footer-column ul li a:hover .icon-img { background-color: var(--primary); }
+.icon-licae { -webkit-mask-image: url(LICAE.svg); mask-image: url(LICAE.svg); }
+.icon-conectagem { -webkit-mask-image: url(ConectaGEM.svg); mask-image: url(ConectaGEM.svg); }
+
+.footer-bottom { padding-top: 30px; margin-top: 30px; text-align: center; }
+.footer-content { max-width: 1200px; margin: 0 auto; }
+.footer-license { margin: 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+.footer-license a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
+.footer-license a:hover { color: var(--primary); }
+.footer-update {
+    font-size: 0.8rem; color: var(--text-muted); display: flex;
+    align-items: center; justify-content: center; gap: 8px; margin-top: 15px;
+}
+.footer-update svg { width: 14px; height: 14px; }
+
+@media (min-width: 1100px) {
+    .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; }
+}
+
+/* 2.5. Botão "Voltar ao Topo" */
+.back-to-top {
+    position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
+    background-color: var(--primary); color: var(--dark); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; text-decoration: none;
+    opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000;
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+.back-to-top.visible { opacity: 1; visibility: visible; }
+.back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
+
+
+/* ---
+3. ESTILOS ESPECÍFICOS POR PÁGINA
+--- */
+
+/* 3.1. Página: Home (#page-home) */
+#page-home .nav-container { grid-template-columns: 1fr auto 1fr; }
+#page-home .nav-col-left { justify-self: start; }
+#page-home .nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
+#page-home .nav-col-right { justify-self: end; }
+#page-home .nav-avatar {
+    width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary);
+    transform: scale(0); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease;
+    box-shadow: 0 0 10px var(--glow);
+}
+nav.scrolled #page-home .nav-avatar { transform: scale(1); opacity: 1; }
+#page-home .nav-link {
+    color: var(--text-muted); text-decoration: none; font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease; position: relative;
+}
+#page-home .nav-link::after {
+    content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
+    background: var(--primary); transition: width 0.3s ease;
+}
+#page-home .nav-link:hover, #page-home .nav-link.active { color: var(--primary); transform: translateY(-2px); }
+#page-home .nav-link:hover::after, #page-home .nav-link.active::after { width: 100%; }
+
+#page-home header {
+    position: relative; padding: 100px 20px 60px; text-align: center;
+    background: radial-gradient(ellipse at top, rgba(16, 185, 129, 0.15) 0%, transparent 60%),
+    linear-gradient(270deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+    background-size: 200% 200%; border-bottom: 1px solid var(--border);
+    animation: animated-gradient 15s ease-infinite;
+}
+#page-home .hero-content { max-width: 900px; margin: 0 auto; animation: fadeInUp 0.8s ease; }
+#page-home .avatar {
+    width: 280px; height: 280px; border-radius: 50%; border: 4px solid var(--primary);
+    box-shadow: 0 0 40px var(--glow); margin: 0 auto 30px; display: block;
+    animation: glow 3s ease-in-out infinite;
+}
+#page-home header h1 { /* Reseta o estilo de H1 do container para o H1 específico do Hero */
+    font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    border-bottom: none; padding-bottom: 0;
+}
+#page-home .subtitle {
+    font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-muted);
+    margin-bottom: 25px; font-weight: 300; height: 1.6em; min-height: 1.6em;
+}
+#page-home .subtitle::after {
+    content: '▋'; animation: blink 0.7s infinite;
+    color: var(--primary); font-weight: 400;
+}
+#page-home .hero-cta { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+#page-home .badges { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 30px 0; }
+#page-home .badge {
+    background: var(--bg-card); border: 1px solid var(--border); padding: 8px 16px;
+    border-radius: 20px; font-size: 0.9rem; color: var(--primary);
+    backdrop-filter: blur(10px); transition: all 0.3s ease;
+}
+#page-home .badge:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3); border-color: var(--primary); }
+
+/* 3.2. Páginas Internas (Não-Home) */
+body:not(#page-home) .nav-brand { justify-self: start; }
+body:not(#page-home) .nav-brand a { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+body:not(#page-home) .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 10px var(--glow); }
+body:not(#page-home) .nav-brand-text { color: var(--text); font-weight: 600; font-size: 1.1rem; }
+body:not(#page-home) .nav-actions { justify-self: end; display: flex; align-items: center; gap: 15px; }
+body:not(#page-home) .nav-title-container { text-align: center; }
+body:not(#page-home) .nav-title {
+    font-size: 1.1rem; color: var(--text); font-weight: 600; opacity: 0; visibility: hidden;
+    transform: translateY(-10px); transition: all 0.3s ease; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; padding-left: 0; margin-bottom: 0;
+}
+body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* 3.3. Página: Projetos (#page-projects) */
 #page-projects .sidebar {
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
     padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
@@ -267,7 +356,7 @@ ESTILOS ESPECÍFICOS DE OUTRAS PÁGINAS
 #page-projects .link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
 #page-projects .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
 
-/* --- Página: Publicações (Layout) --- */
+/* 3.4. Página: Publicações (#page-publications) */
 #page-publications .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
 #page-publications .card {
     background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
@@ -285,60 +374,34 @@ ESTILOS ESPECÍFICOS DE OUTRAS PÁGINAS
 #page-publications .publication-doi a { color: var(--text-muted); text-decoration: none; word-break: break-all; transition: color 0.3s ease; }
 #page-publications .publication-doi a:hover { color: var(--primary); }
 
-/* --- Botão Voltar ao Topo (Projetos e Publicações) --- */
-#page-projects .back-to-top, #page-publications .back-to-top {
-    position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px;
-    background-color: var(--primary); color: var(--dark); border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; text-decoration: none;
-    opacity: 0; visibility: hidden; transition: all 0.4s ease; z-index: 1000;
-    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+/* 3.5. Página: Política de Privacidade (#page-privacy) */
+#page-privacy .container {
+    max-width: 800px; margin: 60px auto; padding: 40px;
+    background: var(--dark-light); border-radius: 16px; border: 1px solid var(--border);
 }
-#page-projects .back-to-top.visible, #page-publications .back-to-top.visible { opacity: 1; visibility: visible; }
-#page-projects .back-to-top:hover, #page-publications .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
 
-/* --- Rodapé (Comum a todas as páginas) --- */
-footer {
-    background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border);
-    padding: 60px 20px 40px; text-align: left; margin-top: 80px;
+
+/* ---
+4. ANIMAÇÕES (KEYFRAMES)
+--- */
+
+@keyframes animated-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-.footer-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto;
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px var(--glow); }
+    50% { box-shadow: 0 0 40px var(--glow); }
 }
-@media (min-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
-.footer-column h4 {
-    color: var(--primary); margin-bottom: 15px; font-size: 1.1rem;
-    position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }
-.footer-column h4::after {
-    content: ''; position: absolute; left: 0; bottom: -1px;
-    width: 40px; height: 2px; background: var(--primary);
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
-.footer-column p, .footer-column ul li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
-.footer-column ul { list-style: none; padding: 0; }
-.footer-column ul li { margin-bottom: 10px; }
-.footer-column ul li a {
-    color: var(--text-muted); text-decoration: none; transition: color 0.3s ease;
-    display: flex; align-items: center; gap: 8px;
-}
-.footer-column ul li a:hover { color: var(--primary); }
-.footer-column ul li a svg { width: 16px; height: 16px; flex-shrink: 0; }
-.footer-column ul li a .icon-img {
-    width: 16px; height: 16px; flex-shrink: 0; background-color: var(--text-muted);
-    -webkit-mask-size: contain; mask-size: contain; -webkit-mask-position: center;
-    mask-position: center; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-    transition: background-color 0.3s ease;
-}
-.footer-column ul li a:hover .icon-img { background-color: var(--primary); }
-.icon-licae { -webkit-mask-image: url(LICAE.svg); mask-image: url(LICAE.svg); }
-.icon-conectagem { -webkit-mask-image: url(ConectaGEM.svg); mask-image: url(ConectaGEM.svg); }
-.footer-bottom { padding-top: 30px; margin-top: 30px; text-align: center; }
-.footer-content { max-width: 1200px; margin: 0 auto; }
-.footer-license { margin: 15px 0; font-size: 0.8rem; color: var(--text-muted); }
-.footer-license a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
-.footer-license a:hover { color: var(--primary); }
-.footer-update {
-    font-size: 0.8rem; color: var(--text-muted); display: flex;
-    align-items: center; justify-content: center; gap: 8px; margin-top: 15px;
-}
-.footer-update svg { width: 14px; height: 14px; }
