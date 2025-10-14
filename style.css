@@ -75,7 +75,7 @@ body {
 Componentes Comuns (Navegação, Rodapé, Botões)
 --- */
 
-/* --- Navegação (Para Projetos e Publicações) --- */
+/* --- Navegação (Funciona para TODAS as páginas) --- */
 nav {
     position: sticky;
     top: 0;
@@ -106,9 +106,9 @@ nav {
 .nav-title::before { display: none; }
 nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
 
-/* --- Seletor de Idioma Comum --- */
+/* --- Seletor de Idioma (Estilo Único para todas as páginas) --- */
 .lang-switcher {
-    background: var(--dark-light);
+    background: var(--bg-card);
     border: 1px solid var(--primary);
     color: var(--primary);
     padding: 8px 12px;
@@ -120,9 +120,20 @@ nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY
     white-space: nowrap;
     transition: background 0.3s, color 0.3s;
 }
-.lang-switcher:hover { background: var(--primary); color: var(--dark); }
-.lang-switcher .lang-pt.active, .lang-switcher .lang-en.active { color: var(--text); font-weight: 700; }
-.lang-switcher:hover .lang-pt, .lang-switcher:hover .lang-en { color: var(--dark); }
+
+.lang-switcher:hover {
+    background: var(--primary);
+    color: var(--dark);
+}
+
+.lang-switcher .lang-pt.active, .lang-switcher .lang-en.active {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.lang-switcher:hover .lang-pt, .lang-switcher:hover .lang-en {
+    color: var(--dark);
+}
 
 /* --- Layout Principal e Tipografia Base --- */
 .container {
@@ -210,12 +221,11 @@ Estilos Específicos por Página
 /* --- Página: Política de Privacidade (#page-privacy) --- */
 #page-privacy .container {
     max-width: 800px;
-    margin: 40px auto;
+    margin: 60px auto;
     padding: 20px 40px;
     background: var(--dark-light);
     border-radius: 16px;
     border: 1px solid var(--border);
-    position: relative;
 }
 
 #page-privacy h1, #page-privacy h2 {
@@ -228,11 +238,23 @@ Estilos Específicos por Página
 #page-privacy h1 { font-size: 2rem; }
 #page-privacy h2 { font-size: 1.5rem; }
 
-#page-privacy .lang-switcher {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+#page-projects h1 {
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-top: 20px;
 }
+
+#page-projects h1 { font-size: 2rem; }
+
+#page-publications h1 {
+    color: var(--primary);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 10px;
+    margin-top: 20px;
+}
+
+#page-publications h1 { font-size: 2rem; }
 
 #page-privacy .back-link {
     display: inline-block;
