@@ -1,8 +1,6 @@
 /**
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
- * A lógica de busca de dados foi removida e centralizada em utils.js (modo fallback).
- * @version 2.0.0
  */
 
 const translations = {
@@ -187,6 +185,10 @@ const translations = {
         'projects-title': 'Projetos & Repositórios',
         'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
         'search-placeholder': 'Buscar repositório...',
+        'fetching_repos': 'Buscando repositórios no GitHub...',
+        'loaded_repos_cache': (n) => `Carregados ${n} repositórios do cache.`,
+        'found_repos': (n) => `Encontrados ${n} repositórios.`,
+        'fetch_error': 'Erro ao buscar. Usando dados de fallback.',
         'no_repos_found': 'Nenhum repositório encontrado com este filtro.',
         'no_description': 'Sem descrição fornecida.',
         'updated_at': 'Atualizado em',
@@ -198,7 +200,15 @@ const translations = {
         'all-publications-intro': 'Explore a lista completa de minhas publicações científicas. Use a busca abaixo para filtrar por título, periódico ou palavra-chave.',
         'showing_repos': (shown, total) => `Exibindo ${shown} de ${total} repositórios.`,
         'showing_pubs': (shown, total) => `Exibindo ${shown} de ${total} publicações.`,
+        'advanced-search-toggle': 'Busca Avançada',
+        'search-journal-label': 'Periódico',
+        'search-journal-placeholder': 'Ex: Crop Science',
+        'search-year-start-label': 'De (Ano)',
+        'search-year-end-label': 'Até (Ano)',
+        'search-year-placeholder': 'Ex: 2020',
+        'fetching_pubs': 'Buscando publicações...',
         'no_pubs_found': 'Nenhuma publicação encontrada com os filtros aplicados.',
+        'fetch_pub_error': 'Erro ao carregar publicações',
 
         // --- Rodapé ---
         'footer-bio': 'Cientista de dados apaixonado por aplicar estatística e IA para impulsionar a inovação no melhoramento genético e agronegócio.',
@@ -246,7 +256,9 @@ const translations = {
             'expertise-title': 'ÁREAS DE ATUAÇÃO',
             'education-title': 'FORMAÇÃO ACADÊMICA',
             'projects-title': 'PRINCIPAIS PROJETOS',
-            'publications-title': 'PRINCIPAIS PUBLICAÇÕES'
+            'projects-link': 'Para mais projetos, acesse meu perfil no GitHub.',
+            'publications-title': 'PRINCIPAIS PUBLICAÇÕES',
+            'publications-link': 'Para mais publicações, acesse meu perfil no Google Scholar.'
         }
     },
     en: {
@@ -430,6 +442,10 @@ const translations = {
         'projects-title': 'Projects & Repositories',
         'projects-intro': 'Here are some of my public projects on GitHub, including analysis codes, tutorials, and developed tools. Feel free to explore, use, and contribute.',
         'search-placeholder': 'Search repository...',
+        'fetching_repos': 'Fetching repositories from GitHub...',
+        'loaded_repos_cache': (n) => `Loaded ${n} repositories from cache.`,
+        'found_repos': (n) => `Found ${n} repositories.`,
+        'fetch_error': 'Fetch error. Using fallback data.',
         'no_repos_found': 'No repositories found with this filter.',
         'no_description': 'No description provided.',
         'updated_at': 'Updated on',
@@ -441,7 +457,15 @@ const translations = {
         'all-publications-intro': 'Explore the complete list of my scientific publications. Use the search below to filter by title, journal, or keyword.',
         'showing_repos': (shown, total) => `Showing ${shown} of ${total} repositories.`,
         'showing_pubs': (shown, total) => `Showing ${shown} of ${total} publications.`,
+        'advanced-search-toggle': 'Advanced Search',
+        'search-journal-label': 'Journal',
+        'search-journal-placeholder': 'E.g., Crop Science',
+        'search-year-start-label': 'From (Year)',
+        'search-year-end-label': 'To (Year)',
+        'search-year-placeholder': 'E.g., 2020',
+        'fetching_pubs': 'Fetching publications...',
         'no_pubs_found': 'No publications found with the applied filters.',
+        'fetch_pub_error': 'Error loading publications',
 
         // --- Footer ---
         'footer-bio': 'A data scientist passionate about applying statistics and AI to drive innovation in genetic improvement and agribusiness.',
@@ -481,7 +505,7 @@ const translations = {
         "privacy-contact-title": "8. Contact",
         "privacy-contact-p": "If you have any questions about this Privacy Policy, please contact us via email at <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
         "privacy-back-link": "← Back to main site",
-        
+
         // --- PDF Section ---
         'pdf': {
             'about-title': 'ABOUT ME',
@@ -490,7 +514,9 @@ const translations = {
             'expertise-title': 'AREAS OF PRACTICE',
             'education-title': 'ACADEMIC BACKGROUND',
             'projects-title': 'MAIN PROJECTS',
-            'publications-title': 'MAIN PUBLICATIONS'
+            'projects-link': 'For more projects, visit my GitHub profile.',
+            'publications-title': 'MAIN PUBLICATIONS',
+            'publications-link': 'For more publications, visit my Google Scholar profile.'
         }
     }
 };
@@ -508,12 +534,23 @@ const App = {
      * Initializes all UI-related functionalities after the DOM is fully loaded.
      */
     init() {
+        // Wait for the DOM to be ready before running any scripts
         document.addEventListener('DOMContentLoaded', () => {
             this.updateFooterInfo();
             this.initScrollAnimations();
             this.initDynamicContentObserver();
             this.initEventListeners();
             
+            // Initialize any external scripts or modules if they exist
+            if (window.scholarScript && typeof window.scholarScript.init === 'function') {
+                scholarScript.init();
+            }
+
+            // Initialize GitHub module only on the projects page
+            if (document.body.id === 'page-projects') {
+                this.githubModule.init();
+            }
+
             // Set the initial language for the page
             setLanguage('pt');
         });
@@ -530,14 +567,16 @@ const App = {
 
         const lastUpdatedEl = document.getElementById('last-updated-date');
         if (lastUpdatedEl) {
-            const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
-            lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
-                day: 'numeric', month: 'long', year: 'numeric'
+            lastUpdatedEl.textContent = new Date(document.lastModified).toLocaleDateString('pt-BR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
             });
         }
         
         const updateDateEl = document.getElementById('update-date');
         if (updateDateEl) {
+             // The privacy policy page uses the current date for its "last updated" field
              updateDateEl.textContent = new Date().toLocaleDateString('pt-BR', {
                 day: 'numeric', month: 'long', year: 'numeric'
             });
@@ -549,6 +588,7 @@ const App = {
      * Also applies staggered delays to animations for a more dynamic effect.
      */
     initScrollAnimations() {
+        // General purpose observer for elements that fade/slide in on scroll
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -559,6 +599,7 @@ const App = {
 
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
+        // Observer specifically for animating skill bars when they become visible
         const skillObserver = new IntersectionObserver((entries, observer) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -568,19 +609,21 @@ const App = {
                     if (bar && level) {
                         bar.style.setProperty('--proficiency-level', level);
                     }
-                    observer.unobserve(entry.target);
+                    observer.unobserve(entry.target); // Animate only once
                 }
             });
         }, { threshold: 0.5 });
 
         document.querySelectorAll('.skill-item').forEach(el => skillObserver.observe(el));
 
+        // Add staggered animation delays to children of specified containers
         document.querySelectorAll('.stagger-children').forEach(container => {
             container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
                 child.style.setProperty('--stagger-index', index);
             });
         });
 
+        // Observer for highlighting the active navigation link based on scroll position
         const sections = document.querySelectorAll('main > section[id]');
         const navLinks = document.querySelectorAll('nav .nav-link');
         const navObserver = new IntersectionObserver((entries) => {
@@ -590,19 +633,21 @@ const App = {
                     navLinks.forEach(link => {
                         link.classList.remove('active');
                         const href = link.getAttribute('href');
+                        // Special condition for combined sections
                         if (href === `#${id}` || (id === 'licae-conecta' && (href === '#conecta' || href === '#licae'))) {
                             link.classList.add('active');
                         }
                     });
                 }
             });
-        }, { rootMargin: '-40% 0px -60% 0px' });
+        }, { rootMargin: '-40% 0px -60% 0px' }); // Activates when section is in the middle of the viewport
 
         sections.forEach(section => navObserver.observe(section));
     },
 
     /**
-     * Sets up a Mutation Observer to apply animations to content that is added to the DOM dynamically.
+     * Sets up a Mutation Observer to apply animations to content that is added to the DOM dynamically,
+     * such as project cards or publications loaded via AJAX.
      */
     initDynamicContentObserver() {
         const revealObserver = new IntersectionObserver((entries) => {
@@ -616,7 +661,8 @@ const App = {
         const mutationObserver = new MutationObserver((mutationsList) => {
             mutationsList.forEach(mutation => {
                 mutation.addedNodes.forEach(node => {
-                    if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.publication-card'))) {
+                    // Ensure we only process element nodes
+                    if (node.nodeType === 1 && (node.matches('.project-card') || node.matches('.reveal'))) {
                         if (!node.classList.contains('reveal')) {
                             node.classList.add('reveal');
                         }
@@ -626,30 +672,35 @@ const App = {
             });
         });
 
-        const dynamicContainers = document.querySelectorAll('#projects-list, #publicacoes-grid');
-        dynamicContainers.forEach(container => {
-            if (container) mutationObserver.observe(container, { childList: true });
-        });
+        const projectsList = document.getElementById('projects-list');
+        const publicationsGrid = document.getElementById('publicacoes-grid');
+
+        if (projectsList) mutationObserver.observe(projectsList, { childList: true });
+        if (publicationsGrid) mutationObserver.observe(publicationsGrid, { childList: true });
     },
     
     /**
-     * Centralizes all event listener attachments.
+     * Centralizes all event listener attachments for clarity and organization.
      */
     initEventListeners() {
+        // --- Scroll Event Handling ---
+        // Efficiently handles multiple scroll-based UI changes in one listener
         const nav = document.querySelector('nav');
         const header = document.querySelector('header');
         const body = document.body;
         const backToTopButton = document.querySelector('.back-to-top');
         
+        // A more generic scroll handler for UI elements that change on scroll
         window.addEventListener('scroll', () => {
             const isScrolled = window.scrollY > 50;
             if (nav) {
+                // Logic for the main page's header
                 if (header) {
                     const scrollThreshold = header.offsetHeight - 100;
                     const isHeaderScrolled = window.scrollY > scrollThreshold;
                     nav.classList.toggle('scrolled', isHeaderScrolled);
                     if(body) body.classList.toggle('scrolled', isHeaderScrolled);
-                } else {
+                } else { // Logic for other pages
                     nav.classList.toggle('scrolled', isScrolled);
                 }
             }
@@ -658,6 +709,8 @@ const App = {
             }
         }, { passive: true });
 
+
+        // --- Mousemove Event for Card Shine Effect ---
         document.body.addEventListener('mousemove', e => {
             const card = e.target.closest('.card');
             if (card) {
@@ -669,17 +722,48 @@ const App = {
             }
         });
 
+        // --- Click Event Delegation and Direct Bindings ---
         const timeline = document.querySelector('.timeline');
         if (timeline) {
             timeline.addEventListener('click', this.handleTimelineToggle);
+        }
+
+        const downloadCvBtn = document.getElementById('download-cv-btn');
+        if (downloadCvBtn) {
+            downloadCvBtn.addEventListener('click', this.handleCvDownload);
         }
         
         const copyEmailLink = document.getElementById('copy-email-link');
         if (copyEmailLink) {
             copyEmailLink.addEventListener('click', this.handleEmailCopy);
         }
+
+        // --- Publication Search Functionality ---
+        const pubSearchInput = document.getElementById('publication-search');
+        const pubClearBtn = document.getElementById('publication-clear-btn');
+        if (pubSearchInput && pubClearBtn) {
+            const debouncedSearch = this.debounce(e => {
+                if (window.scholarScript) {
+                    scholarScript.renderPublications(e.target.value);
+                }
+            }, 250);
+
+            pubSearchInput.addEventListener('input', debouncedSearch);
+
+            pubClearBtn.addEventListener('click', () => {
+                pubSearchInput.value = '';
+                if (window.scholarScript) {
+                    scholarScript.renderPublications();
+                }
+                pubSearchInput.focus();
+            });
+        }
     },
 
+    /**
+     * Handles expanding and collapsing timeline item details.
+     * @param {Event} event - The click event object.
+     */
     handleTimelineToggle(event) {
         const button = event.target.closest('.toggle-details-btn');
         if (!button) return;
@@ -698,6 +782,24 @@ const App = {
         }
     },
 
+    /**
+     * Handles the CV download request, checking for required dependencies.
+     * @param {Event} event - The click event object.
+     */
+    handleCvDownload(event) {
+        event.preventDefault();
+        if (window.PdfGenerator && typeof window.PdfGenerator.generateCvPdf === 'function' && window.jspdf) {
+            PdfGenerator.generateCvPdf();
+        } else {
+            console.error('PDF generator or jspdf library is not available.');
+            App.showToast('Erro ao iniciar o gerador de PDF.');
+        }
+    },
+
+    /**
+     * Copies the specified email address to the clipboard and shows a confirmation toast.
+     * @param {Event} event - The click event object.
+     */
     handleEmailCopy(event) {
         event.preventDefault();
         const emailToCopy = 'wevertonufv@gmail.com';
@@ -709,6 +811,10 @@ const App = {
         });
     },
 
+    /**
+     * Displays a short-lived notification message (toast).
+     * @param {string} message - The message to display in the toast.
+     */
     showToast(message) {
         const toast = document.getElementById('toast-notification');
         if (toast) {
@@ -716,11 +822,256 @@ const App = {
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+    },
+
+    /**
+     * Creates a debounced version of a function that delays its execution.
+     * @param {Function} fn - The function to debounce.
+     * @param {number} wait - The delay in milliseconds.
+     * @returns {Function} The new debounced function.
+     */
+    debounce(fn, wait = 250) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => fn.apply(this, args), wait);
+        };
+    },
+
+    // --- GitHub Module for Projects Page ---
+    githubModule: {
+        // --- Configuration and Constants ---
+        GITHUB_USER: 'WevertonGomesCosta',
+        CACHE_KEY: 'gh_repos_cache_v11',
+        CACHE_TS_KEY: 'gh_repos_cache_ts_v11',
+        CACHE_TTL: 1000 * 60 * 60 * 24, // 24 hours
+        GITHUB_PROXY_URL: '[https://corsproxy.io/](https://corsproxy.io/)?',
+        
+        // --- DOM Selectors ---
+        listEl: null,
+        metaEl: null,
+        searchEl: null,
+        clearBtn: null,
+        
+        // --- Application State ---
+        allRepos: [],
+        currentFilter: '',
+
+        /**
+         * Initializes the GitHub module.
+         */
+        init() {
+            this.listEl = document.getElementById('projects-list');
+            this.metaEl = document.getElementById('projects-meta');
+            this.searchEl = document.getElementById('project-search');
+            this.clearBtn = document.getElementById('clear-btn');
+            
+            if (!this.listEl || !this.metaEl || !this.searchEl || !this.clearBtn) {
+                console.error("GitHub module elements not found.");
+                return;
+            }
+            
+            this.setupEventListeners();
+            this.fetchRepos();
+        },
+
+        /**
+         * Reads repositories from cache if valid.
+         */
+        readCache() {
+            try {
+                const cachedTimestamp = Number(localStorage.getItem(this.CACHE_TS_KEY) || 0);
+                if (Date.now() - cachedTimestamp < this.CACHE_TTL) {
+                    return JSON.parse(localStorage.getItem(this.CACHE_KEY) || '[]');
+                }
+            } catch (e) {
+                console.warn('Failed to read repository cache.', e);
+            }
+            return null;
+        },
+
+        /**
+         * Writes repository data to localStorage.
+         */
+        writeCache(data) {
+            try {
+                localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(this.CACHE_TS_KEY, String(Date.now()));
+            } catch (e) {
+                console.warn('Failed to write to repository cache.', e);
+            }
+        },
+
+        /**
+         * Fetches all pages from the GitHub API.
+         */
+        async fetchAllPages(url) {
+            let results = [];
+            let nextUrl = url;
+            while (nextUrl) {
+                const response = await fetch(`${this.GITHUB_PROXY_URL}${encodeURIComponent(nextUrl)}`);
+                if (!response.ok) throw new Error(`GitHub API request failed: ${response.status}`);
+                const data = await response.json();
+                results = results.concat(data);
+
+                const linkHeader = response.headers.get('Link');
+                nextUrl = null;
+                if (linkHeader) {
+                    const nextLink = linkHeader.split(',').find(s => s.includes('rel="next"'));
+                    if (nextLink) {
+                        const match = nextLink.match(/<([^>]+)>/);
+                        if (match) nextUrl = match[1];
+                    }
+                }
+            }
+            return results;
+        },
+
+        /**
+         * Orchestrates fetching repositories, using cache first.
+         */
+        async fetchRepos() {
+            this.metaEl.textContent = translations[currentLang].fetching_repos;
+            const cachedRepos = this.readCache();
+
+            if (cachedRepos && cachedRepos.length > 0) {
+                this.allRepos = cachedRepos;
+                this.render();
+                return;
+            }
+
+            try {
+                const data = await this.fetchAllPages(`https://api.github.com/users/${this.GITHUB_USER}/repos?per_page=100`);
+                this.allRepos = data.map(repo => ({
+                    name: repo.name,
+                    html_url: repo.html_url,
+                    description: repo.description || '',
+                    language: repo.language || '',
+                    stargazers_count: repo.stargazers_count || 0,
+                    forks_count: repo.forks_count || 0,
+                    updated_at: repo.updated_at,
+                    topics: repo.topics || [],
+                    has_pages: repo.has_pages,
+                    homepage: repo.homepage
+                }));
+                this.writeCache(this.allRepos);
+                this.render();
+            } catch (err) {
+                console.error("Failed to fetch from GitHub:", err);
+                this.metaEl.textContent = translations[currentLang].fetch_error;
+                // Optionally, define fallback repos in translations or here
+            }
+        },
+
+        /**
+         * Renders project cards based on the current state.
+         */
+        render() {
+            this.listEl.innerHTML = '';
+            const filter = this.currentFilter.trim().toLowerCase();
+
+            const filtered = filter ?
+                this.allRepos.filter(r =>
+                    r.name.toLowerCase().includes(filter) ||
+                    (r.description || '').toLowerCase().includes(filter) ||
+                    (r.language || '').toLowerCase().includes(filter) ||
+                    r.topics.some(t => t.toLowerCase().includes(filter))
+                ) :
+                this.allRepos;
+
+            const sorted = this.sortRepos(filtered);
+
+            if (sorted.length === 0) {
+                this.listEl.innerHTML = `<div class="project-card" style="grid-column: 1 / -1;"><p class="project-desc">${translations[currentLang].no_repos_found}</p></div>`;
+            } else {
+                sorted.forEach(repo => {
+                    const cardElement = this.createCard(repo);
+                    this.listEl.appendChild(cardElement);
+                });
+            }
+            
+            this.metaEl.textContent = translations[currentLang].showing_repos(sorted.length, this.allRepos.length);
+        },
+
+        /**
+         * Creates an HTML card element for a repository.
+         */
+        createCard(repo) {
+            const card = document.createElement('div');
+            card.className = 'project-card reveal'; // Add reveal for animation
+            card.setAttribute('role', 'listitem');
+            
+            const siteUrl = repo.homepage || (repo.has_pages ? `https://${this.GITHUB_USER}.github.io/${repo.name}/` : null);
+            let actionsHtml = '';
+            
+            if (siteUrl) {
+                actionsHtml = `
+                    <a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener">${translations[currentLang]['repo-live-site']}</a>
+                    <a class="link-btn secondary" href="${repo.html_url}" target="_blank" rel="noopener">${translations[currentLang]['repo-view-repo']}</a>
+                `;
+            } else {
+                actionsHtml = `<a class="link-btn" href="${repo.html_url}" target="_blank" rel="noopener">${translations[currentLang]['repo-view-repo']}</a>`;
+            }
+
+            card.innerHTML = `
+                <div class="project-top">
+                    <h3>${this.escapeHtml(this.titleCase(repo.name))}</h3>
+                    <div class="project-meta">
+                        <span>⭐ ${repo.stargazers_count}</span>
+                        <span>🍴 ${repo.forks_count}</span>
+                    </div>
+                </div>
+                <p class="project-desc">${this.escapeHtml(repo.description || translations[currentLang].no_description)}</p>
+                <div class="project-topics"></div>
+                <div class="project-meta" style="margin-top: auto;">
+                    <span>${this.escapeHtml(repo.language || '—')}</span>
+                </div>
+                <div class="actions">${actionsHtml}</div>
+            `;
+            
+            const topicsContainer = card.querySelector('.project-topics');
+            if (repo.topics && repo.topics.length > 0) {
+                repo.topics.slice(0, 4).forEach(topic => {
+                    const tag = document.createElement('span');
+                    tag.className = 'topic-tag';
+                    tag.textContent = topic;
+                    topicsContainer.appendChild(tag);
+                });
+            }
+
+            return card;
+        },
+
+        /**
+         * Sets up event listeners for the projects page.
+         */
+        setupEventListeners() {
+            this.searchEl.addEventListener('input', App.debounce(e => {
+                this.currentFilter = e.target.value;
+                this.render();
+            }));
+
+            this.clearBtn.addEventListener('click', () => {
+                this.searchEl.value = '';
+                this.currentFilter = '';
+                this.render();
+                this.searchEl.focus();
+            });
+        },
+        
+        // --- Utility Functions ---
+        sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
+        titleCase: (str) => (str || '').replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
+        escapeHtml: (s) => (s || '').replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m])
     }
 };
 
+
 // --- Translation and Dynamic Content Functions ---
 
+/**
+  * Animates the main subtitle with a typing and deleting effect.
+  */
 function typeAndEraseSubtitle() {
       const subtitleEl = document.getElementById('subtitle');
       if (!subtitleEl) return;
@@ -752,23 +1103,28 @@ function typeAndEraseSubtitle() {
 
       if (!isDeleting && charIndex === currentPhrase.length) {
             isDeleting = true;
-            typeSpeed = 2000;
+            typeSpeed = 2000; // Pause before starting to delete
       } else if (isDeleting && charIndex === 0) {
             isDeleting = false;
             subtitleIndex = (subtitleIndex + 1) % currentPhrases.length;
-            typeSpeed = 500;
+            typeSpeed = 500; // Pause before typing the new phrase
       }
 
       subtitleTimeout = setTimeout(typeAndEraseSubtitle, typeSpeed);
 }
 
+/**
+  * Sets the page language and updates all textual content.
+  * @param {string} lang - The language code to set ('pt' or 'en').
+  */
 function setLanguage(lang) {
     if (!translations[lang]) return;
     currentLang = lang;
     document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
 
+    // --- Update page-specific metadata ---
     const bodyId = document.body.id;
-    let pageTitleKey = 'page-title';
+    let pageTitleKey = 'page-title'; // Default
     let metaDescKey = 'meta-description';
     let metaKeywordsKey = 'meta-keywords';
 
@@ -798,14 +1154,31 @@ function setLanguage(lang) {
         keywordsEl.setAttribute('content', translations[lang][metaKeywordsKey]);
     }
 
+    // --- Update all elements with data-key attributes ---
     document.querySelectorAll('[data-key]').forEach(el => {
         const key = el.dataset.key;
         const translation = translations[lang][key];
         if (translation) {
-             el.innerHTML = typeof translation === 'function' ? translation(0,0) : translation;
+            if (typeof translation === 'function') {
+                 // Special handling for dynamic text functions
+                 // This assumes the function takes numbers and returns a string
+                 try {
+                    // We need to know what values to pass, for now, this is a placeholder
+                    // A better implementation would store the latest values somewhere accessible
+                    if (key === 'showing_repos' && App.githubModule.allRepos.length > 0) {
+                        const filteredCount = App.githubModule.listEl.children.length;
+                        el.textContent = translation(filteredCount, App.githubModule.allRepos.length);
+                    } else if (key === 'showing_pubs') {
+                        // Similar logic for publications would go here
+                    }
+                 } catch (e) { console.warn(`Could not execute translation function for key: ${key}`, e)}
+            } else {
+                el.innerHTML = translation;
+            }
         }
     });
 
+    // --- Update specific attributes (placeholder, title, aria-label) ---
     document.querySelectorAll('[data-key-placeholder]').forEach(el => {
         const key = el.dataset.keyPlaceholder;
         if (translations[lang][key]) el.placeholder = translations[lang][key];
@@ -819,6 +1192,7 @@ function setLanguage(lang) {
         if (translations[lang][key]) el.setAttribute('aria-label', translations[lang][key]);
     });
 
+    // --- Update language switcher UI ---
     const isPt = lang === 'pt';
     document.querySelectorAll('.lang-switcher, .lang-switch-fixed').forEach(button => {
         const ptSpan = button.querySelector('.lang-pt');
@@ -827,6 +1201,7 @@ function setLanguage(lang) {
         if (enSpan) enSpan.classList.toggle('active', !isPt);
     });
 
+    // --- Restart animations or update modules that depend on language ---
     if (document.getElementById('subtitle')) {
         clearTimeout(subtitleTimeout);
         subtitleIndex = 0;
@@ -835,15 +1210,16 @@ function setLanguage(lang) {
         typeAndEraseSubtitle();
     }
     
-    // As renderizações agora são chamadas pelo utils.js, mas podemos invocar a atualização de idioma
+    // --- Refresh external scripts if they depend on language ---
     if (window.githubScript_proj?.renderAll) {
         window.githubScript_proj.renderAll();
     }
+    if (window.scholarScript?.renderChart) window.scholarScript.renderChart();
 }
 
+
+// Expose the language toggle function globally to be called from HTML.
 window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
 
 // --- Initialize the Application ---
 App.init();
-
-}
