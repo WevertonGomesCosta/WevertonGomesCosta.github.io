@@ -337,47 +337,48 @@ nav.scrolled .lang-switch:hover { transform: scale(1.05); }
 .toggle-details-btn:hover { background: rgba(16, 185, 129, 0.1); }
 
 /* ---
-2.7. COMPONENTES DE NAVEGAÇÃO MÓVEL (NOVO)
+2.7. COMPONENTES DE NAVEGAÇÃO MÓVEL (REFINADO)
 --- */
 
-/* Esconde o checkbox */
+/* Esconde o checkbox de controle */
 .nav-toggle-checkbox {
     display: none;
 }
 
-/* Estiliza o contêiner do ícone hambúrguer */
+/* Contêiner do ícone hambúrguer (o 'botão' clicável) */
 .nav-toggle-label {
-    display: none; /* Escondido por padrão, aparece em telas menores */
+    display: none; /* Aparece apenas em telas menores */
     cursor: pointer;
-    z-index: 1002; /* Garante que fique acima de outros elementos */
-    padding: 10px;
+    z-index: 1002; /* Garante que fique acima de tudo */
+    padding: 10px; /* Área de toque */
 }
 
-/* Estiliza as 3 linhas do ícone hambúrguer */
+/* As 3 linhas do ícone hambúrguer (tamanho reduzido) */
 .hamburger,
 .hamburger::before,
 .hamburger::after {
     content: '';
     display: block;
-    width: 28px;
-    height: 3px;
+    width: 24px;  /* Largura reduzida */
+    height: 2px; /* Altura reduzida */
     background-color: var(--primary);
     border-radius: 3px;
     position: relative;
-    transition: transform 0.3s ease, top 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
+/* Espaçamento entre as linhas */
 .hamburger::before {
-    top: -8px;
+    top: -7px;
 }
 
 .hamburger::after {
-    top: 5px; /* Ajuste para a posição correta da linha inferior */
+    top: 5px; /* Posição ajustada para a nova altura */
 }
 
 /* Animação do hambúrguer para um "X" quando o menu está aberto */
 .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger {
-    transform: rotate(45deg);
+    transform: rotate(135deg); /* Rotação para formar o 'X' */
 }
 
 .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger::before {
@@ -386,9 +387,9 @@ nav.scrolled .lang-switch:hover { transform: scale(1.05); }
 }
 
 .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger::after {
-    top: -3px; /* Ajuste para a posição correta */
+    top: 0;
     transform: rotate(90deg);
-    opacity: 0; /* Opcional: esconder a terceira linha */
+    opacity: 0;
 }
 
 /* ---
@@ -666,111 +667,67 @@ header {
 
 
 /* ---
-6. RESPONSIVIDADE (MEDIA QUERIES)
+6. RESPONSIVIDADE (MEDIA QUERIES) - SEÇÃO MÓVEL AJUSTADA
 --- */
 
-@media(min-width: 768px) {
-    .feature-section { grid-template-columns: auto 1fr; align-items: center; text-align: left;}
-}
-
-@media(min-width: 992px) {
-    .contact-container { grid-template-columns: 2fr 1fr; }
-}
-
-@media (min-width: 1100px) {
-    .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; }
-}
-
-/* ================================================================ */
-/* === MODIFICAÇÕES PARA NAVEGAÇÃO MÓVEL (max-width: 992px) === */
-/* ================================================================ */
-
 @media (max-width: 992px) {
+    /* AJUSTE 1: Reordena os elementos na barra de navegação
+       Layout: [Avatar] [Hambúrguer] [Espaço flexível] [Botão de Idioma] */
     .nav-container {
-        grid-template-columns: auto 1fr auto;
+        display: grid;
+        grid-template-columns: auto auto 1fr auto; /* 4 colunas para o layout desejado */
+        align-items: center;
+        gap: 15px; /* Espaçamento entre os elementos */
         padding: 0 15px;
-        gap: 15px;
     }
 
-    /* Mostra o botão hambúrguer */
+    /* O avatar (nav-col-left) ocupa a primeira coluna por padrão */
+
+    /* Mostra o ícone hambúrguer e o coloca na segunda coluna */
     .nav-toggle-label {
         display: block;
-        justify-self: end; /* Alinha o ícone à direita */
     }
-    
+
+    /* Força o botão de idioma a ocupar a última coluna */
+    .nav-col-right {
+        grid-column: 4 / 5;
+    }
+
+    /* AJUSTE 2: Corrige o menu lateral (tamanho da fonte e layout) */
     .nav-col-center {
-        /* Transforma a lista de links em um menu overlay */
+        /* Transforma a lista de links em um menu que desliza da esquerda */
         position: fixed;
         top: 0;
         left: -100%; /* Começa fora da tela */
         width: 75%;
-        max-width: 320px;
-        height: 100vh;
-        padding-top: 100px; /* Espaço para o cabeçalho */
+        max-width: 300px; /* Largura máxima para o painel */
+        height: 100dvh; /* Altura total da tela */
+        padding-top: 100px;
         
-        /* Estilo do menu */
-        background: rgba(15, 23, 42, 0.98); /* Fundo sólido com um pouco de transparência */
+        background: rgba(15, 23, 42, 0.98);
         backdrop-filter: blur(12px);
         border-right: 1px solid var(--border);
         box-shadow: 5px 0 20px rgba(0,0,0,0.2);
 
-        /* Layout e transição */
+        /* Organiza os links em uma única coluna */
         display: flex;
-        flex-direction: column; /* Links em coluna */
+        flex-direction: column;
         align-items: center;
-        gap: 30px;
+        gap: 15px; /* Espaçamento reduzido entre os links */
         transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
-        z-index: 1001; /* Fica abaixo do ícone do menu mas acima do resto */
+        z-index: 1001;
     }
 
     /* Mostra o menu quando o checkbox está marcado */
     .nav-toggle-checkbox:checked ~ .nav-col-center {
-        left: 0; /* Traz o menu para a tela */
-    }
-
-    .nav-link {
-        font-size: 1.2rem; /* Aumenta o tamanho da fonte para melhor toque */
-        padding: 10px 0;
-    }
-    .nav-link::after {
-        bottom: 5px; /* Ajusta posição do sublinhado */
-    }
-    
-    /* Move o seletor de idioma para dentro do menu mobile */
-    .nav-col-right {
-        order: -1; /* Move para a esquerda do hambúrguer, se necessário */
-        justify-self: start;
-    }
-
-    /* Garante que o avatar e o seletor de idioma fiquem visíveis */
-    nav.scrolled .nav-avatar { transform: scale(1); opacity: 1; }
-    nav.scrolled .lang-switch { opacity: 1; transform: scale(1); }
-
-
-    /* Adiciona um overlay escuro no resto da página quando o menu está aberto */
-    .nav-toggle-checkbox:checked::before {
-        content: '';
-        position: fixed;
-        top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 1000;
     }
 
-    /* Ajustes da timeline (código original) */
-    .timeline::before { left: 20px; }
-    .timeline-dot { left: 14px; }
-    .timeline-item { padding-left: 50px; }
-}
-
-/* Ajuste final para telas bem pequenas, se necessário */
-@media (max-width: 768px) {
-    /* O código anterior já cobre bem, mas você pode adicionar ajustes finos aqui. */
-    /* Por exemplo, ajustar o tamanho do avatar */
-    .nav-avatar {
-        width: 40px;
-        height: 40px;
+    /* AJUSTE 3: Reduz o tamanho da fonte dos links no menu */
+    .nav-link {
+        font-size: 1.05rem; /* Fonte ligeiramente maior que o padrão, mas sem exageros */
+        padding: 10px 0;
+        width: 80%;
+        text-align: center;
     }
 }
