@@ -215,46 +215,48 @@ footer {
 
 
 /* ---
-Estilos Específicos por Página
+Estilos de Conteúdo e Páginas Específicas
 --- */
 
-/* --- Página: Política de Privacidade (#page-privacy) --- */
+/* --- PADRÃO DE TÍTULOS DE CONTEÚDO --- */
+.container h1 {
+    font-size: 2rem;
+    color: var(--primary); /* COR PADRONIZADA */
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+.container h2 {
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
+    color: var(--primary); /* COR PADRONIZADA */
+    position: relative;
+    padding-left: 20px;
+    margin-bottom: 25px;
+    margin-top: 40px;
+}
+
+.container h2::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 70%;
+    background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 2px;
+}
+
+/* --- Página: Política de Privacidade (Layout Específico) --- */
 #page-privacy .container {
     max-width: 800px;
     margin: 60px auto;
-    padding: 20px 40px;
+    padding: 40px;
     background: var(--dark-light);
     border-radius: 16px;
     border: 1px solid var(--border);
 }
-
-#page-privacy h1, #page-privacy h2 {
-    color: var(--primary);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
-    margin-top: 20px;
-}
-
-#page-privacy h1 { font-size: 2rem; }
-#page-privacy h2 { font-size: 1.5rem; }
-
-#page-projects h1 {
-    color: var(--primary);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
-    margin-top: 20px;
-}
-
-#page-projects h1 { font-size: 2rem; }
-
-#page-publications h1 {
-    color: var(--primary);
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 10px;
-    margin-top: 20px;
-}
-
-#page-publications h1 { font-size: 2rem; }
 
 #page-privacy .back-link {
     display: inline-block;
@@ -262,26 +264,7 @@ Estilos Específicos por Página
     font-weight: bold;
 }
 
-/* --- Páginas: Projetos e Publicações (Estilos Compartilhados) --- */
-#page-projects h2, #page-publications h2 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    margin-bottom: 30px;
-    color: var(--primary);
-    position: relative;
-    padding-left: 20px;
-}
-
-#page-projects h2::before, #page-publications h2::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 30px;
-    background: linear-gradient(180deg, var(--primary) 0%, var(--secondary) 100%);
-}
-
+/* --- Botão Voltar ao Topo (Projetos e Publicações) --- */
 #page-projects .back-to-top, #page-publications .back-to-top {
     position: fixed;
     bottom: 30px;
