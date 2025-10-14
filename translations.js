@@ -2,7 +2,7 @@
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
  * A lógica de busca de dados foi removida e centralizada em utils.js (modo fallback).
- * @version 2.4.0
+ * @version 2.6.0
  */
 
 const translations = {
@@ -305,6 +305,7 @@ const translations = {
         'pdf': { 'about-title': 'ABOUT ME', 'services-title': 'HOW I CAN HELP', 'skills-title': 'TECHNICAL SKILLS', 'expertise-title': 'AREAS OF PRACTICE', 'education-title': 'ACADEMIC BACKGROUND', 'projects-title': 'MAIN PROJECTS', 'publications-title': 'MAIN PUBLICATIONS' }
     }
 };
+
 let currentLang = 'pt';
 let subtitleTimeout;
 let subtitleIndex = 0;
@@ -315,10 +316,33 @@ let isDeleting = false;
 const App = {
     init() {
         document.addEventListener('DOMContentLoaded', () => {
+            this.updateFooterInfo();
             this.initScrollAnimations();
             this.initEventListeners();
             setLanguage('pt');
         });
+    },
+
+    updateFooterInfo() {
+        const copyrightYearEl = document.getElementById('copyright-year');
+        if (copyrightYearEl) {
+            copyrightYearEl.textContent = new Date().getFullYear();
+        }
+
+        const lastUpdatedEl = document.getElementById('last-updated-date');
+        if (lastUpdatedEl) {
+            const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
+            lastUpdatedEl.textContent = lastModifiedDate.toLocaleDateString('pt-BR', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+        }
+        
+        const updateDateEl = document.getElementById('update-date');
+        if (updateDateEl) {
+             updateDateEl.textContent = new Date().toLocaleDateString('pt-BR', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+        }
     },
 
     initScrollAnimations() {
@@ -373,7 +397,6 @@ const App = {
         sections.forEach(section => navObserver.observe(section));
     },
     
-    // ADICIONADO: Lógica para o botão "Ver mais" e copiar email
     initEventListeners() {
         const nav = document.querySelector('nav');
         const header = document.querySelector('header');
@@ -408,20 +431,17 @@ const App = {
             }
         });
 
-        // Event listener para a timeline (botão "Ver mais")
         const timeline = document.querySelector('.timeline');
         if (timeline) {
             timeline.addEventListener('click', this.handleTimelineToggle.bind(this));
         }
         
-        // Event listener para copiar email
         const copyEmailLink = document.getElementById('copy-email-link');
         if (copyEmailLink) {
             copyEmailLink.addEventListener('click', this.handleEmailCopy.bind(this));
         }
     },
 
-    // ADICIONADO: Função que manipula o clique no "Ver mais"
     handleTimelineToggle(event) {
         const button = event.target.closest('.toggle-details-btn');
         if (!button) return;
@@ -440,7 +460,6 @@ const App = {
         }
     },
 
-    // ADICIONADO: Função para copiar email
     handleEmailCopy(event) {
         event.preventDefault();
         const emailToCopy = 'wevertonufv@gmail.com';
@@ -462,7 +481,7 @@ const App = {
     },
 };
 
-// --- Translation and Dynamic Content Functions ---
+// --- Funções de Tradução e Conteúdo Dinâmico ---
 function typeAndEraseSubtitle() {
       const subtitleEl = document.getElementById('subtitle');
       if (!subtitleEl) return;
@@ -542,7 +561,8 @@ function setLanguage(lang) {
     });
 
     const isPt = lang === 'pt';
-    document.querySelectorAll('.lang-switcher, .lang-switch-fixed').forEach(button => {
+    // CORRIGIDO: Seletor agora inclui a classe .lang-switch do menu
+    document.querySelectorAll('.lang-switcher, .lang-switch-fixed, .lang-switch').forEach(button => {
         button.querySelector('.lang-pt')?.classList.toggle('active', isPt);
         button.querySelector('.lang-en')?.classList.toggle('active', !isPt);
     });
@@ -559,4 +579,5 @@ function setLanguage(lang) {
 
 window.toggleLanguage = () => setLanguage(currentLang === 'pt' ? 'en' : 'pt');
 
+// --- Inicializa a Aplicação ---
 App.init();
