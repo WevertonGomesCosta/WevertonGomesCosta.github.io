@@ -479,7 +479,7 @@ const scholarScript = (function() {
         return card;
     }
 
-    function _animateChart(graphData, articles) {
+function _animateChart(graphData, articles) {
         const containerId = 'interactive-scholar-chart-container';
         const container = document.getElementById(containerId);
         if (!container) return;
