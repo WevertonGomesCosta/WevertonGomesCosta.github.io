@@ -2,18 +2,19 @@
  * @file fallback-data.js
  * @description Contém dados estáticos de fallback para os repositórios do GitHub e publicações do Scholar.
  * Este arquivo deve ser carregado ANTES de utils.js para que o objeto `fallbackData` esteja disponível globalmente.
- * @version 4.0.0
+ * @version 5.0.0
  */
 
 window.fallbackData = {
     /**
      * Fallback para os repositórios do GitHub.
-     * Extraído do PDF "Your Repositories.pdf".
+     * ADICIONADO: Um site (homepage) para cada projeto.
      */
     githubRepos: [
         {
             name: "Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
             html_url: "https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
+            homepage: "https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/",
             description: "This website is a project for analysis of the Genomic Selection for Drought Tolerance Using Genome Wide GBS and/or DART in Cassava by EMBRAPA Mandioca.",
             language: "R",
             stargazers_count: 2,
@@ -24,6 +25,7 @@ window.fallbackData = {
         {
             name: "analisys-next-gen-2022",
             html_url: "https://github.com/WevertonGomesCosta/analisys-next-gen-2022",
+            homepage: "https://wevertongomescosta.github.io/analisys-next-gen-2022/",
             description: "Repositório com código e relatórios reprodutíveis do programa de melhoramento de mandioca da Embrapa no âmbito do NextGen Cassava (Year 6-2022/2023).",
             language: "R",
             stargazers_count: 0,
@@ -34,6 +36,7 @@ window.fallbackData = {
         {
             name: "Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self",
             html_url: "https://github.com/WevertonGomesCosta/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self",
+            homepage: "https://wevertongomescosta.github.io/Genetic-diversity-and-interaction-between-the-maintainers-of-commercial-Soybean-cultivars-using-self/",
             description: "Reproducible R workflow for analyzing genetic diversity and interactions among maintainers of commercial soybean cultivars, integrating Random Forest, Multiple Correspondence Analysis (MCA), and Se...",
             language: "R",
             stargazers_count: 1,
@@ -44,6 +47,7 @@ window.fallbackData = {
         {
             name: "cassavabaseembrapa",
             html_url: "https://github.com/WevertonGomesCosta/cassavabaseembrapa",
+            homepage: "https://wevertongomescosta.github.io/cassavabaseembrapa/",
             description: "Este repositório contém scripts em R para automatizar o processo de inserção de ensaios de mandioca (Manihot esculenta) na plataforma CassavaBase, em colaboração com a EMBRAPA Mandioca e Fruticultu...",
             language: "R",
             stargazers_count: 0,
@@ -54,6 +58,7 @@ window.fallbackData = {
         {
             name: "Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
             html_url: "https://github.com/WevertonGomesCosta/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
+            homepage: "https://wevertongomescosta.github.io/Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow/",
             description: "Projeto de visão computacional que utiliza Mask R-CNN com Keras e TensorFlow para segmentar bovinos em imagens, extrair medidas morfométricas (área, perímetro, comprimento e largura) e estimar o pe...",
             language: "Python",
             stargazers_count: 1,
@@ -64,6 +69,7 @@ window.fallbackData = {
         {
             name: "Integrating-nir-genomic-kernel",
             html_url: "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
+            homepage: "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
             description: "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção",
             language: "R",
             stargazers_count: 0,
@@ -74,6 +80,7 @@ window.fallbackData = {
         {
             name: "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
             html_url: "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
+            homepage: "https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/",
             description: "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativ...",
             language: "R",
             stargazers_count: 0,
@@ -84,6 +91,7 @@ window.fallbackData = {
         {
             name: "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             html_url: "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            homepage: "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
             description: "This Script is part of the article Machine Learning in Genome-Wide Association Studies for Complex Traits. Costa, W. G.et al. 2025",
             language: "HTML",
             stargazers_count: 0,
@@ -94,6 +102,7 @@ window.fallbackData = {
         {
             name: "Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
             html_url: "https://github.com/WevertonGomesCosta/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
+            homepage: "https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/",
             description: "This Script is part of the article Genomic prediction through machine learning and neural networks for traits with epistasis. Costa, W. G.et al. 2022",
             language: "R",
             stargazers_count: 0,
@@ -104,6 +113,7 @@ window.fallbackData = {
         {
             name: "GitHub-with-RStudio-LICAE",
             html_url: "https://github.com/WevertonGomesCosta/GitHub-with-RStudio-LICAE",
+            homepage: "https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/",
             description: "Manual: Integrando o GitHub com o Rstudio. Bem-vindo! Esse manual irá ensinar como realizar todo o processo de criação de um repositório no GitHub até a integração do GitHub com o RStudio, visando ...",
             language: "R",
             stargazers_count: 0,
@@ -114,6 +124,7 @@ window.fallbackData = {
         {
             name: "Genomic-Selection_Course",
             html_url: "https://github.com/WevertonGomesCosta/Genomic-Selection_Course",
+            homepage: "https://wevertongomescosta.github.io/Genomic-Selection_Course/",
             description: "Minicourse 'Application of genomic selection to data from multiple environments' with Professor PhD Kaio Dias in XIII SIGM by GENMELHOR.",
             language: "R",
             stargazers_count: 0,
@@ -124,6 +135,7 @@ window.fallbackData = {
         {
             name: "Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid",
             html_url: "https://github.com/WevertonGomesCosta/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid",
+            homepage: "https://wevertongomescosta.github.io/Diversidade-gen-tica-e-identifica-o-de-regi-es-gen-micas-associadas-ao-tamanho-dos-gr-nulos-de-amid/",
             description: "Este projeto visa explorar a diversidade genética da mandioca e identificar regiões específicas do DNA associadas ao tamanho dos grânulos de amido. Através de análises genômicas avançadas, buscamos...",
             language: "R",
             stargazers_count: 0,
@@ -134,6 +146,7 @@ window.fallbackData = {
         {
             name: "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
             html_url: "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
+            homepage: "https://wevertongomescosta.github.io/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks/",
             description: "O objetivo do presente projeto é propor e avaliar o uso da regularização no desempenho de RNAs em modelos de predição genômica (GP). Tal estudo visa melhorar a predição de valores genéticos genômic...",
             language: "R",
             stargazers_count: 0,
@@ -144,6 +157,7 @@ window.fallbackData = {
         {
             name: "Manipulacao-dados-e-Analise-Grafica-R",
             html_url: "https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R",
+            homepage: "https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/",
             description: null,
             language: "R",
             stargazers_count: 0,
@@ -154,6 +168,7 @@ window.fallbackData = {
         {
             name: "Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
             html_url: "https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
+            homepage: "https://wevertongomescosta.github.io/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow/",
             description: "Mask R-CNN for object detection and instance segmentation on Keras and TensorFlow",
             language: "Python",
             stargazers_count: 0,
@@ -164,6 +179,7 @@ window.fallbackData = {
         {
             name: "curso-git-github",
             html_url: "https://github.com/WevertonGomesCosta/curso-git-github",
+            homepage: "https://wevertongomescosta.github.io/curso-git-github/",
             description: null,
             language: "Python",
             stargazers_count: 0,
@@ -174,6 +190,7 @@ window.fallbackData = {
         {
             name: "Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o",
             html_url: "https://github.com/WevertonGomesCosta/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o",
+            homepage: "https://wevertongomescosta.github.io/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o/",
             description: null,
             language: "R",
             stargazers_count: 0,
@@ -184,6 +201,7 @@ window.fallbackData = {
         {
             name: "Treinamento-GEFERT",
             html_url: "https://github.com/WevertonGomesCosta/Treinamento-GEFERT",
+            homepage: "https://wevertongomescosta.github.io/Treinamento-GEFERT/",
             description: null,
             language: null,
             stargazers_count: 0,
@@ -193,10 +211,6 @@ window.fallbackData = {
         }
     ],
 
-    /**
-     * Fallback para as publicações e métricas do Scholar.
-     * Extraído e combinado dos PDFs do ORCID e Google Acadêmico.
-     */
     scholarData: {
         profile: {
             cited_by: {
