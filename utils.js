@@ -379,24 +379,46 @@ const scholarScript = (function() {
         return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
     };
 
+    /**
+     * Anima a contagem de um número de 0 até o valor alvo com um efeito suave.
+     * @param {HTMLElement} el - O elemento cujo texto será animado.
+     */
     function animateCountUp(el) {
         if (!el) return;
         const target = parseInt(el.dataset.target, 10);
-        if (isNaN(target)) return;
-        let speed = 20;
-        if (el.id.includes('h-') || el.id.includes('i10-')) speed = 70;
-        el.textContent = '0';
-        let current = 0;
-        const increment = Math.max(1, Math.ceil(target / 100));
-        const interval = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-                el.textContent = target;
-                clearInterval(interval);
-            } else {
-                el.textContent = Math.ceil(current);
+        
+        if (isNaN(target)) {
+            el.textContent = el.dataset.target || '0';
+            return;
+        }
+
+        const duration = 2000; // Duração da animação em milissegundos
+        const easeOutQuint = t => 1 - Math.pow(1 - t, 5); // Easing: começa rápido, termina devagar
+        let startTime = null;
+
+        function animationStep(timestamp) {
+            if (!startTime) {
+                startTime = timestamp;
             }
-        }, speed);
+
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutQuint(progress);
+            
+            const currentValue = Math.floor(easedProgress * target);
+
+            // Usa toLocaleString para formatar o número (ex: 1,234)
+            el.textContent = currentValue.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+
+            if (progress < 1) {
+                requestAnimationFrame(animationStep);
+            } else {
+                // Garante que o valor final seja exatamente o alvo e formatado
+                el.textContent = target.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+            }
+        }
+
+        requestAnimationFrame(animationStep);
     }
     
     function setScholarMetrics() {
@@ -494,30 +516,27 @@ const scholarScript = (function() {
         };
         const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
     
-        // --- INÍCIO DA CORREÇÃO ---
-        // 1. Prepara os dados iniciais (vazios) e os dados finais (completos)
         const bubbleTrace = { 
-            x: fullYears, y: Array(fullYears.length).fill(yAxisMin), // Começa no eixo Y mínimo
+            x: fullYears, y: Array(fullYears.length).fill(yAxisMin),
             customdata: fullCustomData, hovertemplate: hoverTemplate, mode: 'markers',
             marker: { 
                 size: fullScaledPubCounts, 
                 color: fullPubCounts, 
-                opacity: 0, // Começa invisível
+                opacity: 0,
                 colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], 
                 showscale: true,
-                colorbar: { title: trans['chart-colorbar-title'] || 'Pubs', thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' }
+                colorbar: { title: trans['chart-colorbar-title'] || 'Pubs', thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.35 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' }
             } 
         };
         const lineTrace = { 
-            x: fullYears, y: Array(fullYears.length).fill(yAxisMin), // Começa no eixo Y mínimo
+            x: fullYears, y: Array(fullYears.length).fill(yAxisMin),
             type: 'scatter', mode: 'lines',
             line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, 
             hoverinfo: 'none' 
         };
     
-        container.innerHTML = ''; // Limpa o container antes de desenhar
+        container.innerHTML = '';
     
-        // 2. Cria o gráfico com os dados iniciais
         Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
             gd.on('plotly_click', data => {
                 if (data.points.length > 0) {
@@ -530,20 +549,18 @@ const scholarScript = (function() {
                 }
             });
     
-            // 3. Usa Plotly.animate() para fazer a transição para os dados finais
             Plotly.animate(containerId, {
                 data: [
-                    { y: fullCitCounts, marker: { opacity: 1 } }, // Anima o eixo Y e a opacidade das bolhas
-                    { y: fullCitCounts } // Anima o eixo Y da linha
+                    { y: fullCitCounts, marker: { opacity: 1 } },
+                    { y: fullCitCounts }
                 ],
-                traces: [0, 1], // Aplica a animação aos dois traços (bolhas e linha)
+                traces: [0, 1],
                 layout: {}
             }, {
                 transition: { duration: 1500, easing: 'cubic-in-out' },
                 frame: { duration: 1500 }
             });
         });
-        // --- FIM DA CORREÇÃO ---
     }
 
     function renderInteractiveChart(graphData, articles) {
@@ -588,13 +605,11 @@ const scholarScript = (function() {
         if (countEl) countEl.textContent = translations[currentLang].showing_pubs(shown, total);
     }
     
-    // CORREÇÃO: Nome da função e lógica
     function updateLoadMoreButton(shown, total) {
         const loadMoreBtn = UI.pubsLoadMoreBtn();
         if (loadMoreBtn) {
             const hasMore = shown < total;
             const trans = translations[currentLang] || {};
-            // Mostra o botão apenas se houver mais itens para carregar
             loadMoreBtn.style.display = hasMore ? 'inline-block' : 'none';
             loadMoreBtn.textContent = trans['show-more'] || 'Ver mais';
         }
@@ -604,7 +619,7 @@ const scholarScript = (function() {
         const searchInput = UI.pubSearchInput();
         if (searchInput) {
             searchInput.addEventListener('input', () => {
-                showingPubsCount = initialPubsToShow; // Reinicia a contagem na busca
+                showingPubsCount = initialPubsToShow;
                 renderPublications();
             });
         }
@@ -622,11 +637,9 @@ const scholarScript = (function() {
             });
         }
         
-        // CORREÇÃO: Lógica do botão "Mostrar mais"
         const loadMoreBtn = UI.pubsLoadMoreBtn();
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', () => { 
-                // Adiciona 'pubsPerLoad' à contagem, sem ultrapassar o total
                 showingPubsCount = Math.min(showingPubsCount + pubsPerLoad, allArticles.length);
                 renderPublications(); 
             });
@@ -649,18 +662,15 @@ const scholarScript = (function() {
     }
 
     function init() {
-        // Apenas executa se o container de publicações existir
         const grid = UI.pubsGrid();
         if (!grid) return;
 
         isIndexPage = !!UI.chartContainer();
         
-        // Se não for a página index, mostra tudo. Se for, começa com o lote inicial.
         showingPubsCount = isIndexPage ? initialPubsToShow : allArticles.length;
         
         allArticles = window.fallbackData?.scholarData?.articles || [];
 
-        // Na página de publicações, que não é a index, a contagem inicial é infinita (mostra tudo)
         if (!isIndexPage) {
             showingPubsCount = allArticles.length;
         }
@@ -683,7 +693,7 @@ const scholarScript = (function() {
                 }, { threshold: 0.1 }); 
 
                 metricsObserver.observe(metricsCard);
-            } else { // Se não houver card, carrega imediatamente
+            } else {
                 setScholarMetrics();
                 startMetricsAnimation();
                 renderInteractiveChart(citationGraphData, allArticles);
