@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 9.9.0
+ * @version 10.0.0
  */
 
 // =================================================================================
@@ -13,17 +13,14 @@
 const PageSetup = {
     init() {
         this.updateDates();
-        // Expõe a função de atualização para que possa ser chamada ao trocar de idioma
         window.pageSetupScript = { renderAll: this.updateDates.bind(this) };
     },
     updateDates() {
-        // Atualiza o ano do copyright
         const copyrightYearEl = document.getElementById('copyright-year');
         if (copyrightYearEl) {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
 
-        // CORREÇÃO: Lógica de tradução para a data de "Última Atualização"
         const lastUpdatedEl = document.getElementById('last-updated-date');
         if (lastUpdatedEl) {
             const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
@@ -36,9 +33,7 @@ const PageSetup = {
                 year: 'numeric'
             });
             
-            // Pega o prefixo (Ex: "Última atualização:") do arquivo de traduções
             const prefix = translations[lang]['last-updated-prefix'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
-            
             lastUpdatedEl.innerHTML = `<span data-key="last-updated-prefix">${prefix}</span> ${dateString}`;
         }
     }
@@ -328,7 +323,8 @@ const GithubReposModule = {
         if (!listEl) return;
 
         this.config = {
-            listEl, metaEl: document.querySelector(userConfig.metaSelector),
+            listEl,
+            metaEl: document.querySelector(userConfig.metaSelector),
             searchEl: document.querySelector(userConfig.searchSelector),
             clearBtnEl: document.querySelector(userConfig.clearBtnSelector),
             loadMoreBtnEl: document.querySelector(userConfig.loadMoreBtnSelector),
@@ -915,7 +911,6 @@ const CvPdfGenerator = {
 // =================================================================================
 // Inicializador Global
 // =================================================================================
-
 function initializePageComponents() {
     PageSetup.init();
     ParticleBackground.init();
