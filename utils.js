@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 9.0.0
+ * @version 9.1.0
  */
 
 // =================================================================================
@@ -222,7 +222,7 @@ const ContactForm = {
 // Módulo: Repositórios do GitHub (MODO FALLBACK)
 // =================================================================================
 const GithubReposModule = {
-    state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '', lang: 'pt', translations: {} },
+    state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '' },
     config: {},
     titleCase: (str) => !str ? '' : str.replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
@@ -231,8 +231,7 @@ const GithubReposModule = {
         const card = document.createElement('div');
         card.className = 'project-card card';
         card.setAttribute('role', 'listitem');
-        const { lang, translations } = this.state;
-        const trans = translations[lang] || {};
+        const trans = translations[currentLang] || {};
         const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
 
         let actionsHtml = '';
@@ -258,17 +257,17 @@ const GithubReposModule = {
             <div class="actions">${actionsHtml}</div>`;
         return card;
     },
-    updateMetaTextSafely(key, fallback, ...args) {
+    updateMetaText() {
         if (!this.config.metaEl) return;
-        const trans = this.state.translations[this.state.lang] || {};
-        const msg = typeof trans[key] === 'function' ? trans[key](...args) : (trans[key] || fallback);
+        const trans = translations[currentLang] || {};
+        const msg = trans.showing_repos(this.state.filteredRepos.length, this.state.allRepos.length);
         this.config.metaEl.textContent = msg;
     },
     sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
     render() {
         if (!this.config.listEl) return;
         this.config.listEl.innerHTML = '';
-        const trans = this.state.translations[this.state.lang] || {};
+        const trans = translations[currentLang] || {};
         const reposToDisplay = this.state.filteredRepos.slice(0, this.state.showingCount);
 
         if (reposToDisplay.length === 0) {
@@ -301,13 +300,11 @@ const GithubReposModule = {
         }
 
         if (!this.config.isPaginated) {
-            this.updateMetaTextSafely('showing_repos', `Exibindo ${this.state.filteredRepos.length} de ${this.state.allRepos.length}`, this.state.filteredRepos.length, this.state.allRepos.length);
+            this.updateMetaText();
         }
         this.render();
     },
     reRenderWithCurrentLang() {
-        this.state.lang = window.currentLang || 'pt';
-        this.state.translations = window.translations || { pt: {} };
         this.filterAndRender();
     },
     init(userConfig) {
@@ -325,19 +322,14 @@ const GithubReposModule = {
             incrementCount: userConfig.incrementCount || 3
         };
 
-        this.state.lang = window.currentLang || 'pt';
-        this.state.translations = window.translations || { pt: {} };
-
-        // Carrega dados diretamente do fallback
         this.state.allRepos = window.fallbackData?.githubRepos || [];
-        this.updateMetaTextSafely('loaded_repos_fallback', `Carregado ${this.state.allRepos.length} repositórios.`, this.state.allRepos.length);
         this.filterAndRender();
 
         if (this.config.searchEl) this.config.searchEl.addEventListener('input', this.debounce(e => { this.state.currentFilter = e.target.value; this.filterAndRender(); }));
         if (this.config.clearBtnEl) this.config.clearBtnEl.addEventListener('click', () => { if (this.config.searchEl) this.config.searchEl.value = ''; this.state.currentFilter = ''; this.filterAndRender(); if (this.config.searchEl) this.config.searchEl.focus(); });
         if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); });
         
-        window.githubScript_proj = { renderAll: this.reRenderWithCurrentLang.bind(this) };
+        window.githubScript = { renderAll: this.reRenderWithCurrentLang.bind(this) };
     }
 };
 
@@ -411,7 +403,7 @@ const scholarScript = (function() {
     function renderPublications() {
         const grid = UI.pubsGrid();
         if (!grid) return;
-        const lang = window.currentLang || 'pt';
+        const trans = translations[currentLang] || {};
         const searchFilter = (UI.pubSearchInput()?.value || '').trim().toLowerCase();
         
         let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
@@ -420,25 +412,27 @@ const scholarScript = (function() {
         const articlesToShow = isIndexPage ? filteredArticles.slice(0, showingPubsCount) : filteredArticles;
         grid.innerHTML = "";
         if (articlesToShow.length === 0) {
-            grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${translations[lang].no_pubs_found}</p></div>`;
+            grid.innerHTML = `<div class="card" style="grid-column: 1 / -1;"><p>${trans.no_pubs_found}</p></div>`;
         } else {
-            articlesToShow.forEach(art => grid.appendChild(createPublicationCard(art, lang)));
+            articlesToShow.forEach(art => grid.appendChild(createPublicationCard(art)));
         }
         updatePubsCount(articlesToShow.length, filteredArticles.length);
         updateToggleMoreButton(articlesToShow.length, filteredArticles.length);
     }
     
-    function createPublicationCard(art, lang) {
+    function createPublicationCard(art) {
         const card = document.createElement("div");
         card.className = "card publication-card";
-        const citationText = art.cited_by?.value ? `${translations[lang]['pub-cited-by']} ${art.cited_by.value} ${translations[lang]['pub-cited-by-times']}` : translations[lang]['pub-no-citation'];
+        const trans = translations[currentLang] || {};
+        const citationText = art.cited_by?.value ? `${trans['pub-cited-by']} ${art.cited_by.value} ${trans['pub-cited-by-times']}` : trans['pub-no-citation'];
         const doiHtml = art.doi ? `<div class="publication-doi"><a href="${art.doiLink}" target="_blank" rel="noopener" title="DOI: ${art.doi}"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/></a><a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a></div>` : '';
-        card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> ${doiHtml} <p class="publication-meta">${translations[lang]['pub-published']}: ${art.year} ${translations[lang]['pub-in']} <em>${art.journalTitle}</em></p><p class="citations">${citationText}</p><a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link">${translations[lang]['pub-read']}</a>`;
+        card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> ${doiHtml} <p class="publication-meta">${trans['pub-published']}: ${art.year} ${trans['pub-in']} <em>${art.journalTitle}</em></p><p class="citations">${citationText}</p><a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link">${trans['pub-read']}</a>`;
         return card;
     }
 
     function _animateChart(graphData, articles) {
         const containerId = 'interactive-scholar-chart-container';
+        const trans = translations[currentLang] || {};
         const yearlyData = {};
         
         (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
@@ -457,18 +451,18 @@ const scholarScript = (function() {
         const fullCustomData = sortedYears.map(y => ({ pubs: yearlyData[y].pubs || 0 }));
         
         const isMobile = window.innerWidth < 768, maxCitation = Math.max(...fullCitCounts, 0);
-        const chartTitle = isMobile ? translations[currentLang]['chart-title-mobile'] : translations[currentLang]['chart-title'];
+        const chartTitle = isMobile ? trans['chart-title-mobile'] : trans['chart-title'];
         const yAxisMin = maxCitation > 5 ? -maxCitation * 0.1 : -1;
 
         const layout = {
             title: { text: chartTitle, x: 0.5, xanchor: 'center', y: 0.95, yanchor: 'top', font: { size: isMobile ? 16 : 18, color: 'var(--text)' } },
             paper_bgcolor: 'transparent', plot_bgcolor: 'transparent', font: { color: 'var(--text-muted)', family: 'inherit' }, dragmode: false,
-            xaxis: { title: { text: translations[currentLang]['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
-            yaxis: { title: { text: translations[currentLang]['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
+            xaxis: { title: { text: trans['chart-xaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', tickvals: fullYears, ticktext: fullYears, fixedrange: true, tickangle: isMobile ? -60 : -45, automargin: true },
+            yaxis: { title: { text: trans['chart-yaxis-title'], font: { size: isMobile ? 10 : 12 }}, gridcolor: 'var(--border)', zeroline: false, showline: true, linecolor: 'var(--border)', range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.1], fixedrange: true, automargin: true },
             margin: { l: isMobile ? 50 : 80, r: isMobile ? 20 : 40, b: isMobile ? 100 : 80, t: 80 }, hovermode: 'closest', showlegend: false, autosize: true
         };
         const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
-        const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>', mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: translations[currentLang]['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' } } };
+        const bubbleTrace = { x: fullYears, y: [], customdata: [], hovertemplate: '<b>Ano: %{x}</b><br>Citações: <b>%{y}</b><br>Publicações: <b>%{customdata.pubs}</b><extra></extra>', mode: 'markers', marker: { size: [], color: [], colorscale: [['0.0', 'rgba(16, 185, 129, 0.3)'], ['1.0', 'rgba(16, 185, 129, 1.0)']], showscale: true, colorbar: { title: trans['chart-colorbar-title'], thickness: 10, len: isMobile ? 0.75 : 0.9, x: isMobile ? 0.5 : 1.02, xanchor: isMobile ? 'center' : 'left', y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle', orientation: isMobile ? 'h' : 'v' } } };
         const lineTrace = { x: fullYears, y: [], type: 'scatter', mode: 'lines', line: { color: 'var(--accent)', width: 2, shape: 'spline', smoothing: 0.7 }, hoverinfo: 'none' };
 
         Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
@@ -495,17 +489,14 @@ const scholarScript = (function() {
     function renderInteractiveChart(graphData, articles) {
         const container = UI.chartContainer();
         if (!container) return;
-
         if (typeof Plotly === 'undefined') {
             setTimeout(() => renderInteractiveChart(graphData, articles), 250);
             return;
         }
-
         if ((!graphData || graphData.length === 0) && (!articles || articles.length === 0)) {
             container.innerHTML = `<div class="card" style="color: var(--text-muted);">${translations[currentLang]['chart-no-data'] || 'Dados para o gráfico não disponíveis.'}</div>`;
             return;
         }
-
         const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => { if (entry.isIntersecting) { _animateChart(graphData, articles); obs.unobserve(entry.target); } });
         }, { threshold: 0.5 });
@@ -542,8 +533,9 @@ const scholarScript = (function() {
         const toggleBtn = UI.pubsToggleBtn();
         if (toggleBtn) {
             const hasMore = shown < total;
+            const trans = translations[currentLang] || {};
             toggleBtn.style.display = (isIndexPage && hasMore) ? 'inline-block' : 'none';
-            toggleBtn.textContent = hasMore ? translations[currentLang]['show-more'] : translations[currentLang]['show-less'];
+            toggleBtn.textContent = hasMore ? trans['show-more'] : trans['show-less'];
         }
     }
 
@@ -556,7 +548,7 @@ const scholarScript = (function() {
             allArticles = window.fallbackData.scholarData.articles;
         } else {
             console.error("Dados de fallback para publicações não encontrados.");
-            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">${translations[currentLang].fetch_pub_error}</div>`;
+            grid.innerHTML = `<div class="card" style="color: var(--error); grid-column: 1 / -1;">Erro ao carregar publicações.</div>`;
             return;
         }
         renderPublications();
@@ -593,6 +585,13 @@ const scholarScript = (function() {
         }
     }
 
+    function reRenderWithCurrentLang() {
+        if(isIndexPage) {
+            renderInteractiveChart(citationGraphData, allArticles);
+        }
+        renderPublications();
+    }
+
     function init() {
         if (!document.getElementById('publicacoes-grid')) return; 
 
@@ -610,7 +609,8 @@ const scholarScript = (function() {
     
     return { 
         init, 
-        allArticles: () => allArticles 
+        allArticles: () => allArticles,
+        renderAll: reRenderWithCurrentLang
     };
 })();
 
@@ -627,13 +627,11 @@ const CvPdfGenerator = {
             });
         }
     },
-
     stripHtml(html) {
         if (!html) return "";
         let doc = new DOMParser().parseFromString(html, 'text/html');
         return doc.body.textContent || "";
     },
-
     async generateCvPdf() {
         const button = document.getElementById('download-cv-btn');
         const originalButtonHTML = button.innerHTML;
@@ -675,9 +673,7 @@ const CvPdfGenerator = {
                     reader.onloadend = () => resolve(reader.result);
                     reader.readAsDataURL(blob);
                 });
-            } catch (e) {
-                console.error("Não foi possível carregar a imagem do avatar:", e);
-            }
+            } catch (e) { console.error("Não foi possível carregar a imagem do avatar:", e); }
 
             if (avatarDataUrl) {
                 doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
@@ -705,7 +701,6 @@ const CvPdfGenerator = {
             const addJustifiedText = (content, options = {}) => {
                 const { fontSize = 10, x = margin, width = max_width, color = 80 } = options;
                 if (!content || content.trim() === "") return;
-                
                 doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
                 const cleanedContent = this.stripHtml(content).replace(/\s+/g, ' ').trim();
                 const lines = doc.splitTextToSize(cleanedContent, width);
@@ -800,17 +795,14 @@ const CvPdfGenerator = {
                 const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
                 const linkUrl = repo.homepage || repo.html_url;
                 const linkText = repo.homepage ? '[Ver Site]' : '[Repositório]';
-
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 doc.text(repoTitle, margin, y);
-
                 if (linkUrl) {
                     const titleWidth = doc.getTextWidth(repoTitle);
                     doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
                     doc.textWithLink(linkText, margin + titleWidth + 5, y, { url: linkUrl });
                 }
                 y += 15;
-
                 addJustifiedText(repo.description, { x: margin + 10, width: max_width - 10 });
                 y += item_gap / 2;
             });
@@ -826,20 +818,17 @@ const CvPdfGenerator = {
                 const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
                 doc.text(titleLines, margin, y);
                 y += titleLines.length * 12 + 5;
-            
                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
                 const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`;
                 const metaLines = doc.splitTextToSize(metaText, max_width - 10);
                 doc.text(metaLines, margin + 10, y);
                 y += metaLines.length * 12 + 5;
-            
                 if (art.cited_by?.value) {
                     doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(100);
                     const citationText = `Citado ${art.cited_by.value} vezes`;
                     doc.text(citationText, margin + 10, y);
                     y += 12;
                 }
-
                 if (art.doi && art.doiLink) {
                     doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
                     const doiLabel = "DOI: ";
