@@ -220,6 +220,8 @@ window.fallbackData = {
                     { i10_index: { all: 5, since_2020: 5 } }
                 ],
                 graph: [
+                    { year: 2017, citations: 0 },
+                    { year: 2018, citations: 0 },
                     { year: 2019, citations: 3 },
                     { year: 2020, citations: 6 },
                     { year: 2021, citations: 18 },
