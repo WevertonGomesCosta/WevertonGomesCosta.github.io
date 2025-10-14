@@ -267,27 +267,48 @@ const GithubReposModule = {
         card.setAttribute('role', 'listitem');
         const trans = translations[currentLang] || {};
         const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
-
+    
         let actionsHtml = '';
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
         actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener" data-key="repo-view-repo">${trans['repo-view-repo'] || 'Repositório'}</a>`;
-        
-        let metaBottomHtml = `<span class="badge">${repo.language || '—'}</span>`;
-        if (this.config.isPaginated) {
-            metaBottomHtml += `<span class="small-muted"><span data-key="updated_at">${trans.updated_at || 'Atualizado em'}</span> ${new Date(repo.updated_at).toLocaleDateString()}</span>`;
-        }
-
+    
+        // linguagem + data (sempre exibida, sem ícone)
+        const dataFormatada = new Date(repo.updated_at).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+    
+        let metaBottomHtml = `
+            <span class="meta-badge language-badge" aria-label="Linguagem">
+              ${repo.language || '—'}
+            </span>
+            <span class="update-date">
+              Última atualização: ${dataFormatada}
+            </span>
+        `;
+    
         card.innerHTML = `
             <div class="project-top">
                 <h3>${this.titleCase(repo.name)}</h3>
-                <div class="project-meta">
-                    <span class="badge" aria-label="${repo.stargazers_count} estrelas">⭐ ${repo.stargazers_count}</span>
-                    <span class="badge" aria-label="${repo.forks_count} forks">🍴 ${repo.forks_count}</span>
-                </div>
             </div>
             <p class="project-desc">${repo.description || (trans.no_description || 'Sem descrição.')}</p>
-            <div class="project-topics">${(repo.topics || []).slice(0, 4).map(t => `<span class="topic-tag">${t}</span>`).join('')}</div>
-            <div class="project-meta" style="margin-top: auto;">${metaBottomHtml}</div>
+            <div class="project-meta meta-icons">
+              <div class="meta-icons">
+                <span class="meta-badge" aria-label="${repo.stargazers_count} estrelas">
+                  ⭐ ${repo.stargazers_count}
+                </span>
+                <span class="meta-badge" aria-label="${repo.forks_count} forks">
+                  🍴 ${repo.forks_count}
+                </span>
+              </div>
+            </div>
+            <div class="project-topics">
+              ${(repo.topics || []).slice(0, 4).map(t => `<span class="topic-tag">${t}</span>`).join('')}
+            </div>
+            <div class="project-meta" style="margin-top: auto;">
+              ${metaBottomHtml}
+            </div>
             <div class="actions">${actionsHtml}</div>`;
         return card;
     },

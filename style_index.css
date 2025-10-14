@@ -467,48 +467,244 @@ header {
 .feature-list li { display: flex; align-items: center; gap: 10px; }
 .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
 
-/* 3.5. Seção de Projetos */
+/* 3.5. Seção de Projetos — versão aprimorada */
 .sidebar {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px; /* mais arredondado */
+    padding: 24px 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 35px rgba(2, 6, 23, 0.4);
 }
-.controls { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+
+/* Barra de controle */
+.controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
 .controls input {
-    flex: 1; min-width: 150px; padding: 10px; border-radius: 10px;
-    border: 1px solid var(--border); background: var(--glass); color: var(--text);
+    flex: 1;
+    min-width: 160px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+.controls input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    outline: none;
 }
 .controls button {
-    padding: 8px 10px; border-radius: 10px; border: none;
-    background: var(--primary); color: #042017; cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: #042017;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
-.meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px }
-.projects { display: flex; flex-direction: column; gap: 12px; max-height: none; overflow: visible; }
-.project-card { 
-    background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
-    border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; 
-    transition: all 0.4s ease; 
+.controls button:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
 }
-.project-card.filtered-out { opacity: 0.3; transform: scale(0.95); }
-.project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
-.project-top h3 { margin: 0; font-size: 1rem; color: #fff }
-.project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem }
-.project-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted) }
-.project-topics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Meta info */
+.meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+/* Lista de projetos */
+.projects {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.project-card {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+}
+.project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 28px rgba(16, 185, 129, 0.15);
+}
+.project-card.filtered-out {
+    opacity: 0.35;
+    transform: scale(0.95);
+}
+
+/* Cabeçalho do card */
+.project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 10px;
+}
+.project-top h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* Descrição */
+.project-desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+/* Metadados */
+.project-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+/* Ícones e badges */
+.meta-icons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px; /* pill */
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: all 0.3s ease;
+}
+.meta-badge:hover {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+/* Badge circular/oval para qualquer linguagem */
+.language-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;   /* largura mínima */
+    height: 40px;      /* altura fixa */
+    padding: 0 12px;   /* permite oval se o texto for maior */
+    border-radius: 50px; /* pill/círculo */
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    color: var(--secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    white-space: nowrap; /* evita quebra em linguagens longas */
+}
+.language-badge:hover {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+
+.update-date svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-muted);
+}
+.small-muted {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Tópicos */
+.project-topics {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 .topic-tag {
-    background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
-    color: var(--secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem;
-    font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: var(--secondary);
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
-.topic-tag:hover, .topic-tag.active { background: var(--secondary); color: var(--dark); transform: scale(1.05); }
-.actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
+.topic-tag:hover,
+.topic-tag.active {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+
+/* Ações */
+.actions {
+    margin-top: auto;
+    padding-top: 10px;
+    display: flex;
+    gap: 10px;
+}
 .link-btn {
-    padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none;
-    font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer;
+    flex: 1;
+    padding: 10px 16px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid var(--primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+    text-align: center;
+    cursor: pointer;
 }
-.link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
-.link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
-.link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
+.link-btn:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+    transform: translateY(-2px);
+}
+.link-btn.secondary {
+    background: transparent;
+    color: var(--primary);
+    box-shadow: none;
+}
+.link-btn.secondary:hover {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
 
 /* 3.6. Seção de Contato */
 .contact-container { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }

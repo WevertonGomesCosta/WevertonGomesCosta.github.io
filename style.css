@@ -324,55 +324,291 @@ body:not(#page-home) .nav-title {
 }
 body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; transform: translateY(0); }
 
-/* 3.3. Página: Projetos (#page-projects) */
+/* 3.3 Página de Projetos: estilo principal com grade */
+
+/* Sidebar */
 #page-projects .sidebar {
-    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 22px 28px; backdrop-filter: blur(8px); box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 28px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 30px rgba(2, 6, 23, 0.35);
 }
-/* NOVO CÓDIGO PARA O GRID DINÂMICO */
+
+/* Controles (busca + botão) */
+#page-projects .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+#page-projects .controls input {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+}
+#page-projects .controls button {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: none;
+    background: var(--primary);
+    color: #042017;
+    cursor: pointer;
+}
+
+/* Grid responsivo */
 #page-projects .projects-grid {
     display: grid;
     gap: 20px;
-    /* Para telas grandes (desktops): 3 colunas */
     grid-template-columns: repeat(3, 1fr);
 }
-/* Para telas médias (tablets): 2 colunas */
-@media (max-width: 1024px) {
-    #page-projects .projects-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+@media (max-width: 1024px) { 
+    #page-projects .projects-grid { grid-template-columns: repeat(2, 1fr); } 
 }
-/* Para telas pequenas (celulares): 1 coluna */
-@media (max-width: 768px) {
-    #page-projects .projects-grid {
-        grid-template-columns: 1fr;
-    }
+@media (max-width: 768px) { 
+    #page-projects .projects-grid { grid-template-columns: 1fr; } 
 }
+
+/* Card de projeto */
 #page-projects .project-card {
-    background: rgba(255, 255, 255, 0.02); border-radius: 10px; padding: 12px;
-    border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; transition: all 0.4s ease;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.4s ease;
+    min-height: 180px;
 }
-#page-projects .project-card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
-#page-projects .project-top { display: flex; justify-content: space-between; align-items: start; gap: 8px }
-#page-projects .project-top h3 { margin: 0; font-size: 1rem; color: #fff }
-#page-projects .project-desc { margin: 0; color: var(--text-muted); font-size: 0.9rem; flex-grow: 1; }
-#page-projects .project-meta { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
-#page-projects .project-topics { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+#page-projects .project-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 5px 30px rgba(16, 185, 129, 0.12);
+}
+
+/* Cabeçalho */
+#page-projects .project-top { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: start; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+}
+#page-projects .project-top h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* Descrição */
+#page-projects .project-description,
+#page-projects .project-desc {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+/* Tópicos */
+#page-projects .project-topics {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
 #page-projects .topic-tag {
-    background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3);
-    color: var(--secondary); padding: 3px 8px; border-radius: 12px; font-size: 0.75rem;
-    font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: var(--secondary);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
-#page-projects .topic-tag:hover, #page-projects .topic-tag.active { background: var(--secondary); color: var(--dark); transform: scale(1.05); }
-#page-projects .actions { margin-top: auto; padding-top: 8px; display: flex; gap: 8px; }
+#page-projects .topic-tag:hover,
+#page-projects .topic-tag.active {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+
+/* Metadados */
+#page-projects .project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+/* Ícones (estrelas, forks, linguagem) */
+#page-projects .meta-icons { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px;
+}
+#page-projects .meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap; /* evita quebra em linguagens longas */
+}
+#page-projects .meta-badge svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.8;
+}
+#page-projects .meta-badge:hover {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+
+/* Badge oval/circular para linguagem */
+#page-projects .language-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;   /* largura mínima */
+    height: 40px;      /* altura fixa */
+    padding: 0 12px;   /* permite oval se o texto for maior */
+    border-radius: 50px; /* pill/círculo */
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    color: var(--secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    white-space: nowrap; /* evita quebra em linguagens longas */
+}
+#page-projects .language-badge:hover {
+    background: var(--secondary);
+    color: var(--dark);
+    transform: scale(1.05);
+}
+
+/* Data de atualização */
+#page-projects .update-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+#page-projects .update-date svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Ações */
+#page-projects .actions {
+    padding-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
 #page-projects .link-btn {
-    padding: 8px 14px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none;
-    font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); text-align: center; cursor: pointer;
+    flex-grow: 1;
+    padding: 10px 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid var(--primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+    text-align: center;
+    cursor: pointer;
 }
-#page-projects .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); transform: translateY(-2px); }
-#page-projects .link-btn.secondary { background: transparent; color: var(--primary); box-shadow: none; }
-#page-projects .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); color: var(--primary); box-shadow: none; transform: translateY(-2px); }
+#page-projects .link-btn:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+    transform: translateY(-2px);
+}
+#page-projects .link-btn.secondary {
+    background: transparent;
+    color: var(--primary);
+    box-shadow: none;
+}
+#page-projects .link-btn.secondary:hover { 
+    background: rgba(16, 185, 129, 0.1); 
+}
+
+/* CTA alternativa */
+#page-projects .cta-btn.secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid rgba(16, 185, 129, 0.08);
+}
+
+/* Esqueleto */
+#page-projects .skeleton-card { 
+    height: 120px; 
+    border-radius: 10px; 
+    background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); 
+    border: 1px dashed rgba(255,255,255,0.02); 
+}
+
+/* Responsividade fina */
+@media (max-width: 520px) {
+    #page-projects .project-top { 
+        flex-direction: column; 
+        gap: 6px; 
+    }
+    #page-projects .project-meta { 
+        gap: 8px; 
+    }
+    #page-projects .link-btn {
+        flex: 1 1 100%;
+    }
+    #page-projects .meta-badge {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+    }
+    #page-projects .meta-badge.language-badge {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    #page-projects .topic-tag {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+}
+
+
 
 /* 3.4. Página: Publicações (#page-publications) */
 #page-publications .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
