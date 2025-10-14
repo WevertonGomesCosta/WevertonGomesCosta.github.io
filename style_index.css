@@ -132,41 +132,44 @@ h2::before {
 2. COMPONENTES REUTILIZÁVEIS
 --- */
 
-/* 2.1. Navegação (Nav) */
+/* 2.1. Navegação */
 nav {
-    position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0;
-    transition: padding 0.3s ease;
+    position: sticky; top: 0; background: rgba(15, 23, 42, 0.9);
+    backdrop-filter: blur(10px); z-index: 1000; transition: all 0.3s ease;
+    border-bottom: 1px solid var(--border);
 }
-nav.scrolled { padding: 8px 0; }
-       
 .nav-container {
-    max-width: 1200px; margin: 0 auto; display: grid;
-    grid-template-columns: 1fr auto 1fr; gap: 20px;
-    padding: 0 20px; align-items: center;
+    display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+    max-width: 1200px; margin: 0 auto; padding: 15px 20px; transition: padding 0.3s ease;
 }
-.nav-col-left { justify-self: start; }
-.nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
-.nav-col-right { justify-self: end; }
-
+nav.scrolled .nav-container { padding: 8px 20px; }
 .nav-avatar {
-    width: 45px; height: 45px; border-radius: 50%;
-    border: 2px solid var(--primary); transform: scale(0); 
-    opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease;
-    box-shadow: 0 0 10px var(--glow);
+    width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary);
+    box-shadow: 0 0 10px var(--glow); transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: scale(0); opacity: 0;
 }
 nav.scrolled .nav-avatar { transform: scale(1); opacity: 1; }
-
+.nav-col-center { display: flex; justify-content: center; gap: 25px; }
 .nav-link {
-    color: var(--text-muted); text-decoration: none; font-weight: 500;
-    transition: color 0.3s ease, transform 0.3s ease; position: relative;
+    color: var(--text-muted); font-weight: 500; position: relative;
+    padding: 5px 0; transition: color 0.3s;
 }
 .nav-link::after {
-    content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
-    background: var(--primary); transition: width 0.3s ease;
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 2px; background: var(--primary);
+    transition: width 0.3s ease;
 }
-.nav-link:hover, .nav-link.active { color: var(--primary); transform: translateY(-2px); }
+.nav-link:hover, .nav-link.active { color: var(--primary); }
 .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+.lang-switch {
+    background: transparent; border: 1px solid var(--primary); color: var(--primary);
+    padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 500;
+    transition: background 0.3s, color 0.3s;
+}
+.lang-switch:hover { background: var(--primary); color: var(--dark); }
+.lang-switch .lang-pt, .lang-switch .lang-en { transition: color 0.3s; }
+.lang-switch .lang-pt.active, .lang-switch .lang-en.active { color: var(--text); font-weight: 700; }
+
 
 /* 2.2. Botões */
 .cta-btn {
@@ -371,45 +374,6 @@ nav.scrolled .lang-switch:hover { transform: scale(1.05); }
     top: 0;
     transform: rotate(90deg);
 }
-.nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger::after {
-    top: 0;
-    transform: rotate(90deg);
-    opacity: 0;
-}
-
-/* As 3 linhas do ícone hambúrguer (tamanho reduzido) */
-.hamburger,
-.hamburger::before,
-.hamburger::after {
-    content: '';
-    display: block;
-    width: 24px;  /* Largura reduzida */
-    height: 2px; /* Altura reduzida */
-    background-color: var(--primary);
-    border-radius: 3px;
-    position: relative;
-    transition: all 0.3s ease-in-out;
-}
-
-/* Espaçamento entre as linhas */
-.hamburger::before {
-    top: -7px;
-}
-
-.hamburger::after {
-    top: 5px; /* Posição ajustada para a nova altura */
-}
-
-/* Animação do hambúrguer para um "X" quando o menu está aberto */
-.nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger {
-    transform: rotate(135deg); /* Rotação para formar o 'X' */
-}
-
-.nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger::before {
-    top: 0;
-    transform: rotate(90deg);
-}
-
 .nav-toggle-checkbox:checked ~ .nav-toggle-label .hamburger::after {
     top: 0;
     transform: rotate(90deg);
@@ -707,7 +671,6 @@ header {
 
 /* MODIFICAÇÕES PARA NAVEGAÇÃO MÓVEL */
 @media (max-width: 992px) {
-    /* AJUSTE 1: Reordena os elementos na barra de navegação */
     .nav-container {
         display: grid;
         grid-template-columns: auto auto 1fr auto;
@@ -724,13 +687,12 @@ header {
         grid-column: 4 / 5;
     }
 
-    /* AJUSTE 2: Corrige o menu lateral */
     .nav-col-center {
         position: fixed;
         top: 0;
         left: -100%;
-        width: 75%;
-        max-width: 300px;
+        width: 65%; /* << AJUSTE: Largura do menu diminuída */
+        max-width: 260px; /* << AJUSTE: Largura máxima diminuída */
         height: 100dvh;
         padding-top: 100px;
         background: rgba(15, 23, 42, 0.98);
@@ -740,7 +702,7 @@ header {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 15px;
+        gap: 10px; /* << AJUSTE: Espaçamento entre links diminuído */
         transition: left 0.4s cubic-bezier(0.77, 0, 0.175, 1);
         z-index: 1001;
     }
@@ -749,10 +711,9 @@ header {
         left: 0;
     }
 
-    /* AJUSTE 3: Reduz o tamanho da fonte dos links */
     .nav-link {
-        font-size: 1.05rem;
-        padding: 10px 0;
+        font-size: 1rem; /* << AJUSTE: Tamanho da fonte diminuído */
+        padding: 8px 0; /* << AJUSTE: Espaçamento interno diminuído */
         width: 80%;
         text-align: center;
     }

@@ -1,6 +1,6 @@
 /**
  * @file utils.js
- * @description Contém scripts utilitários, incluindo fundo de partículas, validação de formulário, 
+ * @description Contém scripts utilitários,  o manipulador do menu de navegação móvel, fundo de partículas, validação de formulário, 
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
@@ -36,6 +36,32 @@ const PageSetup = {
             const prefix = translations[lang]['last-updated-prefix'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
             lastUpdatedEl.innerHTML = `<span data-key="last-updated-prefix">${prefix}</span> ${dateString}`;
         }
+    }
+};
+
+// =================================================================================
+// Módulo: Manipulador da Navegação Móvel
+// Funcionalidade: Fecha o menu hambúrguer ao clicar em um link.
+// =================================================================================
+const MobileNavHandler = {
+    init() {
+        const navToggle = document.getElementById('nav-toggle');
+        const navLinks = document.querySelectorAll('.nav-col-center a');
+
+        // Se não houver um menu de navegação (ex: em outras páginas), não faz nada.
+        if (!navToggle || !navLinks.length) {
+            return;
+        }
+
+        // Adiciona um 'ouvinte' de clique para cada link do menu.
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Se o menu estiver aberto (checkbox marcado), ele o desmarca para fechar.
+                if (navToggle.checked) {
+                    navToggle.checked = false;
+                }
+            });
+        });
     }
 };
 
@@ -523,7 +549,7 @@ const scholarScript = (function() {
                 range: [yAxisMin, maxCitation === 0 ? 10 : maxCitation * 1.15],
                 fixedrange: true, automargin: true
             },
-            margin: { l: isMobile ? 50 : 60, r: isMobile ? 20 : 40, b: isMobile ? 120 : 80, t: 60, pad: 4 },
+            margin: { l: isMobile ? 50 : 60, r: isMobile ? 20 : 40, b: isMobile ? 140 : 80, t: 60, pad: 4 },
             hovermode: 'closest',
             showlegend: false,
             autosize: true
@@ -531,37 +557,38 @@ const scholarScript = (function() {
 
         const config = { responsive: true, displaylogo: false, scrollZoom: false, modeBarButtonsToRemove: ['toImage', 'zoom2d', 'pan2d', 'select2d', 'lasso2d', 'zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d', 'toggleSpikelines'] };
         
-        // --- Animação ---
-        // 1. Definir o estado inicial dos dados (no fundo do gráfico)
         const initialYValues = Array(sortedYears.length).fill(yAxisMin);
 
         const bubbleTrace = {
             x: chartData.map(d => d.year),
-            y: initialYValues, // Inicia no fundo
+            y: initialYValues,
             customdata: chartData,
             hovertemplate: hoverTemplate,
             mode: 'markers',
             marker: {
                 size: scaledPubSizes,
                 color: chartData.map(d => d.pubs),
-                opacity: 0, // Inicia invisível
+                opacity: 0,
                 colorscale: [['0.0', 'rgba(16, 185, 129, 0.4)'], ['1.0', 'rgba(16, 185, 129, 1.0)']],
                 showscale: true,
                 line: { color: 'rgba(11, 110, 78, 0.6)', width: 1 },
                 colorbar: {
                     title: trans['chart-colorbar-title'] || 'Publicações',
-                    thickness: 10,
+                    thickness: isMobile ? 12 : 10,
                     len: isMobile ? 0.8 : 0.9,
                     x: isMobile ? 0.5 : 1.05, xanchor: isMobile ? 'center' : 'left',
-                    y: isMobile ? -0.4 : 0.5, yanchor: isMobile ? 'bottom' : 'middle',
-                    orientation: isMobile ? 'h' : 'v'
+                    y: isMobile ? -0.5 : 0.5, yanchor: isMobile ? 'bottom' : 'middle',
+                    orientation: isMobile ? 'h' : 'v',
+                    outlinewidth: 0,
+                    tickfont: { size: isMobile ? 10 : 9, color: 'var(--text-muted)' },
+                    titlefont: { size: isMobile ? 12 : 10, color: 'var(--text)' }
                 }
             }
         };
 
         const lineTrace = {
             x: chartData.map(d => d.year),
-            y: initialYValues, // Inicia no fundo
+            y: initialYValues,
             type: 'scatter', mode: 'lines',
             line: { color: 'var(--accent)', width: 2.5, shape: 'spline', smoothing: 0.8 },
             hoverinfo: 'none'
@@ -569,7 +596,6 @@ const scholarScript = (function() {
 
         container.innerHTML = '';
         
-        // 2. Plotar o gráfico no estado inicial
         Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
             gd.on('plotly_click', data => {
                 if (data.points.length > 0) {
@@ -582,13 +608,12 @@ const scholarScript = (function() {
                 }
             });
 
-            // 3. Animar para o estado final
             Plotly.animate(containerId, {
                 data: [
                     { y: finalYValues, marker: { opacity: 1 } },
                     { y: finalYValues }
                 ],
-                traces: [0, 1], // Animar ambos os traços (bolhas e linha)
+                traces: [0, 1],
                 layout: {}
             }, {
                 transition: { duration: 1500, easing: 'cubic-in-out' },
@@ -990,9 +1015,10 @@ const CvPdfGenerator = {
 };
 
 // =================================================================================
-// Inicializador Global
+// Inicialização Centralizada dos Módulos
 // =================================================================================
 function initializePageComponents() {
+    MobileNavHandler.init(); // << NOVO: Inicializa o manipulador do menu móvel
     PageSetup.init();
     ParticleBackground.init();
     ContactForm.init();
