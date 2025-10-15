@@ -1055,11 +1055,70 @@ const CvPdfGenerator = {
 };
 
 // =================================================================================
+// Módulo: Copiar para a Área de Transferência
+// Funcionalidade: Adiciona a funcionalidade de copiar e-mail aos links designados.
+// =================================================================================
+const ClipboardCopier = {
+    init() {
+        const emailToCopy = 'wevertonufv@gmail.com';
+
+        // Seleciona todos os elementos que devem acionar a cópia
+        const copyTriggers = [
+            document.getElementById('copy-email-link'), // Botão na seção de contato
+            document.getElementById('copy-email-footer')  // Novo link no rodapé
+        ];
+
+        copyTriggers.forEach(trigger => {
+            if (trigger) {
+                // Impede a navegação padrão do link
+                trigger.addEventListener('click', (event) => {
+                    event.preventDefault(); 
+                    this.copyToClipboard(emailToCopy);
+                });
+            }
+        });
+    },
+
+    copyToClipboard(text) {
+        // Usa a API moderna e segura do Clipboard
+        navigator.clipboard.writeText(text).then(() => {
+            // Sucesso! Mostra a notificação.
+            const successMessage = (typeof translations !== 'undefined' && translations[currentLang]?.emailCopied)
+                ? translations[currentLang].emailCopied
+                : 'E-mail copiado para a área de transferência!';
+            this.showToast(successMessage);
+        }).catch(err => {
+            // Erro. Informa o usuário no console e na notificação.
+            console.error('Falha ao copiar o texto: ', err);
+            const errorMessage = (typeof translations !== 'undefined' && translations[currentLang]?.emailCopyFailed)
+                ? translations[currentLang].emailCopyFailed
+                : 'Falha ao copiar e-mail.';
+            this.showToast(errorMessage, true);
+        });
+    },
+
+    showToast(message, isError = false) {
+        const toast = document.getElementById('toast-notification');
+        if (toast) {
+            toast.textContent = message;
+            toast.style.backgroundColor = isError ? 'var(--error)' : 'var(--primary)';
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+                // Reseta a cor após a animação de saída
+                setTimeout(() => { toast.style.backgroundColor = ''; }, 500);
+            }, 3000);
+        }
+    }
+};
+
+// =================================================================================
 // Inicialização Centralizada dos Módulos
 // =================================================================================
 function initializePageComponents() {
     MobileNavHandler.init(); // << NOVO: Inicializa o manipulador do menu móvel
     PageSetup.init();
+    ClipboardCopier.init(); // <-- ADICIONE ESTA LINHA AQUI
     ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
