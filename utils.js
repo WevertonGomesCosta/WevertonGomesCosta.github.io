@@ -1,14 +1,36 @@
 /**
  * @file utils.js
- * @description Contém scripts utilitários,  o manipulador do menu de navegação móvel, fundo de partículas, validação de formulário, 
- * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
- * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
- * @author Weverton C.
- * @version 10.2.0
+ * @description Contém scripts utilitários centralizados.
+ * @version 12.4.0 (Nome do arquivo do CV dinâmico com base no idioma)
  */
+ 
+// =================================================================================
+// MÓDULO CENTRALIZADO: Formatador de Datas
+// (Nenhuma alteração necessária aqui)
+// =================================================================================
+const DateFormatter = {
+    format(dateInput) {
+        if (!dateInput) return '';
+        const date = new Date(dateInput);
+        const lang = window.currentLang || 'pt';
+        const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
+
+        return date.toLocaleDateString(locale, {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+    },
+    formatWithLabel(dateInput, translationKey) {
+        const lang = window.currentLang || 'pt';
+        const label = translations[lang][translationKey] || '';
+        const formattedDate = this.format(dateInput);
+        return `${label} ${formattedDate}`;
+    }
+};
 
 // =================================================================================
-// Módulo: Configurações Gerais da Página
+// Módulo: Configurações Gerais da Página (Lógica de data corrigida)
 // =================================================================================
 const PageSetup = {
     init() {
@@ -16,25 +38,25 @@ const PageSetup = {
         window.pageSetupScript = { renderAll: this.updateDates.bind(this) };
     },
     updateDates() {
+        const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
+
+        // 1. Atualiza o ano do copyright (sempre)
         const copyrightYearEl = document.getElementById('copyright-year');
         if (copyrightYearEl) {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
 
-        const lastUpdatedEl = document.getElementById('last-updated-date');
-        if (lastUpdatedEl) {
-            const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
-            const lang = window.currentLang || 'pt';
-            const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
-            
-            const dateString = lastModifiedDate.toLocaleDateString(locale, {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            const prefix = translations[lang]['last-updated-prefix'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
-            lastUpdatedEl.innerHTML = `<span data-key="last-updated-prefix">${prefix}</span> ${dateString}`;
+        // 2. Atualiza a data no RODAPÉ (reflete a modificação da página atual)
+        const footerLastUpdatedEl = document.getElementById('last-updated-date');
+        if (footerLastUpdatedEl) {
+            footerLastUpdatedEl.textContent = DateFormatter.formatWithLabel(lastModifiedDate, 'footer-update-text');
+        }
+
+        // 3. ATUALIZAÇÃO ESPECÍFICA: Apenas para a página de privacidade
+        const privacyUpdateEl = document.getElementById('privacy-update-date');
+        if (privacyUpdateEl) {
+            // Usa a mesma data de modificação do arquivo, mas formata sem o rótulo
+            privacyUpdateEl.textContent = DateFormatter.format(lastModifiedDate);
         }
     }
 };
@@ -250,7 +272,7 @@ const ContactForm = {
 };
 
 // =================================================================================
-// Módulo: Repositórios do GitHub (MODO FALLBACK)
+// Módulo: Repositórios do GitHub (Atualizado para usar o DateFormatter)
 // =================================================================================
 const GithubReposModule = {
     state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '' },
@@ -268,56 +290,38 @@ const GithubReposModule = {
         let actionsHtml = '';
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
         actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener" data-key="repo-view-repo">${trans['repo-view-repo'] || 'Repositório'}</a>`;
+
+        let languageTag = repo.language ? `<span class="meta-badge language-badge" aria-label="Linguagem">${repo.language}</span>` : '';
     
-        const lang = window.currentLang || 'pt';
-        const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
-        const dataFormatada = new Date(repo.updated_at).toLocaleDateString(locale, {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
+        // ===== PONTO CENTRAL DA ATUALIZAÇÃO =====
+        // A data de atualização agora é formatada usando o `DateFormatter` centralizado.
+        const formattedUpdateDate = DateFormatter.formatWithLabel(repo.updated_at, 'repo-last-update');
         
-        // Usa a chave de tradução para o texto de "Última atualização"
-        const updateText = trans['repo-last-update'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
-    
-        let metaBottomHtml = `
-            ...
-            <span class="update-date">
-              ${updateText} ${dataFormatada}
-            </span>
-        `;
+        let metaBottomHtml = `<span class="update-date">${formattedUpdateDate}</span>`;
     
         card.innerHTML = `
-            <div class="project-top">
-                <h3>${this.titleCase(repo.name)}</h3>
-            </div>
+            <div class="project-top"><h3>${this.titleCase(repo.name)}</h3></div>
             <p class="project-desc">${repo.description || (trans.no_description || 'Sem descrição.')}</p>
             <div class="project-meta meta-icons">
-              <div class="meta-icons">
-                <span class="meta-badge" aria-label="${repo.stargazers_count} estrelas">
-                  ⭐ ${repo.stargazers_count}
-                </span>
-                <span class="meta-badge" aria-label="${repo.forks_count} forks">
-                  🍴 ${repo.forks_count}
-                </span>
-              </div>
+                <div class="meta-icons">
+                    <span class="meta-badge" aria-label="${repo.stargazers_count} estrelas">⭐ ${repo.stargazers_count}</span>
+                    <span class="meta-badge" aria-label="${repo.forks_count} forks">🍴 ${repo.forks_count}</span>
+                </div>
             </div>
-            <div class="project-topics">
-              ${(repo.topics || []).slice(0, 4).map(t => `<span class="topic-tag">${t}</span>`).join('')}
-            </div>
-            <div class="project-meta" style="margin-top: auto;">
-              ${metaBottomHtml}
-            </div>
+            <div class="project-meta">${(repo.topics || []).slice(0, 4).map(t => `<span class="topic-tag">${t}</span>`).join('')}</div>
+            <div class="project-meta" style="margin-top: auto;">${languageTag}</div>
+            <div class="project-meta" style="margin-top: auto;">${metaBottomHtml}</div>
             <div class="actions">${actionsHtml}</div>`;
         return card;
     },
+
     updateMetaText() {
         if (!this.config.metaEl) return;
         const trans = translations[currentLang] || {};
         const msg = trans.showing_repos(this.state.filteredRepos.length, this.state.allRepos.length);
         this.config.metaEl.textContent = msg;
     },
-    sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(b.updated_at)),
+    sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
     render() {
         if (!this.config.listEl) return;
         this.config.listEl.innerHTML = '';
@@ -333,7 +337,6 @@ const GithubReposModule = {
         if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
         if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
 
-        // CORREÇÃO: Usa a função de tradução para exibir a contagem de repositórios
         if (this.config.shownCountEl) {
             this.config.shownCountEl.textContent = trans.showing_repos(reposToDisplay.length, this.state.filteredRepos.length);
         }
@@ -505,8 +508,6 @@ const scholarScript = (function() {
         const readText = trans['pub-read'] || 'Ler publicação';
         
         const doiHtml = art.doi ? `<div class="publication-doi"><a href="${art.doiLink}" target="_blank" rel="noopener" title="DOI: ${art.doi}"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/></a><a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a></div>` : '';
-
-        // CORREÇÃO: Lógica do link que prioriza o DOI e depois o link do Scholar
         const publicationLink = art.doiLink || art.link;
         
         card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> 
@@ -792,7 +793,7 @@ const scholarScript = (function() {
 })();
 
 // =================================================================================
-// MÓDULO: GERADOR DE CV EM PDF
+// MÓDULO: GERADOR DE CV EM PDF (VERSÃO COM TRADUÇÃO COMPLETA)
 // =================================================================================
 const CvPdfGenerator = {
     init() {
@@ -815,19 +816,21 @@ const CvPdfGenerator = {
         const button = document.getElementById('download-cv-btn');
         const originalButtonHTML = button.innerHTML;
         const toast = document.getElementById('toast-notification');
-        const themeColor = '#10b981';
+        const langContent = translations[currentLang] || {}; // Objeto de tradução para o idioma atual
 
-        button.innerHTML = `<svg class="animate-spin" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 6.87347L16.0659 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.25 12L17.75 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 17.1265L16.0659 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 17.75V19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 17.1265L7.9341 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.75 12L6.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 6.87347L7.9341 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg> <span>Gerando...</span>`;
+        const loadingSpinnerSVG = `<svg class="animate-spin" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 6.87347L16.0659 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.25 12L17.75 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 17.1265L16.0659 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 17.75V19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 17.1265L7.9341 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.75 12L6.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 6.87347L7.9341 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
+        button.innerHTML = `${loadingSpinnerSVG} <span>${langContent['cv-generating'] || 'Gerando...'}</span>`;
         button.disabled = true;
+        
         if (toast) {
-            toast.textContent = 'Preparando seu currículo...';
+            toast.textContent = langContent['cv-generating'] || 'Preparando seu currículo...';
             toast.classList.add('show');
         }
 
         try {
             const { jsPDF } = window.jspdf;
-            const langContent = translations[currentLang] || {};
             const pdfStrings = langContent.pdf || {};
+            const themeColor = '#10b981';
 
             const doc = new jsPDF('p', 'pt', 'a4');
             const page_width = doc.internal.pageSize.getWidth();
@@ -860,7 +863,11 @@ const CvPdfGenerator = {
                 doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
             }
             doc.setFontSize(22).setFont('helvetica', 'bold').setTextColor(0).text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
-            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text("Viçosa - Minas Gerais - Brasil", margin + 115, y + 55);
+            
+            // CORREÇÃO: Usa a chave de tradução para a localização
+            const locationText = langContent['pdf-location'] || 'Viçosa - Minas Gerais, Brazil';
+            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text(locationText, margin + 115, y + 55);
+
             doc.setFont('helvetica', 'bold').text("Email:", margin + 115, y + 70);
             doc.setFont('helvetica', 'normal').text("wevertonufv@gmail.com", margin + 155, y + 70);
             doc.setFont('helvetica', 'bold').text("LinkedIn:", margin + 115, y + 85);
@@ -909,7 +916,7 @@ const CvPdfGenerator = {
                 addJustifiedText(description, { x: margin + 10, width: max_width - 10 });
                 y += item_gap / 2;
             });
-
+            
             addSectionTitle(pdfStrings['skills-title'] || 'HABILIDADES TÉCNICAS');
             const skillsElements = document.querySelectorAll('#habilidades .skill-name, #skills .skill-name');
             if (skillsElements.length > 0) {
@@ -971,13 +978,17 @@ const CvPdfGenerator = {
                 addJustifiedText(details, { fontSize: 9 });
                 y += item_gap;
             });
-
+            
             addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
             (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
                 checkPageBreak(60);
                 const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
                 const linkUrl = repo.homepage || repo.html_url;
-                const linkText = repo.homepage ? '[Ver Site]' : '[Repositório]';
+
+                // CORREÇÃO: Usa chaves de tradução para os links
+                const viewSiteText = langContent['pdf-view-site'] || '[View Site]';
+                const viewRepoText = langContent['pdf-view-repo'] || '[Repository]';
+                const linkText = repo.homepage ? viewSiteText : viewRepoText;
 
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
                 doc.text(repoTitle, margin, y);
@@ -994,7 +1005,10 @@ const CvPdfGenerator = {
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
             const projectsPageUrl = `${window.location.origin}/projetos.html`;
-            doc.textWithLink("Para mais projetos, acesse a página de projetos do site.", margin, y, { url: projectsPageUrl });
+            
+            // CORREÇÃO: Usa chave de tradução para o texto final
+            const moreProjectsText = langContent['pdf-more-projects'] || 'For more projects, visit the projects page on the site.';
+            doc.textWithLink(moreProjectsText, margin, y, { url: projectsPageUrl });
             y += 20;
             
             addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
@@ -1007,14 +1021,18 @@ const CvPdfGenerator = {
                 y += titleLines.length * 12 + 5;
             
                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-                const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`;
+                const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`; // "Publicado em" pode ser traduzido se necessário
                 const metaLines = doc.splitTextToSize(metaText, max_width - 10);
                 doc.text(metaLines, margin + 10, y);
                 y += metaLines.length * 12 + 5;
             
                 if (art.cited_by?.value) {
                     doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(100);
-                    const citationText = `Citado ${art.cited_by.value} vezes`;
+                    
+                    // CORREÇÃO: Usa chave de tradução para o texto de citação
+                    let citationText = (langContent['pdf-cited-by'] || 'Cited {count} times');
+                    citationText = citationText.replace('{count}', art.cited_by.value);
+                    
                     doc.text(citationText, margin + 10, y);
                     y += 12;
                 }
@@ -1033,20 +1051,27 @@ const CvPdfGenerator = {
             });
             doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
             const publicationsPageUrl = `${window.location.origin}/publicacoes.html`;
-            doc.textWithLink("Para mais publicações, acesse a página de publicações do site.", margin, y, { url: publicationsPageUrl });
+
+            // CORREÇÃO: Usa chave de tradução para o texto final
+            const morePublicationsText = langContent['pdf-more-publications'] || 'For more publications, visit the publications page on the site.';
+            doc.textWithLink(morePublicationsText, margin, y, { url: publicationsPageUrl });
             y += 20;
 
-            doc.save('CV-Weverton_Gomes_da_Costa.pdf');
+
+            const langSuffix = langContent['cv-filename-suffix'] || 'cv';
+            const fileName = `CV-Weverton_Gomes_da_Costa_${langSuffix}.pdf`;
+            doc.save(fileName);
+            
             if (toast) {
-                toast.textContent = 'Download iniciado!';
+                toast.textContent = langContent['cv-download-started'] || 'Download iniciado!';
                 toast.style.backgroundColor = '';
             }
 
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
             if (toast) {
-                toast.textContent = 'Ocorreu um erro ao gerar o PDF.';
-                toast.style.backgroundColor = '#f44336';
+                toast.textContent = langContent['cv-error'] || 'Ocorreu um erro ao gerar o PDF.';
+                toast.style.backgroundColor = 'var(--error)';
             }
         } finally {
             button.innerHTML = originalButtonHTML;
@@ -1108,13 +1133,178 @@ const ClipboardCopier = {
 };
 
 // =================================================================================
+// MÓDULO DE TRADUÇÃO E ESTADO GLOBAL
+// Gerencia o idioma atual, animação de digitação e aplicação das traduções.
+// =================================================================================
+
+const LanguageManager = {
+    // --- Estado ---
+    currentLang: 'pt',
+    subtitleState: {
+        timeout: null,
+        index: 0,
+        charIndex: 0,
+        isDeleting: false,
+    },
+
+    /**
+     * Alterna o idioma entre 'pt' e 'en'.
+     */
+    toggleLanguage() {
+        const newLang = this.currentLang === 'pt' ? 'en' : 'pt';
+        this.setLanguage(newLang);
+    },
+
+    /**
+     * Define o idioma da página e atualiza todos os elementos de texto.
+     * @param {string} lang - O código do idioma ('pt' ou 'en').
+     */
+    setLanguage(lang) {
+        if (!translations[lang]) return;
+
+        // 1. Define o estado global e o atributo da página
+        this.currentLang = lang;
+        window.currentLang = lang; // Para compatibilidade com outros scripts
+        document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+
+        // 2. Atualiza títulos da página e navegação com base no ID do body
+        this._updatePageTitles(lang);
+
+        // 3. Atualiza todos os elementos de conteúdo com base nos atributos `data-key`
+        this._updateTextContent(lang);
+
+        // 4. Atualiza a UI do seletor de idioma
+        this._updateLanguageSwitcherUI(lang);
+
+        // 5. Reinicia a animação do subtítulo
+        this._restartSubtitleAnimation();
+        
+        // 6. Notifica outros módulos para se atualizarem com o novo idioma
+        this._notifyOtherScripts();
+    },
+    
+    /**
+     * Animação de digitação e exclusão para o subtítulo.
+     */
+    typeAndEraseSubtitle() {
+        const subtitleEl = document.getElementById('subtitle');
+        if (!subtitleEl) return;
+
+        clearTimeout(this.subtitleState.timeout);
+
+        const phrases = [
+            translations[this.currentLang]['subtitle-1'],
+            translations[this.currentLang]['subtitle-2'],
+            translations[this.currentLang]['subtitle-3'],
+            translations[this.currentLang]['subtitle-4']
+        ].filter(Boolean); // Garante que não há frases nulas ou indefinidas
+
+        if (phrases.length === 0) return;
+
+        const state = this.subtitleState;
+        const currentPhrase = phrases[state.index];
+        let typeSpeed = 100;
+
+        if (state.isDeleting) {
+            state.charIndex--;
+        } else {
+            state.charIndex++;
+        }
+
+        subtitleEl.innerHTML = currentPhrase.substring(0, state.charIndex);
+
+        if (!state.isDeleting && state.charIndex === currentPhrase.length) {
+            state.isDeleting = true;
+            typeSpeed = 2000; // Pausa antes de começar a apagar
+        } else if (state.isDeleting && state.charIndex === 0) {
+            state.isDeleting = false;
+            state.index = (state.index + 1) % phrases.length;
+            typeSpeed = 500; // Pausa antes de começar a nova frase
+        }
+
+        state.timeout = setTimeout(() => this.typeAndEraseSubtitle(), typeSpeed);
+    },
+
+    // --- Métodos Privados Auxiliares ---
+    _updatePageTitles(lang) {
+        const bodyId = document.body.id || '';
+        let pageTitleKey = 'page-title'; // Padrão
+        let navTitleKey = '';
+
+        if (bodyId.includes('projects')) {
+            pageTitleKey = 'projects-page-title';
+            navTitleKey = 'nav-title-projects';
+        } else if (bodyId.includes('publications')) {
+            pageTitleKey = 'publications-page-title';
+            navTitleKey = 'nav-title-publications';
+        } else if (bodyId.includes('privacy')) {
+            pageTitleKey = 'privacy-page-title';
+            navTitleKey = 'nav-title-privacy';
+        }
+
+        document.title = translations[lang][pageTitleKey] || 'Página';
+        
+        const navTitleEl = document.querySelector('.nav-title');
+        if (navTitleEl && navTitleKey) {
+            navTitleEl.textContent = translations[lang][navTitleKey];
+        }
+    },
+
+    _updateTextContent(lang) {
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.dataset.key;
+            const translation = translations[lang][key];
+            if (translation) el.innerHTML = translation;
+        });
+
+        document.querySelectorAll('[data-key-placeholder]').forEach(el => {
+            el.placeholder = translations[lang][el.dataset.keyPlaceholder] || '';
+        });
+        document.querySelectorAll('[data-key-title]').forEach(el => {
+            el.title = translations[lang][el.dataset.keyTitle] || '';
+        });
+        document.querySelectorAll('[data-key-aria-label]').forEach(el => {
+            el.setAttribute('aria-label', translations[lang][el.dataset.keyAriaLabel] || '');
+        });
+    },
+
+    _updateLanguageSwitcherUI(lang) {
+        const isPt = lang === 'pt';
+        document.querySelectorAll('.lang-switcher, .lang-switch-fixed, .lang-switch').forEach(button => {
+            button.querySelector('.lang-pt')?.classList.toggle('active', isPt);
+            button.querySelector('.lang-en')?.classList.toggle('active', !isPt);
+        });
+    },
+
+    _restartSubtitleAnimation() {
+        if (document.getElementById('subtitle')) {
+            clearTimeout(this.subtitleState.timeout);
+            this.subtitleState.index = 0;
+            this.subtitleState.charIndex = 0;
+            this.subtitleState.isDeleting = false;
+            this.typeAndEraseSubtitle();
+        }
+    },
+    
+    _notifyOtherScripts() {
+        // Chama os scripts de renderização para que eles se atualizem com o novo idioma
+        window.pageSetupScript?.renderAll();
+        window.githubScript?.renderAll();
+        window.scholarScript?.renderAll();
+    }
+};
+
+// Expor globalmente a função de alternância para ser usada no HTML (ex: onclick)
+window.toggleLanguage = () => LanguageManager.toggleLanguage();
+
+// =================================================================================
 // Inicialização Centralizada dos Módulos
 // =================================================================================
 function initializePageComponents() {
+    ParticleBackground.init();
     MobileNavHandler.init();
     PageSetup.init();
     ClipboardCopier.init();
-    ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
     scholarScript.init();
