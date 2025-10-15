@@ -277,13 +277,11 @@ const GithubReposModule = {
             year: 'numeric'
         });
         
-        // CORREÇÃO: Usa a chave de tradução para o texto de "Última atualização"
+        // Usa a chave de tradução para o texto de "Última atualização"
         const updateText = trans['repo-last-update'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
     
         let metaBottomHtml = `
-            <span class="meta-badge language-badge" aria-label="Linguagem">
-              ${repo.language || '—'}
-            </span>
+            ...
             <span class="update-date">
               ${updateText} ${dataFormatada}
             </span>
