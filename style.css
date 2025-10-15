@@ -563,20 +563,6 @@ body:not(#page-home) nav.scrolled .nav-title { opacity: 1; visibility: visible; 
     background: rgba(16, 185, 129, 0.1); 
 }
 
-/* CTA alternativa */
-#page-projects .cta-btn.secondary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    background: transparent;
-    color: var(--primary);
-    border: 1px solid rgba(16, 185, 129, 0.08);
-}
-
 /* Esqueleto */
 #page-projects .skeleton-card { 
     height: 120px; 
