@@ -166,6 +166,40 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 .back-to-top.visible { opacity: 1; visibility: visible; }
 .back-to-top:hover { background-color: var(--primary-dark); transform: translateY(-5px); }
 
+/* ========================================================================
+   Componente: Notificação (Toast) - VERSÃO CORRIGIDA GLOBAL
+   Garante que a notificação funcione em TODAS as páginas.
+   ======================================================================== */
+
+#toast-notification {
+    visibility: hidden; /* Começa escondido */
+    opacity: 0;
+    position: fixed;    /* ESSENCIAL: Faz o elemento flutuar sobre a página */
+    z-index: 2000;      /* Garante que fique na frente de tudo */
+    bottom: 30px;
+    right: 30px;        /* Posição no canto inferior direito, como na sua imagem */
+    
+    min-width: 250px;
+    background-color: var(--primary);
+    color: var(--dark);
+    font-weight: 500;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px 24px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    
+    /* Transição suave para aparecer e desaparecer */
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out, visibility 0.5s;
+    transform: translateY(20px); /* Começa um pouco abaixo para um efeito de subida */
+}
+
+/* Classe adicionada via JavaScript para mostrar a notificação */
+#toast-notification.show {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0); /* Move para a posição final */
+}
+
 /* ---
 3. ESTILOS DE PÁGINAS E SEÇÕES ESPECÍFICAS
 --- */
@@ -242,8 +276,6 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .feature-list { list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 10px; }
 #index-page .feature-list li { display: flex; align-items: center; gap: 10px; }
 #index-page .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
-#index-page #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--primary); color: var(--dark); padding: 12px 24px; border-radius: 8px; z-index: 2000; transition: bottom 0.5s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: 500; }
-#index-page #toast-notification.show { bottom: 30px; }
 #index-page .nav-toggle-checkbox { display: none; }
 #index-page .nav-toggle-label { display: none; cursor: pointer; z-index: 1002; padding: 10px; }
 #index-page .hamburger, #index-page .hamburger::before, #index-page .hamburger::after { content: ''; display: block; width: 24px; height: 2px; background-color: var(--primary); border-radius: 3px; position: relative; transition: all 0.3s ease-in-out; }
