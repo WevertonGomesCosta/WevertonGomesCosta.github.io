@@ -825,17 +825,75 @@ header {
 @media(min-width: 992px) { .contact-container { grid-template-columns: 2fr 1fr; } }
 @media (min-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
 
-/* Layout da Navegação para Dispositivos Móveis */
+/* Layout da Navegação para Dispositivos Móveis (ALTERADO) */
 @media (max-width: 992px) {
-    .nav-container { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 15px; padding: 0 15px; }
-    .nav-toggle-label { display: block; }
-    .nav-col-right { grid-column: 4 / 5; }
-    .nav-col-center { position: fixed; top: 75px; left: -300px; height: auto; width: auto; min-width: 240px; padding: 10px; background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: flex-start; gap: 4px; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s; opacity: 0; z-index: 1001; }
-    .nav-toggle-checkbox:checked ~ .nav-col-center { left: 15px; opacity: 1; }
-    .nav-col-center .nav-link { font-size: 1rem; padding: 10px; width: 100%; text-align: left; border-radius: 5px; transition: background-color 0.2s ease, color 0.2s ease; }
-    .nav-col-center .nav-link:hover { background-color: var(--primary); color: var(--dark); }
+    .nav-container {
+        display: grid;
+        /* Alterado para um layout de 3 colunas: esquerda, centro, direita */
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 15px;
+        padding: 0 15px;
+    }
+
+    /* Garante que o avatar fique à esquerda */
+    .nav-col-left {
+        justify-self: start;
+    }
+
+    /* Exibe o ícone de hambúrguer e o centraliza */
+    .nav-toggle-label {
+        display: block;
+        justify-self: center; /* Centraliza o ícone na coluna do meio */
+    }
+
+    /* Garante que o seletor de idioma fique à direita */
+    .nav-col-right {
+        justify-self: end;
+    }
+
+    /* Estilos do menu que desliza para a tela */
+    .nav-col-center {
+        position: fixed;
+        top: 75px;
+        left: -300px;
+        height: auto;
+        width: auto;
+        min-width: 240px;
+        padding: 10px;
+        background: rgba(30, 41, 59, 0.9);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        opacity: 0;
+        z-index: 1001;
+    }
+
+    .nav-toggle-checkbox:checked ~ .nav-col-center {
+        left: 15px;
+        opacity: 1;
+    }
+
+    .nav-col-center .nav-link {
+        font-size: 1rem;
+        padding: 10px;
+        width: 100%;
+        text-align: left;
+        border-radius: 5px;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-col-center .nav-link:hover {
+        background-color: var(--primary);
+        color: var(--dark);
+    }
     
-    /* CORREÇÃO: Esta regra remove o sublinhado de QUALQUER link DENTRO do menu móvel, não importa o estado (hover, active, etc.) */
     .nav-col-center .nav-link::after {
         display: none !important;
     }
