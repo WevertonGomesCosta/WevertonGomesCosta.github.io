@@ -1,7 +1,7 @@
 /**
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
- * @version 3.0.0
+ * @version 3.1.0
  */
 
 const translations = {
@@ -155,7 +155,9 @@ const translations = {
         'projects-title': 'Projetos & Repositórios',
         'projects-intro': 'Abaixo estão alguns dos meus repositórios públicos no GitHub. Eles refletem meu trabalho em desenvolvimento de software, pipelines de análise e estudos em machine learning aplicado, sempre com foco em criar ferramentas reprodutíveis e de impacto para a comunidade científica e o mercado.',
         'search-placeholder': 'Buscar repositório...',
-        'no_repos_found': 'Nenhum repositório encontrado com este filtro.', 'no_description': 'Sem descrição fornecida.', 'updated_at': 'Atualizado em',
+        'no_repos_found': 'Nenhum repositório encontrado com este filtro.', 'no_description': 'Sem descrição fornecida.',
+        // CORREÇÃO: Nova chave de tradução adicionada
+        'repo-last-update': 'Última atualização:',
         'all-projects-title': 'Todos os Projetos & Repositórios',
         'all-projects-intro': 'Explore a lista completa de todos os meus projetos e repositórios públicos. Use a busca abaixo para filtrar por nome, descrição, linguagem ou tópico.',
         'all-publications-title': 'Todas as Publicações',
@@ -285,7 +287,9 @@ const translations = {
         'projects-title': 'Projects & Repositories',
         'projects-intro': 'Here are some of my public projects on GitHub, including analysis codes, tutorials, and developed tools. Feel free to explore, use, and contribute.',
         'search-placeholder': 'Search repository...',
-        'no_repos_found': 'No repositories found with this filter.', 'no_description': 'No description provided.', 'updated_at': 'Updated on',
+        'no_repos_found': 'No repositories found with this filter.', 'no_description': 'No description provided.',
+        // CORREÇÃO: Nova chave de tradução adicionada
+        'repo-last-update': 'Last updated:',
         'all-projects-title': 'All Projects & Repositories',
         'all-projects-intro': 'Explore the complete list of all my public projects and repositories. Use the search below to filter by name, description, language, or topic.',
         'all-publications-title': 'All Publications',
