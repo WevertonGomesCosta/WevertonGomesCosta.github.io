@@ -35,7 +35,22 @@ const DateFormatter = {
 const PageSetup = {
     init() {
         this.updateDates();
-        window.pageSetupScript = { renderAll: this.updateDates.bind(this) };
+        window.pageSetupScript = { 
+            renderAll: this.updateDates.bind(this),
+            updateTimelineButtons: this.updateTimelineButtonsText.bind(this) // <-- Adicione esta parte
+        };
+    },
+    updateTimelineButtonsText() {
+        document.querySelectorAll('.toggle-details-btn').forEach(button => {
+            const item = button.closest('.timeline-item');
+            if (!item || !window.currentLang) return;
+
+            const isExpanded = item.classList.contains('expanded');
+            const lang = window.currentLang;
+            
+            const key = isExpanded ? 'toggle-details-less' : 'toggle-details-more';
+            button.textContent = translations[lang][key];
+        });
     },
     updateDates() {
         const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
@@ -59,6 +74,7 @@ const PageSetup = {
             privacyUpdateEl.textContent = DateFormatter.format(lastModifiedDate);
         }
     }
+    
 };
 
 // =================================================================================
@@ -1181,6 +1197,10 @@ const LanguageManager = {
         
         // 6. Notifica outros módulos para se atualizarem com o novo idioma
         this._notifyOtherScripts();
+        
+        if (window.pageSetupScript && typeof window.pageSetupScript.updateTimelineButtons === 'function') {
+            window.pageSetupScript.updateTimelineButtons();
+        }
     },
     
     /**
