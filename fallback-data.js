@@ -2,10 +2,17 @@
  * @file fallback-data.js
  * @description Contém dados estáticos de fallback para o site.
  * Gerado automaticamente por 'update_fallback_final.py'.
- * @version 2025.10.14
- * @generated_at 2025-10-14T22:54:11.790178
+ * @version 2025.10.15
+ * @generated_at 2025-10-15T15:56:18.719777
+ * @modification citations 0 to 149
+ * @modification h-index 0 to 7
+ * @modification i10-index 0 to 5
+ * @modification new publication: BRSMG Rubelita: cultivar de arroz para cultivo em ...
+ * @modification new publication: Ensaio comparativo preliminar de arroz irrigado em...
+ * @modification citation 'Eficiência de técnicas de mach...' 0 to 1
+ * @modification citation 'Dynamics, diversity and experi...' 0 to 1
  */
- 
+
 window.fallbackData = {
     "githubRepos": [
         {
@@ -344,11 +351,11 @@ window.fallbackData = {
                     },
                     {
                         "year": 2024,
-                        "citations": 39
+                        "citations": 38
                     },
                     {
                         "year": 2025,
-                        "citations": 36
+                        "citations": 37
                     }
                 ]
             }
