@@ -4,7 +4,7 @@
  * busca de repositórios do GitHub, busca de publicações do Google Scholar e geração de CV em PDF.
  * Scripts de busca (GitHub/Scholar) foram modificados para usar apenas dados de fallback.
  * @author Weverton C.
- * @version 10.1.0
+ * @version 10.2.0
  */
 
 // =================================================================================
@@ -48,15 +48,12 @@ const MobileNavHandler = {
         const navToggle = document.getElementById('nav-toggle');
         const navLinks = document.querySelectorAll('.nav-col-center a');
 
-        // Se não houver um menu de navegação (ex: em outras páginas), não faz nada.
         if (!navToggle || !navLinks.length) {
             return;
         }
 
-        // Adiciona um 'ouvinte' de clique para cada link do menu.
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
-                // Se o menu estiver aberto (checkbox marcado), ele o desmarca para fechar.
                 if (navToggle.checked) {
                     navToggle.checked = false;
                 }
@@ -272,19 +269,23 @@ const GithubReposModule = {
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
         actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener" data-key="repo-view-repo">${trans['repo-view-repo'] || 'Repositório'}</a>`;
     
-        // linguagem + data (sempre exibida, sem ícone)
-        const dataFormatada = new Date(repo.updated_at).toLocaleDateString('pt-BR', {
+        const lang = window.currentLang || 'pt';
+        const locale = lang === 'pt' ? 'pt-BR' : 'en-US';
+        const dataFormatada = new Date(repo.updated_at).toLocaleDateString(locale, {
             day: '2-digit',
             month: 'long',
             year: 'numeric'
         });
+        
+        // CORREÇÃO: Usa a chave de tradução para o texto de "Última atualização"
+        const updateText = trans['repo-last-update'] || (lang === 'pt' ? 'Última atualização:' : 'Last updated:');
     
         let metaBottomHtml = `
             <span class="meta-badge language-badge" aria-label="Linguagem">
               ${repo.language || '—'}
             </span>
             <span class="update-date">
-              Última atualização: ${dataFormatada}
+              ${updateText} ${dataFormatada}
             </span>
         `;
     
@@ -334,7 +335,11 @@ const GithubReposModule = {
         if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
         if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
 
-        if (this.config.shownCountEl) this.config.shownCountEl.textContent = `${reposToDisplay.length} / ${this.state.filteredRepos.length}`;
+        // CORREÇÃO: Usa a função de tradução para exibir a contagem de repositórios
+        if (this.config.shownCountEl) {
+            this.config.shownCountEl.textContent = trans.showing_repos(reposToDisplay.length, this.state.filteredRepos.length);
+        }
+
         if (this.config.loadMoreBtnEl) {
             const hasMore = this.state.showingCount < this.state.filteredRepos.length;
             this.config.loadMoreBtnEl.classList.toggle('hidden', !hasMore || this.state.currentFilter.trim() !== '');
@@ -502,12 +507,15 @@ const scholarScript = (function() {
         const readText = trans['pub-read'] || 'Ler publicação';
         
         const doiHtml = art.doi ? `<div class="publication-doi"><a href="${art.doiLink}" target="_blank" rel="noopener" title="DOI: ${art.doi}"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI logo"/></a><a href="${art.doiLink}" target="_blank" rel="noopener">${art.doi}</a></div>` : '';
+
+        // CORREÇÃO: Lógica do link que prioriza o DOI e depois o link do Scholar
+        const publicationLink = art.doiLink || art.link;
         
         card.innerHTML = `<h3>${art.title.replace(/<[^>]+>/g, '')}</h3> 
             ${doiHtml} 
             <p class="publication-meta">${publishedText}</p>
             <p class="citations">${citationText}</p>
-            <a href="${art.link || art.doiLink}" target="_blank" rel="noopener" class="publication-link" data-key="pub-read">${readText}</a>`;
+            <a href="${publicationLink}" target="_blank" rel="noopener" class="publication-link" data-key="pub-read">${readText}</a>`;
         return card;
     }
 
@@ -778,12 +786,10 @@ const scholarScript = (function() {
         window.scholarScript = { renderAll: reRenderWithCurrentLang };
     }
     
-// Em utils.js, dentro de scholarScript - CORRIGIDO
-
     return { 
         init, 
         renderAll: reRenderWithCurrentLang,
-        allArticles: () => allArticles // <-- ADICIONE ESTA LINHA
+        allArticles: () => allArticles
     };
 })();
 
@@ -968,7 +974,6 @@ const CvPdfGenerator = {
                 y += item_gap;
             });
 
-            // MODIFICADO: Seção de Projetos com links
             addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
             (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
                 checkPageBreak(60);
@@ -994,7 +999,6 @@ const CvPdfGenerator = {
             doc.textWithLink("Para mais projetos, acesse a página de projetos do site.", margin, y, { url: projectsPageUrl });
             y += 20;
             
-            // MODIFICADO: Seção de Publicações com links DOI
             addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
             (scholarScript.allArticles() || []).slice(0, 3).forEach(art => {
                 checkPageBreak(80);
@@ -1056,21 +1060,18 @@ const CvPdfGenerator = {
 
 // =================================================================================
 // Módulo: Copiar para a Área de Transferência
-// Funcionalidade: Adiciona a funcionalidade de copiar e-mail aos links designados.
 // =================================================================================
 const ClipboardCopier = {
     init() {
         const emailToCopy = 'wevertonufv@gmail.com';
 
-        // Seleciona todos os elementos que devem acionar a cópia
         const copyTriggers = [
-            document.getElementById('copy-email-link'), // Botão na seção de contato
-            document.getElementById('copy-email-footer')  // Novo link no rodapé
+            document.getElementById('copy-email-link'),
+            document.getElementById('copy-email-footer')
         ];
 
         copyTriggers.forEach(trigger => {
             if (trigger) {
-                // Impede a navegação padrão do link
                 trigger.addEventListener('click', (event) => {
                     event.preventDefault(); 
                     this.copyToClipboard(emailToCopy);
@@ -1080,15 +1081,12 @@ const ClipboardCopier = {
     },
 
     copyToClipboard(text) {
-        // Usa a API moderna e segura do Clipboard
         navigator.clipboard.writeText(text).then(() => {
-            // Sucesso! Mostra a notificação.
             const successMessage = (typeof translations !== 'undefined' && translations[currentLang]?.emailCopied)
                 ? translations[currentLang].emailCopied
                 : 'E-mail copiado para a área de transferência!';
             this.showToast(successMessage);
         }).catch(err => {
-            // Erro. Informa o usuário no console e na notificação.
             console.error('Falha ao copiar o texto: ', err);
             const errorMessage = (typeof translations !== 'undefined' && translations[currentLang]?.emailCopyFailed)
                 ? translations[currentLang].emailCopyFailed
@@ -1105,7 +1103,6 @@ const ClipboardCopier = {
             toast.classList.add('show');
             setTimeout(() => {
                 toast.classList.remove('show');
-                // Reseta a cor após a animação de saída
                 setTimeout(() => { toast.style.backgroundColor = ''; }, 500);
             }, 3000);
         }
@@ -1116,9 +1113,9 @@ const ClipboardCopier = {
 // Inicialização Centralizada dos Módulos
 // =================================================================================
 function initializePageComponents() {
-    MobileNavHandler.init(); // << NOVO: Inicializa o manipulador do menu móvel
+    MobileNavHandler.init();
     PageSetup.init();
-    ClipboardCopier.init(); // <-- ADICIONE ESTA LINHA AQUI
+    ClipboardCopier.init();
     ParticleBackground.init();
     ContactForm.init();
     CvPdfGenerator.init();
