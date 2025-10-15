@@ -197,8 +197,10 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .card:hover::before { opacity: 1; }
 #index-page .card > * { position: relative; z-index: 2; }
 #index-page .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; text-align: left;}
-#index-page .card p { color: var(--text-muted); line-height: 1.6; }
-#index-page .icon { font-size: 2rem; margin-bottom: 15px; display: block; position: relative; overflow: hidden; }
+#index-page .card p:not(.citations) {
+    color: var(--text-muted);
+    line-height: 1.6;
+}#index-page .icon { font-size: 2rem; margin-bottom: 15px; display: block; position: relative; overflow: hidden; }
 #index-page .icon::after { content: ''; position: absolute; top: 0; transform: translateX(-100%); width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); }
 #index-page .card.visible .icon::after { animation: shine-effect 2.5s ease-in-out infinite; }
 #index-page .timeline { position: relative; padding: 20px 0; }
