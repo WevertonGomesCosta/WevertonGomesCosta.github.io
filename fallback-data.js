@@ -1,5 +1,5 @@
 /**
- * @file fallback-data2.js
+ * @file fallback-data.js
  * @description Contém dados estáticos de fallback para o site.
  * Gerado automaticamente por 'update_fallback_final.py'.
  * @version 2025.10.14
