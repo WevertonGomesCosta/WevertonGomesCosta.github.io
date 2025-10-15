@@ -87,7 +87,54 @@ nav.scrolled { padding: 8px 0; }
 .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); transform: translateY(-2px); text-decoration: none; color: #fff !important; }
 .link-btn.secondary { background: transparent; color: var(--primary) !important; box-shadow: none; }
 .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.12); color: var(--primary) !important; transform: translateY(-2px); }
+/* Estilo base unificado para o botão de idioma */
+.lang-switcher {
+    background: var(--bg-card);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition: background 0.3s, color 0.3s, opacity 0.3s, transform 0.3s;
+}
+.lang-switcher:hover {
+    background: var(--primary);
+    color: var(--dark);
+}
+.lang-switcher .lang-pt.active, .lang-switcher .lang-en.active {
+    color: var(--text);
+    font-weight: 700;
+}
 
+/* Estilo específico para o botão fixo da página inicial */
+.lang-fixed {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+}
+/* Esconde o botão fixo ao rolar a página */
+body.scrolled .lang-fixed {
+    opacity: 0;
+    transform: scale(0.8);
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Estilo para o botão que aparece na barra de navegação da home ao rolar */
+#index-page .nav-col-right .lang-switcher {
+    opacity: 0;
+    transform: scale(0);
+}
+#index-page nav.scrolled .nav-col-right .lang-switcher {
+    opacity: 1;
+    transform: scale(1);
+}
 .lang-switcher { background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; transition: background 0.3s, color 0.3s; }
 .lang-switcher:hover { background: var(--primary); color: var(--dark); }
 .lang-switcher .lang-pt.active, .lang-switcher .lang-en.active { color: var(--text); font-weight: 700; }
@@ -193,12 +240,6 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .feature-list { list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 10px; }
 #index-page .feature-list li { display: flex; align-items: center; gap: 10px; }
 #index-page .feature-list li::before { content: '✔️'; color: var(--primary); font-size: 1.2rem; }
-#index-page .lang-switch-fixed { position: fixed; top: 20px; right: 20px; z-index: 1001; box-shadow: 0 3px 12px rgba(0,0,0,0.2); opacity: 1; transform: scale(1); visibility: visible; transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
-#index-page .lang-switch-fixed:hover { background: var(--primary); color: var(--dark); }
-#index-page.scrolled .lang-switch-fixed { opacity: 0; transform: scale(0.8); visibility: hidden; }
-#index-page .lang-switch { opacity: 0; transform: scale(0); transition: opacity 0.3s ease, transform 0.3s ease; background: var(--bg-card); border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 20px; cursor: pointer; backdrop-filter: blur(10px); font-weight: 500; line-height: 1; white-space: nowrap; }
-#index-page .lang-switch:hover { background: var(--primary); color: var(--dark); }
-#index-page nav.scrolled .lang-switch { opacity: 1; transform: scale(1); }
 #index-page #toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--primary); color: var(--dark); padding: 12px 24px; border-radius: 8px; z-index: 2000; transition: bottom 0.5s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.3); font-weight: 500; }
 #index-page #toast-notification.show { bottom: 30px; }
 #index-page .nav-toggle-checkbox { display: none; }
