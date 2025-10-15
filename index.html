@@ -49,6 +49,7 @@
     <!-- Barra de Navegação -->
     <nav>
         <div class="nav-container">
+            <!-- Avatar e Logo -->
             <div class="nav-col-left">
                 <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
             </div>
@@ -58,7 +59,7 @@
             <label for="nav-toggle" class="nav-toggle-label">
                 <span class="hamburger"></span>
             </label>
-
+            <!-- Menu de Navegação -->
             <div class="nav-col-center">
                 <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
                 <a href="#experiencia" class="nav-link" data-key="nav-experience">Atuação</a>
@@ -69,7 +70,7 @@
                 <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
                 <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
             </div>
-            
+            <!-- Alternador de Idioma -->
             <div class="nav-col-right">
                 <button class="lang-switcher" onclick="toggleLanguage()" data-key-title="change-lang-title">
                     <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
@@ -80,6 +81,7 @@
 
     <!-- Conteúdo Principal da Página -->
     <main class="container">
+        <!-- Sobre Mim -->
         <section id="sobre" class="section">
             <h2 class="reveal" data-key="about-title">Sobre Mim</h2>
             <div class="card reveal">
@@ -88,7 +90,7 @@
                 <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p3"></p>
             </div>
         </section>
-
+        <!-- Áreas de Atuação -->
         <section id="experiencia" class="section">
             <h2 class="reveal" data-key="expertise-title">Áreas de Atuação</h2>
             <div class="grid stagger-children">
@@ -100,7 +102,7 @@
                 <div class="card reveal"><span class="icon" role="img" aria-label="Computador">💻</span><h3 data-key="exp-title7">Softwares e Ferramentas</h3><p data-key="exp-desc7"></p></div>
             </div>
         </section>
-
+        <!-- Serviços Oferecidos -->
         <section id="servicos" class="section">
             <h2 class="reveal" data-key="services-title">Como Posso Ajudar</h2>
             <div class="grid stagger-children">
@@ -121,7 +123,7 @@
                 </div>
             </div>
         </section>
-        
+        <!-- Formação Acadêmica -->
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
@@ -211,7 +213,7 @@
                 </div></div>
             </div>
         </section>
-
+        <!-- Projetos e Repositórios -->
         <section id="projetos" class="section" aria-labelledby="projetos-title">
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <p class="section-intro reveal" data-key="projects-intro"></p>
@@ -232,7 +234,7 @@
                 </div>
             </div>
         </section>
-
+        <!-- Publicações e Citações -->
         <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
             <p class="section-intro reveal" data-key="publications-intro"></p>
@@ -288,12 +290,12 @@
                 </div>
             </div>
         </section>
-        
+        <!-- LICAE e ConectaGEM -->
         <section id="licae-conecta" class="section">
-             <div class="feature-section reveal card">
+              <div class="feature-section reveal card">
                 <div class="feature-logo" role="img" aria-label="Logo LICAE">
                     <img src="LICAE.svg" alt="Logo LICAE">
-		        </div>
+		            </div>
                 <div class="feature-content">
                     <h3>Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE)</h3>
                     <p data-key="licae-desc"></p>
@@ -303,11 +305,11 @@
                         <li data-key="licae-item3"></li>
                     </ul>
                 </div>
-            </div>
-             <div class="feature-section reveal card" style="margin-top: 40px;">
+              </div>
+              <div class="feature-section reveal card" style="margin-top: 40px;">
                 <div class="feature-logo" role="img" aria-label="Logo Conecta GEM">
                     <img src="ConectaGEM.svg" alt="Logo Conecta GEM">
-		        </div>
+		            </div>
                 <div class="feature-content">
                     <h3>Conecta GEM</h3>
                     <p data-key="conecta-desc"></p>
@@ -317,10 +319,10 @@
                         <li data-key="conecta-item3"></li>
                     </ul>
                 </div>
-            </div>
+              </div>
         </section>
 
-
+        <!-- Habilidades Técnicas -->
         <section id="habilidades" class="section">
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-grid">
@@ -353,7 +355,7 @@
                 </div>
             </div>
         </section>
-
+        <!-- Formulário de Contato -->
         <section id="contato" class="section">
               <h2 class="reveal" data-key="contact-title">Contato</h2>
               <p data-key="contact-intro" class="section-intro reveal"></p>
@@ -388,7 +390,7 @@
                       </button>
                       <p id="form-status" aria-live="polite"></p>
                   </form>
-  
+                  <!-- Links Rápidos e Contato -->
                   <aside class="contact-links-aside">
                       <h3 data-key="contact-quick-links">Links Rápidos</h3>
                       <div class="contact-grid">
@@ -467,7 +469,8 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                 <div class="footer-license" style="margin-top: 20px;">
+                <!-- Linha de separação -->  
+                <div class="footer-license" style="margin-top: 20px;">
                     <p><a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" data-key="footer-license-text-short">Licença CC BY-SA 4.0</a></p>
                 </div>
                 <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
