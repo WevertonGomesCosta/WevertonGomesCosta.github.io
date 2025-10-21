@@ -3,10 +3,10 @@
 # Descrição:
 # Script para buscar dados de várias fontes, combiná-los e gerar um arquivo de fallback.
 # As chaves e configurações são carregadas de um arquivo 'keys.json' unificado.
-# Implementa fallback automático para a chave da API SerpApi.
+# Implementa fallback automático para a chave da API SerpApi e trata falhas de conexão.
 #
 # Autor: Gemini & Weverton Costa
-# Versão: 8.1.0 (Versão completa, unificada e com gerenciamento de chaves)
+# Versão: 8.3.0 (Versão robusta com fallback de API e tratamento de falhas)
 
 import requests
 import json
@@ -77,12 +77,14 @@ def load_js_data(filepath):
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         json_str = content[content.find('{') : content.rfind('}')+1]
         json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
-        json_str = re.sub(r'([{,]\s*)(\w+)(\s*:)', r'\1"\2"\3', json_str)
+        # Regex aprimorado para lidar com nomes de chaves sem aspas
+        json_str = re.sub(r'([{,]\s*)([a-zA-Z0-9_]+)(\s*:)', r'\1"\2"\3', json_str)
+        # Remove vírgulas extras antes de '}' ou ']'
         json_str = re.sub(r',\s*([\}\]])', r'\1', json_str)
-        
+
         return json.loads(json_str)
     except Exception as e:
         print(f"✗ Erro ao carregar e decodificar o arquivo JSON '{filepath}': {e}")
@@ -104,7 +106,7 @@ def fetch_github_repos(username):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         repos = response.json()
-        
+
         formatted_repos = []
         for repo in repos:
             homepage_url = repo.get("homepage")
@@ -134,9 +136,10 @@ def fetch_scholar_profile(author_id, api_key):
         data = response.json()
         if "error" in data:
             raise Exception(data["error"])
-        
+
         raw_table = data.get("cited_by", {}).get("table", [])
-        
+
+        # Padroniza chaves de idioma (ex: 'desde_2020' para 'since_2020')
         for item in raw_table:
             for metric_values in item.values():
                 if 'desde_2020' in metric_values:
@@ -155,14 +158,15 @@ def fetch_scholar_profile(author_id, api_key):
 
         api_graph = data.get("cited_by", {}).get("graph", [])
         api_graph_map = {item['year']: item['citations'] for item in api_graph}
-        
+
         min_api_year = min(api_graph_map.keys()) if api_graph_map else datetime.now().year
-        
+
+        # Garante que o gráfico comece em 2017, preenchendo anos vazios
         final_graph = []
         for year in range(2017, min_api_year):
             if year not in api_graph_map:
                 final_graph.append({"year": year, "citations": 0})
-        
+
         final_graph.extend(api_graph)
         final_graph.sort(key=lambda x: x['year'])
 
@@ -196,7 +200,8 @@ def fetch_all_scholar_articles(author_id, api_key):
             if len(articles_on_page) < 20: break
         except Exception as e:
             print(f"✗ Erro ao buscar página de publicações do Scholar: {e}")
-            break
+            # Retorna o que foi encontrado até o momento da falha
+            return all_articles
     print(f"✓ Total de {len(all_articles)} publicações do Scholar encontradas.")
     return all_articles
 
@@ -209,16 +214,14 @@ def fetch_orcid_works(orcid_id):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         data = response.json()
-        
+
         orcid_works = []
         for group in data.get('group', []):
-            if not group.get('work-summary'):
-                continue
+            if not group.get('work-summary'): continue
             summary = group['work-summary'][0]
 
             title_obj = summary.get('title')
-            if not title_obj or not title_obj.get('title') or not title_obj['title'].get('value'):
-                continue
+            if not title_obj or not title_obj.get('title') or not title_obj['title'].get('value'): continue
             title = title_obj['title']['value']
 
             doi, doi_link = None, None
@@ -229,19 +232,16 @@ def fetch_orcid_works(orcid_id):
                         ext_id_url_obj = ext_id.get('external-id-url')
                         doi_link = ext_id_url_obj.get('value') if ext_id_url_obj else None
                         break
-            
-            # --- CORREÇÃO APLICADA AQUI ---
-            # Verifica se os objetos existem antes de tentar acessar 'value'.
+
             url_obj = summary.get('url')
             link = url_obj.get('value') if url_obj else None
 
             pub_date_obj = summary.get('publication-date')
             year_obj = pub_date_obj.get('year') if pub_date_obj else None
             year = year_obj.get('value') if year_obj else None
-            
+
             journal_title_obj = summary.get('journal-title')
             journal_title = journal_title_obj.get('value', 'N/A') if journal_title_obj else 'N/A'
-            # --- FIM DA CORREÇÃO ---
 
             orcid_works.append({
                 "title": title, "doi": doi,
@@ -263,7 +263,7 @@ def analyze_changes(old_data, new_data):
         return ["  [!] Arquivo de dados antigo não encontrado. Criando um novo."], ["initial data generation"]
 
     report_lines, modification_notes = [], []
-    
+
     # Repositórios
     old_repos = {r.get('name') for r in old_data.get('githubRepos', [])}
     new_repos = {r.get('name') for r in new_data.get('githubRepos', [])}
@@ -275,7 +275,8 @@ def analyze_changes(old_data, new_data):
     # Métricas
     def extract_metrics(data):
         m = {'citations': 0, 'h_index': 0, 'i10_index': 0}
-        table = data.get('scholarData', {}).get('profile', {}).get('cited_by', {}).get('table', [])
+        # Tratamento para evitar erro se 'cited_by' for None
+        table = (data.get('scholarData', {}).get('profile', {}).get('cited_by') or {}).get('table', [])
         for item in table:
             if 'citations' in item: m['citations'] = item['citations'].get('all', 0)
             if 'h_index' in item: m['h_index'] = item['h_index'].get('all', 0)
@@ -297,7 +298,7 @@ def analyze_changes(old_data, new_data):
     old_articles = {normalize_title(a.get('title')): a for a in old_data.get('scholarData', {}).get('articles', [])}
     new_articles = {normalize_title(a.get('title')): a for a in new_data.get('scholarData', {}).get('articles', [])}
     added_titles = set(new_articles.keys()) - set(old_articles.keys())
-    
+
     if added_titles:
         report_lines.append(f"\n--- Novas Publicações ({len(added_titles)}) ---")
         for norm_title in added_titles:
@@ -314,7 +315,7 @@ def analyze_changes(old_data, new_data):
                 title = new_art.get('title', '')
                 citation_updates.append(f"    - '{title[:50]}...': {old_cites} -> {new_cites} (+{new_cites - old_cites})")
                 modification_notes.append(f"citation '{title[:30]}...' {old_cites} to {new_cites}")
-    
+
     if citation_updates:
         report_lines.append(f"\n--- Atualizações de Citações ({len(citation_updates)}) ---")
         report_lines.extend(citation_updates)
@@ -328,7 +329,7 @@ def generate_fallback_file(data, filename, modification_notes=None):
     """Gera o arquivo de dados com notas de modificação no cabeçalho."""
     print(f"\nGerando o arquivo '{filename}'...")
     json_string = json.dumps(data, indent=4, ensure_ascii=False)
-    
+
     modifications_str = ""
     if modification_notes:
         for note in modification_notes:
@@ -368,21 +369,51 @@ def update_main_file(main_file, temp_file):
 if __name__ == "__main__":
     print("Iniciando a atualização do arquivo de fallback...")
 
-    if not SERPAPI_API_KEY or "COLE_SUA_CHAVE" in SERPAPI_API_KEY:
-        print("\n✗ ERRO CRÍTICO: A chave da API da SerpApi não foi configurada.")
+    if not SERPAPI_KEYS:
+        print("\n✗ ERRO CRÍTICO: Nenhuma chave da API da SerpApi foi configurada corretamente.")
         sys.exit(1)
 
-    # 1. Buscar todos os dados
+    # 1. Buscar GitHub e ORCID (são independentes)
     github_repos = fetch_github_repos(GITHUB_USERNAME)
     orcid_works = fetch_orcid_works(ORCID_ID)
-    scholar_profile = fetch_scholar_profile(SCHOLAR_AUTHOR_ID, SERPAPI_API_KEY)
-    scholar_articles_raw = fetch_all_scholar_articles(SCHOLAR_AUTHOR_ID, SERPAPI_API_KEY)
 
+    # -----------------------------------------------------------------
+    # 2. Buscar dados do Scholar com LÓGICA DE FALLBACK CORRIGIDA
+    # -----------------------------------------------------------------
+    scholar_profile = None
+    scholar_articles_raw = None
+
+    for i, key in enumerate(SERPAPI_KEYS):
+        print(f"\nTentando buscar dados do Scholar com a Chave {i+1}/{len(SERPAPI_KEYS)}...")
+
+        temp_profile = fetch_scholar_profile(SCHOLAR_AUTHOR_ID, key)
+        temp_articles = fetch_all_scholar_articles(SCHOLAR_AUTHOR_ID, key)
+
+        # Checa se a busca foi bem-sucedida (retornou dados, mesmo que vazios)
+        if temp_profile is not None and temp_articles is not None:
+            print(f"✓ Sucesso com a Chave {i+1}.")
+            scholar_profile = temp_profile
+            scholar_articles_raw = temp_articles
+            break # Sai do loop 'for' ao encontrar uma chave válida
+        else:
+            print(f"✗ Falha ao buscar dados com a Chave {i+1}.")
+
+    # -----------------------------------------------------------------
+    # 3. Lidar com falha de TODAS as chaves (Previne o crash)
+    # -----------------------------------------------------------------
+    if scholar_profile is None:
+         print("\nAVISO: Não foi possível buscar o perfil do Scholar com nenhuma chave.")
+         scholar_profile = {} # Define como dicionário vazio para evitar o crash
+    if scholar_articles_raw is None:
+         print("AVISO: Não foi possível buscar os artigos do Scholar com nenhuma chave.")
+         scholar_articles_raw = [] # Define como lista vazia
+
+    # Aborta somente se os dados essenciais do GitHub não puderem ser buscados
     if not github_repos:
-        print("\n✗ A execução foi abortada, pois não foi possível buscar os dados do GitHub.")
+        print("\n✗ ERRO CRÍTICO: A execução foi abortada, pois não foi possível buscar os dados do GitHub.")
         sys.exit(1)
 
-    # 2. Combinar dados de publicações
+    # 4. Combinar dados de publicações
     print("\nCombinando dados do ORCID e Google Scholar...")
     merged_articles_map = {}
     for work in orcid_works:
@@ -390,6 +421,7 @@ if __name__ == "__main__":
         if norm_title:
             work['cited_by'] = {"value": 0}
             merged_articles_map[norm_title] = work
+
     for scholar_art in scholar_articles_raw:
         norm_title = normalize_title(scholar_art.get("title"))
         if not norm_title: continue
@@ -406,44 +438,39 @@ if __name__ == "__main__":
                 "link": scholar_art.get("link"),
                 "cited_by": {"value": scholar_art.get("cited_by", {}).get("value", 0)}
             }
-    merged_articles = sorted(list(merged_articles_map.values()), 
-                             key=lambda x: ((x.get("cited_by") or {}).get("value") or 0, int(x.get("year") or 0)), 
+
+    merged_articles = sorted(list(merged_articles_map.values()),
+                             key=lambda x: ((x.get("cited_by") or {}).get("value") or 0, int(x.get("year") or 0)),
                              reverse=True)
     print(f"✓ Combinação finalizada. Total de {len(merged_articles)} publicações.")
 
-    # 3. Montar o objeto final, comparar com o antigo e gerar o arquivo
+    # 5. Montar o objeto final, comparar com o antigo e gerar o arquivo
     new_data = {
         "githubRepos": github_repos,
         "scholarData": {"profile": {"cited_by": scholar_profile}, "articles": merged_articles}
     }
     old_data = load_js_data(MAIN_FILENAME)
-    
+
     report_lines, modification_notes = analyze_changes(old_data, new_data)
-    
+
     if generate_fallback_file(new_data, TEMP_FILENAME, modification_notes):
         print("\n" + "="*50)
         print("RELATÓRIO DE MUDANÇAS")
         print("="*50)
 
         if report_lines:
-            # Imprime as seções principais primeiro
             for line in report_lines:
-                if not line.strip().startswith('-'):
-                    print(line)
-            # Imprime os detalhes de artigos e citações
-            for line in report_lines:
-                if line.strip().startswith('-'):
-                    print(line)
-            
+                print(line)
+
             print("\n" + "="*50)
             print(f"  [!] Mudanças detectadas. Atualizando '{MAIN_FILENAME}'...")
             update_main_file(MAIN_FILENAME, TEMP_FILENAME)
         else:
             print("  ✓ Nenhuma mudança detectada. O arquivo principal já está atualizado.")
-        
+
         print("="*50)
 
-    # 4. Limpar o arquivo temporário
+    # 6. Limpar o arquivo temporário
     try:
         if os.path.exists(TEMP_FILENAME):
             os.remove(TEMP_FILENAME)
@@ -452,5 +479,3 @@ if __name__ == "__main__":
         print(f"\n✗ Erro ao excluir o arquivo temporário: {e}")
 
     print("\nProcesso finalizado.")
-
-

@@ -2,14 +2,32 @@
  * @file fallback-data.js
  * @description Contém dados estáticos de fallback para o site.
  * Gerado automaticamente por 'update_fallback_final.py'.
- * @version 2025.10.15
- * @generated_at 2025-10-15T15:56:18.719777
- * @modification citations 0 to 149
+ * @version 2025.10.21
+ * @generated_at 2025-10-21T17:08:52.449333
+ * @modification citations 0 to 153
  * @modification h-index 0 to 7
  * @modification i10-index 0 to 5
  * @modification new publication: BRSMG Rubelita: cultivar de arroz para cultivo em ...
  * @modification new publication: Ensaio comparativo preliminar de arroz irrigado em...
+ * @modification citation 'Recommendation of <i>Coffea ar...' 0 to 35
+ * @modification citation 'Genomic prediction through mac...' 0 to 15
+ * @modification citation 'Machine learning and statistic...' 0 to 12
+ * @modification citation 'Very Early Biomarkers Screenin...' 0 to 11
+ * @modification citation 'Methods of adaptability and st...' 0 to 9
+ * @modification citation 'Body weight prediction in cros...' 0 to 8
+ * @modification citation 'Metabolic, Nutritional and Mor...' 0 to 6
+ * @modification citation 'Genetic diversity and interact...' 0 to 6
+ * @modification citation 'Multiple-trait model through B...' 0 to 6
+ * @modification citation 'Application of fuzzy logic for...' 0 to 5
+ * @modification citation 'Performance of a breeding prog...' 0 to 4
+ * @modification citation 'Optimizing drought tolerance i...' 0 to 3
+ * @modification citation 'Potential of dry matter yield ...' 0 to 3
+ * @modification citation 'Quarter century genetic progre...' 0 to 2
+ * @modification citation 'Multivariate Adaptive Regressi...' 0 to 1
+ * @modification citation 'Rapid detection of bromatologi...' 0 to 1
+ * @modification citation 'Prediction and importance of p...' 0 to 1
  * @modification citation 'Eficiência de técnicas de mach...' 0 to 1
+ * @modification citation 'Multi-information analysis for...' 0 to 1
  * @modification citation 'Dynamics, diversity and experi...' 0 to 1
  */
 
@@ -303,8 +321,8 @@ window.fallbackData = {
                 "table": [
                     {
                         "citations": {
-                            "all": 149,
-                            "since_2020": 146
+                            "all": 153,
+                            "since_2020": 150
                         }
                     },
                     {
@@ -355,7 +373,7 @@ window.fallbackData = {
                     },
                     {
                         "year": 2025,
-                        "citations": 37
+                        "citations": 41
                     }
                 ]
             }
@@ -424,7 +442,7 @@ window.fallbackData = {
                 "journalTitle": "LIVESTOCK SCIENCE",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
                 "cited_by": {
-                    "value": 7
+                    "value": 8
                 }
             },
             {
@@ -439,6 +457,17 @@ window.fallbackData = {
                 }
             },
             {
+                "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
+                "doi": "10.1002/CSC2.20816",
+                "doiLink": "https://doi.org/10.1002/CSC2.20816",
+                "year": "2022",
+                "journalTitle": "CROP SCIENCE",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
+                "cited_by": {
+                    "value": 6
+                }
+            },
+            {
                 "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (<i>Oryza sativa</i> L)",
                 "doi": "10.1007/S10681-022-03077-X",
                 "doiLink": "https://doi.org/10.1007/S10681-022-03077-X",
@@ -447,17 +476,6 @@ window.fallbackData = {
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:_FxGoFyzp5QC",
                 "cited_by": {
                     "value": 6
-                }
-            },
-            {
-                "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
-                "doi": "10.1002/CSC2.20816",
-                "doiLink": "https://doi.org/10.1002/CSC2.20816",
-                "year": "2022",
-                "journalTitle": "CROP SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
-                "cited_by": {
-                    "value": 5
                 }
             },
             {
@@ -483,6 +501,17 @@ window.fallbackData = {
                 }
             },
             {
+                "title": "Optimizing drought tolerance in cassava through genomic selection",
+                "doi": "10.3389/FPLS.2024.1483340",
+                "doiLink": "https://doi.org/10.3389/FPLS.2024.1483340",
+                "year": "2024",
+                "journalTitle": "FRONTIERS IN PLANT SCIENCE",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+                "cited_by": {
+                    "value": 3
+                }
+            },
+            {
                 "title": "Potential of dry matter yield from alfalfa germplasm in composing base populations",
                 "doi": "10.1590/1984-70332021V21N3A41",
                 "doiLink": "https://doi.org/10.1590/1984-70332021V21N3A41",
@@ -491,17 +520,6 @@ window.fallbackData = {
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:W7OEmFMy1HYC",
                 "cited_by": {
                     "value": 3
-                }
-            },
-            {
-                "title": "Optimizing drought tolerance in cassava through genomic selection",
-                "doi": "10.3389/FPLS.2024.1483340",
-                "doiLink": "https://doi.org/10.3389/FPLS.2024.1483340",
-                "year": "2024",
-                "journalTitle": "FRONTIERS IN PLANT SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
-                "cited_by": {
-                    "value": 2
                 }
             },
             {
