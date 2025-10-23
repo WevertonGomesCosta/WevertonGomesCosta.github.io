@@ -248,7 +248,7 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .timeline-item.expanded .timeline-details { max-height: 200px; }
 #index-page .toggle-details-btn { background: none; border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 15px; transition: all 0.3s; }
 #index-page .toggle-details-btn:hover { background: rgba(16, 185, 129, 0.1); }
-#index-page .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; margin-top: 20px; }
+#index-page .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; margin-top: 20px; }
 #index-page .skill-category.card { padding: 25px; }
 #index-page .skill-category h3 { color: var(--primary); font-size: 1.3rem; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border); position: relative; }
 #index-page .skill-category h3::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 50px; height: 2px; background: var(--primary); }
