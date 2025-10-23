@@ -85,21 +85,23 @@ const translations = {
         // 5. SEÇÃO HERO (TOPO DA PÁGINA INICIAL)
         // --------------------------------------------------------------------
         
-        // ALTERADO: Foco na nova identidade CEO + Data Science.
-        'subtitle-1': 'CEO & Cofundador da Conecta GEM',
-        'subtitle-2': 'Cientista de Dados | Machine Learning',
-        'subtitle-3': 'PhD | Genética & Biometria',
-        'subtitle-4': 'Especialista em Seleção Genômica', // Mais forte que "Melhoramento 4.0"
-
-        // ALTERADO: Badges atualizados para refletir a nova hierarquia.
-        'badge-phd': '🎓 PhD em Genética e Melhoramento',
+        'subtitle-1': 'Cientista de Dados | Machine Learning',
+        'subtitle-2': 'Pesquisador em Genética & Biometria',
+        'subtitle-3': 'Melhoramento de Plantas 4.0',
+        'subtitle-4': 'CEO & Cofundador da Conecta GEM',
+        
+        'badge-phd': '🎓 Doutorando em Estatística - UFV',
         'badge-ceo': '🚀 CEO & Cofundador - Conecta GEM',
-        'badge-postdoc1': '🔬 Doutorando em Estatística - UFV', // Rebaixado na hierarquia
-        'badge-ml': '🤖 Machine Learning Expert', // Mais específico
-
-        // ALTERADO: CTAs (Call to Action) - Um para CV, outro para Contato.
-        'cta-projects': 'Ver Projetos', // Mantido (se esta for a chave do botão de projetos)
+        'badge-postdoc1': '🔬 Pós-Doc FAPEMIG/CNPq',
+        'badge-ml': '🤖 Machine Learning Expert',
+        
+        'cta-projects': 'Ver Projetos', 
         'cta-contact': 'Entre em Contato',
+
+        // =====> ADICIONE ESTAS DUAS LINHAS AQUI <=====
+        'cta-cv-pro': 'Baixar CV Profissional',
+        'cta-cv-academic': 'Baixar CV Acadêmico',
+        // ===========================================
         
         // --------------------------------------------------------------------
         // 6. SEÇÕES DE CONTEÚDO (SOBRE, SERVIÇOS, FORMAÇÃO, ETC.)
@@ -330,20 +332,23 @@ const translations = {
         // 5. SEÇÃO HERO (TOPO DA PÁGINA INICIAL)
         // --------------------------------------------------------------------
         
-        // (ALTERADO: Foco na nova identidade CEO + Data Science)
-        'subtitle-1': 'CEO & Co-founder of Conecta GEM',
-        'subtitle-2': 'Data Scientist | Machine Learning',
-        'subtitle-3': 'PhD | Genetics & Biometrics',
-        'subtitle-4': 'Genomic Selection Specialist', // Mais forte que "Melhoramento 4.0"
-
-        // (ALTERADO: Badges atualizados para refletir a nova hierarquia)
-        'badge-phd': '🎓 PhD in Genetics and Plant Breeding',
+        'subtitle-1': 'Data Scientist | Machine Learning',
+        'subtitle-2': 'Researcher in Genetics & Biometrics',
+        'subtitle-3': 'Plant Breeding 4.0',
+        'subtitle-4': 'CEO & Co-founder of Conecta GEM',
+        
+        'badge-phd': '🎓 PhD Student in Statistics - UFV',
         'badge-ceo': '🚀 CEO & Co-founder - Conecta GEM',
-        'badge-postdoc1': '🔬 PhD Student in Statistics - UFV', // Rebaixado na hierarquia
-        'badge-ml': '🤖 Machine Learning Expert', // Mais específico
-
+        'badge-postdoc1': '🔬 Postdoc FAPEMIG/CNPq',
+        'badge-ml': '🤖 Machine Learning Expert',
+        
         'cta-projects': 'View Projects',
         'cta-contact': 'Get in Touch',
+
+        // =====> ADD THESE TWO LINES HERE <=====
+        'cta-cv-pro': 'Download Professional CV',
+        'cta-cv-academic': 'Download Academic CV',
+        // ======================================
     
         // --------------------------------------------------------------------
         // 6. SEÇÕES DE CONTEÚDO (SOBRE, SERVIÇOS, FORMAÇÃO, ETC.)
