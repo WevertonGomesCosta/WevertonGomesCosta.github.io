@@ -71,7 +71,18 @@ a:hover { text-decoration: underline; }
 /* ---
 2. COMPONENTES REUTILIZÁVEIS
 --- */
-nav { position: sticky; top: 0; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 1000; padding: 15px 0; transition: padding 0.3s ease; }
+
+/* Barra de navegação GLOBAL (padrão para páginas internas) */
+nav { 
+    position: sticky; 
+    top: 0; 
+    background: rgba(15, 23, 42, 0.95); 
+    backdrop-filter: blur(10px); 
+    border-bottom: 1px solid var(--border); 
+    z-index: 1000; 
+    padding: 15px 0; 
+    transition: padding 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; 
+}
 nav.scrolled { padding: 8px 0; }
 .nav-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; padding: 0 20px; align-items: center; }
 
@@ -83,10 +94,32 @@ nav.scrolled { padding: 8px 0; }
 .cta-btn.secondary { background: transparent; color: var(--primary); border-color: var(--primary); }
 .cta-btn.secondary:hover { background: rgba(16, 185, 129, 0.1); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2); }
 
-.link-btn { padding: 10px 16px; background: var(--primary); color: #fff !important; border-radius: 10px; text-decoration: none; font-weight: 600; border: 1px solid var(--primary); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25); text-align: center; cursor: pointer; display: inline-block; }
+/* ========================================================================
+   CORREÇÃO 1: Botão centralizado com Flexbox
+   ======================================================================== */
+.link-btn {
+    display: inline-flex;     /* MUDANÇA: 'inline-block' para 'inline-flex' */
+    align-items: center;     /* ADICIONADO: Alinha o texto verticalmente */
+    justify-content: center; /* ADICIONADO: Alinha o texto horizontalmente */
+    
+    padding: 10px 16px;
+    background: var(--primary);
+    color: #fff !important;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid var(--primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.25);
+    text-align: center;      /* Mantido para segurança */
+    cursor: pointer;
+}
+/* ======================================================================== */
+
 .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); transform: translateY(-2px); text-decoration: none; color: #fff !important; }
 .link-btn.secondary { background: transparent; color: var(--primary) !important; box-shadow: none; }
 .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.12); color: var(--primary) !important; transform: translateY(-2px); }
+
 /* Estilo base unificado para o botão de idioma */
 .lang-switcher {
     background: var(--bg-card);
@@ -205,11 +238,36 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 --- */
 
 /* 3.1. Página Inicial (#index-page) - Estilos Únicos */
+
+/* ========================================================================
+   CORREÇÃO 2: Barra de Navegação Dinâmica
+   ======================================================================== */
+
+/* ADICIONADO: Torna a nav da Home transparente por padrão */
+#index-page nav {
+    background: transparent;
+    border-bottom: 1px solid transparent; /* Esconde a borda tbm */
+    box-shadow: none; /* Garante que não há sombra */
+    /* A transição já está no seletor 'nav' global */
+}
+
+/* ADICIONADO: Define o estilo 'scrolled' para a nav da Home */
+#index-page nav.scrolled {
+    background: rgba(15, 23, 42, 0.95); /* Cor sólida ao rolar */
+    border-bottom-color: var(--border);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+/* ======================================================================== */
+
+
 #index-page .nav-col-left { justify-self: start; }
 #index-page .nav-col-center { display: flex; gap: 25px; justify-content: center; flex-wrap: wrap; }
 #index-page .nav-col-right { justify-self: end; }
+
+/* O seu CSS existente já esconde/mostra o avatar com 'nav.scrolled' */
 #index-page .nav-avatar { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--primary); transform: scale(0); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; box-shadow: 0 0 10px var(--glow); }
 #index-page nav.scrolled .nav-avatar { transform: scale(1); opacity: 1; }
+
 #index-page .nav-link { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.3s ease, transform 0.3s ease; position: relative; }
 #index-page .nav-link::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--primary); transition: width 0.3s ease; }
 #index-page .nav-link:hover, #index-page .nav-link.active { color: var(--primary); transform: translateY(-2px); }
@@ -467,7 +525,7 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 @keyframes glow { 0%, 100% { box-shadow: 0 0 20px var(--glow); } 50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(16, 185, 129, 0.3); } }
 @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes shine-effect { 0% { transform: translateX(-150%) skewX(-30deg); } 100% { transform: translateX(250%) skewX(-30deg); } }
-@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
 @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
@@ -475,10 +533,7 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 6. RESPONSIVIDADE (MEDIA QUERIES)
 --- */
 
-/* AQUI ESTÁ A CORREÇÃO QUE FALTAVA.
-  Em telas maiores (>= 768px), o layout dos botões 
-  volta a ser horizontal e com space-between.
-*/
+/* ADICIONADO: Media query para o .load-more-container (botões de projetos) */
 @media (min-width: 768px) {
     .load-more-container {
         flex-direction: row;          /* Coloca lado a lado */
