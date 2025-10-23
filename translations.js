@@ -1,7 +1,7 @@
 /**
  * @file translations.js
  * @description Gerencia todo o conteúdo de texto e a lógica de inicialização e internacionalização (i18n) do site.
- * @version 4.0 (Atualizado para versão CV acadêmico e o guia de otimização)
+ * @version 4.1 (Atualizado para botões versão CV acadêmico e pro)
  */
 
 const translations = {
