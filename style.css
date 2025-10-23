@@ -425,9 +425,31 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 4. CLASSES UTILITÁRIAS E DE ESTADO
 --- */
 .small-muted { font-size: 0.9rem; color: var(--text-muted); padding-left: 20px; }
-.center { display: flex; justify-content: center; }
+
+/* O seletor .center é uma classe utilitária. 
+  A adição de 'flex-wrap: wrap' é uma segurança 
+  para caso os dois botões não caibam lado a lado.
+*/
+.center { 
+    display: flex; 
+    justify-content: center;
+    flex-wrap: wrap; /* Permite que os botões quebrem a linha se necessário */
+    gap: 15px;       /* Define um espaçamento padrão */
+}
+
 .hidden { display: none; }
-.load-more-container { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+
+/* CORREÇÃO (Estilo Base = Mobile)
+  O container agora é empilhado e centrado por padrão.
+*/
+.load-more-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column; /* Empilha verticalmente por padrão */
+    align-items: center;     /* Centra tudo */
+    gap: 15px;               /* Espaçamento entre o texto e os botões */
+}
+
 .back-to-home-container { margin-top: 40px; text-align: center; }
 .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.5, 0, 0, 1), transform 0.8s cubic-bezier(0.5, 0, 0, 1); will-change: opacity, transform; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
@@ -452,6 +474,19 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 /* ---
 6. RESPONSIVIDADE (MEDIA QUERIES)
 --- */
+
+/* AQUI ESTÁ A CORREÇÃO QUE FALTAVA.
+  Em telas maiores (>= 768px), o layout dos botões 
+  volta a ser horizontal e com space-between.
+*/
+@media (min-width: 768px) {
+    .load-more-container {
+        flex-direction: row;          /* Coloca lado a lado */
+        justify-content: space-between; /* Volta ao layout original de desktop */
+        align-items: center;          /* Alinha verticalmente */
+    }
+}
+
 @media(min-width: 768px) { #index-page .feature-section { grid-template-columns: auto 1fr; align-items: center; text-align: left; } }
 @media (min-width: 1100px) { .footer-grid { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr; } }
 
