@@ -2,37 +2,27 @@
  * @file fallback-data.js
  * @description Contém dados estáticos de fallback para o site.
  * Gerado automaticamente por 'update_fallback_final.py'.
- * @version 2025.10.21
- * @generated_at 2025-10-21T17:08:52.449333
- * @modification citations 0 to 153
- * @modification h-index 0 to 7
- * @modification i10-index 0 to 5
- * @modification new publication: BRSMG Rubelita: cultivar de arroz para cultivo em ...
- * @modification new publication: Ensaio comparativo preliminar de arroz irrigado em...
- * @modification citation 'Recommendation of <i>Coffea ar...' 0 to 35
- * @modification citation 'Genomic prediction through mac...' 0 to 15
- * @modification citation 'Machine learning and statistic...' 0 to 12
- * @modification citation 'Very Early Biomarkers Screenin...' 0 to 11
- * @modification citation 'Methods of adaptability and st...' 0 to 9
- * @modification citation 'Body weight prediction in cros...' 0 to 8
- * @modification citation 'Metabolic, Nutritional and Mor...' 0 to 6
- * @modification citation 'Genetic diversity and interact...' 0 to 6
- * @modification citation 'Multiple-trait model through B...' 0 to 6
- * @modification citation 'Application of fuzzy logic for...' 0 to 5
- * @modification citation 'Performance of a breeding prog...' 0 to 4
- * @modification citation 'Optimizing drought tolerance i...' 0 to 3
- * @modification citation 'Potential of dry matter yield ...' 0 to 3
- * @modification citation 'Quarter century genetic progre...' 0 to 2
- * @modification citation 'Multivariate Adaptive Regressi...' 0 to 1
- * @modification citation 'Rapid detection of bromatologi...' 0 to 1
- * @modification citation 'Prediction and importance of p...' 0 to 1
- * @modification citation 'Eficiência de técnicas de mach...' 0 to 1
- * @modification citation 'Multi-information analysis for...' 0 to 1
- * @modification citation 'Dynamics, diversity and experi...' 0 to 1
+ * @version 2025.10.24
+ * @generated_at 2025-10-24T15:46:16.609414
+ * @modification new repository: WevertonGomesCosta.github.io
  */
 
 window.fallbackData = {
     "githubRepos": [
+        {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "JavaScript",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2025-10-24T17:59:25Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
         {
             "name": "Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
             "html_url": "https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
@@ -151,8 +141,27 @@ window.fallbackData = {
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2025-09-16T14:29:53Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:18:00Z",
+            "topics": [
+                "agriculture",
+                "data-fusion",
+                "genomic-selection",
+                "genomics",
+                "kernel-methods",
+                "kernel-ridge-regression",
+                "machine-learning",
+                "nir-spectroscopy",
+                "non-linear-models",
+                "phenomics",
+                "plant-breeding",
+                "predictive-modeling",
+                "python",
+                "r",
+                "reproducible-research",
+                "rstats",
+                "snps",
+                "spectroscopy"
+            ]
         },
         {
             "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
@@ -174,12 +183,12 @@ window.fallbackData = {
         {
             "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "description": "This Script is part of the article Machine Learning in Genome-Wide Association Studies for Complex Traits. Costa, W. G.et al. 2025",
+            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
+            "description": "R pipeline and analyses for the paper \"Machine Learning in GWAS for Complex Traits\" (Scientia Agricolae), focusing on QTL detection and marker importance.",
             "language": "HTML",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2025-07-29T03:37:46Z",
+            "updated_at": "2025-10-23T18:02:55Z",
             "topics": [
                 "genomic-wide-association-studies",
                 "gwas",
@@ -193,23 +202,55 @@ window.fallbackData = {
             "name": "Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
             "html_url": "https://github.com/WevertonGomesCosta/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
             "homepage": "https://wevertongomescosta.github.io/Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis/",
-            "description": "This Script is part of the article Genomic prediction through machine learning and neural networks for traits with epistasis. Costa, W. G.et al. 2022",
+            "description": "Code and analysis pipeline for the paper \"Genomic Prediction through Machine Learning and Neural Networks for Traits with Epistasis\" (Comput Struct Biotechnol J, 2022).",
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2025-03-25T13:51:07Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:19:49Z",
+            "topics": [
+                "artificial-neural-networks",
+                "bioinformatics",
+                "computational-biology",
+                "deep-learning",
+                "epistasis",
+                "genomic-prediction",
+                "genomic-selection",
+                "genomics",
+                "machine-learning",
+                "matlab",
+                "neural-networks",
+                "predictive-modeling",
+                "quantitative-genetics",
+                "r",
+                "reproducible-research",
+                "rstats"
+            ]
         },
         {
             "name": "GitHub-with-RStudio-LICAE",
             "html_url": "https://github.com/WevertonGomesCosta/GitHub-with-RStudio-LICAE",
-            "homepage": "https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE",
-            "description": "Manual: Integrando o GitHub com o Rstudio.  Bem-vindo! Esse manual irá ensinar como realizar todo o processo de criação de um repositório no GitHub até a integração do GitHub com o RStudio, visando otimizar e permitir a reprodução de materiais para o meio acadêmico. Esse curso foi desenvolvido para a capacitação dos membros do [Laboratório de Inteligência Computacional e Aprendizado Estatístico - LICAE](https://www.licae.ufv.br/).",
+            "homepage": "https://wevertongomescosta.github.io/GitHub-with-RStudio-LICAE/",
+            "description": "Manual: Integrando o GitHub com o Rstudio.  Bem-vindo! Esse manual irá ensinar como realizar todo o processo de criação de um repositório no GitHub até a integração do GitHub com o RStudio, visando otimizar e permitir a reprodução de materiais para o meio acadêmico. Esse curso foi desenvolvido para a capacitação dos membros do LICAE.",
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2023-06-10T14:10:04Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:21:03Z",
+            "topics": [
+                "course-materials",
+                "data-science",
+                "education",
+                "git",
+                "github",
+                "licae",
+                "r",
+                "reproducible-research",
+                "rstats",
+                "rstudio",
+                "tutorial",
+                "version-control",
+                "workflow",
+                "workshop"
+            ]
         },
         {
             "name": "Genomic-Selection_Course",
@@ -251,57 +292,132 @@ window.fallbackData = {
         {
             "name": "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
             "html_url": "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
-            "homepage": null,
+            "homepage": "",
             "description": "O objetivo do presente projeto é propor e avaliar o uso da regularização no desempenho de RNAs em modelos de predição genômica (GP). Tal estudo visa melhorar a predição de valores genéticos genômicos (GEBV), evitando o chamado o problema de ‘overfitting’, e estimação de parâmetros genéticos. Para isso, dados simulados e reais serão utilizados. ",
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2023-06-01T17:12:38Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:24:22Z",
+            "topics": [
+                "animal-breeding",
+                "artificial-neural-networks",
+                "bioinformatics",
+                "computational-biology",
+                "deep-learning",
+                "gebv",
+                "genomic-prediction",
+                "genomic-selection",
+                "machine-learning",
+                "neural-networks",
+                "overfitting",
+                "plant-breeding",
+                "quantitative-genetics",
+                "regularization"
+            ]
         },
         {
             "name": "Manipulacao-dados-e-Analise-Grafica-R",
             "html_url": "https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R",
             "homepage": "https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/",
-            "description": null,
+            "description": "Material do curso de manipulação de dados e análise gráfica (visualização) utilizando a linguagem R. Desenvolvido para a Conecta GEM. 📊📈",
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2022-10-20T17:51:01Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:14:01Z",
+            "topics": [
+                "boxplot",
+                "course-materials",
+                "data-analysis",
+                "data-manipulation",
+                "data-visualization",
+                "dplyr",
+                "education",
+                "exploratory-data-analysis",
+                "ggplot2",
+                "histogram",
+                "plotting",
+                "r",
+                "rstats",
+                "statistics",
+                "tidyverse",
+                "tutorial"
+            ]
         },
         {
             "name": "Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
             "html_url": "https://github.com/WevertonGomesCosta/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow",
-            "homepage": "https://WevertonGomesCosta.github.io/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow/",
-            "description": "Mask R-CNN for object detection and instance segmentation on Keras and TensorFlow",
+            "homepage": "https://wevertongomescosta.github.io/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow/",
+            "description": "Google Colab notebook using Mask R-CNN (Keras/TensorFlow) for pig instance segmentation to estimate measurements (area, length) and predict weight. 🐷",
             "language": "Python",
             "stargazers_count": 0,
             "forks_count": 3,
-            "updated_at": "2023-01-27T22:11:19Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:15:22Z",
+            "topics": [
+                "agriculture",
+                "animal-science",
+                "computer-vision",
+                "deep-learning",
+                "google-colab",
+                "image-analysis",
+                "image-processing",
+                "instance-segmentation",
+                "jupyter-notebook",
+                "keras",
+                "mask-rcnn",
+                "object-detection",
+                "opencv",
+                "pig-weight",
+                "precision-livestock-farming",
+                "tensorflow"
+            ]
         },
         {
             "name": "curso-git-github",
             "html_url": "https://github.com/WevertonGomesCosta/curso-git-github",
-            "homepage": null,
-            "description": null,
+            "homepage": "",
+            "description": "Material do curso introdutório sobre controle de versão com Git e GitHub. 🎓",
             "language": "Python",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2023-04-05T20:15:13Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:27:26Z",
+            "topics": [
+                "course",
+                "curso",
+                "education",
+                "git",
+                "git-tutorial",
+                "github",
+                "github-tutorial",
+                "tutorial",
+                "version-control",
+                "workshop"
+            ]
         },
         {
             "name": "Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o",
             "html_url": "https://github.com/WevertonGomesCosta/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o",
             "homepage": "https://wevertongomescosta.github.io/Prediction-of-trait-through-computational-intelligence-and-machine-learning-applied-to-improvement-o/",
-            "description": null,
+            "description": "Using Computational Intelligence and Machine Learning methods for trait prediction in genetic improvement (plant breeding) programs.",
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2022-12-14T19:12:28Z",
-            "topics": []
+            "updated_at": "2025-10-23T18:31:16Z",
+            "topics": [
+                "agritech",
+                "animal-breeding",
+                "artificial-intelligence",
+                "bioinformatics",
+                "computational-intelligence",
+                "data-science",
+                "genetic-improvement",
+                "genomics",
+                "machine-learning",
+                "phenomics",
+                "plant-breeding",
+                "predictive-modeling",
+                "quantitative-genetics",
+                "trait-prediction"
+            ]
         },
         {
             "name": "Treinamento-GEFERT",
