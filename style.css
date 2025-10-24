@@ -1,3 +1,10 @@
+/**
+ * @file style.css
+ * @description Estilos principais para o site pessoal de [Seu Nome], incluindo design responsivo, animações e componentes reutilizáveis.
+ * @version 4.0 (corrigida) correções integradas para remover todos os estilos inline do seu HTML.
+ */
+
+
 /* ---
   ÍNDICE (VERSÃO CORRIGIDA 2.0)
   ============================================
@@ -86,8 +93,51 @@ nav {
 nav.scrolled { padding: 8px 0; }
 .nav-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; padding: 0 20px; align-items: center; }
 
-.cta-btn { padding: 12px 28px; border-radius: 8px; text-decoration: none; display: inline-block; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); border: 1px solid transparent; position: relative; overflow: hidden; z-index: 1; }
-.cta-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent); transition: all 0.6s ease; z-index: -1; }
+.cta-btn {
+    display: inline-flex;     
+    align-items: center;     
+    justify-content: center; 
+    gap: 8px; /* ADICIONADO: Espaço entre o ícone e o texto */
+    
+    /* Suas propriedades existentes */
+    padding: 12px 28px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    font-weight: 600; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    border: 1px solid transparent; 
+    position: relative; 
+    overflow: hidden; /* Cuidado: Pode esconder se o SVG for muito grande */
+    z-index: 1; 
+    text-align: center; 
+    cursor: pointer;    
+}
+
+/* ============================================================ */
+/* ADICIONE ESTA NOVA REGRA para garantir a visibilidade do SVG */
+/* ============================================================ */
+.cta-btn svg {
+    width: 18px;        /* Garante a largura (igual ao HTML) */
+    height: 18px;       /* Garante a altura (igual ao HTML) */
+    flex-shrink: 0;     /* Impede que o ícone encolha se não houver espaço */
+    fill: currentColor; /* Faz o ícone herdar a cor do texto do botão (branco ou preto) */
+}
+/* ============================================================ */
+
+
+/* (Suas outras regras .cta-btn::before, .cta-btn.primary, etc., permanecem iguais) */
+.cta-btn::before { 
+    content: ''; 
+    position: absolute; 
+    top: 0; 
+    left: -100%; 
+    width: 100%; 
+    height: 100%; 
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent); 
+    transition: all 0.6s ease; 
+    z-index: -1; 
+}
 .cta-btn:hover::before { left: 100%; }
 .cta-btn.primary { background: var(--primary); color: var(--dark); }
 .cta-btn.primary:hover { background: var(--primary-dark); transform: translateY(-3px) scale(1.05); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
@@ -119,6 +169,13 @@ nav.scrolled { padding: 8px 0; }
 .link-btn:hover { background: var(--primary-dark); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); transform: translateY(-2px); text-decoration: none; color: #fff !important; }
 .link-btn.secondary { background: transparent; color: var(--primary) !important; box-shadow: none; }
 .link-btn.secondary:hover { background: rgba(16, 185, 129, 0.12); color: var(--primary) !important; transform: translateY(-2px); }
+
+/* --- ADICIONADO: Classe para botões pequenos (remove style inline) --- */
+.btn-small {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+/* --- FIM ADIÇÃO --- */
 
 /* Estilo base unificado para o botão de idioma */
 .lang-switcher {
@@ -176,9 +233,25 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; max-width: 1200px; margin-left: auto; margin-right: auto; }
 .footer-column h4 { color: var(--primary); margin-bottom: 15px; font-size: 1.1rem; position: relative; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
 .footer-column h4::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 40px; height: 2px; background: var(--primary); }
+/* --- ADICIONADO: Seletor para h4 escondido (remove style inline) --- */
+.footer-grid .footer-column:nth-child(5) h4 {
+    visibility: hidden;
+}
 .footer-column p, .footer-column ul li { color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; }
+/* --- ADICIONADO: ul após p (remove style inline) --- */
+.footer-column p + ul {
+    margin-top: 15px;
+}
 .footer-column ul { list-style: none; padding: 0; }
 .footer-column ul li { margin-bottom: 10px; }
+/* --- ADICIONADO: Estilo para li de localização (remove style inline) --- */
+.footer-column ul li[data-key="footer-location"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    padding-top: 10px;
+}
 .footer-column ul li a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; display: flex; align-items: center; gap: 8px; }
 .footer-column ul li a:hover { color: var(--primary); }
 .footer-column ul li a svg { width: 16px; height: 16px; flex-shrink: 0; }
@@ -189,7 +262,8 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 .icon-doi { -webkit-mask-image: url(https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg); mask-image: url(https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg); }
 .footer-bottom { padding-top: 30px; margin-top: 30px; text-align: center; }
 .footer-content { max-width: 1200px; margin: 0 auto; }
-.footer-license { margin: 15px 0; font-size: 0.8rem; color: var(--text-muted); }
+/* --- ALTERADO: margin-top (remove style inline) --- */
+.footer-license { margin-top: 20px; margin-bottom: 15px; font-size: 0.8rem; color: var(--text-muted); }
 .footer-license a { color: var(--text-muted); text-decoration: none; transition: color 0.3s ease; }
 .footer-license a:hover { color: var(--primary); }
 .footer-update { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; }
@@ -289,10 +363,18 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .card:hover::before { opacity: 1; }
 #index-page .card > * { position: relative; z-index: 2; }
 #index-page .card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.2rem; text-align: left;}
+/* --- ALTERADO: Regra para parágrafos (remove style inline) --- */
 #index-page .card p:not(.citations) {
     color: var(--text-muted);
-    line-height: 1.6;
-}#index-page .icon { font-size: 2rem; margin-bottom: 15px; display: block; position: relative; overflow: hidden; }
+    line-height: 1.8;
+    margin-top: 20px; /* Adicionado para p2 e p3 */
+}
+#index-page #sobre .card p:first-of-type { /* Específico para o p1 do Sobre */
+    font-size: 1.1rem;
+    margin-top: 0;
+}
+/* --- FIM ALTERAÇÃO --- */
+#index-page .icon { font-size: 2rem; margin-bottom: 15px; display: block; position: relative; overflow: hidden; }
 #index-page .icon::after { content: ''; position: absolute; top: 0; transform: translateX(-100%); width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); }
 #index-page .card.visible .icon::after { animation: shine-effect 2.5s ease-in-out infinite; }
 #index-page .timeline { position: relative; padding: 20px 0; }
@@ -301,6 +383,10 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .timeline-dot { position: absolute; left: 24px; top: 15px; width: 14px; height: 14px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 20px var(--glow); transition: transform 0.3s ease; }
 #index-page .timeline-item:hover .timeline-dot { transform: scale(1.5); }
 #index-page .timeline-content.card { padding: 25px; }
+/* --- ADICIONADO: margin-top para .small-muted (remove style inline) --- */
+#index-page .timeline-header + .small-muted {
+    margin-top: 5px;
+}
 #index-page .timeline-date { color: var(--accent); font-weight: 600; margin-bottom: 5px; }
 #index-page .timeline-details { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-in-out; color: var(--text-muted); }
 #index-page .timeline-item.expanded .timeline-details { max-height: 200px; }
@@ -316,7 +402,8 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .skill-bar-container { width: 60%; height: 10px; background-color: var(--dark-light); border-radius: 5px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
 #index-page .skill-bar { height: 100%; width: 0; background: linear-gradient(90deg, var(--primary-dark) 0%, var(--primary) 100%); border-radius: 5px; transition: width 1.2s cubic-bezier(0.25, 1, 0.5, 1); will-change: width; transform: translateZ(0); }
 #index-page .skill-item.visible .skill-bar { width: var(--proficiency-level); }
-#index-page .scholar-summary-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 30px; margin-bottom: 40px; }
+/* --- ALTERADO: Adicionado margin-top (remove style inline) --- */
+#index-page .scholar-summary-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; padding: 30px; margin-bottom: 40px; margin-top: 25px; }
 #index-page .scholar-header { display: flex; align-items: center; gap: 15px; }
 #index-page .scholar-header svg { width: 40px; height: 40px; color: #4285F4; }
 #index-page .scholar-header h3 { margin: 0; font-size: 1.5rem; color: var(--text); }
@@ -327,6 +414,10 @@ footer { background: rgba(15, 23, 42, 0.95); border-top: 1px solid var(--border)
 #index-page .scholar-chart-container { width: 100%; min-height: 450px; margin: 30px auto 0; }
 #index-page .feature-section.card { padding: 40px; }
 #index-page .feature-section { display: grid; grid-template-columns: 1fr; gap: 40px; }
+/* --- ADICIONADO: margin-top para o segundo card (remove style inline) --- */
+#index-page .feature-section + .feature-section {
+    margin-top: 40px;
+}
 #index-page .feature-logo { width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
 #index-page .feature-logo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(125deg) brightness(95%) contrast(80%); }
 #index-page .feature-content h3 { color: var(--primary); font-size: 1.8rem; margin-bottom: 10px; }
@@ -360,7 +451,8 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 .controls input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); outline: none; }
 .controls button { padding: 10px 14px; border-radius: 12px; border: none; background: var(--primary); color: #042017; cursor: pointer; font-weight: 600; transition: all 0.3s ease; }
 .controls button:hover { background: var(--primary-dark); transform: translateY(-2px); }
-.projects { display: flex; flex-direction: column; gap: 16px; }
+/* --- ALTERADO: Adicionado margin-top (remove style inline) --- */
+.projects { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
 #page-projects .projects-grid { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }
 .project-card { background: rgba(255, 255, 255, 0.03); border-radius: 14px; padding: 16px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; transition: all 0.35s ease; }
 .project-card:hover { transform: translateY(-4px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 6px 28px rgba(16, 185, 129, 0.15); }
@@ -424,7 +516,10 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
     width: 100%;
     font-size: 1rem;
 }
+/* --- ALTERADO: Adicionado width/height (remove atributos inline) --- */
 .contact-form button.link-btn svg {
+    width: 18px;
+    height: 18px;
     transition: transform 0.3s ease;
 }
 .contact-form button.link-btn:hover svg {
