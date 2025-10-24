@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 12.4.0 (Nome do arquivo do CV dinâmico com base no idioma)
+ * @version 13.0.1 (Corrige a ordem de inicialização do LanguageManager)
  */
  
 // =================================================================================
@@ -37,8 +37,15 @@ const PageSetup = {
         this.updateDates();
         window.pageSetupScript = { 
             renderAll: this.updateDates.bind(this),
-            updateTimelineButtons: this.updateTimelineButtonsText.bind(this) // <-- Adicione esta parte
+            updateTimelineButtons: this.updateTimelineButtonsText.bind(this)
         };
+        
+        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+        // O módulo agora se inscreve no evento de mudança de idioma.
+        if (window.AppEvents) {
+            window.AppEvents.on('languageChanged', this.updateDates.bind(this));
+        }
+        // --- FIM ALTERAÇÃO ---
     },
     updateTimelineButtonsText() {
         document.querySelectorAll('.toggle-details-btn').forEach(button => {
@@ -53,6 +60,13 @@ const PageSetup = {
         });
     },
     updateDates() {
+        // --- CORREÇÃO DE BUG ---
+        // Adiciona uma verificação para garantir que 'translations' exista antes de usá-lo.
+        if (typeof translations === 'undefined' || typeof window.currentLang === 'undefined') {
+            return; 
+        }
+        // --- FIM CORREÇÃO ---
+
         const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
 
         // 1. Atualiza o ano do copyright (sempre)
@@ -79,7 +93,7 @@ const PageSetup = {
 
 // =================================================================================
 // Módulo: Manipulador da Navegação Móvel
-// Funcionalidade: Fecha o menu hambúrguer ao clicar em um link.
+// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const MobileNavHandler = {
     init() {
@@ -102,6 +116,7 @@ const MobileNavHandler = {
 
 // =================================================================================
 // Módulo: Fundo com Partículas
+// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const ParticleBackground = {
     canvas: null,
@@ -192,6 +207,7 @@ class Particle {
 
 // =================================================================================
 // Módulo: Formulário de Contato
+// (Nenhuma alteração necessária aqui, já faz cache do DOM)
 // =================================================================================
 const ContactForm = {
     form: null,
@@ -300,7 +316,14 @@ const GithubReposModule = {
         const card = document.createElement('div');
         card.className = 'project-card card';
         card.setAttribute('role', 'listitem');
-        const trans = translations[currentLang] || {};
+        
+        // --- CORREÇÃO DE BUG ---
+        // Garante que 'translations' e 'currentLang' existam antes de tentar acessá-los.
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // --- FIM CORREÇÃO ---
+        
         const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
     
         let actionsHtml = '';
@@ -309,8 +332,6 @@ const GithubReposModule = {
 
         let languageTag = repo.language ? `<span class="meta-badge language-badge" aria-label="Linguagem">${repo.language}</span>` : '';
     
-        // ===== PONTO CENTRAL DA ATUALIZAÇÃO =====
-        // A data de atualização agora é formatada usando o `DateFormatter` centralizado.
         const formattedUpdateDate = DateFormatter.formatWithLabel(repo.updated_at, 'repo-last-update');
         
         let metaBottomHtml = `<span class="update-date">${formattedUpdateDate}</span>`;
@@ -341,7 +362,13 @@ const GithubReposModule = {
     render() {
         if (!this.config.listEl) return;
         this.config.listEl.innerHTML = '';
-        const trans = translations[currentLang] || {};
+
+        // --- CORREÇÃO DE BUG ---
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // --- FIM CORREÇÃO ---
+                      
         const reposToDisplay = this.state.filteredRepos.slice(0, this.state.showingCount);
 
         if (reposToDisplay.length === 0) {
@@ -354,7 +381,10 @@ const GithubReposModule = {
         if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
 
         if (this.config.shownCountEl) {
-            this.config.shownCountEl.textContent = trans.showing_repos(reposToDisplay.length, this.state.filteredRepos.length);
+            const template = trans.showing_repos_template || "Exibindo {shown} de {total}"; // Pega o template
+            this.config.shownCountEl.textContent = template
+                .replace("{shown}", reposToDisplay.length)
+                .replace("{total}", this.state.filteredRepos.length);
         }
 
         if (this.config.loadMoreBtnEl) {
@@ -410,7 +440,13 @@ const GithubReposModule = {
         if (this.config.clearBtnEl) this.config.clearBtnEl.addEventListener('click', () => { if (this.config.searchEl) this.config.searchEl.value = ''; this.state.currentFilter = ''; this.filterAndRender(); if (this.config.searchEl) this.config.searchEl.focus(); });
         if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); });
         
-        window.githubScript = { renderAll: this.reRenderWithCurrentLang.bind(this) };
+        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+        // Módulo se inscreve no evento ao invés de expor uma global
+        if (window.AppEvents) {
+            window.AppEvents.on('languageChanged', this.reRenderWithCurrentLang.bind(this));
+        }
+        // window.githubScript = { renderAll: this.reRenderWithCurrentLang.bind(this) }; // REMOVIDO
+        // --- FIM ALTERAÇÃO ---
     }
 };
 
@@ -427,21 +463,25 @@ const scholarScript = (function() {
     let isIndexPage = false;
     let activeYearFilter = null;
 
+    // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+    // A UI agora é um objeto de cache, não um mapa de funções.
+    // Será populado no init().
     const UI = {
-        citTotal: () => document.getElementById("cit-total"),
-        citPeriod: () => document.getElementById("cit-period"),
-        hTotal: () => document.getElementById("h-total"),
-        hPeriod: () => document.getElementById("h-period"),
-        i10Total: () => document.getElementById("i10-total"),
-        i10Period: () => document.getElementById("i10-period"),
-        scholarMetrics: () => document.querySelectorAll('.scholar-metrics .metric-value, .scholar-metrics .metric-value-period'),
-        chartContainer: () => document.getElementById('interactive-scholar-chart-container'),
-        pubsGrid: () => document.getElementById("publicacoes-grid"),
-        pubSearchInput: () => document.getElementById('publication-search'),
-        pubClearBtn: () => document.getElementById('publication-clear-btn'),
-        pubsShownCount: () => document.getElementById('pubs-shown-count'),
-        pubsLoadMoreBtn: () => document.getElementById('pubs-toggle-more'),
+        citTotal: null,
+        citPeriod: null,
+        hTotal: null,
+        hPeriod: null,
+        i10Total: null,
+        i10Period: null,
+        scholarMetrics: null,
+        chartContainer: null,
+        pubsGrid: null,
+        pubSearchInput: null,
+        pubClearBtn: null,
+        pubsShownCount: null,
+        pubsLoadMoreBtn: null,
     };
+    // --- FIM ALTERAÇÃO ---
 
     const normalizeTitle = (str) => {
         if (!str) return '';
@@ -478,12 +518,15 @@ const scholarScript = (function() {
     function setScholarMetrics() {
         if (window.fallbackData?.scholarData?.profile) {
             const { table, graph } = window.fallbackData.scholarData.profile.cited_by;
-            UI.citTotal().dataset.target = table[0].citations.all;
-            UI.citPeriod().dataset.target = table[0].citations.since_2020;
-            UI.hTotal().dataset.target = table[1].h_index.all;
-            UI.hPeriod().dataset.target = table[1].h_index.since_2020;
-            UI.i10Total().dataset.target = table[2].i10_index.all;
-            UI.i10Period().dataset.target = table[2].i10_index.since_2020;
+            // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+            // Usa as referências cacheadas (UI.citTotal) em vez de chamadas de função (UI.citTotal())
+            UI.citTotal.dataset.target = table[0].citations.all;
+            UI.citPeriod.dataset.target = table[0].citations.since_2020;
+            UI.hTotal.dataset.target = table[1].h_index.all;
+            UI.hPeriod.dataset.target = table[1].h_index.since_2020;
+            UI.i10Total.dataset.target = table[2].i10_index.all;
+            UI.i10Period.dataset.target = table[2].i10_index.since_2020;
+            // --- FIM ALTERAÇÃO ---
             citationGraphData = graph || [];
         } else {
              console.error("Dados de fallback para métricas não encontrados.");
@@ -491,14 +534,27 @@ const scholarScript = (function() {
     }
 
     function startMetricsAnimation() {
-        UI.scholarMetrics().forEach(animateCountUp);
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        UI.scholarMetrics.forEach(animateCountUp);
+        // --- FIM ALTERAÇÃO ---
     }
     
     function renderPublications() {
-        const grid = UI.pubsGrid();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const grid = UI.pubsGrid;
         if (!grid) return;
-        const trans = translations[currentLang] || {};
-        const searchFilter = (UI.pubSearchInput()?.value || '').trim().toLowerCase();
+        // --- FIM ALTERAÇÃO ---
+        
+        // --- CORREÇÃO DE BUG ---
+        // Garante que 'translations' e 'currentLang' existam antes de tentar acessá-los.
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // --- FIM CORREÇÃO ---
+                      
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const searchFilter = (UI.pubSearchInput?.value || '').trim().toLowerCase();
+        // --- FIM ALTERAÇÃO ---
         
         let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
         const filteredArticles = searchFilter ? baseList.filter(art => normalizeTitle(art.title).includes(searchFilter) || (art.journalTitle || '').toLowerCase().includes(searchFilter) || (art.year || '').includes(searchFilter)) : baseList;
@@ -517,7 +573,12 @@ const scholarScript = (function() {
     function createPublicationCard(art) {
         const card = document.createElement("div");
         card.className = "card publication-card";
-        const trans = translations[currentLang] || {};
+        
+        // --- CORREÇÃO DE BUG ---
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // --- FIM CORREÇÃO ---
         
         const citationText = art.cited_by?.value ? `${trans['pub-cited-by'] || 'Citado'} ${art.cited_by.value} ${trans['pub-cited-by-times'] || 'vezes'}` : (trans['pub-no-citation'] || 'Nenhuma citação');
         const publishedText = `${trans['pub-published'] || 'Publicado'}: ${art.year} ${trans['pub-in'] || 'em'} <em>${art.journalTitle || 'N/A'}</em>`;
@@ -535,11 +596,17 @@ const scholarScript = (function() {
     }
 
     function _animateChart(graphData, articles) {
-        const containerId = 'interactive-scholar-chart-container';
-        const container = document.getElementById(containerId);
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const container = UI.chartContainer;
+        // --- FIM ALTERAÇÃO ---
         if (!container) return;
 
-        const trans = translations[currentLang] || {};
+        // --- CORREÇÃO DE BUG ---
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // --- FIM CORREÇÃO ---
+                      
         const yearlyData = {};
 
         (graphData || []).forEach(item => { yearlyData[item.year] = { citations: item.citations || 0, pubs: 0 }; });
@@ -640,19 +707,21 @@ const scholarScript = (function() {
 
         container.innerHTML = '';
         
-        Plotly.newPlot(containerId, [bubbleTrace, lineTrace], layout, config).then(gd => {
+        Plotly.newPlot(container.id, [bubbleTrace, lineTrace], layout, config).then(gd => {
             gd.on('plotly_click', data => {
                 if (data.points.length > 0) {
                     const clickedYear = data.points[0].x;
                     activeYearFilter = (activeYearFilter === clickedYear) ? null : clickedYear;
-                    document.getElementById('publication-search').value = '';
+                    // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+                    if (UI.pubSearchInput) UI.pubSearchInput.value = '';
+                    // --- FIM ALTERAÇÃO ---
                     showingPubsCount = initialPubsToShow;
                     renderPublications();
                     updateFilterUI();
                 }
             });
 
-            Plotly.animate(containerId, {
+            Plotly.animate(container.id, {
                 data: [
                     { y: finalYValues, marker: { opacity: 1 } },
                     { y: finalYValues }
@@ -667,7 +736,9 @@ const scholarScript = (function() {
     }
 
     function renderInteractiveChart(graphData, articles) {
-        const container = UI.chartContainer();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const container = UI.chartContainer;
+        // --- FIM ALTERAÇÃO ---
         if (!container) return;
         if (typeof Plotly === 'undefined') {
             setTimeout(() => renderInteractiveChart(graphData, articles), 250);
@@ -703,13 +774,36 @@ const scholarScript = (function() {
         }
     }
 
-    function updatePubsCount(shown, total) {
-        const countEl = UI.pubsShownCount();
-        if (countEl) countEl.textContent = translations[currentLang].showing_pubs(shown, total);
+    function updatePubsCount(count, total) {
+        const metaEl = document.getElementById('pubs-meta');
+        if (!metaEl) return;
+    
+        const lang = window.currentLang; // Corrigido para usar a global
+        const translations = window.translations;
+    
+        let linkHtml = '';
+        if (count < total) {
+            const linkText = translations[lang]['see-all-pubs'] || 'Ver todas as publicações';
+            linkHtml = `<a href="publications.html" class="link-discreto">${linkText} (${total})</a>`;
+        }
+    
+        const template = translations[lang]['showing_pubs'];
+    
+        if (template && typeof template === 'string') {
+            metaEl.innerHTML = template
+                .replace('{count}', count)
+                .replace('{total}', total)
+                .replace('{link_all}', linkHtml);
+        } else {
+            console.error("A chave 'showing_pubs' não foi encontrada nas traduções.");
+            metaEl.innerHTML = `Exibindo ${count} de ${total}. ${linkHtml}`;
+        }
     }
     
     function updateLoadMoreButton(shown, total) {
-        const loadMoreBtn = UI.pubsLoadMoreBtn();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const loadMoreBtn = UI.pubsLoadMoreBtn;
+        // --- FIM ALTERAÇÃO ---
         if (loadMoreBtn) {
             const hasMore = shown < total;
             const trans = translations[currentLang] || {};
@@ -719,7 +813,9 @@ const scholarScript = (function() {
     }
     
     function attachEventListeners() {
-        const searchInput = UI.pubSearchInput();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const searchInput = UI.pubSearchInput;
+        // --- FIM ALTERAÇÃO ---
         if (searchInput) {
             searchInput.addEventListener('input', () => {
                 showingPubsCount = initialPubsToShow;
@@ -727,7 +823,9 @@ const scholarScript = (function() {
             });
         }
         
-        const clearBtn = UI.pubClearBtn();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const clearBtn = UI.pubClearBtn;
+        // --- FIM ALTERAÇÃO ---
         if (clearBtn && searchInput) {
             clearBtn.addEventListener('click', () => { 
                 searchInput.value = '';
@@ -740,10 +838,14 @@ const scholarScript = (function() {
             });
         }
         
-        const loadMoreBtn = UI.pubsLoadMoreBtn();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const loadMoreBtn = UI.pubsLoadMoreBtn;
+        // --- FIM ALTERAÇÃO ---
         if (loadMoreBtn) {
             loadMoreBtn.addEventListener('click', () => { 
-                const searchFilter = (UI.pubSearchInput()?.value || '').trim().toLowerCase();
+                // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+                const searchFilter = (UI.pubSearchInput?.value || '').trim().toLowerCase();
+                // --- FIM ALTERAÇÃO ---
                 let baseList = activeYearFilter ? allArticles.filter(art => art.year === activeYearFilter.toString()) : allArticles;
                 const filteredTotal = searchFilter ? baseList.filter(art => normalizeTitle(art.title).includes(searchFilter) || (art.journalTitle || '').toLowerCase().includes(searchFilter) || (art.year || '').includes(searchFilter)).length : baseList.length;
 
@@ -755,7 +857,9 @@ const scholarScript = (function() {
 
     function reRenderWithCurrentLang() {
         const trans = translations[currentLang] || {};
-        const clearBtn = UI.pubClearBtn();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        const clearBtn = UI.pubClearBtn;
+        // --- FIM ALTERAÇÃO ---
         if (clearBtn) clearBtn.textContent = trans['clear-btn'] || 'Limpar';
         
         if (isIndexPage) {
@@ -767,10 +871,31 @@ const scholarScript = (function() {
     }
 
     function init() {
-        const grid = UI.pubsGrid();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        // Popula o objeto UI com os elementos do DOM
+        UI.citTotal = document.getElementById("cit-total");
+        UI.citPeriod = document.getElementById("cit-period");
+        UI.hTotal = document.getElementById("h-total");
+        UI.hPeriod = document.getElementById("h-period");
+        UI.i10Total = document.getElementById("i10-total");
+        UI.i10Period = document.getElementById("i10-period");
+        UI.scholarMetrics = document.querySelectorAll('.scholar-metrics .metric-value, .scholar-metrics .metric-value-period');
+        UI.chartContainer = document.getElementById('interactive-scholar-chart-container');
+        UI.pubsGrid = document.getElementById("publicacoes-grid");
+        UI.pubSearchInput = document.getElementById('publication-search');
+        UI.pubClearBtn = document.getElementById('publication-clear-btn');
+        UI.pubsShownCount = document.getElementById('pubs-shown-count');
+        UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
+
+        const grid = UI.pubsGrid; // Usa a referência cacheada
+        // --- FIM ALTERAÇÃO ---
+        
         if (!grid) return;
 
-        isIndexPage = !!UI.chartContainer();
+        // --- ALTERAÇÃO (Sugestão 3: Cache de DOM) ---
+        isIndexPage = !!UI.chartContainer; // Usa a referência cacheada
+        // --- FIM ALTERAÇÃO ---
+        
         allArticles = window.fallbackData?.scholarData?.articles || [];
         showingPubsCount = isIndexPage ? initialPubsToShow : allArticles.length;
         
@@ -798,54 +923,77 @@ const scholarScript = (function() {
             }
         }
         
-        window.scholarScript = { renderAll: reRenderWithCurrentLang };
+        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+        // Módulo se inscreve no evento ao invés de expor uma global
+        if (window.AppEvents) {
+            window.AppEvents.on('languageChanged', reRenderWithCurrentLang);
+        }
+        // window.scholarScript = { renderAll: reRenderWithCurrentLang }; // REMOVIDO
+        // --- FIM ALTERAÇÃO ---
     }
     
     return { 
         init, 
-        renderAll: reRenderWithCurrentLang,
+        renderAll: reRenderWithCurrentLang, // Mantido para referência interna se necessário
         allArticles: () => allArticles
     };
 })();
 
 // =================================================================================
-// MÓDULO: GERADOR DE CV EM PDF (VERSÃO COM TRADUÇÃO COMPLETA)
+// MÓDULO: GERADOR DE CV EM PDF (VERSÃO ATUALIZADA PARA 2 TIPOS DE CV - DINÂMICO)
+// --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
+// O módulo agora lê os dados de estruturas de dados locais e do
+// `translations.json`, em vez de fazer "scraping" do DOM.
 // =================================================================================
 const CvPdfGenerator = {
     init() {
-        const downloadBtn = document.getElementById('download-cv-btn');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.generateCvPdf();
-            });
+        const downloadButtons = document.querySelectorAll('[data-cv-type]');
+        if (downloadButtons.length === 0) {
+            console.warn("CvPdfGenerator: Nenhum botão/link de download de CV encontrado (sem [data-cv-type]).");
+            return;
         }
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cvType = button.dataset.cvType; 
+                if (button.hasAttribute('data-generating')) return;
+                this.generateCvPdf(cvType, button); 
+            });
+        });
     },
 
-    stripHtml(html) {
+    stripHtml(html) { 
         if (!html) return "";
         let doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.body.querySelectorAll('p, br, h1, h2, h3, h4, h5, h6, li, blockquote, dd, dt').forEach(el => {
+           el.insertAdjacentText('afterend', ' ');
+        });
         return doc.body.textContent || "";
     },
 
-    async generateCvPdf() {
-        const button = document.getElementById('download-cv-btn');
-        const originalButtonHTML = button.innerHTML;
+    async generateCvPdf(cvType, clickedButton) {
+        const lang = typeof currentLang !== 'undefined' ? currentLang : 'pt';
+        const langContent = translations[lang] || translations['pt'];
+        const pdfStrings = langContent.pdf || {};
         const toast = document.getElementById('toast-notification');
-        const langContent = translations[currentLang] || {}; // Objeto de tradução para o idioma atual
+        const originalButtonHTML = clickedButton.innerHTML; 
 
+        clickedButton.setAttribute('data-generating', 'true');
         const loadingSpinnerSVG = `<svg class="animate-spin" style="width: 20px; height: 20px; display: inline-block; margin-right: 8px;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.75V6.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 6.87347L16.0659 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M19.25 12L17.75 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M17.1266 17.1265L16.0659 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M12 17.75V19.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 17.1265L7.9341 16.0659" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M4.75 12L6.25 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M6.87344 6.87347L7.9341 7.93413" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>`;
-        button.innerHTML = `${loadingSpinnerSVG} <span>${langContent['cv-generating'] || 'Gerando...'}</span>`;
-        button.disabled = true;
-        
+        clickedButton.innerHTML = `${loadingSpinnerSVG} <span>${langContent['cv-generating'] || 'Gerando...'}</span>`;
+        clickedButton.style.pointerEvents = 'none';
+
         if (toast) {
             toast.textContent = langContent['cv-generating'] || 'Preparando seu currículo...';
             toast.classList.add('show');
+            toast.style.backgroundColor = '';
         }
 
         try {
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                 throw new Error('Biblioteca jsPDF não carregada.');
+            }
             const { jsPDF } = window.jspdf;
-            const pdfStrings = langContent.pdf || {};
             const themeColor = '#10b981';
 
             const doc = new jsPDF('p', 'pt', 'a4');
@@ -853,231 +1001,337 @@ const CvPdfGenerator = {
             const margin = 40;
             const max_width = page_width - margin * 2;
             let y = margin;
-            const item_gap = 15;
+            const item_gap = 12; 
+            const section_gap = 20; 
 
-            const checkPageBreak = (neededHeight) => {
+            const checkPageBreak = (neededHeight) => { 
                 if (y + neededHeight > doc.internal.pageSize.getHeight() - margin) {
                     doc.addPage();
                     y = margin;
-                }
-            };
-
-            let avatarDataUrl = null;
-            try {
-                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(document.querySelector('.avatar').src)}`);
-                const blob = await response.blob();
-                avatarDataUrl = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
-                });
-            } catch (e) {
-                console.error("Não foi possível carregar a imagem do avatar:", e);
-            }
-
-            if (avatarDataUrl) {
-                doc.addImage(avatarDataUrl, 'JPEG', margin, y, 100, 100);
-            }
-            doc.setFontSize(22).setFont('helvetica', 'bold').setTextColor(0).text(document.getElementById('hero-name').textContent, margin + 115, y + 35);
-            
-            // CORREÇÃO: Usa a chave de tradução para a localização
-            const locationText = langContent['pdf-location'] || 'Viçosa - Minas Gerais, Brazil';
-            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(100).text(locationText, margin + 115, y + 55);
-
-            doc.setFont('helvetica', 'bold').text("Email:", margin + 115, y + 70);
-            doc.setFont('helvetica', 'normal').text("wevertonufv@gmail.com", margin + 155, y + 70);
-            doc.setFont('helvetica', 'bold').text("LinkedIn:", margin + 115, y + 85);
-            doc.setFont('helvetica', 'normal').setTextColor(40, 40, 255).textWithLink("linkedin.com/in/wevertoncosta", margin + 165, y + 85, { url: 'https://linkedin.com/in/wevertoncosta' });
-            y += 120;
-
-            const addSectionTitle = (title) => {
-                y += (y > margin + 20) ? 25 : 5;
-                checkPageBreak(40);
-                doc.setFontSize(14).setFont('helvetica', 'bold').setTextColor('#0f172a');
-                doc.text(title.toUpperCase(), margin, y);
-                y += 8;
-                doc.setLineWidth(1);
-                doc.setDrawColor(themeColor);
-                doc.line(margin, y, page_width - margin, y);
-                y += 20;
-            };
-
-            const addJustifiedText = (content, options = {}) => {
-                const { fontSize = 10, x = margin, width = max_width, color = 80 } = options;
-                if (!content || content.trim() === "") return;
-                
-                doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
-                const cleanedContent = this.stripHtml(content).replace(/\s+/g, ' ').trim();
-                const lines = doc.splitTextToSize(cleanedContent, width);
-                const textHeight = lines.length * (fontSize * 1.2);
-                checkPageBreak(textHeight);
-                doc.text(lines, x, y, { align: 'justify', maxWidth: width });
-                y += textHeight + 5;
-            };
-            
-            // --- SECTIONS ---
-            addSectionTitle(pdfStrings['about-title'] || 'SOBRE MIM');
-            addJustifiedText(langContent['about-p1']);
-            addJustifiedText(langContent['about-p2']);
-            addJustifiedText(langContent['about-p3']);
-
-            addSectionTitle(pdfStrings['services-title'] || 'SERVIÇOS & CONSULTORIA');
-            document.querySelectorAll('#servicos .card').forEach(card => {
-                const title = card.querySelector('h3').innerText;
-                const description = card.querySelector('p').innerText;
-                checkPageBreak(50);
-                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
-                doc.text(`• ${title}`, margin, y);
-                y += 15;
-                addJustifiedText(description, { x: margin + 10, width: max_width - 10 });
-                y += item_gap / 2;
-            });
-            
-            addSectionTitle(pdfStrings['skills-title'] || 'HABILIDADES TÉCNICAS');
-            const skillsElements = document.querySelectorAll('#habilidades .skill-name, #skills .skill-name');
-            if (skillsElements.length > 0) {
-                const skills = Array.from(skillsElements).map(s => `• ${s.innerText.trim()}`);
-                const half = Math.ceil(skills.length / 2);
-                const column1 = skills.slice(0, half);
-                const column2 = skills.slice(half);
-                const initialY = y;
-                const lineHeight = 14;
-                checkPageBreak(column1.length * lineHeight);
-                doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80);
-                doc.text(column1, margin, y);
-                if (column2.length > 0) {
-                    doc.text(column2, margin + (max_width / 2), initialY);
-                }
-                y += Math.max(column1.length, column2.length) * lineHeight + 10;
-            }
-            
-            addSectionTitle(pdfStrings['expertise-title'] || 'ÁREAS DE ESPECIALIZAÇÃO');
-            document.querySelectorAll('#experiencia .card').forEach(card => {
-                 const title = `• ${card.querySelector('h3').innerText}:`;
-                 const description = card.querySelector('p').innerText;
-                 checkPageBreak(60);
-                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
-                 const titleLines = doc.splitTextToSize(title, max_width);
-                 const initialY = y;
-                 doc.text(titleLines, margin, y);
-                 y += titleLines.length * 12;
-                 let textX = margin + 10;
-                 let textWidth = max_width - 10;
-                 if (titleLines.length === 1) {
-                     textX = margin + doc.getTextWidth(title) + 4;
-                     textWidth = max_width - (doc.getTextWidth(title) + 4);
-                     y = initialY;
                  }
-                 addJustifiedText(description, { x: textX, width: textWidth });
-                 y += item_gap;
-            });
-            
-            addSectionTitle(pdfStrings['education-title'] || 'FORMAÇÃO ACADÊMICA');
-            document.querySelectorAll('#formacao .timeline-item').forEach(item => {
-                checkPageBreak(80);
-                const title = item.querySelector('h3').innerText;
-                const date = item.querySelector('.timeline-date').innerText;
-                const institution = item.querySelector('p:not(.small-muted)').innerText;
-                const advisor = item.querySelector('p.small-muted')?.innerHTML || '';
-                const details = item.querySelector('.timeline-details').innerText;
-                doc.setFontSize(11).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
-                y += 14;
-                doc.setFontSize(10).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
-                y += 14;
-                doc.setFont('helvetica', 'normal').setTextColor(100).text(date, margin, y);
-                y += 14;
-                if(advisor){
-                    const advisorLines = doc.splitTextToSize(this.stripHtml(advisor), max_width);
-                    doc.setFont('helvetica', 'normal').text(advisorLines, margin, y);
-                    y += advisorLines.length * 14;
-                }
-                addJustifiedText(details, { fontSize: 9 });
-                y += item_gap;
-            });
-            
-            addSectionTitle(pdfStrings['projects-title'] || 'PRINCIPAIS PROJETOS');
-            (GithubReposModule.state.allRepos || []).slice(0, 3).forEach(repo => {
-                checkPageBreak(60);
-                const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
-                const linkUrl = repo.homepage || repo.html_url;
+            };
 
-                // CORREÇÃO: Usa chaves de tradução para os links
-                const viewSiteText = langContent['pdf-view-site'] || '[View Site]';
-                const viewRepoText = langContent['pdf-view-repo'] || '[Repository]';
-                const linkText = repo.homepage ? viewSiteText : viewRepoText;
+             let avatarDataUrl = null;
+             try {
+                const avatarImg = document.querySelector('.avatar') || document.querySelector('.nav-avatar'); 
+                if (avatarImg && avatarImg.src) {
+                    if (avatarImg.src.startsWith('data:image')) {
+                        avatarDataUrl = avatarImg.src;
+                    } else {
+                         const imageUrl = avatarImg.src.startsWith('http') ? `https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}` : avatarImg.src;
+                         const response = await fetch(imageUrl);
+                         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                         const blob = await response.blob();
+                         avatarDataUrl = await new Promise((resolve, reject) => {
+                             const reader = new FileReader();
+                             reader.onloadend = () => resolve(reader.result);
+                             reader.onerror = (error) => reject(error); 
+                             reader.readAsDataURL(blob);
+                         });
+                     }
+                 }
+             } catch (e) {
+                console.error("Não foi possível carregar a imagem do avatar:", e);
+             }
 
+            // --- CABEÇALHO DO PDF (Comum a ambos os CVs) ---
+            if (avatarDataUrl) {
+                 doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80); 
+             }
+            const headerX = avatarDataUrl ? margin + 95 : margin; 
+             const headerW = avatarDataUrl ? max_width - 95 : max_width; 
+
+             doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
+             doc.setFontSize(12).setFont('helvetica', 'normal').setTextColor(themeColor).text(langContent['subtitle-1'] || 'Cientista de Dados | Machine Learning', headerX, y + 30, { maxWidth: headerW });
+             doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
+             doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 45);
+             doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 57); 
+             doc.setTextColor(40, 40, 255); 
+             try {
+                 doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 57, { url: 'https://linkedin.com/in/wevertoncosta' });
+             } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
+             doc.setTextColor(80); 
+             doc.text(`Location: ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 69);
+
+            y += (avatarDataUrl ? 90 : 80) + item_gap; 
+
+            // --- Funções Auxiliares (Mantidas) ---
+             const addSectionTitle = (title) => {
+                 y += section_gap; 
+                 checkPageBreak(30); 
+                 doc.setFontSize(12).setFont('helvetica', 'bold').setTextColor('#0f172a');
+                 doc.text(title.toUpperCase(), margin, y);
+                 y += 6;
+                 doc.setLineWidth(0.5); 
+                 doc.setDrawColor(themeColor);
+                 doc.line(margin, y, page_width - margin, y);
+                 y += 15; 
+             };
+
+            const addJustifiedText = (content, options = {}) => { 
+                 const { fontSize = 9, x = margin, width = max_width, color = 80, lineHeightFactor = 1.15 } = options; 
+                 if (!content || content.trim() === "") return;
+
+                 doc.setFontSize(fontSize).setFont('helvetica', 'normal').setTextColor(color);
+                 const cleanedContent = this.stripHtml(content).replace(/\s+/g, ' ').trim();
+                  if (typeof doc.splitTextToSize !== 'function') {
+                     console.error("doc.splitTextToSize not available.");
+                     doc.text(cleanedContent, x, y, { maxWidth: width });
+                     y += (fontSize * lineHeightFactor) * Math.ceil(cleanedContent.length / (width / (fontSize * 0.5))) + 5; 
+                     return;
+                 }
+                 const lines = doc.splitTextToSize(cleanedContent, width);
+                 const textHeight = lines.length * (fontSize * lineHeightFactor);
+                 checkPageBreak(textHeight);
+                 doc.text(lines, x, y, { align: 'justify', maxWidth: width, lineHeightFactor: lineHeightFactor });
+                 y += textHeight + 5; 
+             };
+
+            // --- SEÇÕES DO PDF (Lendo do JSON) ---
+
+            // --- SOBRE MIM ---
+            addSectionTitle(pdfStrings['about-title'] || 'SOBRE MIM');
+            if (cvType === 'pro') {
+                addJustifiedText(langContent['about-p1']); 
+            } else { 
+                addJustifiedText(langContent['about-p1']);
+                addJustifiedText(langContent['about-p2']);
+                addJustifiedText(langContent['about-p3']);
+            }
+
+            // --- SERVIÇOS / FRENTES DE ATUAÇÃO ---
+            // --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
+             addSectionTitle(pdfStrings['services-title'] || (langContent['services-title'] || 'COMO POSSO AJUDAR'));
+             const services = [
+                { titleKey: 'service-title1', descKey: 'service-desc1' },
+                { titleKey: 'service-title2', descKey: 'service-desc2' },
+                { titleKey: 'service-title3', descKey: 'service-desc3' }
+             ];
+             services.forEach(service => {
+                 const title = langContent[service.titleKey] || 'Service Title';
+                 const description = langContent[service.descKey] || 'Service Description';
+                 checkPageBreak(40); 
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                 doc.text(`• ${title}`, margin, y);
+                 y += 12;
+                 addJustifiedText(description, { x: margin + 8, width: max_width - 8, fontSize: 9 }); 
+                 y += item_gap / 2;
+             });
+             // --- FIM ALTERAÇÃO ---
+
+             // --- HABILIDADES TÉCNICAS ---
+             // --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
+             addSectionTitle(pdfStrings['skills-title'] || (langContent['skills-title'] || 'HABILIDADES TÉCNICAS'));
+             const skillKeys = [
+                'skill-name-r', 'skill-name-genes', 'skill-name-selegen', 'skill-name-python',
+                'skill-name-eda', 'skill-name-ml', 'skill-name-deep-learning',
+                'skill-name-genomic-sel', 'skill-name-mixed-models', 'skill-name-quant-gen', 'skill-name-bioinfo',
+                'skill-name-dataviz', 'skill-name-git', 'skill-name-shiny', 'skill-name-html'
+             ];
+             const skills = skillKeys.map(key => `• ${langContent[key] || key}`);
+             
+             if (skills.length > 0) {
+                 const skillsToShow = skills; 
+                 const half = Math.ceil(skillsToShow.length / 2);
+                 const column1 = skillsToShow.slice(0, half);
+                 const column2 = skillsToShow.slice(half);
+                  const initialY = y;
+                  const lineHeight = 12; 
+                  checkPageBreak(Math.max(column1.length, column2.length) * lineHeight);
+                  doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80); 
+                  doc.text(column1, margin, y, { lineHeightFactor: 1.15 });
+                  if (column2.length > 0) {
+                       doc.text(column2, margin + (max_width / 2), initialY, { lineHeightFactor: 1.15 });
+                  }
+                  y += Math.max(column1.length, column2.length) * lineHeight + 5; 
+             }
+             // --- FIM ALTERAÇÃO ---
+
+
+            // --- ÁREAS DE ATUAÇÃO / EXPERTISE ---
+            // --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
+            addSectionTitle(pdfStrings['expertise-title'] || (langContent['expertise-title'] || 'ÁREAS DE ATUAÇÃO'));
+            const expertiseAreas = [
+                { titleKey: 'exp-title1', descKey: 'exp-desc1' },
+                { titleKey: 'exp-title2', descKey: 'exp-desc2' },
+                { titleKey: 'exp-title3', descKey: 'exp-desc3' },
+                { titleKey: 'exp-title4', descKey: 'exp-desc4' },
+                { titleKey: 'exp-title5', descKey: 'exp-desc5' },
+                { titleKey: 'exp-title7', descKey: 'exp-desc7' } // Vem do ID 'exp-title7' no HTML
+            ];
+            expertiseAreas.forEach(area => {
+                const title = `• ${langContent[area.titleKey] || 'Area Title'}:`;
+                const description = langContent[area.descKey] || 'Area Description';
+
+                checkPageBreak(50); 
                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
-                doc.text(repoTitle, margin, y);
+                const titleLines = doc.splitTextToSize(title, max_width);
+                doc.text(titleLines, margin, y);
+                y += titleLines.length * 12 + 2; 
 
-                if (linkUrl) {
-                    const titleWidth = doc.getTextWidth(repoTitle);
-                    doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
-                    doc.textWithLink(linkText, margin + titleWidth + 5, y, { url: linkUrl });
-                }
-                y += 15;
-
-                addJustifiedText(repo.description, { x: margin + 10, width: max_width - 10 });
+                addJustifiedText(description, { x: margin + 8, width: max_width - 8, fontSize: 9 });
                 y += item_gap / 2;
             });
-            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
-            const projectsPageUrl = `${window.location.origin}/projetos.html`;
-            
-            // CORREÇÃO: Usa chave de tradução para o texto final
-            const moreProjectsText = langContent['pdf-more-projects'] || 'For more projects, visit the projects page on the site.';
-            doc.textWithLink(moreProjectsText, margin, y, { url: projectsPageUrl });
-            y += 20;
-            
-            addSectionTitle(pdfStrings['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES');
-            (scholarScript.allArticles() || []).slice(0, 3).forEach(art => {
-                checkPageBreak(80);
-            
-                doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
-                const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
-                doc.text(titleLines, margin, y);
-                y += titleLines.length * 12 + 5;
-            
-                doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-                const metaText = `Publicado em: ${art.journalTitle || 'N/A'} - ${art.year || 'N/A'}`; // "Publicado em" pode ser traduzido se necessário
-                const metaLines = doc.splitTextToSize(metaText, max_width - 10);
-                doc.text(metaLines, margin + 10, y);
-                y += metaLines.length * 12 + 5;
-            
-                if (art.cited_by?.value) {
-                    doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(100);
-                    
-                    // CORREÇÃO: Usa chave de tradução para o texto de citação
-                    let citationText = (langContent['pdf-cited-by'] || 'Cited {count} times');
-                    citationText = citationText.replace('{count}', art.cited_by.value);
-                    
-                    doc.text(citationText, margin + 10, y);
-                    y += 12;
-                }
+            // --- FIM ALTERAÇÃO ---
 
-                if (art.doi && art.doiLink) {
-                    doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-                    const doiLabel = "DOI: ";
-                    doc.text(doiLabel, margin + 10, y);
-                    const doiLabelWidth = doc.getTextWidth(doiLabel);
-                    doc.setTextColor(40, 40, 255);
-                    doc.textWithLink(art.doi, margin + 10 + doiLabelWidth, y, { url: art.doiLink });
-                    y += 12;
-                }
-            
-                y += item_gap / 2; 
-            });
-            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
-            const publicationsPageUrl = `${window.location.origin}/publicacoes.html`;
+            // --- FORMAÇÃO ACADÊMICA ---
+            // --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
+            addSectionTitle(pdfStrings['education-title'] || (langContent['education-title'] || 'FORMAÇÃO ACADÊMICA'));
+            // Esta estrutura de dados é mais estável do que raspar o DOM
+             const educationData = [
+                { date: 'edu-date1', title: 'edu-title1', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor1', details: 'edu-desc1' },
+                { date: 'edu-date2', title: 'edu-title2', institution: 'Universidade Federal de Viçosa (UFV) — FAPEMIG', advisor: 'edu-advisor2', details: 'edu-desc2' },
+                { date: null, title: 'edu-title4', institution: 'EMBRAPA Mandioca e Fruticultura — CNPq', advisor: 'edu-advisor4', details: 'edu-desc4', year: '2022' },
+                { date: null, title: 'edu-title5', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor5', details: 'edu-desc5', year: '2018 - 2022' },
+                { date: null, title: 'edu-title6', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor6', details: 'edu-desc6', year: '2016 - 2018' },
+                { date: null, title: 'edu-title7', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor7', details: 'edu-desc7', year: '2010 - 2015' }
+             ];
 
-            // CORREÇÃO: Usa chave de tradução para o texto final
-            const morePublicationsText = langContent['pdf-more-publications'] || 'For more publications, visit the publications page on the site.';
-            doc.textWithLink(morePublicationsText, margin, y, { url: publicationsPageUrl });
-            y += 20;
+             const educationItems = educationData; 
+             educationItems.forEach((item, index) => {
+                 if (cvType === 'pro' && index > 2) { 
+                     return;
+                 }
+
+                 checkPageBreak(60); 
+
+                 const title = langContent[item.title] || 'Title';
+                 const date = item.year ? item.year : (langContent[item.date] || 'Date'); // Usa ano fixo ou chave de data
+                 const institution = item.institution; // Instituição não é traduzida
+                 const advisorHTML = langContent[item.advisor] || '';
+                 const details = langContent[item.details] || '';
 
 
-            const langSuffix = langContent['cv-filename-suffix'] || 'cv';
-            const fileName = `CV-Weverton_Gomes_da_Costa_${langSuffix}.pdf`;
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
+                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
+                 y += 12;
+                 doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
+                 y += 12;
+
+                 if (advisorHTML) {
+                     const cleanedAdvisor = this.stripHtml(advisorHTML).replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
+                     const advisorLines = doc.splitTextToSize(cleanedAdvisor, max_width);
+                     doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100); 
+                     doc.text(advisorLines, margin, y);
+                     y += advisorLines.length * 10 + 3; 
+                 }
+                  if (details && cvType !== 'pro') { 
+                     addJustifiedText(details, { fontSize: 8, width: max_width }); 
+                  } else if (details && cvType === 'pro' && index < 1) { 
+                       addJustifiedText(details, { fontSize: 8, width: max_width });
+                  }
+
+                 y += item_gap; 
+             });
+             // --- FIM ALTERAÇÃO ---
+
+            // --- PROJETOS ---
+             // (Esta seção já estava boa, lendo do estado do módulo JS)
+             addSectionTitle(pdfStrings['projects-title'] || (langContent['projects-title'] || 'PRINCIPAIS PROJETOS'));
+             const reposToDisplay = (typeof GithubReposModule !== 'undefined' && GithubReposModule.state?.allRepos) ? GithubReposModule.state.allRepos : [];
+             const maxProjects = (cvType === 'pro') ? 2 : 4; 
+             reposToDisplay.slice(0, maxProjects).forEach(repo => {
+                 checkPageBreak(50); 
+                 const repoTitle = `• ${GithubReposModule.titleCase(repo.name)}`;
+                 const linkUrl = repo.homepage || repo.html_url;
+                 const viewSiteText = langContent['pdf-view-site'] || '[View Site]';
+                 const viewRepoText = langContent['pdf-view-repo'] || '[Repository]';
+                 const linkText = repo.homepage ? viewSiteText : viewRepoText;
+
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                 const titleWidth = doc.getTextWidth(repoTitle);
+                  if (margin + titleWidth + 5 + doc.getTextWidth(linkText) < page_width - margin) {
+                     doc.text(repoTitle, margin, y);
+                     if (linkUrl) {
+                         doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
+                          try { doc.textWithLink(linkText, margin + titleWidth + 5, y, { url: linkUrl }); } catch(e){}
+                     }
+                     y += 12;
+                 } else { 
+                     doc.text(repoTitle, margin, y);
+                     y += 10;
+                      if (linkUrl) {
+                         doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(40, 40, 255);
+                          try { doc.textWithLink(linkText, margin, y, { url: linkUrl }); } catch(e){}
+                      }
+                     y += 12;
+                 }
+
+                 addJustifiedText(repo.description || (langContent['no_description'] || 'No description provided.'), { x: margin + 8, width: max_width - 8, fontSize: 9 });
+                 y += item_gap / 2;
+             });
+             if (reposToDisplay.length > maxProjects) {
+                 doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
+                 const projectsPageUrl = `${window.location.origin}/projetos.html`;
+                 const moreProjectsText = langContent['pdf-more-projects'] || 'For more projects, visit the projects page on the site.';
+                  try { doc.textWithLink(moreProjectsText, margin, y, { url: projectsPageUrl }); } catch(e){ doc.text(moreProjectsText, margin, y); }
+                 y += 15;
+             }
+
+
+            // --- PUBLICAÇÕES ---
+             // (Esta seção já estava boa, lendo do estado do módulo JS)
+             addSectionTitle(pdfStrings['publications-title'] || (langContent['publications-title'] || 'PRINCIPAIS PUBLICAÇÕES'));
+             const articlesToDisplay = (typeof scholarScript !== 'undefined' && typeof scholarScript.allArticles === 'function') ? scholarScript.allArticles() : [];
+             const maxPublications = (cvType === 'pro') ? 2 : 4; 
+             articlesToDisplay.slice(0, maxPublications).forEach(art => {
+                 checkPageBreak(60); 
+                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(themeColor);
+                 const titleLines = doc.splitTextToSize(`• ${art.title}`, max_width);
+                 doc.text(titleLines, margin, y);
+                 y += titleLines.length * 12 + 3; 
+
+                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
+                 const metaTextParts = [];
+                 if (art.journalTitle) metaTextParts.push(art.journalTitle);
+                 if (art.year) metaTextParts.push(art.year);
+                 const metaText = metaTextParts.length > 0 ? metaTextParts.join(' - ') : (langContent['pub-no-journal'] || 'N/A');
+                 const metaLines = doc.splitTextToSize(metaText, max_width - 8); 
+                 doc.text(metaLines, margin + 8, y);
+                 y += metaLines.length * 11 + 3; 
+
+                 if (art.cited_by?.value) {
+                     doc.setFontSize(8).setFont('helvetica', 'italic').setTextColor(100); 
+                     let citationText = (langContent['pdf-cited-by'] || 'Cited {count} times');
+                     citationText = citationText.replace('{count}', art.cited_by.value);
+                     doc.text(citationText, margin + 8, y);
+                     y += 10;
+                 }
+
+                 if (art.doi && art.doiLink) {
+                     doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(80); 
+                     const doiLabel = "DOI: ";
+                     doc.text(doiLabel, margin + 8, y);
+                     const doiLabelWidth = doc.getTextWidth(doiLabel);
+                     doc.setTextColor(40, 40, 255);
+                     try {
+                         doc.textWithLink(art.doi, margin + 8 + doiLabelWidth, y, { url: art.doiLink, maxWidth: max_width - 8 - doiLabelWidth }); 
+                     } catch(e) {
+                         doc.text(art.doi, margin + 8 + doiLabelWidth, y, { maxWidth: max_width - 8 - doiLabelWidth });
+                     }
+                     y += 10;
+                 }
+                 y += item_gap / 2;
+             });
+             if (articlesToDisplay.length > maxPublications) {
+                 doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(40, 40, 255);
+                 const publicationsPageUrl = `${window.location.origin}/publicacoes.html`;
+                 const morePublicationsText = langContent['pdf-more-publications'] || 'For more publications, visit the publications page on the site.';
+                  try { doc.textWithLink(morePublicationsText, margin, y, { url: publicationsPageUrl }); } catch(e){ doc.text(morePublicationsText, margin, y); }
+                 y += 15;
+             }
+
+            // --- NOME DO ARQUIVO E SALVAMENTO ---
+            let fileNameKey;
+            if (cvType === 'pro') {
+                fileNameKey = 'cv-file-name-pro';
+            } else { 
+                fileNameKey = 'cv-file-name-academic';
+            }
+            const fileName = langContent[fileNameKey] || `CV-Weverton_Gomes_da_Costa_${cvType}_${lang}.pdf`; 
+
             doc.save(fileName);
-            
+
             if (toast) {
                 toast.textContent = langContent['cv-download-started'] || 'Download iniciado!';
                 toast.style.backgroundColor = '';
@@ -1086,12 +1340,13 @@ const CvPdfGenerator = {
         } catch (error) {
             console.error('Erro ao gerar PDF:', error);
             if (toast) {
-                toast.textContent = langContent['cv-error'] || 'Ocorreu um erro ao gerar o PDF.';
+                toast.textContent = `${langContent['cv-error'] || 'Erro ao gerar PDF.'} ${error.message ? `(${error.message})` : ''}`;
                 toast.style.backgroundColor = 'var(--error)';
             }
         } finally {
-            button.innerHTML = originalButtonHTML;
-            button.disabled = false;
+            clickedButton.innerHTML = originalButtonHTML;
+            clickedButton.style.pointerEvents = 'auto';
+            clickedButton.removeAttribute('data-generating'); 
             setTimeout(() => { if (toast) toast.classList.remove('show'); }, 3000);
         }
     }
@@ -1099,6 +1354,7 @@ const CvPdfGenerator = {
 
 // =================================================================================
 // Módulo: Copiar para a Área de Transferência
+// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const ClipboardCopier = {
     init() {
@@ -1150,12 +1406,78 @@ const ClipboardCopier = {
 
 // =================================================================================
 // MÓDULO DE TRADUÇÃO E ESTADO GLOBAL
-// Gerencia o idioma atual, animação de digitação e aplicação das traduções.
+// --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+// Adiciona um Emitter e altera a ordem de inicialização.
 // =================================================================================
 
 const LanguageManager = {
     // --- Estado ---
     currentLang: 'pt',
+
+    // --- NOVO: Event Emitter Simples ---
+    _events: {},
+    emitter: {
+        /**
+         * Assina um evento.
+         * @param {string} event - Nome do evento (ex: 'languageChanged')
+         * @param {function} callback - Função a ser chamada
+         */
+        on: (event, callback) => {
+            if (!LanguageManager._events[event]) LanguageManager._events[event] = [];
+            LanguageManager._events[event].push(callback);
+        },
+        /**
+         * Dispara um evento.
+         * @param {string} event - Nome do evento
+         * @param {*} data - Dados a serem passados para o callback
+         */
+        emit: (event, data) => {
+            if (!LanguageManager._events[event]) return;
+            LanguageManager._events[event].forEach(callback => callback(data));
+        }
+    },
+    // --- FIM NOVO ---
+    
+    /**
+     * Ponto de entrada do módulo.
+     * Carrega o JSON de traduções e, em seguida, inicia o resto da aplicação.
+     */
+    init() {
+        console.log("LanguageManager.init: Iniciando. Tentando carregar translations.json...");
+        
+        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+        // Expõe o listener do emitter IMEDIATAMENTE para que outros módulos
+        // possam se inscrever durante a inicialização.
+        window.AppEvents = { on: this.emitter.on.bind(this.emitter) };
+        // --- FIM ALTERAÇÃO ---
+
+        fetch('translations.json') 
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("LanguageManager.init: translations.json carregado com sucesso.");
+                window.translations = data; 
+                
+                // --- ALTERAÇÃO (CORREÇÃO DO BUG) ---
+                // 1. Define o idioma (e window.currentLang) PRIMEIRO.
+                // Isso também dispara o primeiro evento 'languageChanged' via _notifyOtherScripts().
+                this.setLanguage(this.currentLang); 
+                
+                // 2. AGORA inicializa os outros componentes.
+                // Eles já encontrarão window.currentLang definido quando `scholarScript.init` for chamado.
+                waitForFallbackDataAndInitialize();
+                // --- FIM ALTERAÇÃO ---
+            })
+            .catch(error => {
+                console.error("FALHA CRÍTICA AO CARREGAR 'translations.json':", error);
+                document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar as traduções. Verifique o console.</div>';
+            });
+    },
+    
     subtitleState: {
         timeout: null,
         index: 0,
@@ -1163,24 +1485,17 @@ const LanguageManager = {
         isDeleting: false,
     },
 
-    /**
-     * Alterna o idioma entre 'pt' e 'en'.
-     */
     toggleLanguage() {
         const newLang = this.currentLang === 'pt' ? 'en' : 'pt';
         this.setLanguage(newLang);
     },
 
-    /**
-     * Define o idioma da página e atualiza todos os elementos de texto.
-     * @param {string} lang - O código do idioma ('pt' ou 'en').
-     */
     setLanguage(lang) {
         if (!translations[lang]) return;
 
         // 1. Define o estado global e o atributo da página
         this.currentLang = lang;
-        window.currentLang = lang; // Para compatibilidade com outros scripts
+        window.currentLang = lang; 
         document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
 
         // 2. Atualiza títulos da página e navegação com base no ID do body
@@ -1203,9 +1518,6 @@ const LanguageManager = {
         }
     },
     
-    /**
-     * Animação de digitação e exclusão para o subtítulo.
-     */
     typeAndEraseSubtitle() {
         const subtitleEl = document.getElementById('subtitle');
         if (!subtitleEl) return;
@@ -1217,7 +1529,7 @@ const LanguageManager = {
             translations[this.currentLang]['subtitle-2'],
             translations[this.currentLang]['subtitle-3'],
             translations[this.currentLang]['subtitle-4']
-        ].filter(Boolean); // Garante que não há frases nulas ou indefinidas
+        ].filter(Boolean); 
 
         if (phrases.length === 0) return;
 
@@ -1235,11 +1547,11 @@ const LanguageManager = {
 
         if (!state.isDeleting && state.charIndex === currentPhrase.length) {
             state.isDeleting = true;
-            typeSpeed = 2000; // Pausa antes de começar a apagar
+            typeSpeed = 2000; 
         } else if (state.isDeleting && state.charIndex === 0) {
             state.isDeleting = false;
             state.index = (state.index + 1) % phrases.length;
-            typeSpeed = 500; // Pausa antes de começar a nova frase
+            typeSpeed = 500; 
         }
 
         state.timeout = setTimeout(() => this.typeAndEraseSubtitle(), typeSpeed);
@@ -1248,7 +1560,7 @@ const LanguageManager = {
     // --- Métodos Privados Auxiliares ---
     _updatePageTitles(lang) {
         const bodyId = document.body.id || '';
-        let pageTitleKey = 'page-title'; // Padrão
+        let pageTitleKey = 'page-title'; 
         let navTitleKey = '';
 
         if (bodyId.includes('projects')) {
@@ -1307,18 +1619,199 @@ const LanguageManager = {
     },
     
     _notifyOtherScripts() {
-        // Chama os scripts de renderização para que eles se atualizem com o novo idioma
-        window.pageSetupScript?.renderAll();
-        window.githubScript?.renderAll();
-        window.scholarScript?.renderAll();
+        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
+        // Dispara o evento global. Módulos inscritos irão reagir.
+        this.emitter.emit('languageChanged', this.currentLang);
+        // --- FIM ALTERAÇÃO ---
     }
 };
 
 // Expor globalmente a função de alternância para ser usada no HTML (ex: onclick)
 window.toggleLanguage = () => LanguageManager.toggleLanguage();
 
+
+// =================================================================================
+// MÓDULO PRINCIPAL DA APLICAÇÃO (UI & Interações)
+// (Nenhuma alteração necessária aqui)
+// =================================================================================
+
+const App = {
+    UI: { // Cache para elementos do DOM
+        nav: null,
+        header: null,
+        body: null,
+        backToTopButton: null,
+        timeline: null,
+        copyEmailLink: null,
+        toast: null
+    },
+
+    init() {
+        console.log("App.init: Cacheando DOM e configurando listeners...");
+        this._cacheDOMElements();
+        this._initSetup();
+    },
+
+    _cacheDOMElements() {
+        this.UI.nav = document.querySelector('nav');
+        this.UI.header = document.querySelector('header');
+        this.UI.body = document.body;
+        this.UI.backToTopButton = document.querySelector('.back-to-top');
+        this.UI.timeline = document.querySelector('.timeline');
+        this.UI.copyEmailLink = document.getElementById('copy-email-link');
+        this.UI.toast = document.getElementById('toast-notification');
+    },
+
+    _initSetup() {
+        this._setupObservers();
+        this._setupEventListeners();
+    },
+
+    // --- Configuração de Observadores (Animações de Scroll) ---
+    _setupObservers() {
+        this._setupRevealObserver();
+        this._setupSkillObserver();
+        this._setupNavObserver();
+        this._setupStaggerEffect();
+    },
+
+    _setupRevealObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    },
+
+    _setupSkillObserver() {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const level = entry.target.dataset.level;
+                    const bar = entry.target.querySelector('.skill-bar');
+                    if (bar && level) {
+                        bar.style.setProperty('--proficiency-level', level);
+                    }
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.skill-item').forEach(el => observer.observe(el));
+    },
+
+    _setupNavObserver() {
+        const sections = document.querySelectorAll('main > section[id]');
+        const navLinks = document.querySelectorAll('nav .nav-link');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { rootMargin: '-40% 0px -60% 0px' });
+        sections.forEach(section => observer.observe(section));
+    },
+
+    _setupStaggerEffect() {
+        document.querySelectorAll('.stagger-children').forEach(container => {
+            container.querySelectorAll('.reveal, .skill-item').forEach((child, index) => {
+                child.style.setProperty('--stagger-index', index);
+            });
+        });
+    },
+
+    // --- Configuração de Listeners de Eventos ---
+    _setupEventListeners() {
+        window.addEventListener('scroll', this._handleScroll.bind(this), { passive: true });
+        this.UI.body.addEventListener('mousemove', this._handleCardHover.bind(this));
+
+        if (this.UI.timeline) {
+            this.UI.timeline.addEventListener('click', this._handleTimelineToggle.bind(this));
+        }
+        if (this.UI.copyEmailLink) {
+            this.UI.copyEmailLink.addEventListener('click', this._handleEmailCopy.bind(this));
+        }
+    },
+
+    // --- Manipuladores de Eventos (Handlers) ---
+    _handleScroll() {
+        const scrollY = window.scrollY;
+        
+        if (this.UI.nav) {
+            const isScrolled = this.UI.header 
+                ? scrollY > this.UI.header.offsetHeight - 100 
+                : scrollY > 50;
+            this.UI.nav.classList.toggle('scrolled', isScrolled);
+            if (this.UI.header) this.UI.body.classList.toggle('scrolled', isScrolled);
+        }
+
+        if (this.UI.backToTopButton) {
+            this.UI.backToTopButton.classList.toggle('visible', scrollY > 300);
+        }
+    },
+
+    _handleCardHover(event) {
+        const card = event.target.closest('.card');
+        if (card) {
+            const rect = card.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        }
+    },
+
+    _handleTimelineToggle(event) {
+        const button = event.target.closest('.toggle-details-btn');
+        if (!button) return;
+
+        const item = button.closest('.timeline-item');
+        item.classList.toggle('expanded');
+
+        const lang = LanguageManager.currentLang;
+        const moreText = translations[lang]['toggle-details-more'] || 'Ver mais';
+        const lessText = translations[lang]['toggle-details-less'] || 'Ver menos';
+        
+        button.textContent = item.classList.contains('expanded') ? lessText : moreText;
+
+        const details = item.querySelector('.timeline-details');
+        if (item.classList.contains('expanded') && details.dataset.key) {
+            details.innerHTML = translations[lang][details.dataset.key] || '';
+        }
+    },
+
+    _handleEmailCopy(event) {
+        event.preventDefault();
+        const emailToCopy = 'wevertonufv@gmail.com';
+        navigator.clipboard.writeText(emailToCopy)
+            .then(() => this.showToast(`Email: ${emailToCopy} copiado!`))
+            .catch(err => {
+                console.error('Falha ao copiar email: ', err);
+                this.showToast('Falha ao copiar o email.');
+            });
+    },
+
+    // --- Funções Utilitárias ---
+    showToast(message) {
+        if (this.UI.toast) {
+            this.UI.toast.textContent = message;
+            this.UI.toast.classList.add('show');
+            setTimeout(() => this.UI.toast.classList.remove('show'), 3000);
+        }
+    },
+};
+
 // =================================================================================
 // Inicialização Centralizada dos Módulos
+// (Nenhuma alteração necessária aqui)
 // =================================================================================
 function initializePageComponents() {
     ParticleBackground.init();
@@ -1328,6 +1821,7 @@ function initializePageComponents() {
     ContactForm.init();
     CvPdfGenerator.init();
     scholarScript.init();
+    App.init();
 
     if (document.getElementById('projects-list')) {
         GithubReposModule.init({
@@ -1363,4 +1857,13 @@ function waitForFallbackDataAndInitialize() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", waitForFallbackDataAndInitialize);
+// =================================================================================
+// PONTO DE ENTRADA PRINCIPAL (ATUALIZADO)
+// =================================================================================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOMContentLoaded: Evento disparado. Iniciando LanguageManager...");
+    // A ÚNICA COISA que acontece aqui é chamar o init do LanguageManager.
+    // Ele carrega o JSON, expõe o emitter, inicializa os módulos (que se inscrevem)
+    // e então dispara o primeiro evento de mudança de idioma.
+    LanguageManager.init();
+});
