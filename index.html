@@ -139,7 +139,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor1"></p>
                     <div class="timeline-details" data-key="edu-desc1"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                      <div class="timeline-header">
@@ -151,7 +151,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor2"></p>
                     <div class="timeline-details" data-key="edu-desc2"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
@@ -163,7 +163,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor4"></p>
                     <div class="timeline-details" data-key="edu-desc4"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
@@ -175,7 +175,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor5"></p>
                     <div class="timeline-details" data-key="edu-desc5"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
@@ -187,7 +187,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor6"></p>
                     <div class="timeline-details" data-key="edu-desc6"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
                     <div class="timeline-header">
@@ -199,7 +199,7 @@
                     </div>
                     <p class="small-muted" data-key="edu-advisor7"></p>
                     <div class="timeline-details" data-key="edu-desc7"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
+                    <button class="toggle-details-btn" data-key="toggle-details-more">Ver mais</button>
                 </div></div>
             </div>
         </section>
@@ -208,7 +208,10 @@
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <p class="section-intro reveal" data-key="projects-intro"></p>
             <div class="sidebar">
-                <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
+                <div class="controls reveal">
+                    <input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder">
+                    <button id="clear-btn" title="Limpar busca" data-key-title="clear-search" data-key="clear-btn">Limpar</button>
+                </div>
                 <div class="meta reveal" id="projects-meta"></div>
                 <div class="projects stagger-children" id="projects-list" role="list">
                     <div class="skeleton-card"></div>
@@ -260,7 +263,7 @@
             </div>
             <div class="controls reveal">
                 <input id="publication-search" aria-label="Buscar publicações" data-key-placeholder="search-pub-placeholder">
-                <button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search">Limpar</button>
+                <button id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search" data-key="clear-btn">Limpar</button>
             </div>
             <div class="grid stagger-children" id="publicacoes-grid">
                 <div class="skeleton-card"></div>
@@ -427,12 +430,12 @@
                     <p data-key="footer-bio"></p>
                     <ul>
                     <li>
-                        <a href="#" id="copy-email-footer" title="Copiar e-mail" style="cursor: pointer;">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" /></svg>
+                        <a href="#" id="copy-email-footer" title="Copiar e-mail">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" /></svg>
                             wevertonufv@gmail.com
                         </a>
                     </li>
-                    <li data-key="footer-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Viçosa - MG, Brasil</li>
+                    <li data-key="footer-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Viçosa - MG, Brasil</li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -455,23 +458,23 @@
                 <div class="footer-column">
                     <h4 data-key="footer-sitemap">Mapa do Site</h4>
                     <ul>
-                        <li><a href="#sobre" data-key="nav-about">Sobre</a></li>
-                        <li><a href="#experiencia" data-key="nav-experience">Atuação</a></li>
-                        <li><a href="#servicos" data-key="nav-services">Serviços</a></li>
-                        <li><a href="#formacao" data-key="nav-education">Formação</a></li>
+                        <li><a href="index.html#sobre" data-key="nav-about">Sobre</a></li>
+                        <li><a href="index.html#experiencia" data-key="nav-experience">Atuação</a></li>
+                        <li><a href="index.html#servicos" data-key="nav-services">Serviços</a></li>
+                        <li><a href="index.html#formacao" data-key="nav-education">Formação</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h4>&nbsp;</h4> <ul>
-                        <li><a href="#projetos" data-key="nav-projects">Projetos</a></li>
-                        <li><a href="#publicacoes" data-key="nav-publications">Publicações</a></li>
-                        <li><a href="#habilidades" data-key="nav-skills">Habilidades</a></li>
-                        <li><a href="#contato" data-key="nav-contact">Contato</a></li>
+                        <li><a href="index.html#projetos" data-key="nav-projects">Projetos</a></li>
+                        <li><a href="index.html#publicacoes" data-key="nav-publications">Publicações</a></li>
+                        <li><a href="index.html#habilidades" data-key="nav-skills">Habilidades</a></li>
+                        <li><a href="index.html#contato" data-key="nav-contact">Contato</a></li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <div class="footer-license">
+                 <div class="footer-license">
                     <p><a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" data-key="footer-license-text-short">Licença CC BY-SA 4.0</a></p>
                 </div>
                 <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
@@ -485,13 +488,13 @@
             </div>
         </div>
     </footer>
-
+    
     <div id="toast-notification"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
     
-    <script src="fallback-data.js"></script> <script src="utils.js"></script>
-
+    <script src="fallback-data.js"></script> 
+    <script src="utils.js" defer></script> 
 </body>
 </html>
