@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 14.0.1 (Corrige contagem de pubs e data de privacidade)
+ * @version 14.0.2 (Corrige contagem de pubs)
  */
  
 // =================================================================================
@@ -368,10 +368,6 @@ const GithubReposModule = {
                       : {};
         // Usa a chave correta 'showing_repos_template' e replace()
         const template = trans.showing_repos_template || "Exibindo {shown} de {total} repositórios."; 
-        const msg = template
-            .replace("{shown}", this.state.filteredRepos.length) // Corrigido para usar filteredRepos.length
-            .replace("{total}", this.state.allRepos.length);
-        this.config.metaEl.textContent = msg;
     },
     // --- FIM CORREÇÃO ---
 
@@ -804,29 +800,29 @@ const scholarScript = (function() {
         }
     }
 
+    // VERSÃO CORRIGIDA (Opção 1: Corrigindo o JS)
     function updatePubsCount(count, total) {
-        const metaEl = document.getElementById('pubs-meta');
+        const metaEl = UI.pubsShownCount; 
         if (!metaEl) return;
     
-        const lang = window.currentLang; // Corrigido para usar a global
-        const translations = window.translations;
-    
-        let linkHtml = '';
-        if (count < total) {
-            const linkText = translations[lang]['see-all-pubs'] || 'Ver todas as publicações';
-            linkHtml = `<a href="publications.html" class="link-discreto">${linkText} (${total})</a>`;
-        }
-    
-        const template = translations[lang]['showing_pubs'];
+        const lang = window.currentLang;
+        const trans = (typeof translations !== 'undefined' && typeof lang !== 'undefined') 
+                      ? translations[lang] 
+                      : {};
+        
+        // Usando a chave que você definiu
+        const template = trans['showing_pubs_template']; 
     
         if (template && typeof template === 'string') {
             metaEl.innerHTML = template
-                .replace('{count}', count)
+                // CORREÇÃO:
+                // Substitui {shown} (que está no seu JSON) pela variável count (que vem do JS)
+                .replace('{shown}', count) 
                 .replace('{total}', total)
-                .replace('{link_all}', linkHtml);
+                .replace('{link_all}', ''); 
         } else {
-            console.error("A chave 'showing_pubs' não foi encontrada nas traduções.");
-            metaEl.innerHTML = `Exibindo ${count} de ${total}. ${linkHtml}`;
+            console.error("A chave 'showing_pubs_template' não foi encontrada.");
+            metaEl.innerHTML = `Exibindo ${count} de ${total}`;
         }
     }
     
