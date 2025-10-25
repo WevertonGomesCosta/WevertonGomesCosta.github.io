@@ -1,13 +1,13 @@
-# update_fallback_final_logging.py
+# update_fallback_json.py
 #
 # Descrição:
-# Script para buscar dados de várias fontes, combiná-los e gerar um arquivo de fallback.
+# Script para buscar dados de várias fontes, combiná-los e gerar um arquivo JSON puro.
 # As chaves e configurações são carregadas de um arquivo 'keys.json' unificado.
 # Implementa fallback automático para a chave da API SerpApi e trata falhas de conexão.
 # Usa o módulo logging para saída.
 #
 # Autor: Weverton Costa
-# Versão: 8.4.0 (Logging implementado, mantém saída .js)
+# Versão: 9.0.0 (Gera JSON puro, logging implementado)
 
 import requests
 import json
@@ -16,7 +16,7 @@ from datetime import datetime
 import sys
 import os
 import unicodedata
-import logging # --- ALTERAÇÃO: Importa o módulo logging ---
+import logging
 
 # ==============================================================================
 # CONFIGURAÇÃO DO LOGGING
@@ -32,98 +32,82 @@ def load_keys(keys_file="keys.json"):
     """Carrega as configurações e chaves de um arquivo JSON."""
     try:
         with open(keys_file, 'r', encoding='utf-8') as f:
-            # --- ALTERAÇÃO: Usa logging ---
             logging.info(f"Carregando configurações do arquivo '{keys_file}'...")
             return json.load(f)
     except FileNotFoundError:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.critical(f"ERRO CRÍTICO: O arquivo de chaves '{keys_file}' não foi encontrado.")
         sys.exit(1)
     except json.JSONDecodeError:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.critical(f"ERRO CRÍTICO: O arquivo '{keys_file}' contém um JSON inválido.")
         sys.exit(1)
 
 # Carrega todas as chaves e IDs do arquivo JSON
 keys = load_keys()
 
-# Atribui as variáveis de configuração a partir do arquivo carregado
+# Atribui as variáveis de configuração
 GITHUB_USERNAME = keys.get("github_username")
 GITHUB_TOKEN = keys.get("github_token")
 SCHOLAR_AUTHOR_ID = keys.get("scholar_author_id")
 ORCID_ID = keys.get("orcid_id")
-
-# Lista de chaves SerpApi para tentativa e fallback
 SERPAPI_KEYS = [keys.get("serpapi_api_key"), keys.get("serpapi_api_key2")]
-# Filtra chaves que são None, vazias ou strings de placeholder
 SERPAPI_KEYS = [key for key in SERPAPI_KEYS if key and "CHAVE" not in key.upper()]
 
-# Nomes dos arquivos de dados (mantidos como .js por enquanto)
-MAIN_FILENAME = "fallback-data.js"
-TEMP_FILENAME = "fallback-data2.js"
+# --- ALTERAÇÃO: Nomes dos arquivos para .json ---
+MAIN_FILENAME = "fallback-data.json"
+TEMP_FILENAME = "fallback-data-temp.json"
+# --- FIM ALTERAÇÃO ---
 
 # Validação das chaves essenciais
 if not all([GITHUB_USERNAME, SCHOLAR_AUTHOR_ID, ORCID_ID, SERPAPI_KEYS]):
-    # --- ALTERAÇÃO: Usa logging ---
-    logging.critical("ERRO CRÍTICO: Verifique se 'github_username', 'scholar_author_id', 'orcid_id' e pelo menos uma 'serpapi_api_key' válida estão definidas no 'keys.json'.")
+    logging.critical("ERRO CRÍTICO: Verifique 'github_username', 'scholar_author_id', 'orcid_id' e pelo menos uma 'serpapi_api_key' válida no 'keys.json'.")
     sys.exit(1)
 
 # ==============================================================================
 # FUNÇÕES AUXILIARES
 # ==============================================================================
 def normalize_title(title):
-    """Normaliza um título para facilitar a comparação, removendo HTML, acentos e caracteres especiais."""
-    if not title:
-        return ''
+    """Normaliza um título para facilitar a comparação."""
+    if not title: return ''
     clean_title = re.sub(r'<.*?>', '', title)
     clean_title = unicodedata.normalize('NFKD', clean_title).encode('ascii', 'ignore').decode('utf-8')
     return re.sub(r'[^\w\s]', '', clean_title).lower().strip()
 
-def load_js_data(filepath):
-    """Carrega os dados de um arquivo .js, extraindo e limpando o objeto JSON."""
+# --- ALTERAÇÃO: Renomeada e simplificada para ler JSON ---
+def load_json_data(filepath):
+    """Carrega os dados de um arquivo JSON."""
     if not os.path.exists(filepath):
-        # --- ALTERAÇÃO: Usa logging ---
         logging.warning(f"Arquivo antigo '{filepath}' não encontrado para comparação.")
         return None
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
-            content = f.read()
-
-        json_str = content[content.find('{') : content.rfind('}')+1]
-        json_str = re.sub(r'/\*.*?\*/', '', json_str, flags=re.DOTALL)
-        json_str = re.sub(r'([{,]\s*)([a-zA-Z0-9_]+)(\s*:)', r'\1"\2"\3', json_str)
-        json_str = re.sub(r',\s*([\}\]])', r'\1', json_str)
-
-        return json.loads(json_str)
-    except Exception as e:
-        # --- ALTERAÇÃO: Usa logging ---
-        logging.error(f"Erro ao carregar e decodificar o arquivo JS '{filepath}': {e}")
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        logging.error(f"Erro ao decodificar o arquivo JSON '{filepath}': {e}")
         return None
+    except Exception as e:
+        logging.error(f"Erro inesperado ao carregar o arquivo JSON '{filepath}': {e}")
+        return None
+# --- FIM ALTERAÇÃO ---
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS
+# FUNÇÕES DE BUSCA DE DADOS (Inalteradas, exceto logging)
 # ==============================================================================
-
 def fetch_github_repos(username):
     """Busca os repositórios de um usuário no GitHub."""
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info("Buscando repositórios do GitHub...")
     api_url = f"https://api.github.com/users/{username}/repos?sort=pushed&per_page=100"
     headers = {"Accept": "application/vnd.github.v3+json"}
-    if GITHUB_TOKEN:
-        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+    if GITHUB_TOKEN: headers["Authorization"] = f"token {GITHUB_TOKEN}"
 
     try:
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         repos = response.json()
-
         formatted_repos = []
         for repo in repos:
             homepage_url = repo.get("homepage")
             if not homepage_url and repo.get("has_pages"):
                 homepage_url = f"https://{username}.github.io/{repo['name']}/"
-
             formatted_repos.append({
                 "name": repo.get("name"), "html_url": repo.get("html_url"),
                 "homepage": homepage_url, "description": repo.get("description"),
@@ -131,28 +115,23 @@ def fetch_github_repos(username):
                 "forks_count": repo.get("forks_count"), "updated_at": repo.get("updated_at"),
                 "topics": repo.get("topics", [])
             })
-        # --- ALTERAÇÃO: Usa logging ---
         logging.info(f"✓ {len(formatted_repos)} repositórios do GitHub encontrados.")
         return formatted_repos
     except requests.exceptions.RequestException as e:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.error(f"Erro ao buscar repositórios do GitHub: {e}")
         return None
 
 def fetch_scholar_profile(author_id, api_key):
     """Busca e padroniza o perfil do Google Scholar via SerpApi."""
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info("Buscando perfil do Google Scholar...")
     params = { "engine": "google_scholar_author", "author_id": author_id, "api_key": api_key, "hl": "pt-br" }
     try:
         response = requests.get("https://serpapi.com/search.json", params=params)
         response.raise_for_status()
         data = response.json()
-        if "error" in data:
-            raise Exception(data["error"])
+        if "error" in data: raise Exception(data["error"])
 
         raw_table = data.get("cited_by", {}).get("table", [])
-
         for item in raw_table:
             for metric_values in item.values():
                 if 'desde_2020' in metric_values:
@@ -160,47 +139,31 @@ def fetch_scholar_profile(author_id, api_key):
 
         standardized_table = []
         for item in raw_table:
-            if "citações" in item:
-                standardized_table.append({"citations": item["citações"]})
-            elif "Índice_h" in item:
-                standardized_table.append({"h_index": item["Índice_h"]})
-            elif "Índice_i10" in item:
-                standardized_table.append({"i10_index": item["Índice_i10"]})
-            else:
-                 standardized_table.append(item)
+            if "citações" in item: standardized_table.append({"citations": item["citações"]})
+            elif "Índice_h" in item: standardized_table.append({"h_index": item["Índice_h"]})
+            elif "Índice_i10" in item: standardized_table.append({"i10_index": item["Índice_i10"]})
+            else: standardized_table.append(item)
 
         api_graph = data.get("cited_by", {}).get("graph", [])
         api_graph_map = {item['year']: item['citations'] for item in api_graph}
         min_api_year = min(api_graph_map.keys()) if api_graph_map else datetime.now().year
-
-        final_graph = []
-        for year in range(2017, min_api_year):
-            if year not in api_graph_map:
-                final_graph.append({"year": year, "citations": 0})
-
+        final_graph = [{"year": year, "citations": 0} for year in range(2017, min_api_year) if year not in api_graph_map]
         final_graph.extend(api_graph)
         final_graph.sort(key=lambda x: x['year'])
 
-        profile_data = {
-            "table": standardized_table,
-            "graph": final_graph
-        }
-        # --- ALTERAÇÃO: Usa logging ---
+        profile_data = {"table": standardized_table, "graph": final_graph}
         logging.info("✓ Perfil do Google Scholar encontrado e padronizado.")
         return profile_data
     except Exception as e:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.error(f"Erro ao buscar perfil do Scholar: {e}")
         return None
 
 def fetch_all_scholar_articles(author_id, api_key):
     """Busca todos os artigos do Google Scholar, paginando os resultados."""
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info("Buscando publicações do Google Scholar (isso pode levar um tempo)...")
     all_articles = []
     start_index = 0
     while True:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.info(f"  - Buscando página de resultados (iniciando em {start_index})...")
         params = { "engine": "google_scholar_author", "author_id": author_id, "api_key": api_key, "hl": "pt-br", "start": start_index, "num": 20 }
         try:
@@ -214,16 +177,13 @@ def fetch_all_scholar_articles(author_id, api_key):
             start_index += len(articles_on_page)
             if len(articles_on_page) < 20: break
         except Exception as e:
-            # --- ALTERAÇÃO: Usa logging ---
             logging.error(f"Erro ao buscar página de publicações do Scholar: {e}")
             return all_articles
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info(f"✓ Total de {len(all_articles)} publicações do Scholar encontradas.")
     return all_articles
 
 def fetch_orcid_works(orcid_id):
-    """Busca as publicações de um perfil ORCID de forma robusta, lidando com campos nulos."""
-    # --- ALTERAÇÃO: Usa logging ---
+    """Busca as publicações de um perfil ORCID de forma robusta."""
     logging.info("Buscando publicações do ORCID...")
     api_url = f"https://pub.orcid.org/v3.0/{orcid_id}/works"
     headers = {"Accept": "application/json"}
@@ -231,17 +191,14 @@ def fetch_orcid_works(orcid_id):
         response = requests.get(api_url, headers=headers)
         response.raise_for_status()
         data = response.json()
-
         orcid_works = []
         for group in data.get('group', []):
             if not group.get('work-summary'): continue
             summary = group['work-summary'][0]
-
             title_obj = summary.get('title')
             if not title_obj or not title_obj.get('title') or not title_obj['title'].get('value'): continue
             title = title_obj['title']['value']
-
-            doi, doi_link = None, None
+            doi, doi_link, link, year, journal_title = None, None, None, None, 'N/A'
             if summary.get('external-ids'):
                 for ext_id in summary.get('external-ids', {}).get('external-id', []):
                     if ext_id and ext_id.get('external-id-type') == 'doi':
@@ -249,32 +206,26 @@ def fetch_orcid_works(orcid_id):
                         ext_id_url_obj = ext_id.get('external-id-url')
                         doi_link = ext_id_url_obj.get('value') if ext_id_url_obj else None
                         break
-
             url_obj = summary.get('url')
             link = url_obj.get('value') if url_obj else None
-
             pub_date_obj = summary.get('publication-date')
             year_obj = pub_date_obj.get('year') if pub_date_obj else None
             year = year_obj.get('value') if year_obj else None
-
             journal_title_obj = summary.get('journal-title')
             journal_title = journal_title_obj.get('value', 'N/A') if journal_title_obj else 'N/A'
-
             orcid_works.append({
                 "title": title, "doi": doi,
                 "doiLink": doi_link or (f"https://doi.org/{doi}" if doi else None),
                 "year": year, "journalTitle": journal_title, "link": link
             })
-        # --- ALTERAÇÃO: Usa logging ---
         logging.info(f"✓ {len(orcid_works)} publicações encontradas no ORCID.")
         return orcid_works
     except requests.exceptions.RequestException as e:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.error(f"Erro ao buscar dados do ORCID: {e}")
         return []
 
 # ==============================================================================
-# FUNÇÃO DE COMPARAÇÃO E GERAÇÃO DE RELATÓRIO
+# FUNÇÃO DE COMPARAÇÃO E GERAÇÃO DE RELATÓRIO (Inalterada)
 # ==============================================================================
 def analyze_changes(old_data, new_data):
     """Compara os dados antigos e novos e gera notas de modificação e um relatório para o logger."""
@@ -338,64 +289,59 @@ def analyze_changes(old_data, new_data):
         report_lines.append(f"\n--- Atualizações de Citações ({len(citation_updates)}) ---")
         report_lines.extend(citation_updates)
 
-    return report_lines, modification_notes
+    # Retorna o relatório para log, mas não as notas para o arquivo
+    return report_lines, modification_notes # Modification notes mantidas por enquanto, embora não usadas no arquivo
 
 # ==============================================================================
 # FUNÇÕES DE GERAÇÃO E ATUALIZAÇÃO DE ARQUIVOS
 # ==============================================================================
-def generate_fallback_file(data, filename, modification_notes=None):
-    """Gera o arquivo de dados .js com notas de modificação no cabeçalho."""
-    # --- ALTERAÇÃO: Usa logging ---
+# --- ALTERAÇÃO: Simplificada para gerar JSON puro ---
+def generate_fallback_file(data, filename):
+    """Gera o arquivo de dados JSON puro."""
     logging.info(f"Gerando o arquivo '{filename}'...")
-    json_string = json.dumps(data, indent=4, ensure_ascii=False)
-
-    modifications_str = ""
-    if modification_notes:
-        for note in modification_notes:
-            modifications_str += f" * @modification {note}\n"
-
-    js_content = f"""/**
- * @file {os.path.basename(MAIN_FILENAME)}
- * @description Contém dados estáticos de fallback para o site.
- * Gerado automaticamente por '{os.path.basename(__file__)}'.
- * @version {datetime.now().strftime('%Y.%m.%d')}
- * @generated_at {datetime.now().isoformat()}
-{modifications_str} */
-
-window.fallbackData = {json_string};
-"""
     try:
         with open(filename, 'w', encoding='utf-8') as f:
-            f.write(js_content)
-        # --- ALTERAÇÃO: Usa logging ---
+            json.dump(data, f, indent=4, ensure_ascii=False)
         logging.info(f"✅ Arquivo '{filename}' gerado com sucesso!")
         return True
     except IOError as e:
-        # --- ALTERAÇÃO: Usa logging ---
         logging.error(f"Erro ao escrever o arquivo '{filename}': {e}")
         return False
+    except TypeError as e:
+        logging.error(f"Erro ao serializar dados para JSON no arquivo '{filename}': {e}")
+        return False
+# --- FIM ALTERAÇÃO ---
 
 def update_main_file(main_file, temp_file):
     """Substitui o arquivo principal pelo temporário."""
     try:
-        with open(temp_file, 'r', encoding='utf-8') as f_new, open(main_file, 'w', encoding='utf-8') as f_old:
-            f_old.write(f_new.read())
-        # --- ALTERAÇÃO: Usa logging ---
+        # Renomeia o arquivo temporário para o principal (mais atômico)
+        os.replace(temp_file, main_file)
         logging.info(f"✓ Arquivo '{main_file}' atualizado com sucesso!")
-    except IOError as e:
-        # --- ALTERAÇÃO: Usa logging ---
-        logging.error(f"Erro ao atualizar o arquivo '{main_file}': {e}")
+    except OSError as e:
+        logging.error(f"Erro ao atualizar o arquivo '{main_file}' via replace: {e}")
+        # Tenta copiar como fallback (menos atômico)
+        try:
+             with open(temp_file, 'r', encoding='utf-8') as f_new, open(main_file, 'w', encoding='utf-8') as f_old:
+                 f_old.write(f_new.read())
+             logging.info(f"✓ Arquivo '{main_file}' atualizado via cópia (fallback).")
+             # Tenta remover o temporário após cópia bem-sucedida
+             try:
+                 os.remove(temp_file)
+             except OSError:
+                 logging.warning(f"Não foi possível remover o arquivo temporário '{temp_file}' após a cópia.")
+        except IOError as e_copy:
+             logging.error(f"Erro ao atualizar o arquivo '{main_file}' via cópia (fallback): {e_copy}")
+
 
 # ==============================================================================
 # PONTO DE ENTRADA DO SCRIPT
 # ==============================================================================
 if __name__ == "__main__":
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info("Iniciando a atualização do arquivo de fallback...")
 
     if not SERPAPI_KEYS:
-        # --- ALTERAÇÃO: Usa logging ---
-        logging.critical("ERRO CRÍTICO: Nenhuma chave da API da SerpApi foi configurada corretamente.")
+        logging.critical("ERRO CRÍTICO: Nenhuma chave da API da SerpApi configurada.")
         sys.exit(1)
 
     # 1. Buscar GitHub e ORCID
@@ -406,38 +352,31 @@ if __name__ == "__main__":
     scholar_profile = None
     scholar_articles_raw = None
     for i, key in enumerate(SERPAPI_KEYS):
-        # --- ALTERAÇÃO: Usa logging ---
         logging.info(f"Tentando buscar dados do Scholar com a Chave {i+1}/{len(SERPAPI_KEYS)}...")
         temp_profile = fetch_scholar_profile(SCHOLAR_AUTHOR_ID, key)
         temp_articles = fetch_all_scholar_articles(SCHOLAR_AUTHOR_ID, key)
         if temp_profile is not None and temp_articles is not None:
-            # --- ALTERAÇÃO: Usa logging ---
             logging.info(f"✓ Sucesso com a Chave {i+1}.")
             scholar_profile = temp_profile
             scholar_articles_raw = temp_articles
             break
         else:
-            # --- ALTERAÇÃO: Usa logging ---
             logging.warning(f"Falha ao buscar dados com a Chave {i+1}.")
 
     # 3. Lidar com falha total do Scholar
     if scholar_profile is None:
-         # --- ALTERAÇÃO: Usa logging ---
          logging.warning("Não foi possível buscar o perfil do Scholar com nenhuma chave.")
          scholar_profile = {}
     if scholar_articles_raw is None:
-         # --- ALTERAÇÃO: Usa logging ---
          logging.warning("Não foi possível buscar os artigos do Scholar com nenhuma chave.")
          scholar_articles_raw = []
 
     # Aborta se GitHub falhar
-    if github_repos is None: # Verifica se é None (indicando falha na busca)
-        # --- ALTERAÇÃO: Usa logging ---
-        logging.critical("ERRO CRÍTICO: A execução foi abortada, pois não foi possível buscar os dados do GitHub.")
+    if github_repos is None:
+        logging.critical("ERRO CRÍTICO: Abortado, pois não foi possível buscar os dados do GitHub.")
         sys.exit(1)
 
     # 4. Combinar dados de publicações
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info("Combinando dados do ORCID e Google Scholar...")
     merged_articles_map = {}
     for work in orcid_works:
@@ -466,42 +405,66 @@ if __name__ == "__main__":
     merged_articles = sorted(list(merged_articles_map.values()),
                              key=lambda x: ((x.get("cited_by") or {}).get("value") or 0, int(x.get("year") or 0)),
                              reverse=True)
-    # --- ALTERAÇÃO: Usa logging ---
     logging.info(f"✓ Combinação finalizada. Total de {len(merged_articles)} publicações.")
 
     # 5. Montar o objeto final, comparar e gerar
     new_data = {
-        # Garante que github_repos seja uma lista, mesmo que a busca tenha falhado antes
         "githubRepos": github_repos if github_repos is not None else [],
         "scholarData": {"profile": {"cited_by": scholar_profile}, "articles": merged_articles}
     }
-    old_data = load_js_data(MAIN_FILENAME)
+    # --- ALTERAÇÃO: Chama load_json_data ---
+    old_data = load_json_data(MAIN_FILENAME)
+    # --- FIM ALTERAÇÃO ---
 
-    report_lines, modification_notes = analyze_changes(old_data, new_data)
+    report_lines, modification_notes = analyze_changes(old_data, new_data) # modification_notes ainda são geradas para o log
 
-    if generate_fallback_file(new_data, TEMP_FILENAME, modification_notes):
-        # --- ALTERAÇÃO: Usa logging ---
+    # --- ALTERAÇÃO: Passa apenas 'data' e 'filename' ---
+    if generate_fallback_file(new_data, TEMP_FILENAME):
+    # --- FIM ALTERAÇÃO ---
         logging.info("\n" + "="*50 + "\nRELATÓRIO DE MUDANÇAS\n" + "="*50)
         if report_lines:
             for line in report_lines:
-                logging.info(line) # Loga cada linha do relatório
+                logging.info(line)
+            # Log das modification_notes que antes iam para o header
+            if modification_notes and modification_notes != ["initial data generation"]:
+                 logging.info("\n--- Detalhes das Modificações ---")
+                 for note in modification_notes:
+                     logging.info(f"  - {note}")
+
             logging.info("\n" + "="*50)
             logging.info(f"  [!] Mudanças detectadas. Atualizando '{MAIN_FILENAME}'...")
             update_main_file(MAIN_FILENAME, TEMP_FILENAME)
         else:
             logging.info("  ✓ Nenhuma mudança detectada. O arquivo principal já está atualizado.")
-        logging.info("="*50)
+            # Se não houver mudanças, remove o arquivo temporário desnecessário
+            try:
+                if os.path.exists(TEMP_FILENAME):
+                    os.remove(TEMP_FILENAME)
+                    logging.debug(f"Arquivo temporário '{TEMP_FILENAME}' removido (sem mudanças).")
+            except OSError as e:
+                logging.warning(f"Erro ao excluir arquivo temporário '{TEMP_FILENAME}' (sem mudanças): {e}")
 
-    # 6. Limpar o arquivo temporário
+        logging.info("="*50)
+    else:
+        # Se a geração do arquivo temporário falhar, limpa se ele existir
+        logging.error(f"Falha ao gerar o arquivo temporário '{TEMP_FILENAME}'. O arquivo principal NÃO foi atualizado.")
+        try:
+            if os.path.exists(TEMP_FILENAME):
+                os.remove(TEMP_FILENAME)
+        except OSError as e:
+            logging.warning(f"Erro ao excluir arquivo temporário '{TEMP_FILENAME}' após falha na geração: {e}")
+
+
+    # 6. Limpeza final (update_main_file agora usa os.replace ou remove o temp)
+    # A limpeza explícita aqui só é necessária se update_main_file falhar na cópia e não conseguir remover.
+    # Adicionamos uma verificação extra por segurança.
     try:
         if os.path.exists(TEMP_FILENAME):
-            os.remove(TEMP_FILENAME)
-            # --- ALTERAÇÃO: Usa logging ---
-            logging.info(f"✓ Arquivo temporário '{TEMP_FILENAME}' excluído com sucesso.")
+             logging.warning(f"Arquivo temporário '{TEMP_FILENAME}' ainda existe após a conclusão. Tentando remover...")
+             os.remove(TEMP_FILENAME)
+             logging.info(f"✓ Arquivo temporário '{TEMP_FILENAME}' removido na limpeza final.")
     except OSError as e:
-        # --- ALTERAÇÃO: Usa logging ---
-        logging.error(f"Erro ao excluir o arquivo temporário '{TEMP_FILENAME}': {e}")
+        logging.error(f"Erro ao excluir o arquivo temporário '{TEMP_FILENAME}' na limpeza final: {e}")
 
-    # --- ALTERAÇÃO: Usa logging ---
+
     logging.info("Processo finalizado.")
-
