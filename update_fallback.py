@@ -5,7 +5,7 @@
 # As chaves e configurações são carregadas de um arquivo 'keys.json' unificado.
 # Implementa fallback automático para a chave da API SerpApi e trata falhas de conexão.
 #
-# Autor: Gemini & Weverton Costa
+# Autor: Weverton Costa
 # Versão: 8.3.0 (Versão robusta com fallback de API e tratamento de falhas)
 
 import requests
