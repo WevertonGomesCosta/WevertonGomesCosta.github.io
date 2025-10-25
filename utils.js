@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 13.0.2 (Corrige erro em updateMetaText e remove dependência translations.js)
+ * @version 14.0.1 (Corrige contagem de pubs e data de privacidade)
  */
  
 // =================================================================================
@@ -22,50 +22,58 @@ const DateFormatter = {
     },
     formatWithLabel(dateInput, translationKey) {
         const lang = window.currentLang || 'pt';
-        // --- CORREÇÃO DE BUG ---
-        // Garante que 'translations' exista antes de tentar acessá-lo.
         const trans = (typeof translations !== 'undefined') ? translations[lang] : {};
-        // --- FIM CORREÇÃO ---
-        const label = trans[translationKey] || ''; // Usa o objeto 'trans' corrigido
+        const label = trans[translationKey] || '';
         const formattedDate = this.format(dateInput);
         return `${label} ${formattedDate}`;
     }
 };
 
 // =================================================================================
-// Módulo: Configurações Gerais da Página 
-// ... (código inalterado) ...
+// Módulo: Configurações Gerais da Página
+// --- ALTERAÇÃO (Bug Fix 2: Data Privacidade) ---
+// Garante que updateDates seja chamado de forma confiável após a carga inicial.
+// Adicionado log para depuração.
 // =================================================================================
 const PageSetup = {
     init() {
+        // A atualização inicial de datas AGORA É CHAMADA AQUI de forma segura,
+        // pois init() só roda depois que os JSONs são carregados.
         this.updateDates();
-        window.pageSetupScript = { 
+        this.updateTimelineButtonsText(); // Atualiza botões da timeline também
+
+        window.pageSetupScript = {
             renderAll: this.updateDates.bind(this),
             updateTimelineButtons: this.updateTimelineButtonsText.bind(this)
         };
-        
+
+        // Continua escutando mudanças de idioma para atualizações futuras
         if (window.AppEvents) {
-            window.AppEvents.on('languageChanged', this.updateDates.bind(this));
+            window.AppEvents.on('languageChanged', () => {
+                this.updateDates();
+                this.updateTimelineButtonsText();
+            });
         }
     },
     updateTimelineButtonsText() {
         document.querySelectorAll('.toggle-details-btn').forEach(button => {
             const item = button.closest('.timeline-item');
-            if (!item || !window.currentLang || typeof translations === 'undefined') return; // Verificação adicional
+            if (!item || typeof translations === 'undefined' || typeof window.currentLang === 'undefined') return;
 
             const isExpanded = item.classList.contains('expanded');
             const lang = window.currentLang;
-            
+
             const key = isExpanded ? 'toggle-details-less' : 'toggle-details-more';
             button.textContent = translations[lang][key];
-            // Adiciona data-key de volta para futuras atualizações de idioma
-            button.dataset.key = key; 
+            button.dataset.key = key;
         });
     },
     updateDates() {
         if (typeof translations === 'undefined' || typeof window.currentLang === 'undefined') {
-            return; 
+            console.warn("PageSetup.updateDates: translations ou currentLang não definidos ainda.");
+            return;
         }
+        console.log("PageSetup.updateDates: Função executada."); // Log geral
 
         const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
 
@@ -79,13 +87,20 @@ const PageSetup = {
             footerLastUpdatedEl.textContent = DateFormatter.formatWithLabel(lastModifiedDate, 'footer-update-text');
         }
 
+        // Atualização específica para a página de privacidade
         const privacyUpdateEl = document.getElementById('privacy-update-date');
         if (privacyUpdateEl) {
-            privacyUpdateEl.textContent = DateFormatter.format(lastModifiedDate);
+            const formattedDate = DateFormatter.format(lastModifiedDate);
+            // --- LOGGING PARA DEBUG ---
+            console.log(`PageSetup.updateDates: Encontrado #privacy-update-date. Tentando definir data para: ${formattedDate} (Raw: ${lastModifiedDate})`);
+            // --- FIM LOGGING ---
+            privacyUpdateEl.textContent = formattedDate;
+        } else if (document.body.id === 'page-privacy') {
+             console.warn("PageSetup.updateDates: Na página de privacidade, mas #privacy-update-date não foi encontrado.");
         }
     }
-    
 };
+// --- FIM ALTERAÇÃO ---
 
 // =================================================================================
 // Módulo: Manipulador da Navegação Móvel
@@ -469,6 +484,7 @@ const GithubReposModule = {
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
+    // --- Variáveis e UI cache ---
     const initialPubsToShow = 3;
     const pubsPerLoad = 3;
     let allArticles = [];
@@ -1416,74 +1432,61 @@ const ClipboardCopier = {
 
 // =================================================================================
 // MÓDULO DE TRADUÇÃO E ESTADO GLOBAL
+// --- ALTERAÇÃO: Modificado para carregar ambos JSONs com Promise.all ---
 // =================================================================================
 
 const LanguageManager = {
-    // --- Estado ---
     currentLang: 'pt',
-
-    // --- NOVO: Event Emitter Simples ---
     _events: {},
     emitter: {
-        /**
-         * Assina um evento.
-         * @param {string} event - Nome do evento (ex: 'languageChanged')
-         * @param {function} callback - Função a ser chamada
-         */
         on: (event, callback) => {
             if (!LanguageManager._events[event]) LanguageManager._events[event] = [];
             LanguageManager._events[event].push(callback);
         },
-        /**
-         * Dispara um evento.
-         * @param {string} event - Nome do evento
-         * @param {*} data - Dados a serem passados para o callback
-         */
         emit: (event, data) => {
             if (!LanguageManager._events[event]) return;
             LanguageManager._events[event].forEach(callback => callback(data));
         }
     },
-    // --- FIM NOVO ---
-    
+
     /**
      * Ponto de entrada do módulo.
-     * Carrega o JSON de traduções e, em seguida, inicia o resto da aplicação.
+     * Carrega translations.json e fallback-data.json, depois inicializa o resto.
      */
     init() {
-        console.log("LanguageManager.init: Iniciando. Tentando carregar translations.json...");
-        
-        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
-        // Expõe o listener do emitter IMEDIATAMENTE para que outros módulos
-        // possam se inscrever durante a inicialização.
-        window.AppEvents = { on: this.emitter.on.bind(this.emitter) };
-        // --- FIM ALTERAÇÃO ---
+        console.log("LanguageManager.init: Iniciando carregamento de JSONs...");
 
-        fetch('translations.json') 
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
-                }
+        // Expõe o listener do emitter imediatamente
+        window.AppEvents = { on: this.emitter.on.bind(this.emitter) };
+
+        // --- ALTERAÇÃO: Carrega ambos os JSONs ---
+        Promise.all([
+            fetch('translations.json').then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
+                return response.json();
+            }),
+            fetch('fallback-data.json').then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar fallback-data.json`);
                 return response.json();
             })
-            .then(data => {
-                console.log("LanguageManager.init: translations.json carregado com sucesso.");
-                window.translations = data; 
-                
-                // --- ALTERAÇÃO (CORREÇÃO DO BUG) ---
-                // 1. Define o idioma (e window.currentLang) PRIMEIRO.
-                // Isso também dispara o primeiro evento 'languageChanged' via _notifyOtherScripts().
-                this.setLanguage(this.currentLang); 
-                
-                // 2. AGORA inicializa os outros componentes.
-                // Eles já encontrarão window.currentLang definido quando `scholarScript.init` for chamado.
-                waitForFallbackDataAndInitialize();
-                // --- FIM ALTERAÇÃO ---
-            })
-            .catch(error => {
-                console.error("FALHA CRÍTICA AO CARREGAR 'translations.json':", error);
-                document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar as traduções. Verifique o console.</div>';
-            });
+        ])
+        .then(([translationsData, fallbackData]) => {
+            console.log("LanguageManager.init: JSONs carregados com sucesso.");
+            window.translations = translationsData; // Armazena traduções globalmente
+            window.fallbackData = fallbackData;     // Armazena fallback data globalmente
+
+            // 1. Define o idioma inicial (dispara evento 'languageChanged')
+            this.setLanguage(this.currentLang);
+
+            // 2. Inicializa os componentes da página AGORA que os dados estão prontos
+            initializePageComponents();
+
+        })
+        .catch(error => {
+            console.error("FALHA CRÍTICA AO CARREGAR ARQUIVOS JSON:", error);
+            document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar dados essenciais (traduções ou fallback). Verifique o console.</div>';
+        });
+        // --- FIM ALTERAÇÃO ---
     },
     
     subtitleState: {
@@ -1818,17 +1821,21 @@ const App = {
 
 // =================================================================================
 // Inicialização Centralizada dos Módulos
+// --- ALTERAÇÃO: Simplificada, chamada após carregamento dos JSONs ---
 // =================================================================================
 function initializePageComponents() {
+    console.log("initializePageComponents: Iniciando módulos..."); // Log para depuração
+    // Não precisa mais verificar window.fallbackData aqui
     ParticleBackground.init();
     MobileNavHandler.init();
-    PageSetup.init();
+    PageSetup.init(); // PageSetup agora reage ao evento 'languageChanged' para a primeira atualização
     ClipboardCopier.init();
     ContactForm.init();
     CvPdfGenerator.init();
     scholarScript.init();
-    App.init();
+    App.init(); // App gerencia UI geral, observers, etc.
 
+    // Inicializa GithubReposModule SE o elemento existir
     if (document.getElementById('projects-list')) {
         GithubReposModule.init({
             listSelector: '#projects-list',
@@ -1842,31 +1849,18 @@ function initializePageComponents() {
             incrementCount: 3
         });
     }
+    console.log("initializePageComponents: Módulos inicializados."); // Log para depuração
 }
 
-function waitForFallbackDataAndInitialize() {
-    if (window.fallbackData) {
-        initializePageComponents();
-    } else {
-        let attempts = 0;
-        const interval = setInterval(() => {
-            attempts++;
-            if (window.fallbackData) {
-                clearInterval(interval);
-                initializePageComponents();
-            } else if (attempts > 50) { 
-                clearInterval(interval);
-                console.error("Os dados de fallback (fallback-data.js) não foram carregados a tempo.");
-                initializePageComponents(); 
-            }
-        }, 100);
-    }
-}
+// --- ALTERAÇÃO: Função removida, lógica integrada no LanguageManager.init ---
+// function waitForFallbackDataAndInitialize() { /* ... REMOVIDO ... */ }
+// --- FIM ALTERAÇÃO ---
 
 // =================================================================================
 // PONTO DE ENTRADA PRINCIPAL
+// --- ALTERAÇÃO: Apenas chama LanguageManager.init que agora orquestra tudo ---
 // =================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded: Evento disparado. Iniciando LanguageManager...");
-    LanguageManager.init();
+    LanguageManager.init(); // LanguageManager agora carrega JSONs e chama initializePageComponents
 });
