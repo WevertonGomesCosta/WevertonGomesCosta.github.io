@@ -1,12 +1,11 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 13.0.1 (Corrige a ordem de inicialização do LanguageManager)
+ * @version 13.0.2 (Corrige erro em updateMetaText e remove dependência translations.js)
  */
  
 // =================================================================================
 // MÓDULO CENTRALIZADO: Formatador de Datas
-// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const DateFormatter = {
     format(dateInput) {
@@ -23,14 +22,19 @@ const DateFormatter = {
     },
     formatWithLabel(dateInput, translationKey) {
         const lang = window.currentLang || 'pt';
-        const label = translations[lang][translationKey] || '';
+        // --- CORREÇÃO DE BUG ---
+        // Garante que 'translations' exista antes de tentar acessá-lo.
+        const trans = (typeof translations !== 'undefined') ? translations[lang] : {};
+        // --- FIM CORREÇÃO ---
+        const label = trans[translationKey] || ''; // Usa o objeto 'trans' corrigido
         const formattedDate = this.format(dateInput);
         return `${label} ${formattedDate}`;
     }
 };
 
 // =================================================================================
-// Módulo: Configurações Gerais da Página (Lógica de data corrigida)
+// Módulo: Configurações Gerais da Página 
+// ... (código inalterado) ...
 // =================================================================================
 const PageSetup = {
     init() {
@@ -40,51 +44,43 @@ const PageSetup = {
             updateTimelineButtons: this.updateTimelineButtonsText.bind(this)
         };
         
-        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
-        // O módulo agora se inscreve no evento de mudança de idioma.
         if (window.AppEvents) {
             window.AppEvents.on('languageChanged', this.updateDates.bind(this));
         }
-        // --- FIM ALTERAÇÃO ---
     },
     updateTimelineButtonsText() {
         document.querySelectorAll('.toggle-details-btn').forEach(button => {
             const item = button.closest('.timeline-item');
-            if (!item || !window.currentLang) return;
+            if (!item || !window.currentLang || typeof translations === 'undefined') return; // Verificação adicional
 
             const isExpanded = item.classList.contains('expanded');
             const lang = window.currentLang;
             
             const key = isExpanded ? 'toggle-details-less' : 'toggle-details-more';
             button.textContent = translations[lang][key];
+            // Adiciona data-key de volta para futuras atualizações de idioma
+            button.dataset.key = key; 
         });
     },
     updateDates() {
-        // --- CORREÇÃO DE BUG ---
-        // Adiciona uma verificação para garantir que 'translations' exista antes de usá-lo.
         if (typeof translations === 'undefined' || typeof window.currentLang === 'undefined') {
             return; 
         }
-        // --- FIM CORREÇÃO ---
 
         const lastModifiedDate = document.lastModified ? new Date(document.lastModified) : new Date();
 
-        // 1. Atualiza o ano do copyright (sempre)
         const copyrightYearEl = document.getElementById('copyright-year');
         if (copyrightYearEl) {
             copyrightYearEl.textContent = new Date().getFullYear();
         }
 
-        // 2. Atualiza a data no RODAPÉ (reflete a modificação da página atual)
         const footerLastUpdatedEl = document.getElementById('last-updated-date');
         if (footerLastUpdatedEl) {
             footerLastUpdatedEl.textContent = DateFormatter.formatWithLabel(lastModifiedDate, 'footer-update-text');
         }
 
-        // 3. ATUALIZAÇÃO ESPECÍFICA: Apenas para a página de privacidade
         const privacyUpdateEl = document.getElementById('privacy-update-date');
         if (privacyUpdateEl) {
-            // Usa a mesma data de modificação do arquivo, mas formata sem o rótulo
             privacyUpdateEl.textContent = DateFormatter.format(lastModifiedDate);
         }
     }
@@ -93,7 +89,7 @@ const PageSetup = {
 
 // =================================================================================
 // Módulo: Manipulador da Navegação Móvel
-// (Nenhuma alteração necessária aqui)
+// ... (código inalterado) ...
 // =================================================================================
 const MobileNavHandler = {
     init() {
@@ -116,7 +112,6 @@ const MobileNavHandler = {
 
 // =================================================================================
 // Módulo: Fundo com Partículas
-// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const ParticleBackground = {
     canvas: null,
@@ -207,7 +202,6 @@ class Particle {
 
 // =================================================================================
 // Módulo: Formulário de Contato
-// (Nenhuma alteração necessária aqui, já faz cache do DOM)
 // =================================================================================
 const ContactForm = {
     form: null,
@@ -304,7 +298,9 @@ const ContactForm = {
 };
 
 // =================================================================================
-// Módulo: Repositórios do GitHub (Atualizado para usar o DateFormatter)
+// Módulo: Repositórios do GitHub 
+// --- ALTERAÇÃO (CORREÇÃO DO BUG) ---
+// Função updateMetaText corrigida para usar string.replace()
 // =================================================================================
 const GithubReposModule = {
     state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '' },
@@ -317,12 +313,9 @@ const GithubReposModule = {
         card.className = 'project-card card';
         card.setAttribute('role', 'listitem');
         
-        // --- CORREÇÃO DE BUG ---
-        // Garante que 'translations' e 'currentLang' existam antes de tentar acessá-los.
         const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
                       ? translations[currentLang] 
                       : {};
-        // --- FIM CORREÇÃO ---
         
         const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
     
@@ -352,22 +345,29 @@ const GithubReposModule = {
         return card;
     },
 
+    // --- CORREÇÃO AQUI ---
     updateMetaText() {
         if (!this.config.metaEl) return;
-        const trans = translations[currentLang] || {};
-        const msg = trans.showing_repos(this.state.filteredRepos.length, this.state.allRepos.length);
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        // Usa a chave correta 'showing_repos_template' e replace()
+        const template = trans.showing_repos_template || "Exibindo {shown} de {total} repositórios."; 
+        const msg = template
+            .replace("{shown}", this.state.filteredRepos.length) // Corrigido para usar filteredRepos.length
+            .replace("{total}", this.state.allRepos.length);
         this.config.metaEl.textContent = msg;
     },
+    // --- FIM CORREÇÃO ---
+
     sortRepos: (arr) => [...arr].sort((a, b) => b.stargazers_count - a.stargazers_count || b.forks_count - a.forks_count || new Date(b.updated_at) - new Date(a.updated_at)),
     render() {
         if (!this.config.listEl) return;
         this.config.listEl.innerHTML = '';
 
-        // --- CORREÇÃO DE BUG ---
         const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
                       ? translations[currentLang] 
                       : {};
-        // --- FIM CORREÇÃO ---
                       
         const reposToDisplay = this.state.filteredRepos.slice(0, this.state.showingCount);
 
@@ -377,11 +377,17 @@ const GithubReposModule = {
             reposToDisplay.forEach(repo => this.config.listEl.appendChild(this.createCard(repo)));
         }
         
-        if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
-        if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
+        if (this.config.clearBtnEl) {
+             this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
+             this.config.clearBtnEl.dataset.key = 'clear-btn'; // Garante que a chave está presente
+        }
+        if (this.config.loadMoreBtnEl) {
+             this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
+             this.config.loadMoreBtnEl.dataset.key = 'show-more'; // Garante que a chave está presente
+        }
 
         if (this.config.shownCountEl) {
-            const template = trans.showing_repos_template || "Exibindo {shown} de {total}"; // Pega o template
+            const template = trans.showing_repos_template || "Exibindo {shown} de {total}"; 
             this.config.shownCountEl.textContent = template
                 .replace("{shown}", reposToDisplay.length)
                 .replace("{total}", this.state.filteredRepos.length);
@@ -406,16 +412,27 @@ const GithubReposModule = {
         if (this.config.isPaginated && !filter) {
             this.state.showingCount = Math.min(this.config.initialCount, this.state.filteredRepos.length);
         } else {
-            this.state.showingCount = this.state.filteredRepos.length;
+            // Se houver filtro ou não for paginado, mostra todos os resultados filtrados
+            this.state.showingCount = this.state.filteredRepos.length; 
         }
 
-        if (!this.config.isPaginated) {
-            this.updateMetaText();
-        }
+        // --- CORREÇÃO AQUI ---
+        // updateMetaText deve ser chamado APÓS calcular filteredRepos
+        this.updateMetaText(); 
+        // --- FIM CORREÇÃO ---
+
         this.render();
     },
     reRenderWithCurrentLang() {
-        this.filterAndRender();
+        // Atualiza textos estáticos dos controles
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
+                      ? translations[currentLang] 
+                      : {};
+        if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
+        if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
+        
+        // Re-renderiza a lista com base nos filtros atuais
+        this.filterAndRender(); 
     },
     init(userConfig) {
         const listEl = document.querySelector(userConfig.listSelector);
@@ -434,19 +451,16 @@ const GithubReposModule = {
         };
 
         this.state.allRepos = window.fallbackData?.githubRepos || [];
-        this.filterAndRender();
+        // Chama filterAndRender AQUI para a renderização inicial
+        this.filterAndRender(); 
 
         if (this.config.searchEl) this.config.searchEl.addEventListener('input', this.debounce(e => { this.state.currentFilter = e.target.value; this.filterAndRender(); }));
         if (this.config.clearBtnEl) this.config.clearBtnEl.addEventListener('click', () => { if (this.config.searchEl) this.config.searchEl.value = ''; this.state.currentFilter = ''; this.filterAndRender(); if (this.config.searchEl) this.config.searchEl.focus(); });
-        if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); });
+        if (this.config.loadMoreBtnEl && this.config.isPaginated) this.config.loadMoreBtnEl.addEventListener('click', () => { this.state.showingCount = Math.min(this.state.showingCount + this.config.incrementCount, this.state.filteredRepos.length); this.render(); }); // Render simples aqui é ok
         
-        // --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
-        // Módulo se inscreve no evento ao invés de expor uma global
         if (window.AppEvents) {
             window.AppEvents.on('languageChanged', this.reRenderWithCurrentLang.bind(this));
         }
-        // window.githubScript = { renderAll: this.reRenderWithCurrentLang.bind(this) }; // REMOVIDO
-        // --- FIM ALTERAÇÃO ---
     }
 };
 
@@ -941,9 +955,6 @@ const scholarScript = (function() {
 
 // =================================================================================
 // MÓDULO: GERADOR DE CV EM PDF (VERSÃO ATUALIZADA PARA 2 TIPOS DE CV - DINÂMICO)
-// --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
-// O módulo agora lê os dados de estruturas de dados locais e do
-// `translations.json`, em vez de fazer "scraping" do DOM.
 // =================================================================================
 const CvPdfGenerator = {
     init() {
@@ -1354,7 +1365,6 @@ const CvPdfGenerator = {
 
 // =================================================================================
 // Módulo: Copiar para a Área de Transferência
-// (Nenhuma alteração necessária aqui)
 // =================================================================================
 const ClipboardCopier = {
     init() {
@@ -1406,8 +1416,6 @@ const ClipboardCopier = {
 
 // =================================================================================
 // MÓDULO DE TRADUÇÃO E ESTADO GLOBAL
-// --- ALTERAÇÃO (Sugestão 2: Pub/Sub) ---
-// Adiciona um Emitter e altera a ordem de inicialização.
 // =================================================================================
 
 const LanguageManager = {
@@ -1632,7 +1640,6 @@ window.toggleLanguage = () => LanguageManager.toggleLanguage();
 
 // =================================================================================
 // MÓDULO PRINCIPAL DA APLICAÇÃO (UI & Interações)
-// (Nenhuma alteração necessária aqui)
 // =================================================================================
 
 const App = {
@@ -1811,7 +1818,6 @@ const App = {
 
 // =================================================================================
 // Inicialização Centralizada dos Módulos
-// (Nenhuma alteração necessária aqui)
 // =================================================================================
 function initializePageComponents() {
     ParticleBackground.init();
@@ -1858,12 +1864,9 @@ function waitForFallbackDataAndInitialize() {
 }
 
 // =================================================================================
-// PONTO DE ENTRADA PRINCIPAL (ATUALIZADO)
+// PONTO DE ENTRADA PRINCIPAL
 // =================================================================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOMContentLoaded: Evento disparado. Iniciando LanguageManager...");
-    // A ÚNICA COISA que acontece aqui é chamar o init do LanguageManager.
-    // Ele carrega o JSON, expõe o emitter, inicializa os módulos (que se inscrevem)
-    // e então dispara o primeiro evento de mudança de idioma.
     LanguageManager.init();
 });
