@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-    <!-- Bloco de Metadados: Informações sobre a página para navegadores e buscadores -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="page-title">Weverton Gomes da Costa | Pesquisador & Data Scientist</title>
@@ -12,30 +11,39 @@
     <meta name="google-site-verification" content="nfoEwVQ8Ln3F7m66zG3-P2TByH8jzyvs8iXEGwqVzKM" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
-    <!-- Bloco de Estilos (CSS): Toda a estilização da página -->
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body id="index-page">
-    <!-- Bloco de Conteúdo Visível: Todo o HTML que o usuário vê -->
-    
-    <!-- Elementos Flutuantes e de Fundo -->
     <button class="lang-switcher lang-fixed" onclick="toggleLanguage()" data-key-title="change-lang-title">
         <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
     </button>
     <canvas id="particle-canvas"></canvas>
-    <a href="#" class="back-to-top" data-key-aria-label="back-to-top-label">↑</a>
+    <a href="#" class="back-to-top" data-key-aria-label="back-to-top-label">↑</a>    
     
-    <!-- Cabeçalho Principal (Hero Section) -->
     <header>
         <div class="hero-content">
             <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Weverton Gomes da Costa" class="avatar" width="280" height="280" loading="lazy" decoding="async">
             <h1 id="hero-name">Weverton Gomes da Costa</h1>
             <p class="subtitle" id="subtitle"></p>
+
             <div class="hero-cta">
-                <a href="#projetos" class="cta-btn primary" data-key="cta-projects">Meus Projetos</a>
-                <a href="#contato" class="cta-btn secondary" data-key="cta-contact">Entre em Contato</a>
+                <a href="#" class="cta-btn primary" data-cv-type="pro">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                   <span data-key="cta-cv-pro" ></span>
+                </a>
+            
+                <a href="#" class="cta-btn secondary btn-small" data-cv-type="academic">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+                   <span data-key="cta-cv-academic" ></span>
+                </a>
+        
             </div>
+            <div class="hero-links">
+                <a href="#projetos" class="link-btn secondary btn-small" data-key="cta-projects"></a> 
+                <a href="#contato" class="link-btn secondary btn-small" data-key="cta-contact"></a>
+            </div>
+
             <div class="badges">
                 <span class="badge" data-key="badge-phd">🎓 Doutorando em Estatística - UFV</span>
                 <span class="badge" data-key="badge-ceo">🚀 CEO & Cofundador - Conecta GEM</span>
@@ -46,10 +54,8 @@
         <div class="scroll-indicator" aria-hidden="true">⬇</div>
     </header>
 
-    <!-- Barra de Navegação -->
     <nav>
         <div class="nav-container">
-            <!-- Avatar e Logo -->
             <div class="nav-col-left">
                 <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
             </div>
@@ -59,7 +65,6 @@
             <label for="nav-toggle" class="nav-toggle-label">
                 <span class="hamburger"></span>
             </label>
-            <!-- Menu de Navegação -->
             <div class="nav-col-center">
                 <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
                 <a href="#experiencia" class="nav-link" data-key="nav-experience">Atuação</a>
@@ -70,7 +75,6 @@
                 <a href="#habilidades" class="nav-link" data-key="nav-skills">Habilidades</a>
                 <a href="#contato" class="nav-link" data-key="nav-contact">Contato</a>
             </div>
-            <!-- Alternador de Idioma -->
             <div class="nav-col-right">
                 <button class="lang-switcher" onclick="toggleLanguage()" data-key-title="change-lang-title">
                     <span class="lang-pt active">PT</span> | <span class="lang-en">EN</span>
@@ -79,19 +83,16 @@
         </div>
     </nav>
 
-    <!-- Conteúdo Principal da Página -->
     <main class="container">
-        <!-- Sobre Mim -->
         <section id="sobre" class="section">
             <h2 class="reveal" data-key="about-title">Sobre Mim</h2>
             <div class="card reveal">
-                 <p style="font-size: 1.1rem; line-height: 1.8;" data-key="about-p1"></p>
-                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p2"></p>
-                <p style="margin-top: 20px; line-height: 1.8;" data-key="about-p3"></p>
+                 <p data-key="about-p1"></p>
+                <p data-key="about-p2"></p>
+                <p data-key="about-p3"></p>
             </div>
         </section>
 
-        <!-- Áreas de Atuação -->
         <section id="experiencia" class="section">
             <h2 class="reveal" data-key="expertise-title">Áreas de Atuação</h2>
             <div class="grid stagger-children">
@@ -104,7 +105,6 @@
             </div>
         </section>
  
-        <!-- Serviços Oferecidos -->
         <section id="servicos" class="section">
             <h2 class="reveal" data-key="services-title">Como Posso Ajudar</h2>
             <div class="grid stagger-children">
@@ -126,7 +126,6 @@
             </div>
         </section>
 
-        <!-- Formação Acadêmica -->
         <section id="formacao" class="section">
             <h2 class="reveal" data-key="education-title">Formação Acadêmica</h2>
             <div class="timeline stagger-children">
@@ -138,7 +137,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor1" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor1"></p>
                     <div class="timeline-details" data-key="edu-desc1"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -150,20 +149,8 @@
                             <p>Universidade Federal de Viçosa (UFV) — FAPEMIG</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor2" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor2"></p>
                     <div class="timeline-details" data-key="edu-desc2"></div>
-                    <button class="toggle-details-btn">Ver mais</button>
-                </div></div>
-                <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
-                    <div class="timeline-header">
-                        <div>
-                            <div class="timeline-date" data-key="edu-date3">2022 - 2023</div>
-                            <h3 data-key="edu-title3">Pós-Doutorado</h3>
-                            <p>Universidade Federal de Viçosa (UFV) — CNPq</p>
-                        </div>
-                    </div>
-                    <p class="small-muted" data-key="edu-advisor3" style="margin-top: 5px;"></p>
-                    <div class="timeline-details" data-key="edu-desc3"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
                 <div class="timeline-item reveal"><div class="timeline-dot"></div><div class="timeline-content card">
@@ -174,7 +161,7 @@
                             <p>EMBRAPA Mandioca e Fruticultura — CNPq</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor4" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor4"></p>
                     <div class="timeline-details" data-key="edu-desc4"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -186,7 +173,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor5" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor5"></p>
                     <div class="timeline-details" data-key="edu-desc5"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -198,7 +185,7 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor6" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor6"></p>
                     <div class="timeline-details" data-key="edu-desc6"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
@@ -210,28 +197,27 @@
                             <p>Universidade Federal de Viçosa (UFV)</p>
                         </div>
                     </div>
-                    <p class="small-muted" data-key="edu-advisor7" style="margin-top: 5px;"></p>
+                    <p class="small-muted" data-key="edu-advisor7"></p>
                     <div class="timeline-details" data-key="edu-desc7"></div>
                     <button class="toggle-details-btn">Ver mais</button>
                 </div></div>
             </div>
         </section>
 
-        <!-- Projetos e Repositórios -->
         <section id="projetos" class="section" aria-labelledby="projetos-title">
             <h2 id="projetos-title" class="reveal" data-key="projects-title">Projetos & Repositórios</h2>
             <p class="section-intro reveal" data-key="projects-intro"></p>
             <div class="sidebar">
                 <div class="controls reveal"><input id="project-search" aria-label="Buscar repositório" data-key-placeholder="search-placeholder"><button id="clear-btn" title="Limpar busca" data-key-title="clear-search">Limpar</button></div>
                 <div class="meta reveal" id="projects-meta"></div>
-                <div class="projects stagger-children" id="projects-list" role="list" style="margin-top: 20px;">
+                <div class="projects stagger-children" id="projects-list" role="list">
                     <div class="skeleton-card"></div>
                     <div class="skeleton-card"></div>
                     <div class="skeleton-card"></div>
                 </div>
                 <div class="reveal load-more-container">
                     <div class="small-muted" id="shown-count">—</div>
-                    <div class="center" style="display: flex; gap: 15px;">
+                    <div class="center">
                         <button id="toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button>
                         <a href="projetos.html" class="link-btn secondary" data-key="see-all-projects"></a>
                     </div>
@@ -239,11 +225,10 @@
             </div>
         </section>
  
-        <!-- Publicações e Citações -->
         <section id="publicacoes" class="section">
             <h2 class="reveal" data-key="publications-title">Publicações e Citações</h2>
             <p class="section-intro reveal" data-key="publications-intro"></p>
-            <div class="card reveal scholar-summary-card" style="margin-top: 25px;">
+            <div class="card reveal scholar-summary-card">
                 <div class="scholar-header">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm0 464c-132.5 0-240-107.5-240-240S123.5 16 256 16s240 107.5 240 240-107.5 240-240 240z"/><path d="M256 96c-88.4 0-160 71.6-160 160s71.6 160 160 160 160-71.6 160-160S344.4 96 256 96zm0 288c-70.7 0-128-57.3-128-128s57.3-128 128-128 128 57.3 128 128-57.3 128-128 128z"/></svg>
                     <h3>Google Scholar</h3>
@@ -284,14 +269,13 @@
             </div>
             <div class="reveal load-more-container">
                 <div class="small-muted" id="pubs-shown-count">—</div>
-                <div class="center" style="display: flex; gap: 15px;">
+                <div class="center">
                     <button id="pubs-toggle-more" class="link-btn" data-key="show-more">Mostrar mais</button>
                     <a href="publicacoes.html" class="link-btn secondary" data-key="see-all-publications"></a>
                 </div>
             </div>
         </section>
 
-        <!-- LICAE e ConectaGEM -->
         <section id="licae-conecta" class="section">
               <div class="feature-section reveal card">
                 <div class="feature-logo" role="img" aria-label="Logo LICAE">
@@ -307,7 +291,7 @@
                     </ul>
                 </div>
               </div>
-              <div class="feature-section reveal card" style="margin-top: 40px;">
+              <div class="feature-section reveal card">
                 <div class="feature-logo" role="img" aria-label="Logo Conecta GEM">
                     <img src="ConectaGEM.svg" alt="Logo Conecta GEM">
 		            </div>
@@ -323,7 +307,6 @@
               </div>
         </section>
 
-        <!-- Habilidades Técnicas -->
         <section id="habilidades" class="section">
             <h2 class="reveal" data-key="skills-title">Habilidades Técnicas</h2>
             <div class="skills-grid">
@@ -357,7 +340,6 @@
             </div>
         </section>
 
-        <!-- Formulário de Contato -->
         <section id="contato" class="section">
               <h2 class="reveal" data-key="contact-title">Contato</h2>
               <p data-key="contact-intro" class="section-intro reveal"></p>
@@ -385,52 +367,75 @@
                       </div>
                       <button type="submit" class="link-btn">
                           <span data-key="form-submit">Enviar Mensagem</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                               <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
                           </svg>
                       </button>
                       <p id="form-status" aria-live="polite"></p>
                   </form>
-                  <!-- Links Rápidos e Contato -->
                   <aside class="contact-links-aside">
                       <h3 data-key="contact-quick-links">Links Rápidos</h3>
                       <div class="contact-grid">
-                          <a href="#" id="download-cv-btn" class="contact-link">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
-                              <span data-key="download-cv">Baixar Currículo (PDF)</span>
+                          
+                          <a href="#" class="contact-link" 
+                             data-cv-type="pro"> 
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                 <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+                              </svg>
+                              <span data-key="cta-cv-pro"></span> 
                           </a>
+                          
+                          <a href="#" class="contact-link" 
+                             data-cv-type="academic"> 
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                 <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+                              </svg>
+                              <span data-key="cta-cv-academic"></span> 
+                          </a>
+                          
                           <a href="#" id="copy-email-link" class="contact-link">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" /></svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                 <path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" />
+                              </svg>
                               <span data-key="contact-email-text">Email</span>
                           </a>
-                          <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg><span>LinkedIn</span></a>
-                          <a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener" class="contact-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg><span>GitHub</span></a>
+                          
+                          <a href="https://www.linkedin.com/in/wevertoncosta/" target="_blank" rel="noopener" class="contact-link">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                             </svg>
+                             <span>LinkedIn</span>
+                          </a>
+                          
+                          <a href="https://github.com/WevertonGomesCosta" target="_blank" rel="noopener" class="contact-link">
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                             </svg>
+                             <span>GitHub</span>
+                          </a>
                       </div>
                   </aside>
               </div>
           </section>
     </main>
 
-    <!-- Rodapé -->
     <footer class="reveal">
         <div class="footer-content">
              <div class="footer-grid">
-                <!-- Coluna 1: Bio e Contato Direto -->
                 <div class="footer-column">
                     <h4 data-key="footer-title">Weverton G. Costa</h4>
                     <p data-key="footer-bio"></p>
-                    <ul style="margin-top: 15px;">
+                    <ul>
                     <li>
                         <a href="#" id="copy-email-footer" title="Copiar e-mail" style="cursor: pointer;">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm15 1.007a1 1 0 00-1.637-.77L12 8.71 7.637 5.237a1 1 0 00-1.274 1.54L12 10.29l5.637-3.513a1 1 0 00.363-.77z" clip-rule="evenodd" /></svg>
                             wevertonufv@gmail.com
                         </a>
                     </li>
-                    <li data-key="footer-location" style="display: flex; align-items: center; gap: 8px; color: var(--text-muted); padding-top:10px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Viçosa - MG, Brasil</li>
+                    <li data-key="footer-location"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> Viçosa - MG, Brasil</li>
                     </ul>
                 </div>
-                <!-- Coluna 2: Perfis Acadêmicos -->
-                 <div class="footer-column">
+                <div class="footer-column">
                     <h4 data-key="footer-academic-profiles">Perfis Acadêmicos</h4>
                      <ul>
                         <li><a href="http://lattes.cnpq.br/2723811288754046" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M97.872 434.733c-46.338-94.949-73.906-152.29-73.906-153.713c0-2.322 2.831-2 30.672 3.46c48.965 9.614 75.126 12.326 118.735 12.342c57.697.016 104.68-9.122 141.185-27.484c19.311-9.715 30.925-18.327 40.437-29.993c11.716-14.378 15.48-24.28 15.615-40.947c.118-15.852-2.018-24.211-11.19-43.608c-3.63-7.665-6.817-16.463-7.122-19.55c-.475-4.968-.068-5.68 3.595-6.104c8.003-.948 47.507 37.403 62.055 60.241c25.076 39.386 27.111 81.993 5.884 123.195c-13.04 25.314-27.45 42.828-51.577 62.734c-40.099 33.062-86.708 56.086-151.069 74.635c-34.57 9.97-90.471 22.059-101.984 22.059c-2.44 0-7.02-8.003-21.296-37.283l-.034.015zm12.904-153.121c-45.016-5.832-82.79-10.903-83.96-11.275c-2-.644-9.155-24.516-13.191-43.947c-1.017-4.917-2.51-17.939-3.323-28.958c-3.63-49.17 7.069-83.166 35.74-113.735C94.583 31.985 198.516 25.694 315.777 67.37c20.582 7.325 28.755 12.411 24.975 15.581c-2.797 2.34-21.753 2.306-54.51-.102c-51.204-3.764-90.183 3.357-110.274 20.176c-30.588 25.602-25.924 81.724 13.53 162.682c4.273 8.766 8.58 17.345 9.563 19.09c2.29 4.019.628 7.75-3.357 7.563c-1.697-.081-39.915-4.912-84.929-10.746zm151.016-44.047c-35.928-6.46-68.227-28.74-78.654-54.222c-5.002-12.241-4.765-28.213.576-37.774c4.832-8.648 17.31-18.65 28.484-22.839c18.6-6.968 51.17-4.188 74.907 6.41c22.533 10.055 42.507 27.738 49.932 44.184c9.53 21.109 1.593 44.66-18.82 55.901c-13.531 7.443-39.827 11.326-56.443 8.341z"/></svg>Lattes</a></li>
@@ -438,7 +443,6 @@
                         <li><a href="https://orcid.org/0000-0003-0742-5936" target="_blank" rel="noopener"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor"><path d="M336.62 194.538c-7.13-3.328-13.866-5.56-20.253-6.614c-6.365-1.095-16.574-1.612-30.71-1.612h-36.704v152.747h37.634c14.673 0 26.081-1.013 34.224-3.017c8.142-2.004 14.921-4.526 20.356-7.626a69.448 69.448 0 0 0 14.942-11.388c14.488-14.714 21.742-33.273 21.742-55.717c0-22.052-7.44-40.052-22.341-53.982c-5.498-5.166-11.822-9.444-18.89-12.793zM256 8C119.022 8 8 119.042 8 256s111.022 248 248 248s248-111.042 248-248S392.978 8 256 8m-82.336 357.513h-29.389V160.148h29.389zM158.95 138.696c-11.14 0-20.213-9.01-20.213-20.212c0-11.118 9.052-20.191 20.213-20.191c11.18 0 20.232 9.052 20.232 20.191a20.194 20.194 0 0 1-20.232 20.212m241.386 163.597c-5.29 12.545-12.834 23.581-22.65 33.088c-9.982 9.837-21.597 17.194-34.844 22.196c-7.75 3.017-14.839 5.063-21.307 6.117c-6.49 1.013-18.828 1.509-37.076 1.509h-64.956V160.148h69.233c27.962 0 50.034 4.154 66.32 12.545c16.265 8.37 29.181 20.728 38.792 36.972c9.61 16.265 14.425 34.018 14.425 53.196c.023 13.765-2.666 26.908-7.936 39.432z"/></svg>ORCID</a></li>
                     </ul>
                  </div>
-                 <!-- Coluna 3: Redes e Perfis -->
                  <div class="footer-column">
                     <h4 data-key="footer-professional-profiles">Redes e Perfis</h4>
                      <ul>
@@ -448,7 +452,6 @@
                         <li><a href="https://www.conectagem.com/sobre" target="_blank" rel="noopener"><span class="icon-img icon-conectagem" aria-label="Logo Conecta GEM"></span>Conecta GEM</a></li>
                     </ul>
                  </div>
-                <!-- Coluna 4: Mapa do Site (Parte 1) -->
                 <div class="footer-column">
                     <h4 data-key="footer-sitemap">Mapa do Site</h4>
                     <ul>
@@ -458,10 +461,8 @@
                         <li><a href="#formacao" data-key="nav-education">Formação</a></li>
                     </ul>
                 </div>
-                <!-- Coluna 5: Mapa do Site (Parte 2) -->
                 <div class="footer-column">
-                    <h4 style="visibility: hidden;">&nbsp;</h4> <!-- Placeholder para alinhamento vertical -->
-                    <ul>
+                    <h4>&nbsp;</h4> <ul>
                         <li><a href="#projetos" data-key="nav-projects">Projetos</a></li>
                         <li><a href="#publicacoes" data-key="nav-publications">Publicações</a></li>
                         <li><a href="#habilidades" data-key="nav-skills">Habilidades</a></li>
@@ -470,8 +471,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <!-- Linha de separação -->  
-                <div class="footer-license" style="margin-top: 20px;">
+                <div class="footer-license">
                     <p><a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener" data-key="footer-license-text-short">Licença CC BY-SA 4.0</a></p>
                 </div>
                 <p>&copy; <span id="copyright-year"></span> Weverton Gomes da Costa</p>
@@ -486,19 +486,12 @@
         </div>
     </footer>
 
-    <!-- Elemento para Notificações (Toast) -->
     <div id="toast-notification"></div>
 
-    <!-- Bloco de Scripts: Funcionalidades da página -->
-    
-    <!-- Bibliotecas Externas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" defer></script>
     
-    <!-- Scripts Internos -->
-    <script src="fallback-data.js"></script> <!-- NOVO ARQUIVO ADICIONADO AQUI -->
-    <script src="translations.js"></script>
-    <script src="utils.js"></script>
+    <script src="fallback-data.js"></script> <script src="utils.js"></script>
 
 </body>
 </html>
