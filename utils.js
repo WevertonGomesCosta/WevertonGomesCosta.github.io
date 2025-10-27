@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 14.0.2 (Corrige contagem de pubs)
+ * @version 14.0.3 (Corrige cabeçalho e formação academica)
  */
  
 // =================================================================================
@@ -1064,19 +1064,41 @@ const CvPdfGenerator = {
             const headerX = avatarDataUrl ? margin + 95 : margin; 
              const headerW = avatarDataUrl ? max_width - 95 : max_width; 
 
+             // Pega o idioma atual (necessário para a correção do Location)
+             const lang = window.currentLang || 'pt';
+
              doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
-             doc.setFontSize(12).setFont('helvetica', 'normal').setTextColor(themeColor).text(langContent['subtitle-1'] || 'Cientista de Dados | Machine Learning', headerX, y + 30, { maxWidth: headerW });
+             
+             // --- ALTERAÇÃO: Adicionando todos os subtítulos ---
+             
+             // Subtítulo 1
+             doc.setFontSize(12).setFont('helvetica', 'normal').setTextColor(themeColor).text(langContent['subtitle-1'] || 'Cientista de Dados | Doutorando em Estatística', headerX, y + 30, { maxWidth: headerW });
+             
+             // Subtítulo 2
+             doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-2'] || '', headerX, y + 44, { maxWidth: headerW });
+             
+             // Subtítulo 3
+             doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-3'] || '', headerX, y + 57, { maxWidth: headerW });
+             
+             // --- Fim da Alteração ---
+
+             // Posições 'y' ajustadas para os itens seguintes:
              doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-             doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 45);
-             doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 57); 
+             doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 70); // Era y + 45
+             
+             doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 82); // Era y + 57
              doc.setTextColor(40, 40, 255); 
              try {
-                 doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 57, { url: 'https://linkedin.com/in/wevertoncosta' });
+                 doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: 'https://linkedin.com/in/wevertoncosta' }); // Era y + 57
              } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
              doc.setTextColor(80); 
-             doc.text(`Location: ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 69);
 
-            y += (avatarDataUrl ? 90 : 80) + item_gap; 
+             // Correção do "Location" (como feito anteriormente)
+             const locationLabel = (lang === 'pt') ? 'Localização:' : 'Location:';
+             doc.text(`${locationLabel} ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 94); // Era y + 69
+
+             // Ajusta o 'y' final para acomodar o espaço extra (aumentamos 25 pts)
+            y += (avatarDataUrl ? 90 + 25 : 80 + 25) + item_gap; // Era (avatarDataUrl ? 90 : 80) 
 
             // --- Funções Auxiliares (Mantidas) ---
              const addSectionTitle = (title) => {
@@ -1198,54 +1220,140 @@ const CvPdfGenerator = {
             // --- FIM ALTERAÇÃO ---
 
             // --- FORMAÇÃO ACADÊMICA ---
-            // --- ALTERAÇÃO (Sugestão 1: Refatoração do PDF) ---
-            addSectionTitle(pdfStrings['education-title'] || (langContent['education-title'] || 'FORMAÇÃO ACADÊMICA'));
-            // Esta estrutura de dados é mais estável do que raspar o DOM
-             const educationData = [
-                { date: 'edu-date1', title: 'edu-title1', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor1', details: 'edu-desc1' },
-                { date: 'edu-date2', title: 'edu-title2', institution: 'Universidade Federal de Viçosa (UFV) — FAPEMIG', advisor: 'edu-advisor2', details: 'edu-desc2' },
-                { date: null, title: 'edu-title4', institution: 'EMBRAPA Mandioca e Fruticultura — CNPq', advisor: 'edu-advisor4', details: 'edu-desc4', year: '2022' },
-                { date: null, title: 'edu-title5', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor5', details: 'edu-desc5', year: '2018 - 2022' },
-                { date: null, title: 'edu-title6', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor6', details: 'edu-desc6', year: '2016 - 2018' },
-                { date: null, title: 'edu-title7', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor7', details: 'edu-desc7', year: '2010 - 2015' }
-             ];
+                addSectionTitle(pdfStrings['education-title'] || (langContent['education-title'] || 'FORMAÇÃO ACADÊMICA'));
 
-             const educationItems = educationData; 
-             educationItems.forEach((item, index) => {
-                 if (cvType === 'pro' && index > 2) { 
-                     return;
-                 }
+                // --- ALTERAÇÃO: Reestruturado para agrupar Pós-docs ---
+                const educationData = [
+                    // Doutorado em Estatística
+                    { type: 'entry', date: 'edu-date1', title: 'edu-title1', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor1', details: 'edu-desc1' },
+                    
+                    // GRUPO DE PÓS-DOUTORADOS
+                    {
+                        type: 'group',
+                        group_title: 'cv-edu-postdocs-title', // Chave "Pós-Doutorados"
+                        items: [
+                            // Pós-doc UFV
+                            { date: 'edu-date2', title: 'edu-title2', institution: 'Universidade Federal de Viçosa (UFV) — FAPEMIG', advisor: 'edu-advisor2', details: 'edu-desc2' },
+                            // Pós-doc Embrapa
+                            { date: null, title: 'edu-title4', institution: 'EMBRAPA Mandioca e Fruticultura — CNPq', advisor: 'edu-advisor4', details: 'edu-desc4', year: '2022' }
+                        ]
+                    },
 
-                 checkPageBreak(60); 
+                    // Doutorado em Genética
+                    { type: 'entry', date: null, title: 'edu-title5', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor5', details: 'edu-desc5', year: '2018 - 2022' },
+                    
+                    // Mestrado
+                    { type: 'entry', date: null, title: 'edu-title6', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor6', details: 'edu-desc6', year: '2016 - 2018' },
+                    
+                    // Graduação
+                    { type: 'entry', date: null, title: 'edu-title7', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor7', details: 'edu-desc7', year: '2010 - 2015' }
+                ];
+                
+                // Lista de chaves de TÍTULO a pular no CV Profissional
+                const pro_skip_keys = ['edu-title6', 'edu-title7'];
 
-                 const title = langContent[item.title] || 'Title';
-                 const date = item.year ? item.year : (langContent[item.date] || 'Date'); // Usa ano fixo ou chave de data
-                 const institution = item.institution; // Instituição não é traduzida
-                 const advisorHTML = langContent[item.advisor] || '';
-                 const details = langContent[item.details] || '';
+                educationData.forEach((item, index) => {
+                    
+                    // --- LÓGICA DE FILTRO CORRIGIDA ---
+                    // Se for 'pro' E o item for uma 'entry' E seu título estiver na lista de pular
+                    if (cvType === 'pro' && item.type === 'entry' && pro_skip_keys.includes(item.title)) {
+                        return; // Pula Mestrado e Graduação no CV Pro
+                    }
 
+                    checkPageBreak(60);
 
-                 doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
-                 doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
-                 y += 12;
-                 doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
-                 y += 12;
+                    // --- LÓGICA DE RENDERIZAÇÃO CORRIGIDA ---
+                    
+                    if (item.type === 'group') {
+                        // --- INÍCIO DO BLOCO DE GRUPO (Pós-Doutorados) ---
+                        
+                        // 1. Renderiza o Título Principal do Grupo (ex: "Pós-Doutorados")
+                        const groupTitle = langContent[item.group_title] || 'Pós-Doutorados';
+                        doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(groupTitle, margin, y);
+                        y += 12; // Espaçamento após o título do grupo
 
-                 if (advisorHTML) {
-                     const cleanedAdvisor = this.stripHtml(advisorHTML).replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
-                     const advisorLines = doc.splitTextToSize(cleanedAdvisor, max_width);
-                     doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100); 
-                     doc.text(advisorLines, margin, y);
-                     y += advisorLines.length * 10 + 3; 
-                 }
-                  if (details && cvType !== 'pro') { 
-                     addJustifiedText(details, { fontSize: 8, width: max_width }); 
-                  } else if (details && cvType === 'pro' && index < 1) { 
-                       addJustifiedText(details, { fontSize: 8, width: max_width });
-                  }
+                        // 2. Itera sobre os sub-itens (UFV e Embrapa)
+                        item.items.forEach(subItem => {
+                            checkPageBreak(60);
+                            
+                            // Puxa os dados do sub-item
+                            const date = subItem.year ? subItem.year : (langContent[subItem.date] || 'Date');
+                            const institution = subItem.institution;
+                            const advisorHTML = langContent[subItem.advisor] || '';
+                            const details = langContent[subItem.details] || '';
 
-                 y += item_gap; 
-             });
+                            // Renderiza Instituição e Data (sem título principal, como pedido)
+                            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
+                            doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
+                            y += 12;
+
+                            // Renderiza Advisor (com tradução correta)
+                            if (advisorHTML) {
+                                const cleanedAdvisor = this.stripHtml(advisorHTML);
+                                let translatedAdvisor = cleanedAdvisor;
+                                if (lang === 'pt') {
+                                    translatedAdvisor = cleanedAdvisor.replace('Advisor:', 'Orientador:').replace('Co-advisor:', 'Coorientador:');
+                                } else {
+                                    translatedAdvisor = cleanedAdvisor.replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
+                                }
+                                const advisorLines = doc.splitTextToSize(translatedAdvisor, max_width);
+                                doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100);
+                                doc.text(advisorLines, margin, y);
+                                y += advisorLines.length * 10 + 3;
+                            }
+                            
+                            // Renderiza Detalhes (Sempre, para Pós-docs)
+                            if (details) {
+                                addJustifiedText(details, { fontSize: 8, width: max_width });
+                            }
+                            y += item_gap; // Gap entre os Pós-docs
+                        });
+                        // --- FIM DO BLOCO DE GRUPO ---
+
+                    } else if (item.type === 'entry') {
+                        // --- INÍCIO DO BLOCO NORMAL (PhD, MSc, BSc) ---
+                        const title = langContent[item.title] || 'Title';
+                        const date = item.year ? item.year : (langContent[item.date] || 'Date');
+                        const institution = item.institution;
+                        const advisorHTML = langContent[item.advisor] || '';
+                        const details = langContent[item.details] || '';
+
+                        // Renderiza Título e Data
+                        doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
+                        doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
+                        y += 12;
+
+                        // Renderiza Instituição
+                        doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
+                        y += 12;
+
+                        // Renderiza Advisor (com tradução correta)
+                        if (advisorHTML) {
+                            const cleanedAdvisor = this.stripHtml(advisorHTML);
+                            let translatedAdvisor = cleanedAdvisor;
+                            if (lang === 'pt') {
+                                translatedAdvisor = cleanedAdvisor.replace('Advisor:', 'Orientador:').replace('Co-advisor:', 'Coorientador:');
+                            } else {
+                                translatedAdvisor = cleanedAdvisor.replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
+                            }
+                            const advisorLines = doc.splitTextToSize(translatedAdvisor, max_width);
+                            doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100);
+                            doc.text(advisorLines, margin, y);
+                            y += advisorLines.length * 10 + 3;
+                        }
+                        
+                        // LÓGICA DE DETALHES CORRIGIDA
+                        // Mostra detalhes se:
+                        // 1. For CV Acadêmico
+                        // 2. Ou for CV Profissional E NÃO estiver na lista de pular (ou seja, mostra para PhDs)
+                        if (details && (cvType !== 'pro' || !pro_skip_keys.includes(item.title))) {
+                            addJustifiedText(details, { fontSize: 8, width: max_width });
+                        }
+
+                        y += item_gap; // Gap entre as entradas principais
+                        // --- FIM DO BLOCO NORMAL ---
+                    }
+                });
              // --- FIM ALTERAÇÃO ---
 
             // --- PROJETOS ---
