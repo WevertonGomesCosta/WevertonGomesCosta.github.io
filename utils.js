@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 14.0.4 (Ajuste tamanho do avatar cabeçalho pdf)
+ * @version 14.1 (Correção imagem avatar pdf circular e com contorno)
  */
  
 // =================================================================================
@@ -994,6 +994,83 @@ const CvPdfGenerator = {
         return doc.body.textContent || "";
     },
 
+// ==========================================================
+    // === SUBSTITUA A FUNÇÃO ANTERIOR POR ESTA VERSÃO ATUALIZADA ===
+    // ==========================================================
+    async cropImageToCircle(imageDataUrl) {
+        return new Promise((resolve, reject) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                // Usar a menor dimensão (largura ou altura) para o círculo
+                const size = Math.min(img.width, img.height);
+                canvas.width = size;
+                canvas.height = size;
+
+                // --- BLOCO 1: DEFINIR A MÁSCARA CIRCULAR ---
+                ctx.beginPath();
+                // arc(centroX, centroY, raio, anguloInicio, anguloFim)
+                ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2, true);
+                ctx.closePath();
+                
+                // Ativa o "clipping path" (máscara)
+                ctx.clip();
+
+                // --- BLOCO 2: DESENHAR A IMAGEM ---
+                // Isso centraliza a imagem e a recorta
+                const sx = (img.width > size) ? (img.width - size) / 2 : 0;
+                const sy = (img.height > size) ? (img.height - size) / 2 : 0;
+                
+                //drawImage(imagem, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+                // Desenha a parte central da imagem original dentro do canvas
+                ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+
+
+                // --- INÍCIO DA ALTERAÇÃO: ADICIONAR CONTORNO ---
+                
+                // --- BLOCO 3: DESENHAR O CONTORNO (BORDA) ---
+                
+                // Define a cor da borda (a mesma 'themeColor' do seu PDF)
+                const themeColor = '#10b981';
+                // Define a largura da borda. 
+                // Usamos um valor relativo (ex: 1.5% do tamanho) para escalar bem.
+                const borderWidth = size * 0.015; // 1.5%
+                
+                ctx.lineWidth = borderWidth;
+                ctx.strokeStyle = themeColor;
+
+                // Cria um novo caminho para a borda
+                ctx.beginPath();
+                // O raio deve ser (Raio total) - (metade da largura da borda)
+                // para que a borda seja desenhada "para dentro" da borda.
+                const radius = (size / 2) - (borderWidth / 2);
+                ctx.arc(size / 2, size / 2, radius, 0, Math.PI * 2, true);
+                ctx.closePath();
+                
+                // Desenha a linha (contorno)
+                ctx.stroke();
+
+                // --- FIM DA ALTERAÇÃO ---
+
+                // Exporta o canvas como um novo Data URL (PNG, para transparência)
+                resolve(canvas.toDataURL('image/png'));
+            };
+
+            img.onerror = (error) => {
+                reject(new Error("Erro ao carregar imagem no canvas para recortar."));
+            };
+
+            // Habilita o CORS para a imagem, se aplicável
+            img.crossOrigin = "anonymous"; 
+            img.src = imageDataUrl;
+        });
+    },
+    // ==========================================================
+    // === FIM DA FUNÇÃO ATUALIZADA ===
+    // ==========================================================
+    
     async generateCvPdf(cvType, clickedButton) {
         const lang = typeof currentLang !== 'undefined' ? currentLang : 'pt';
         const langContent = translations[lang] || translations['pt'];
@@ -1038,23 +1115,35 @@ const CvPdfGenerator = {
              try {
                 const avatarImg = document.querySelector('.avatar') || document.querySelector('.nav-avatar'); 
                 if (avatarImg && avatarImg.src) {
+                    
+                    let rawDataUrl; // Variável temporária para a imagem crua
+                    
                     if (avatarImg.src.startsWith('data:image')) {
-                        avatarDataUrl = avatarImg.src;
+                        rawDataUrl = avatarImg.src;
                     } else {
                          const imageUrl = avatarImg.src.startsWith('http') ? `https://corsproxy.io/?${encodeURIComponent(avatarImg.src)}` : avatarImg.src;
                          const response = await fetch(imageUrl);
                          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                          const blob = await response.blob();
-                         avatarDataUrl = await new Promise((resolve, reject) => {
+                         rawDataUrl = await new Promise((resolve, reject) => {
                              const reader = new FileReader();
                              reader.onloadend = () => resolve(reader.result);
                              reader.onerror = (error) => reject(error); 
                              reader.readAsDataURL(blob);
                          });
                      }
+                     
+                     // --- ALTERAÇÃO PRINCIPAL ---
+                     // Se conseguimos a imagem crua, agora a processamos para virar circular
+                     if (rawDataUrl) {
+                        avatarDataUrl = await this.cropImageToCircle(rawDataUrl);
+                     }
+                     // --- FIM DA ALTERAÇÃO ---
+
                  }
              } catch (e) {
-                console.error("Não foi possível carregar a imagem do avatar:", e);
+                // A mensagem de erro agora cobre o carregamento OU processamento
+                console.error("Não foi possível carregar ou processar a imagem do avatar:", e);
              }
 
             // --- CABEÇALHO DO PDF (Comum a ambos os CVs) ---
@@ -1063,8 +1152,10 @@ const CvPdfGenerator = {
             const avatarSize = 100; // Mantendo 100 (conforme feedback do usuário)
             
             if (avatarDataUrl) {
-                // Apenas desenha a imagem maior, sem clip ou save/restore
-                doc.addImage(avatarDataUrl, 'JPEG', margin, y, avatarSize, avatarSize); 
+                // --- ALTERAÇÃO: MUDAR DE 'JPEG' PARA 'PNG' ---
+                // A imagem agora é um PNG circular com transparência.
+                // O 'clip' e 'save/restore' não são mais necessários.
+                doc.addImage(avatarDataUrl, 'PNG', margin, y, avatarSize, avatarSize); 
             }
             
             // Ajusta o X inicial do texto e a Largura máxima do texto para a nova imagem
