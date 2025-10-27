@@ -1,7 +1,7 @@
 /**
  * @file utils.js
  * @description Contém scripts utilitários centralizados.
- * @version 14.0.3 (Corrige cabeçalho e formação academica)
+ * @version 14.0.4 (Ajuste tamanho do avatar cabeçalho pdf)
  */
  
 // =================================================================================
@@ -1058,47 +1058,58 @@ const CvPdfGenerator = {
              }
 
             // --- CABEÇALHO DO PDF (Comum a ambos os CVs) ---
+            
+            // --- ALTERAÇÃO: Aumentar tamanho da imagem ---
+            const avatarSize = 100; // Mantendo 100 (conforme feedback do usuário)
+            
             if (avatarDataUrl) {
-                 doc.addImage(avatarDataUrl, 'JPEG', margin, y, 80, 80); 
-             }
-            const headerX = avatarDataUrl ? margin + 95 : margin; 
-             const headerW = avatarDataUrl ? max_width - 95 : max_width; 
+                // Apenas desenha a imagem maior, sem clip ou save/restore
+                doc.addImage(avatarDataUrl, 'JPEG', margin, y, avatarSize, avatarSize); 
+            }
+            
+            // Ajusta o X inicial do texto e a Largura máxima do texto para a nova imagem
+            const xPadding = 15; // Espaço entre imagem e texto
+            const headerX = avatarDataUrl ? margin + avatarSize + xPadding : margin; 
+            const headerW = avatarDataUrl ? max_width - (avatarSize + xPadding) : max_width; 
+            // --- FIM DA ALTERAÇÃO ---
 
-             // Pega o idioma atual (necessário para a correção do Location)
-             const lang = window.currentLang || 'pt';
+            // Pega o idioma atual (necessário para a correção do Location)
+            const lang = window.currentLang || 'pt';
 
-             doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
-             
-             // --- ALTERAÇÃO: Adicionando todos os subtítulos ---
-             
-             // Subtítulo 1
-             doc.setFontSize(12).setFont('helvetica', 'normal').setTextColor(themeColor).text(langContent['subtitle-1'] || 'Cientista de Dados | Doutorando em Estatística', headerX, y + 30, { maxWidth: headerW });
-             
-             // Subtítulo 2
-             doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-2'] || '', headerX, y + 44, { maxWidth: headerW });
-             
-             // Subtítulo 3
-             doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-3'] || '', headerX, y + 57, { maxWidth: headerW });
-             
-             // --- Fim da Alteração ---
+            doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
+            
+            // --- ALTERAÇÃO: Adicionando todos os subtítulos ---
+            
+            // Subtítulo 1
+            doc.setFontSize(12).setFont('helvetica', 'normal').setTextColor(themeColor).text(langContent['subtitle-1'] || 'Cientista de Dados | Doutorando em Estatística', headerX, y + 30, { maxWidth: headerW });
+            
+            // Subtítulo 2
+            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-2'] || '', headerX, y + 44, { maxWidth: headerW });
+            
+            // Subtítulo 3
+            doc.setFontSize(10).setFont('helvetica', 'normal').setTextColor(80).text(langContent['subtitle-3'] || '', headerX, y + 57, { maxWidth: headerW });
+            
+            // --- Fim da Alteração ---
 
-             // Posições 'y' ajustadas para os itens seguintes:
-             doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-             doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 70); // Era y + 45
-             
-             doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 82); // Era y + 57
-             doc.setTextColor(40, 40, 255); 
-             try {
-                 doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: 'https://linkedin.com/in/wevertoncosta' }); // Era y + 57
-             } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
-             doc.setTextColor(80); 
+            // Posições 'y' ajustadas para os itens seguintes:
+            doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
+            doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 70); 
+            
+            doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 82); 
+            doc.setTextColor(40, 40, 255); 
+            try {
+                doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: 'https://linkedin.com/in/wevertoncosta' }); 
+            } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
+            doc.setTextColor(80); 
 
-             // Correção do "Location" (como feito anteriormente)
-             const locationLabel = (lang === 'pt') ? 'Localização:' : 'Location:';
-             doc.text(`${locationLabel} ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 94); // Era y + 69
+            // Correção do "Location" (como feito anteriormente)
+            const locationLabel = (lang === 'pt') ? 'Localização:' : 'Location:';
+            doc.text(`${locationLabel} ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 94); 
 
-             // Ajusta o 'y' final para acomodar o espaço extra (aumentamos 25 pts)
-            y += (avatarDataUrl ? 90 + 25 : 80 + 25) + item_gap; // Era (avatarDataUrl ? 90 : 80) 
+            // --- ALTERAÇÃO: Ajusta o 'y' final para acomodar a imagem maior (avatarSize) e os subtítulos (25 pts) ---
+            const finalYIncrement = avatarDataUrl ? avatarSize + 25 : 80 + 25; // Usa o avatarSize (100)
+            y += finalYIncrement + item_gap; 
+            // --- FIM DA ALTERAÇÃO --- 
 
             // --- Funções Auxiliares (Mantidas) ---
              const addSectionTitle = (title) => {
