@@ -1,24 +1,6 @@
 {
     "githubRepos": [
         {
-            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
-            "description": "R pipeline and analyses for the paper \"Machine Learning in GWAS for Complex Traits\" (Scientia Agricolae), focusing on QTL detection and marker importance.",
-            "language": "HTML",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-10-29T12:39:42Z",
-            "topics": [
-                "genomic-wide-association-studies",
-                "gwas",
-                "machine-learning",
-                "mars",
-                "neural-network",
-                "splines"
-            ]
-        },
-        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -26,7 +8,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-10-27T14:34:18Z",
+            "updated_at": "2025-10-25T01:17:01Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -187,6 +169,24 @@
                 "genetics",
                 "machine-learning",
                 "neural-network"
+            ]
+        },
+        {
+            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
+            "description": "R pipeline and analyses for the paper \"Machine Learning in GWAS for Complex Traits\" (Scientia Agricolae), focusing on QTL detection and marker importance.",
+            "language": "HTML",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-10-23T18:02:55Z",
+            "topics": [
+                "genomic-wide-association-studies",
+                "gwas",
+                "machine-learning",
+                "mars",
+                "neural-network",
+                "splines"
             ]
         },
         {
@@ -428,8 +428,8 @@
                 "table": [
                     {
                         "citations": {
-                            "all": 155,
-                            "since_2020": 152
+                            "all": 153,
+                            "since_2020": 150
                         }
                     },
                     {
@@ -468,11 +468,11 @@
                     },
                     {
                         "year": 2022,
-                        "citations": 20
+                        "citations": 19
                     },
                     {
                         "year": 2023,
-                        "citations": 27
+                        "citations": 28
                     },
                     {
                         "year": 2024,
@@ -480,7 +480,7 @@
                     },
                     {
                         "year": 2025,
-                        "citations": 43
+                        "citations": 41
                     }
                 ]
             }
@@ -494,7 +494,7 @@
                 "journalTitle": "EUPHYTICA",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                 "cited_by": {
-                    "value": 36
+                    "value": 35
                 }
             },
             {
@@ -560,7 +560,7 @@
                 "journalTitle": "AGRONOMY-BASEL",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:MXK_kJrjxJIC",
                 "cited_by": {
-                    "value": 7
+                    "value": 6
                 }
             },
             {
