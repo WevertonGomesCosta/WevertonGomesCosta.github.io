@@ -1,6 +1,36 @@
 {
     "githubRepos": [
         {
+            "name": "Integrating-nir-genomic-kernel",
+            "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
+            "homepage": "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
+            "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-11-03T15:37:17Z",
+            "topics": [
+                "agriculture",
+                "data-fusion",
+                "genomic-selection",
+                "genomics",
+                "kernel-methods",
+                "kernel-ridge-regression",
+                "machine-learning",
+                "nir-spectroscopy",
+                "non-linear-models",
+                "phenomics",
+                "plant-breeding",
+                "predictive-modeling",
+                "python",
+                "r",
+                "reproducible-research",
+                "rstats",
+                "snps",
+                "spectroscopy"
+            ]
+        },
+        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -8,7 +38,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-10-29T19:37:10Z",
+            "updated_at": "2025-10-29T19:39:27Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -140,36 +170,6 @@
                 "opencv",
                 "precision-livestock",
                 "tensorflow"
-            ]
-        },
-        {
-            "name": "Integrating-nir-genomic-kernel",
-            "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
-            "homepage": "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
-            "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-10-23T18:18:00Z",
-            "topics": [
-                "agriculture",
-                "data-fusion",
-                "genomic-selection",
-                "genomics",
-                "kernel-methods",
-                "kernel-ridge-regression",
-                "machine-learning",
-                "nir-spectroscopy",
-                "non-linear-models",
-                "phenomics",
-                "plant-breeding",
-                "predictive-modeling",
-                "python",
-                "r",
-                "reproducible-research",
-                "rstats",
-                "snps",
-                "spectroscopy"
             ]
         },
         {
@@ -428,8 +428,8 @@
                 "table": [
                     {
                         "citations": {
-                            "all": 155,
-                            "since_2020": 152
+                            "all": 156,
+                            "since_2020": 153
                         }
                     },
                     {
@@ -480,7 +480,7 @@
                     },
                     {
                         "year": 2025,
-                        "citations": 43
+                        "citations": 44
                     }
                 ]
             }
@@ -531,6 +531,17 @@
                 }
             },
             {
+                "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                "doi": "10.1016/J.LIVSCI.2024.105433",
+                "doiLink": "https://doi.org/10.1016/J.LIVSCI.2024.105433",
+                "year": "2024",
+                "journalTitle": "LIVESTOCK SCIENCE",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
+                "cited_by": {
+                    "value": 9
+                }
+            },
+            {
                 "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
                 "doi": "10.4238/GMR18434",
                 "doiLink": "https://doi.org/10.4238/GMR18434",
@@ -539,17 +550,6 @@
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C",
                 "cited_by": {
                     "value": 9
-                }
-            },
-            {
-                "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
-                "doi": "10.1016/J.LIVSCI.2024.105433",
-                "doiLink": "https://doi.org/10.1016/J.LIVSCI.2024.105433",
-                "year": "2024",
-                "journalTitle": "LIVESTOCK SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
-                "cited_by": {
-                    "value": 8
                 }
             },
             {
@@ -704,6 +704,17 @@
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:2osOgNQ5qMEC",
                 "cited_by": {
                     "value": 1
+                }
+            },
+            {
+                "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex Maiden and E. urophylla T. Blake",
+                "doi": "10.3390/ijpb16040124",
+                "doiLink": "https://doi.org/10.3390/ijpb16040124",
+                "year": "2025",
+                "journalTitle": "International Journal of Plant Biology",
+                "link": "https://doi.org/10.3390/ijpb16040124",
+                "cited_by": {
+                    "value": 0
                 }
             },
             {
