@@ -8,7 +8,7 @@
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2025-11-03T15:37:17Z",
+            "updated_at": "2025-11-04T18:51:41Z",
             "topics": [
                 "agriculture",
                 "data-fusion",
@@ -38,7 +38,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-10-29T19:39:27Z",
+            "updated_at": "2025-11-03T17:13:54Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -428,14 +428,14 @@
                 "table": [
                     {
                         "citations": {
-                            "all": 156,
-                            "since_2020": 153
+                            "all": 161,
+                            "since_2020": 158
                         }
                     },
                     {
                         "h_index": {
-                            "all": 7,
-                            "since_2020": 7
+                            "all": 8,
+                            "since_2020": 8
                         }
                     },
                     {
@@ -476,11 +476,11 @@
                     },
                     {
                         "year": 2024,
-                        "citations": 38
+                        "citations": 39
                     },
                     {
                         "year": 2025,
-                        "citations": 44
+                        "citations": 48
                     }
                 ]
             }
@@ -494,7 +494,7 @@
                 "journalTitle": "EUPHYTICA",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                 "cited_by": {
-                    "value": 36
+                    "value": 37
                 }
             },
             {
@@ -516,7 +516,7 @@
                 "journalTitle": "PLOS ONE",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:zYLM7Y9cAGgC",
                 "cited_by": {
-                    "value": 12
+                    "value": 13
                 }
             },
             {
@@ -527,7 +527,7 @@
                 "journalTitle": "AGRONOMY-BASEL",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:8k81kl-MbHgC",
                 "cited_by": {
-                    "value": 11
+                    "value": 12
                 }
             },
             {
@@ -560,7 +560,7 @@
                 "journalTitle": "AGRONOMY-BASEL",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:MXK_kJrjxJIC",
                 "cited_by": {
-                    "value": 7
+                    "value": 8
                 }
             },
             {
@@ -630,6 +630,17 @@
                 }
             },
             {
+                "title": "Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",
+                "doi": "10.1016/J.SAJB.2024.10.052",
+                "doiLink": "https://doi.org/10.1016/J.SAJB.2024.10.052",
+                "year": "2024",
+                "journalTitle": "SOUTH AFRICAN JOURNAL OF BOTANY",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:aqlVkmm33-oC",
+                "cited_by": {
+                    "value": 2
+                }
+            },
+            {
                 "title": "Quarter century genetic progress in irrigated rice (<i>Oryza sativa</i>) in Southeast Brazil",
                 "doi": "10.1111/PBR.12972",
                 "doiLink": "https://doi.org/10.1111/PBR.12972",
@@ -647,17 +658,6 @@
                 "year": "2024",
                 "journalTitle": "Agronomy",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
-                "cited_by": {
-                    "value": 1
-                }
-            },
-            {
-                "title": "Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",
-                "doi": "10.1016/J.SAJB.2024.10.052",
-                "doiLink": "https://doi.org/10.1016/J.SAJB.2024.10.052",
-                "year": "2024",
-                "journalTitle": "SOUTH AFRICAN JOURNAL OF BOTANY",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:aqlVkmm33-oC",
                 "cited_by": {
                     "value": 1
                 }
@@ -724,6 +724,17 @@
                 "year": "2025",
                 "journalTitle": "International Journal of Horticultural Science",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:QIV2ME_5wuYC",
+                "cited_by": {
+                    "value": null
+                }
+            },
+            {
+                "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex …",
+                "doi": null,
+                "doiLink": null,
+                "year": "2025",
+                "journalTitle": "International Journal of Plant Biology, 2025",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:dhFuZR0502QC",
                 "cited_by": {
                     "value": null
                 }
