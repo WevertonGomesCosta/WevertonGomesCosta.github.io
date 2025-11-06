@@ -1,6 +1,55 @@
 {
     "githubRepos": [
         {
+            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
+            "description": "R pipeline and analyses for the paper \"Machine Learning in GWAS for Complex Traits\" (Scientia Agricolae), focusing on QTL detection and marker importance.",
+            "language": "HTML",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-11-05T14:15:15Z",
+            "topics": [
+                "genomic-wide-association-studies",
+                "gwas",
+                "machine-learning",
+                "mars",
+                "neural-network",
+                "splines"
+            ]
+        },
+        {
+            "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
+            "html_url": "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
+            "homepage": "https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/",
+            "description": "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativos. Utiliza dados reais de 195 genótipos (21 211 SNPs) com características de doença e produtividade.",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-11-05T14:05:21Z",
+            "topics": [
+                "breeding",
+                "coffee",
+                "genetics",
+                "machine-learning",
+                "neural-network"
+            ]
+        },
+        {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "JavaScript",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2025-11-04T18:56:23Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
+        {
             "name": "Integrating-nir-genomic-kernel",
             "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
             "homepage": "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
@@ -28,38 +77,6 @@
                 "rstats",
                 "snps",
                 "spectroscopy"
-            ]
-        },
-        {
-            "name": "WevertonGomesCosta.github.io",
-            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
-            "homepage": "https://wevertongomescosta.github.io",
-            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "JavaScript",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2025-11-03T17:13:54Z",
-            "topics": [
-                "pessoal",
-                "site"
-            ]
-        },
-        {
-            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
-            "description": "R pipeline and analyses for the paper \"Machine Learning in GWAS for Complex Traits\" (Scientia Agricolae), focusing on QTL detection and marker importance.",
-            "language": "HTML",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-10-29T12:39:42Z",
-            "topics": [
-                "genomic-wide-association-studies",
-                "gwas",
-                "machine-learning",
-                "mars",
-                "neural-network",
-                "splines"
             ]
         },
         {
@@ -170,23 +187,6 @@
                 "opencv",
                 "precision-livestock",
                 "tensorflow"
-            ]
-        },
-        {
-            "name": "Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
-            "html_url": "https://github.com/WevertonGomesCosta/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro",
-            "homepage": "https://wevertongomescosta.github.io/Machine-learning-e-redes-neurais-artificiais-no-melhoramento-genetico-do-cafeeiro/",
-            "description": "Este repositório desenvolve e compara métodos de machine learning e redes neurais artificiais para aprimorar a seleção genômica ampla (GWS) em Coffea arabica e identificar marcadores SNP informativos. Utiliza dados reais de 195 genótipos (21 211 SNPs) com características de doença e produtividade.",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-08-01T19:29:24Z",
-            "topics": [
-                "breeding",
-                "coffee",
-                "genetics",
-                "machine-learning",
-                "neural-network"
             ]
         },
         {
@@ -476,11 +476,11 @@
                     },
                     {
                         "year": 2024,
-                        "citations": 39
+                        "citations": 38
                     },
                     {
                         "year": 2025,
-                        "citations": 48
+                        "citations": 49
                     }
                 ]
             }
@@ -495,6 +495,17 @@
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                 "cited_by": {
                     "value": 37
+                }
+            },
+            {
+                "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
+                "doi": "10.1002/CSC2.20488",
+                "doiLink": "https://doi.org/10.1002/CSC2.20488",
+                "year": "2021",
+                "journalTitle": "CROP SCIENCE",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:qjMakFHDy7sC",
+                "cited_by": {
+                    "value": 16
                 }
             },
             {
@@ -561,6 +572,17 @@
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:MXK_kJrjxJIC",
                 "cited_by": {
                     "value": 8
+                }
+            },
+            {
+                "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
+                "doi": "10.33158/asb.r179.v9.2023",
+                "doiLink": "https://doi.org/10.33158/asb.r179.v9.2023",
+                "year": "2023",
+                "journalTitle": "Agronomy Science and Biotechnology",
+                "link": "http://dx.doi.org/10.33158/asb.r179.v9.2023",
+                "cited_by": {
+                    "value": 6
                 }
             },
             {
@@ -657,18 +679,7 @@
                 "doiLink": "https://doi.org/10.3390/agronomy14102234",
                 "year": "2024",
                 "journalTitle": "Agronomy",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
-                "cited_by": {
-                    "value": 1
-                }
-            },
-            {
-                "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
-                "doi": "10.33158/asb.r179.v9.2023",
-                "doiLink": "https://doi.org/10.33158/asb.r179.v9.2023",
-                "year": "2023",
-                "journalTitle": "Agronomy Science and Biotechnology",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:mVmsd5A6BfQC",
+                "link": "https://doi.org/10.3390/agronomy14102234",
                 "cited_by": {
                     "value": 1
                 }
@@ -679,7 +690,7 @@
                 "doiLink": "https://doi.org/10.47328/ufvbbt.2022.326",
                 "year": "2022",
                 "journalTitle": "N/A",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:0EnyYjriUFMC",
+                "link": "http://dx.doi.org/10.47328/ufvbbt.2022.326",
                 "cited_by": {
                     "value": 1
                 }
@@ -690,7 +701,7 @@
                 "doiLink": "https://doi.org/10.33158/ASB.r145.v8.2022",
                 "year": "2021",
                 "journalTitle": "Agronomy Science and Biotechnology",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:3fE2CSJIrl8C",
+                "link": "https://doi.org/10.33158/ASB.r145.v8.2022",
                 "cited_by": {
                     "value": 1
                 }
@@ -725,18 +736,7 @@
                 "journalTitle": "International Journal of Horticultural Science",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:QIV2ME_5wuYC",
                 "cited_by": {
-                    "value": null
-                }
-            },
-            {
-                "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex …",
-                "doi": null,
-                "doiLink": null,
-                "year": "2025",
-                "journalTitle": "International Journal of Plant Biology, 2025",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:dhFuZR0502QC",
-                "cited_by": {
-                    "value": null
+                    "value": 0
                 }
             },
             {
@@ -745,9 +745,9 @@
                 "doiLink": "https://doi.org/10.37496/rbz5320240001",
                 "year": "2024",
                 "journalTitle": "Revista Brasileira de Zootecnia",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:qxL8FJ1GzNcC",
+                "link": "https://doi.org/10.37496/rbz5320240001",
                 "cited_by": {
-                    "value": null
+                    "value": 0
                 }
             },
             {
@@ -758,7 +758,7 @@
                 "journalTitle": "SCIENTIA AGRICOLA",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:YOwf2qJgpHMC",
                 "cited_by": {
-                    "value": null
+                    "value": 0
                 }
             },
             {
@@ -769,30 +769,19 @@
                 "journalTitle": "bioRxiv",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:Zph67rFs4hoC",
                 "cited_by": {
-                    "value": null
-                }
-            },
-            {
-                "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
-                "doi": "10.1002/CSC2.20488",
-                "doiLink": "https://doi.org/10.1002/CSC2.20488",
-                "year": "2021",
-                "journalTitle": "CROP SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:Se3iqnhoufwC",
-                "cited_by": {
-                    "value": null
+                    "value": 0
                 }
             },
             {
                 "title": "Ensaio comparativo preliminar de arroz irrigado em Minas Gerais? safra 2018/2019.",
-                "doi": null,
-                "doiLink": null,
                 "year": "2019",
                 "journalTitle": "N/A",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:u5HHmVD_uO8C",
                 "cited_by": {
-                    "value": null
-                }
+                    "value": 0
+                },
+                "doi": null,
+                "doiLink": null
             },
             {
                 "title": "Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais",
@@ -807,14 +796,14 @@
             },
             {
                 "title": "BRSMG Rubelita: cultivar de arroz para cultivo em várzeas mineiras.",
-                "doi": null,
-                "doiLink": null,
                 "year": "2017",
                 "journalTitle": "N/A",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:Tyk-4Ss8FVUC",
                 "cited_by": {
-                    "value": null
-                }
+                    "value": 0
+                },
+                "doi": null,
+                "doiLink": null
             }
         ]
     }
