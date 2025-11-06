@@ -7,7 +7,7 @@
 # Usa o módulo logging para saída.
 #
 # Autor: Weverton Costa
-# Versão: 9.0.0 (Gera JSON puro, logging implementado)
+# Versão: 9.1.1 (Corrige TypeError [None > int] na mesclagem de citações)
 
 import requests
 import json
@@ -70,6 +70,7 @@ def normalize_title(title):
     if not title: return ''
     clean_title = re.sub(r'<.*?>', '', title)
     clean_title = unicodedata.normalize('NFKD', clean_title).encode('ascii', 'ignore').decode('utf-8')
+    # Remove toda pontuação (incluindo …), deixa apenas letras, números e espaços
     return re.sub(r'[^\w\s]', '', clean_title).lower().strip()
 
 # --- ALTERAÇÃO: Renomeada e simplificada para ler JSON ---
@@ -278,8 +279,10 @@ def analyze_changes(old_data, new_data):
     citation_updates = []
     for norm_title, new_art in new_articles.items():
         if norm_title in old_articles:
-            old_cites = (old_articles[norm_title].get('cited_by') or {}).get('value') or 0
-            new_cites = (new_art.get('cited_by') or {}).get('value') or 0
+            # --- CORREÇÃO (v9.1.1): Usa (get() or {}) ... (get() or 0) para ser seguro contra None ---
+            old_cites = ((old_articles[norm_title].get('cited_by') or {}).get('value') or 0)
+            new_cites = ((new_art.get('cited_by') or {}).get('value') or 0)
+            # --- FIM CORREÇÃO ---
             if new_cites > old_cites:
                 title = new_art.get('title', '')
                 citation_updates.append(f"    - '{title[:50]}...': {old_cites} -> {new_cites} (+{new_cites - old_cites})")
@@ -379,31 +382,132 @@ if __name__ == "__main__":
     # 4. Combinar dados de publicações
     logging.info("Combinando dados do ORCID e Google Scholar...")
     merged_articles_map = {}
+    
+    # --- INÍCIO DA LÓGICA DE CORRESPONDÊNCIA (v9.1.0) ---
+    # Heurística de comprimento mínimo para evitar correspondências parciais em títulos curtos
+    MIN_LEN_FOR_PARTIAL = 40 
+
+    def find_matching_key(norm_title, key_map):
+        """
+        Encontra a melhor chave correspondente no mapa, lidando com substrings.
+        Retorna (matching_key, match_type)
+        match_type: 'exact', 'partial_new_is_longer', 'partial_existing_is_longer', None
+        """
+        # 1. Verificação exata
+        if norm_title in key_map:
+            return norm_title, 'exact'
+
+        # 2. Verificação de substring (só se o título for longo o suficiente)
+        if len(norm_title) > MIN_LEN_FOR_PARTIAL:
+            
+            # Caso A: O novo título (norm_title) é a versão completa de uma chave existente (abreviada)
+            # Ex: norm_title = "artigo completo", existing_key = "artigo"
+            for existing_key in key_map:
+                if len(existing_key) > MIN_LEN_FOR_PARTIAL and norm_title.startswith(existing_key):
+                    logging.info(f"  [Merge] Título completo '{norm_title[:50]}...' substitui chave abreviada '{existing_key[:50]}...'")
+                    # Devemos substituir a chave antiga pela nova (mais longa)
+                    return existing_key, 'partial_new_is_longer'
+            
+            # Caso B: O novo título (norm_title) é a versão abreviada de uma chave existente (completa)
+            # Ex: norm_title = "artigo", existing_key = "artigo completo"
+            for existing_key in key_map:
+                if len(existing_key) > MIN_LEN_FOR_PARTIAL and existing_key.startswith(norm_title):
+                    logging.info(f"  [Merge] Título abreviado '{norm_title[:50]}...' corresponde à chave existente '{existing_key[:50]}...'")
+                    # Não substitui, apenas usa a chave existente
+                    return existing_key, 'partial_existing_is_longer'
+        
+        return None, None
+    # --- FIM DA LÓGICA DE CORRESPONDÊNCIA ---
+
+
+    # --- Loop 1 (ORCID) com lógica de correspondência ---
     for work in orcid_works:
         norm_title = normalize_title(work.get("title"))
-        if norm_title:
-            work['cited_by'] = {"value": 0}
+        if not norm_title: continue
+        
+        matching_key, match_type = find_matching_key(norm_title, merged_articles_map)
+        
+        work['cited_by'] = {"value": 0} # Placeholder
+        
+        if match_type == 'exact':
+            # Atualiza o item existente com dados do ORCID (DOI, etc.)
+            merged_articles_map[matching_key].update(work)
+            
+        elif match_type == 'partial_new_is_longer':
+            # Substitui a chave abreviada pela nova (completa)
+            existing_data = merged_articles_map.pop(matching_key)
+            existing_data.update(work) # Atualiza com dados do ORCID (DOI, etc.)
+            merged_articles_map[norm_title] = existing_data
+            
+        elif match_type == 'partial_existing_is_longer':
+            # O novo título (ORCID) é abreviado, mas já temos um completo.
+            # Atualiza o completo com os dados do ORCID.
+            merged_articles_map[matching_key].update(work)
+            
+        else: # None
+            # Nenhum match, adiciona novo
             merged_articles_map[norm_title] = work
 
+    # --- Loop 2 (Scholar) com lógica de correspondência ---
     for scholar_art in scholar_articles_raw:
         norm_title = normalize_title(scholar_art.get("title"))
         if not norm_title: continue
-        if norm_title in merged_articles_map:
-            if scholar_art.get("cited_by"):
-                merged_articles_map[norm_title]['cited_by'] = {"value": scholar_art.get("cited_by", {}).get("value", 0)}
-            if scholar_art.get("link"):
-                merged_articles_map[norm_title]['link'] = scholar_art.get("link")
-        else:
-            merged_articles_map[norm_title] = {
-                "title": scholar_art.get("title"), "doi": None, "doiLink": None,
-                "year": str(scholar_art.get("year", "")),
-                "journalTitle": scholar_art.get("publication", "N/A"),
-                "link": scholar_art.get("link"),
-                "cited_by": {"value": scholar_art.get("cited_by", {}).get("value", 0)}
-            }
+        
+        matching_key, match_type = find_matching_key(norm_title, merged_articles_map)
+        
+        # --- CORREÇÃO (v9.1.1): Trata 'None' em citações ---
+        # A API pode retornar {"value": null} que o get("value", 0) interpreta como None.
+        # Usamos (get(...) or {}) e (get(...) or 0) para garantir 0 em caso de None ou ausência.
+        scholar_cites_clean = ((scholar_art.get("cited_by") or {}).get("value") or 0)
+        # --- FIM CORREÇÃO ---
+
+        # Prepara os dados do scholar
+        scholar_data = {
+            "title": scholar_art.get("title"),
+            "year": str(scholar_art.get("year", "")),
+            "journalTitle": scholar_art.get("publication", "N/A"),
+            "link": scholar_art.get("link"),
+            "cited_by": {"value": scholar_cites_clean} # Usa o valor limpo
+        }
+        
+        if match_type == 'exact':
+            # Match exato, apenas atualiza citações e link (se faltar)
+            # --- CORREÇÃO (v9.1.1): Garante que a comparação é segura contra None ---
+            existing_cites = ((merged_articles_map[matching_key].get('cited_by') or {}).get('value') or 0)
+            if scholar_data['cited_by']['value'] > existing_cites:
+            # --- FIM CORREÇÃO ---
+                merged_articles_map[matching_key]['cited_by'] = scholar_data['cited_by']
+            if scholar_data.get('link') and not merged_articles_map[matching_key].get('link'):
+                merged_articles_map[matching_key]['link'] = scholar_data['link']
+
+        elif match_type == 'partial_new_is_longer':
+            # O novo título (Scholar) é a versão completa de uma chave existente (abreviada).
+            # Substitui a chave abreviada pela completa, mantendo dados antigos.
+            existing_data = merged_articles_map.pop(matching_key)
+            existing_data.update(scholar_data) # Atualiza com dados do Scholar
+            merged_articles_map[norm_title] = existing_data
+
+        elif match_type == 'partial_existing_is_longer':
+            # O novo título (Scholar, abreviado) corresponde a uma chave completa existente.
+            # Apenas atualiza as citações na chave completa.
+            # --- CORREÇÃO (v9.1.1): Garante que a comparação é segura contra None ---
+            existing_cites = ((merged_articles_map[matching_key].get('cited_by') or {}).get('value') or 0)
+            if scholar_data['cited_by']['value'] > existing_cites:
+            # --- FIM CORREÇÃO ---
+                 merged_articles_map[matching_key]['cited_by'] = scholar_data['cited_by']
+            if scholar_data.get('link') and not merged_articles_map[matching_key].get('link'):
+                merged_articles_map[matching_key]['link'] = scholar_data['link']
+        
+        else: # None
+            # Nenhum match, adiciona novo
+            scholar_data.update({"doi": None, "doiLink": None}) # Garante campos do ORCID
+            merged_articles_map[norm_title] = scholar_data
+            
+    # --- FIM DAS ALTERAÇÕES (v9.1.1) ---
 
     merged_articles = sorted(list(merged_articles_map.values()),
-                             key=lambda x: ((x.get("cited_by") or {}).get("value") or 0, int(x.get("year") or 0)),
+                             # --- CORREÇÃO (v9.1.1): Lógica robusta de ordenação contra None ---
+                             key=lambda x: (((x.get("cited_by") or {}).get("value") or 0), int(x.get("year") or 0)),
                              reverse=True)
     logging.info(f"✓ Combinação finalizada. Total de {len(merged_articles)} publicações.")
 
