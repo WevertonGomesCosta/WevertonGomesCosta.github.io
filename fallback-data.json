@@ -1,6 +1,20 @@
 {
     "githubRepos": [
         {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "JavaScript",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2025-11-06T18:34:24Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
+        {
             "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
@@ -33,20 +47,6 @@
                 "genetics",
                 "machine-learning",
                 "neural-network"
-            ]
-        },
-        {
-            "name": "WevertonGomesCosta.github.io",
-            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
-            "homepage": "https://wevertongomescosta.github.io",
-            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "JavaScript",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2025-11-04T18:56:23Z",
-            "topics": [
-                "pessoal",
-                "site"
             ]
         },
         {
@@ -428,8 +428,8 @@
                 "table": [
                     {
                         "citations": {
-                            "all": 161,
-                            "since_2020": 158
+                            "all": 162,
+                            "since_2020": 159
                         }
                     },
                     {
@@ -464,7 +464,7 @@
                     },
                     {
                         "year": 2021,
-                        "citations": 18
+                        "citations": 19
                     },
                     {
                         "year": 2022,
@@ -494,7 +494,7 @@
                 "journalTitle": "EUPHYTICA",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                 "cited_by": {
-                    "value": 37
+                    "value": 38
                 }
             },
             {
@@ -735,6 +735,17 @@
                 "year": "2025",
                 "journalTitle": "International Journal of Horticultural Science",
                 "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:QIV2ME_5wuYC",
+                "cited_by": {
+                    "value": 0
+                }
+            },
+            {
+                "title": "Multi-trait selection and the relationship between sensory analysis and post-harvest variables in Coffea arabica",
+                "doi": "10.1590/1678-992x-2025-0020",
+                "doiLink": "https://doi.org/10.1590/1678-992x-2025-0020",
+                "year": "2025",
+                "journalTitle": "Scientia Agricola",
+                "link": "https://doi.org/10.1590/1678-992x-2025-0020",
                 "cited_by": {
                     "value": 0
                 }
