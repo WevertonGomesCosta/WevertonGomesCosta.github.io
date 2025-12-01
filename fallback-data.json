@@ -1,6 +1,20 @@
 {
     "githubRepos": [
         {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "JavaScript",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2025-11-25T00:57:35Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
+        {
             "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
@@ -44,20 +58,6 @@
                 "r",
                 "reproducible-research",
                 "rstats"
-            ]
-        },
-        {
-            "name": "WevertonGomesCosta.github.io",
-            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
-            "homepage": "https://wevertongomescosta.github.io",
-            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "JavaScript",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2025-11-21T19:09:23Z",
-            "topics": [
-                "pessoal",
-                "site"
             ]
         },
         {
@@ -440,8 +440,8 @@
                     },
                     {
                         "i10_index": {
-                            "all": 5,
-                            "since_2020": 5
+                            "all": 6,
+                            "since_2020": 6
                         }
                     }
                 ],
@@ -464,7 +464,7 @@
                     },
                     {
                         "year": 2021,
-                        "citations": 19
+                        "citations": 18
                     },
                     {
                         "year": 2022,
@@ -472,7 +472,7 @@
                     },
                     {
                         "year": 2023,
-                        "citations": 27
+                        "citations": 29
                     },
                     {
                         "year": 2024,
@@ -480,30 +480,30 @@
                     },
                     {
                         "year": 2025,
-                        "citations": 50
+                        "citations": 48
                     }
                 ]
             }
         },
         "articles": [
             {
-                "title": "Recommendation of <i>Coffea arabica</i> genotypes by factor analysis",
-                "doi": "10.1007/S10681-019-2499-X",
-                "doiLink": "https://doi.org/10.1007/S10681-019-2499-X",
+                "title": "Recommendation of Coffea arabica genotypes by factor analysis",
+                "doi": "10.1007/s10681-019-2499-x",
+                "doiLink": "https://doi.org/10.1007/s10681-019-2499-x",
                 "year": "2019",
-                "journalTitle": "EUPHYTICA",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
+                "journalTitle": "Euphytica",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85073253514&partnerID=MN8TOARS",
                 "cited_by": {
-                    "value": 39
+                    "value": 38
                 }
             },
             {
-                "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
-                "doi": "10.1002/CSC2.20488",
-                "doiLink": "https://doi.org/10.1002/CSC2.20488",
+                "title": "Genome‐enabled prediction through machine learning methods considering different levels of trait complexity",
+                "doi": "10.1002/csc2.20488",
+                "doiLink": "https://doi.org/10.1002/csc2.20488",
                 "year": "2021",
-                "journalTitle": "CROP SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:qjMakFHDy7sC",
+                "journalTitle": "Crop Science",
+                "link": "https://doi.org/10.1002/csc2.20488",
                 "cited_by": {
                     "value": 16
                 }
@@ -520,56 +520,56 @@
                 }
             },
             {
-                "title": "Machine learning and statistics to qualify environments through multi-traits in <i>Coffea arabica</i>",
-                "doi": "10.1371/JOURNAL.PONE.0245298",
-                "doiLink": "https://doi.org/10.1371/JOURNAL.PONE.0245298",
+                "title": "Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",
+                "doi": "10.1371/journal.pone.0245298",
+                "doiLink": "https://doi.org/10.1371/journal.pone.0245298",
                 "year": "2021",
                 "journalTitle": "PLOS ONE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:zYLM7Y9cAGgC",
+                "link": "https://doi.org/10.1371/journal.pone.0245298",
                 "cited_by": {
                     "value": 13
                 }
             },
             {
-                "title": "Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial <i>Eucalyptus</i> Clones",
-                "doi": "10.3390/AGRONOMY13030937",
-                "doiLink": "https://doi.org/10.3390/AGRONOMY13030937",
+                "title": "Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial Eucalyptus Clones",
+                "doi": "10.3390/agronomy13030937",
+                "doiLink": "https://doi.org/10.3390/agronomy13030937",
                 "year": "2023",
-                "journalTitle": "AGRONOMY-BASEL",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:8k81kl-MbHgC",
+                "journalTitle": "Agronomy",
+                "link": "https://doi.org/10.3390/agronomy13030937",
                 "cited_by": {
                     "value": 12
                 }
             },
             {
-                "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
-                "doi": "10.1016/J.LIVSCI.2024.105433",
-                "doiLink": "https://doi.org/10.1016/J.LIVSCI.2024.105433",
-                "year": "2024",
-                "journalTitle": "LIVESTOCK SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
+                "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
+                "doi": "10.4238/gmr18434",
+                "doiLink": "https://doi.org/10.4238/gmr18434",
+                "year": "2020",
+                "journalTitle": "Genetics and Molecular Research",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85090047441&partnerID=MN8TOARS",
                 "cited_by": {
-                    "value": 9
+                    "value": 10
                 }
             },
             {
-                "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
-                "doi": "10.4238/GMR18434",
-                "doiLink": "https://doi.org/10.4238/GMR18434",
-                "year": "2020",
-                "journalTitle": "GENETICS AND MOLECULAR RESEARCH",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C",
+                "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                "doi": "10.1016/j.livsci.2024.105433",
+                "doiLink": "https://doi.org/10.1016/j.livsci.2024.105433",
+                "year": "2024",
+                "journalTitle": "Livestock Science",
+                "link": "https://doi.org/10.1016/j.livsci.2024.105433",
                 "cited_by": {
                     "value": 9
                 }
             },
             {
                 "title": "Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",
-                "doi": "10.3390/AGRONOMY13051261",
-                "doiLink": "https://doi.org/10.3390/AGRONOMY13051261",
+                "doi": "10.3390/agronomy13051261",
+                "doiLink": "https://doi.org/10.3390/agronomy13051261",
                 "year": "2023",
-                "journalTitle": "AGRONOMY-BASEL",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:MXK_kJrjxJIC",
+                "journalTitle": "Agronomy",
+                "link": "https://www.mdpi.com/2073-4395/13/5/1261",
                 "cited_by": {
                     "value": 8
                 }
@@ -586,89 +586,89 @@
                 }
             },
             {
-                "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
-                "doi": "10.1002/CSC2.20816",
-                "doiLink": "https://doi.org/10.1002/CSC2.20816",
+                "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self‐organizing maps",
+                "doi": "10.1002/csc2.20816",
+                "doiLink": "https://doi.org/10.1002/csc2.20816",
                 "year": "2022",
-                "journalTitle": "CROP SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
+                "journalTitle": "Crop Science",
+                "link": "https://doi.org/10.1002/csc2.20816",
                 "cited_by": {
                     "value": 6
                 }
             },
             {
-                "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (<i>Oryza sativa</i> L)",
-                "doi": "10.1007/S10681-022-03077-X",
-                "doiLink": "https://doi.org/10.1007/S10681-022-03077-X",
+                "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
+                "doi": "10.1007/s10681-022-03077-x",
+                "doiLink": "https://doi.org/10.1007/s10681-022-03077-x",
                 "year": "2022",
-                "journalTitle": "EUPHYTICA",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:_FxGoFyzp5QC",
+                "journalTitle": "Euphytica",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85135566113&partnerID=MN8TOARS",
                 "cited_by": {
                     "value": 6
                 }
             },
             {
-                "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (<i>Oryza sativa</i>)",
-                "doi": "10.1111/PBR.12973",
-                "doiLink": "https://doi.org/10.1111/PBR.12973",
+                "title": "Application of fuzzy logic for adaptability and stability studies in flood‐irrigated rice (Oryza sativa)",
+                "doi": "10.1111/pbr.12973",
+                "doiLink": "https://doi.org/10.1111/pbr.12973",
                 "year": "2021",
-                "journalTitle": "PLANT BREEDING",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:YsMSGLbcyi4C",
+                "journalTitle": "Plant Breeding",
+                "link": "https://doi.org/10.1111/pbr.12973",
                 "cited_by": {
                     "value": 5
                 }
             },
             {
-                "title": "Performance of a breeding program for irrigated rice in Southeast Brazil",
-                "doi": "10.4238/GMR18332",
-                "doiLink": "https://doi.org/10.4238/GMR18332",
+                "title": "Performance of a breeding program for irrigated rice in southeast Brazil",
+                "doi": "10.4238/gmr18332",
+                "doiLink": "https://doi.org/10.4238/gmr18332",
                 "year": "2019",
-                "journalTitle": "GENETICS AND MOLECULAR RESEARCH",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC",
+                "journalTitle": "Genetics and Molecular Research",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85071667621&partnerID=MN8TOARS",
                 "cited_by": {
                     "value": 4
                 }
             },
             {
                 "title": "Optimizing drought tolerance in cassava through genomic selection",
-                "doi": "10.3389/FPLS.2024.1483340",
-                "doiLink": "https://doi.org/10.3389/FPLS.2024.1483340",
+                "doi": "10.3389/fpls.2024.1483340",
+                "doiLink": "https://doi.org/10.3389/fpls.2024.1483340",
                 "year": "2024",
-                "journalTitle": "FRONTIERS IN PLANT SCIENCE",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+                "journalTitle": "Frontiers in Plant Science",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85213532603&partnerID=MN8TOARS",
                 "cited_by": {
                     "value": 3
                 }
             },
             {
                 "title": "Potential of dry matter yield from alfalfa germplasm in composing base populations",
-                "doi": "10.1590/1984-70332021V21N3A41",
-                "doiLink": "https://doi.org/10.1590/1984-70332021V21N3A41",
+                "doi": "10.1590/1984-70332021v21n3a41",
+                "doiLink": "https://doi.org/10.1590/1984-70332021v21n3a41",
                 "year": "2021",
-                "journalTitle": "CROP BREEDING AND APPLIED BIOTECHNOLOGY",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:W7OEmFMy1HYC",
+                "journalTitle": "Crop Breeding and Applied Biotechnology",
+                "link": "https://doi.org/10.1590/1984-70332021v21n3a41",
                 "cited_by": {
                     "value": 3
                 }
             },
             {
                 "title": "Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",
-                "doi": "10.1016/J.SAJB.2024.10.052",
-                "doiLink": "https://doi.org/10.1016/J.SAJB.2024.10.052",
+                "doi": "10.1016/j.sajb.2024.10.052",
+                "doiLink": "https://doi.org/10.1016/j.sajb.2024.10.052",
                 "year": "2024",
-                "journalTitle": "SOUTH AFRICAN JOURNAL OF BOTANY",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:aqlVkmm33-oC",
+                "journalTitle": "South African Journal of Botany",
+                "link": "https://www.scopus.com/inward/record.url?eid=2-s2.0-85208483551&partnerID=MN8TOARS",
                 "cited_by": {
                     "value": 2
                 }
             },
             {
-                "title": "Quarter century genetic progress in irrigated rice (<i>Oryza sativa</i>) in Southeast Brazil",
-                "doi": "10.1111/PBR.12972",
-                "doiLink": "https://doi.org/10.1111/PBR.12972",
+                "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
+                "doi": "10.1111/pbr.12972",
+                "doiLink": "https://doi.org/10.1111/pbr.12972",
                 "year": "2021",
-                "journalTitle": "PLANT BREEDING",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&citation_for_view=eJNKcHsAAAAJ:eQOLeE2rZwMC",
+                "journalTitle": "Plant Breeding",
+                "link": "https://doi.org/10.1111/pbr.12972",
                 "cited_by": {
                     "value": 2
                 }
@@ -708,11 +708,11 @@
             },
             {
                 "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: a time meta-analysis",
-                "doi": "10.1590/1984-70332020V20N4A55",
-                "doiLink": "https://doi.org/10.1590/1984-70332020V20N4A55",
+                "doi": "10.1590/1984-70332020v20n4a55",
+                "doiLink": "https://doi.org/10.1590/1984-70332020v20n4a55",
                 "year": "2020",
-                "journalTitle": "CROP BREEDING AND APPLIED BIOTECHNOLOGY",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:2osOgNQ5qMEC",
+                "journalTitle": "Crop Breeding and Applied Biotechnology",
+                "link": "https://doi.org/10.1590/1984-70332020v20n4a55",
                 "cited_by": {
                     "value": 1
                 }
@@ -762,26 +762,37 @@
                 }
             },
             {
-                "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
-                "doi": "10.1590/1678-992X-2022-0233",
-                "doiLink": "https://doi.org/10.1590/1678-992X-2022-0233",
+                "title": "Trait prediction through computational intelligence and machine learning applied to soybean (Glycine max) breeding in shaded environments",
+                "doi": "10.1101/2024.01.31.578252",
+                "doiLink": "https://doi.org/10.1101/2024.01.31.578252",
                 "year": "2024",
-                "journalTitle": "SCIENTIA AGRICOLA",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:YOwf2qJgpHMC",
+                "journalTitle": "N/A",
+                "link": "https://doi.org/10.1101/2024.01.31.578252",
                 "cited_by": {
                     "value": 0
                 }
             },
             {
-                "title": "Trait prediction through computational intelligence and machine learning applied to soybean (Glycine max) breeding in shaded environments",
-                "doi": "10.1101/2024.01.31.578252",
-                "doiLink": "https://doi.org/10.1101/2024.01.31.578252",
+                "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
+                "doi": "10.1590/1678-992x-2022-0233",
+                "doiLink": "https://doi.org/10.1590/1678-992x-2022-0233",
                 "year": "2024",
-                "journalTitle": "bioRxiv",
-                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:Zph67rFs4hoC",
+                "journalTitle": "Scientia Agricola",
+                "link": "https://doi.org/10.1590/1678-992x-2022-0233",
                 "cited_by": {
                     "value": 0
                 }
+            },
+            {
+                "title": "RESEARCH ARTICLE METHODS OF ADAPTABILITY AND STABILITY APPLIED TO THE IMPROVEMENT OF FLOODED RICE",
+                "year": "2020",
+                "journalTitle": "GENETICS AND MOLECULAR RESEARCH 19 (3), 2020",
+                "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&cstart=20&citation_for_view=eJNKcHsAAAAJ:L8Ckcad2t8MC",
+                "cited_by": {
+                    "value": 0
+                },
+                "doi": null,
+                "doiLink": null
             },
             {
                 "title": "Ensaio comparativo preliminar de arroz irrigado em Minas Gerais? safra 2018/2019.",
