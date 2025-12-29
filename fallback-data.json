@@ -1,6 +1,17 @@
 {
     "githubRepos": [
         {
+            "name": "shiny-plant-disease",
+            "html_url": "https://github.com/WevertonGomesCosta/shiny-plant-disease",
+            "homepage": "https://weverton-costa.shinyapps.io/shiny-plant-disease/",
+            "description": "Aplicativo Shiny para análise de imagem e cálculo de severidade de doenças em folhas.",
+            "language": null,
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-12-19T04:37:48Z",
+            "topics": []
+        },
+        {
             "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
             "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
@@ -8,7 +19,7 @@
             "language": "R",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2025-12-09T12:30:48Z",
+            "updated_at": "2025-12-19T04:22:04Z",
             "topics": [
                 "genomic-wide-association-studies",
                 "gwas",
@@ -19,6 +30,17 @@
             ]
         },
         {
+            "name": "sorteador-pelada",
+            "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
+            "homepage": null,
+            "description": "Sorteador de times para pelada",
+            "language": "Python",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2025-12-17T13:26:02Z",
+            "topics": []
+        },
+        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -26,7 +48,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-12-01T14:36:38Z",
+            "updated_at": "2025-12-12T14:59:50Z",
             "topics": [
                 "pessoal",
                 "site"
