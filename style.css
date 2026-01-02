@@ -470,21 +470,304 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 .project-card .actions { margin-top: auto; padding-top: 10px; display: flex; gap: 15px; }
 
 
-/* 3.4. Seção de Publicações (Unificada) */
-.publication-card { display: flex; flex-direction: column; gap: 10px; height: 100%; }
-.publication-card.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; backdrop-filter: blur(10px); transition: all 0.3s ease; }
-.publication-card.card:hover { transform: translateY(-5px); border-color: rgba(16, 185, 129, 0.4); box-shadow: 0 5px 30px rgba(16, 185, 129, 0.2); }
-.publication-card h3 { color: var(--primary); font-size: 1.2rem; }
-.publication-card > a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; margin-top: auto; padding-top: 10px; }
-.publication-card > a:hover { color: var(--primary-dark); }
-.publication-meta { font-size: 0.9rem; color: var(--text-muted); }
-.publication-card .citations { font-size: 0.9rem; color: var(--accent); font-weight: bold; }
-.publication-doi { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 0.9rem; }
-.publication-doi img { width: 20px; height: 20px; }
-.publication-doi a { color: var(--text-muted); text-decoration: none; word-break: break-all; transition: color 0.3s ease; }
-.publication-doi a:hover { color: var(--primary); }
+/*    3.4. Seção de Publicações (Carrossel + Grid) */
 
-/* style.css */
+.carousel-container {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto 3rem auto;
+    overflow: visible; /* Permite ver os botões fora */
+}
+
+.carousel-track-container {
+    overflow: hidden;
+    border-radius: 16px;
+    position: relative;
+    /* Ajuste para mobile para não cortar sombra */
+    padding: 5px; 
+    margin: -5px;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+    padding: 0 4px; /* Pequeno espaçamento entre slides */
+}
+
+/* Card de Estatística (Dentro do Carrossel) */
+.stats-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    min-height: 300px; /* Altura mínima consistente */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Cabeçalho do Card (Ícone + Título) */
+.stats-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.stats-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--text);
+}
+
+.stats-icon {
+    width: 32px;
+    height: 32px;
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover .stats-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Temas de Cores Específicas */
+.scholar-theme .stats-icon { color: #4285F4; }
+.scopus-theme .stats-icon { color: #f58025; }
+.wos-theme .stats-icon { color: #6d2077; }
+.max-theme .stats-icon { color: var(--primary); }
+
+/* Métricas Genéricas (Números Grandes) */
+.generic-metrics {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    gap: 10px;
+}
+
+.metric-large {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.big-number {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.stats-card .label {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.stats-card .description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    max-width: 80%;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Controles do Carrossel (Botões Laterais) */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.carousel-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: 0 0 15px var(--glow);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev-btn { left: -60px; }
+.next-btn { right: -60px; }
+
+/* Esconder botões laterais em mobile (usar swipe/dots) */
+@media (max-width: 900px) {
+    .prev-btn, .next-btn { display: none; }
+}
+
+/* Navegação por Bolinhas (Dots) */
+.carousel-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 1.5rem;
+}
+
+.carousel-indicator {
+    border: 0;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    background: var(--border); /* Cor inativa */
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.carousel-indicator:hover {
+    background: var(--text-muted);
+}
+
+.carousel-indicator.current-slide {
+    background: var(--primary);
+    transform: scale(1.3);
+    box-shadow: 0 0 10px var(--glow);
+}
+
+/* --- B. GRID DE PUBLICAÇÕES (LISTA ABAIXO) --- */
+
+.publication-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+}
+
+.publication-card.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.publication-card.card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(16, 185, 129, 0.4); /* Verde sutil no hover */
+    box-shadow: 0 5px 30px rgba(16, 185, 129, 0.15);
+}
+
+.publication-card h3 {
+    color: var(--primary);
+    font-size: 1.15rem;
+    line-height: 1.4;
+    margin-bottom: 5px;
+}
+
+.publication-meta {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.publication-card .citations {
+    font-size: 0.9rem;
+    color: var(--accent); /* Ex: Dourado/Laranja para destaque */
+    font-weight: bold;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.publication-doi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 5px 0;
+    font-size: 0.85rem;
+    margin-top: auto; /* Empurra para o fundo se houver espaço */
+}
+
+.publication-doi img {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.publication-doi:hover img {
+    opacity: 1;
+}
+
+.publication-doi a {
+    color: var(--text-muted);
+    text-decoration: none;
+    word-break: break-all;
+    transition: color 0.3s ease;
+}
+
+.publication-doi a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* Botão "Ver Artigo" no card */
+.publication-card > a.article-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.publication-card > a.article-link:hover {
+    color: var(--primary-dark);
+    gap: 8px; /* Animação sutil de seta */
+}
+
+/* Ajuste para o gráfico ocupar toda a largura */
+.chart-container {
+    width: 100%;
+    height: 350px;       /* Altura fixa ideal */
+    min-height: 350px;   /* Impede que diminua */
+    position: relative;
+    display: block;      /* Garante comportamento de bloco */
+    overflow: hidden;    /* Evita que elementos vazem */
+}
+
+/* Garante que o Plotly dentro dele seja responsivo */
+.js-plotly-plot, .plot-container {
+    width: 100% !important;
+}
 
 /* 3.5. Seção de Contato (VISUAL MELHORADO) */
 .contact-container {
