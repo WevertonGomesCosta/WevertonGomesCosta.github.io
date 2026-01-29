@@ -22,6 +22,7 @@ import requests
 import json
 import re
 import csv
+import math
 from datetime import datetime
 import sys
 import os
@@ -261,7 +262,7 @@ def calculate_i10(citations_list) -> int:
 
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS (Fontes Padrão)
+# FUNÇÕES DE BUSCA DE DADOS - GITHUB
 # ==============================================================================
 
 def fetch_github_repos(username: str):
@@ -625,7 +626,7 @@ def fetch_orcid_works(orcid_id):
         return []
 
 # ==============================================================================
-# MÓDULO SCOPUS – Estratégia Híbrida Robusta (Com Gráfico Completo)
+# FUNÇÕES DE BUSCA DE DADOS – SCOPUS
 # ==============================================================================
 
 def fetch_scopus_data(author_id, api_key):
@@ -641,15 +642,15 @@ def fetch_scopus_data(author_id, api_key):
 
     articles = []
     scopus_ids = []
-    yearly_citation_totals = {} # Dicionário para acumular citações: {2020: 15, ...}
-    yearly_pub_counts = {}      # Dicionário para acumular publicações: {2020: 2, ...}
+    yearly_citation_totals = {} 
+    yearly_pub_counts = {}
 
     # ==========================================================================
-    # PASSO 1: SEARCH API (COM PAGINAÇÃO) -> LISTA DE ARTIGOS
+    # PASSO 1: SEARCH API
     # ==========================================================================
     logging.info("Buscando artigos via Scopus Search API...")
     start = 0
-    count = 25  # seguro contra timeout
+    count = 25
     more = True
 
     while more:
@@ -657,7 +658,7 @@ def fetch_scopus_data(author_id, api_key):
             "query": f"AU-ID({author_id})",
             "count": count,
             "start": start,
-            "view": "STANDARD",
+            "view": "STANDARD", # STANDARD geralmente contém dc:identifier
             "sort": "-citedby-count"
         }
 
@@ -678,16 +679,18 @@ def fetch_scopus_data(author_id, api_key):
                 break
 
             for entry in entries:
-                sid = entry.get("dc:identifier", "").replace("SCOPUS_ID:", "")
-                if sid:
+                # CORREÇÃO: Limpeza rigorosa do ID
+                raw_sid = entry.get("dc:identifier", "")
+                sid = raw_sid.replace("SCOPUS_ID:", "").strip()
+                
+                # Só adiciona se tiver ID e for numérico (evita lixo)
+                if sid and sid.isdigit():
                     scopus_ids.append(sid)
-
+                
                 doi = entry.get("prism:doi")
-                # Garante ano com 4 dígitos
                 raw_date = entry.get("prism:coverDate") or ""
                 year = raw_date[:4] if len(raw_date) >= 4 else ""
 
-                # Contagem de publicações por ano
                 if year.isdigit():
                     y_int = int(year)
                     yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
@@ -695,6 +698,7 @@ def fetch_scopus_data(author_id, api_key):
                 articles.append({
                     "title": entry.get("dc:title"),
                     "year": year,
+                    "journalTitle": entry.get("prism:publicationName", "N/A"),
                     "doi": doi,
                     "link": f"https://doi.org/{doi}" if doi else None,
                     "cited_by": {"value": int(entry.get("citedby-count", 0))},
@@ -708,58 +712,82 @@ def fetch_scopus_data(author_id, api_key):
             logging.error(f"Erro Search API: {e}")
             break
 
-    logging.info(f"✓ {len(articles)} artigos Scopus recuperados.")
+    logging.info(f"✓ {len(articles)} artigos recuperados. {len(scopus_ids)} IDs válidos para histórico.")
 
     # ==========================================================================
-    # PASSO 2: CITATION OVERVIEW API (HISTÓRICO DE CITAÇÕES)
+    # PASSO 2: CITATION OVERVIEW API
     # ==========================================================================
     api_overview_success = False
 
     if scopus_ids:
         try:
             logging.info("Tentando Citation Overview API...")
-            ids_chunk = ",".join(scopus_ids[:50])  # limite seguro
+            
+            batch_size = 20
             curr_year = datetime.now().year
             start_year = 2017
+            date_range = f"{start_year}-{curr_year}"
+            
+            overview_failed = False 
+            
+            for i in range(0, len(scopus_ids), batch_size):
+                batch = scopus_ids[i : i + batch_size]
+                if not batch: continue
 
-            params_over = {
-                "scopus_id": ids_chunk,
-                "date": f"{start_year}-{curr_year + 1}",
-                "httpAccept": "application/json"
-            }
+                ids_chunk = ",".join(batch)
+                
+                # DEBUG CRÍTICO: Mostra o que estamos enviando
+                logging.info(f"Enviando Batch {i//batch_size + 1}: IDs={ids_chunk[:20]}... (Total: {len(batch)})")
+                
+                params_over = {
+                    "scopus_id": ids_chunk, # O parametro deve ser exatamente este
+                    "date": date_range,
+                    "httpAccept": "application/json"
+                }
 
-            ov_resp = requests.get(
-                "https://api.elsevier.com/content/abstract/citation-overview",
-                headers=headers,
-                params=params_over,
-                timeout=20
-            )
-
-            if ov_resp.status_code == 200:
-                data = ov_resp.json()
-                matrix = (
-                    data
-                    .get("citation-overview-content", {})
-                    .get("citeInfoMatrix", {})
-                    .get("citeInfoMatrixXML", {})
-                    .get("citationMatrix", {})
-                    .get("citeInfo", [])
+                ov_resp = requests.get(
+                    "https://api.elsevier.com/content/abstract/citation-overview",
+                    headers=headers,
+                    params=params_over,
+                    timeout=20
                 )
 
-                for paper in matrix:
-                    for col in paper.get("cc", []):
-                        y = int(col.get("@year"))
-                        v = int(col.get("$", 0))
-                        yearly_citation_totals[y] = yearly_citation_totals.get(y, 0) + v
+                if ov_resp.status_code == 200:
+                    data = ov_resp.json()
+                    overview_base = data.get("citation-overview", {})
+                    docs = overview_base.get("document", [])
+                    if isinstance(docs, dict): docs = [docs]
 
+                    for doc in docs:
+                        matrix = (
+                            doc.get("citeInfoMatrix", {})
+                            .get("citeInfoMatrixXML", {})
+                            .get("citationMatrix", {})
+                            .get("citeInfo", [])
+                        )
+                        for col in matrix:
+                            y = col.get("dc:coverage-text") or col.get("@year")
+                            v = col.get("$")
+                            if y and v:
+                                try:
+                                    yearly_citation_totals[int(y)] = yearly_citation_totals.get(int(y), 0) + int(v)
+                                except: pass
+                else:
+                    logging.warning(f"Batch falhou ({ov_resp.status_code}).")
+                    if ov_resp.status_code == 400:
+                        logging.error(f"ERRO 400 RETORNO: {ov_resp.text}")
+                    overview_failed = True
+                    break 
+            
+            if not overview_failed:
                 api_overview_success = True
                 logging.info("✓ Histórico de citações obtido via API.")
 
         except Exception as e:
-            logging.warning(f"Citation Overview falhou: {e}")
+            logging.warning(f"Citation Overview falhou com exceção: {e}")
 
     # ==========================================================================
-    # PASSO 3: CSV FALLBACK (SE API DE CITAÇÕES FALHOU)
+    # PASSO 3: CSV FALLBACK
     # ==========================================================================
     if not api_overview_success:
         csv_path = "CitationOverview.csv"
@@ -770,35 +798,31 @@ def fetch_scopus_data(author_id, api_key):
                     reader = csv.reader(f)
                     rows = list(reader)
 
-                # Localiza a linha de anos
                 year_row_idx = -1
                 for i, r in enumerate(rows):
-                    if any(c.isdigit() and 1990 < int(c) < 2030 for c in r):
+                    if any(c.isdigit() and 2000 < int(c) < 2030 for c in r):
                         year_row_idx = i
                         break
                 
                 if year_row_idx != -1 and len(rows) > year_row_idx + 1:
                     year_row = rows[year_row_idx]
-                    data_row = rows[year_row_idx + 1]
-
-                    for y, v in zip(year_row, data_row):
-                        if y.isdigit():
-                            try:
-                                y_int = int(y)
-                                v_int = int(v)
-                                yearly_citation_totals[y_int] = v_int
-                            except:
-                                pass
-
+                    
+                    for row_idx in range(year_row_idx + 1, len(rows)):
+                        row = rows[row_idx]
+                        if not row or "total" in str(row[0]).lower(): continue 
+                        
+                        for y_str, val_str in zip(year_row, row):
+                            if y_str.isdigit() and val_str.isdigit():
+                                y = int(y_str)
+                                v = int(val_str)
+                                yearly_citation_totals[y] = yearly_citation_totals.get(y, 0) + v
             except Exception as e:
                 logging.error(f"Erro ao processar CSV Scopus: {e}")
 
     # ==========================================================================
-    # PASSO 4: MESCLAGEM DO GRÁFICO (CITAÇÕES + PUBLICAÇÕES)
+    # PASSO 4: MONTAGEM FINAL
     # ==========================================================================
     graph_data = []
-    
-    # Conjunto de todos os anos encontrados (seja em pubs ou cites)
     all_years = sorted(set(yearly_citation_totals.keys()) | set(yearly_pub_counts.keys()))
     current_year = datetime.now().year
 
@@ -807,35 +831,22 @@ def fetch_scopus_data(author_id, api_key):
             graph_data.append({
                 "year": y,
                 "citations": yearly_citation_totals.get(y, 0),
-                "publications": yearly_pub_counts.get(y, 0) # <--- Campo solicitado
+                "publications": yearly_pub_counts.get(y, 0) 
             })
 
-    # ==========================================================================
-    # PASSO 5: CÁLCULO DE MÉTRICAS GERAIS
-    # ==========================================================================
     cites_all = [a["cited_by"]["value"] for a in articles]
-    cites_since_2021 = [
-        a["cited_by"]["value"]
-        for a in articles
-        if a.get("year") and a["year"].isdigit() and int(a["year"]) >= 2021
-    ]
+    cites_since_2021 = [a["cited_by"]["value"] for a in articles if a.get("year", "").isdigit() and int(a["year"]) >= 2021]
 
     metrics_table = [
         {"citations": {"all": sum(cites_all), "since_2021": sum(cites_since_2021)}},
-        {"h_index": {
-            "all": calculate_h_index(cites_all),
-            "since_2021": calculate_h_index(cites_since_2021)
-        }},
-        {"i10_index": {
-            "all": calculate_i10(cites_all),
-            "since_2021": calculate_i10(cites_since_2021)
-        }}
+        {"h_index": {"all": calculate_h_index(cites_all), "since_2021": calculate_h_index(cites_since_2021)}},
+        {"i10_index": {"all": calculate_i10(cites_all), "since_2021": calculate_i10(cites_since_2021)}}
     ]
 
     return {
+        "source_name": "Scopus",
         "profile": {
-            "source_name": "Scopus",
-            "total_publications": len(articles), # <--- Contagem total
+            "total_publications": len(articles), 
             "cited_by": {
                 "table": metrics_table,
                 "graph": graph_data 
@@ -845,7 +856,7 @@ def fetch_scopus_data(author_id, api_key):
     }
 
 # ==============================================================================
-# MÓDULO WEB OF SCIENCE (Híbrido: API -> Fallback Local Corrigido)
+# FUNÇÕES DE BUSCA DE DADOS – WEB OF SCIENCE
 # ==============================================================================
 
 def fetch_wos_data(researcher_id, api_key):
@@ -1519,6 +1530,7 @@ def merge_article_into_map(main_map, new_article, source_name):
             "sources": [source_name]
         }
         main_map[norm_title] = article
+
 # ==============================================================================
 # CÁLCULO DE MÉTRICAS MAXIMIZADAS E GRÁFICO HÍBRIDO
 # ==============================================================================
