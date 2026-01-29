@@ -1,6 +1,17 @@
 {
     "githubRepos": [
         {
+            "name": "sorteador-pelada",
+            "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
+            "homepage": null,
+            "description": "Sorteador de times para pelada",
+            "language": "Python",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-01-08T19:03:09Z",
+            "topics": []
+        },
+        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -8,7 +19,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-12-29T11:46:17Z",
+            "updated_at": "2026-01-02T23:11:15Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -42,17 +53,6 @@
                 "neural-network",
                 "splines"
             ]
-        },
-        {
-            "name": "sorteador-pelada",
-            "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
-            "homepage": null,
-            "description": "Sorteador de times para pelada",
-            "language": "Python",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-12-17T13:26:02Z",
-            "topics": []
         },
         {
             "name": "Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
@@ -444,19 +444,19 @@
             "topics": []
         }
     ],
-    "lastUpdated": "02/01/2026 20:09",
+    "lastUpdated": "29/01/2026 14:28",
     "academicData": {
         "google_scholar": {
             "profile": {
                 "source": "Google Scholar",
                 "source_name": "Google Scholar",
-                "total_publications": 32,
+                "total_publications": 33,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 165,
-                                "since_2021": 156
+                                "all": 167,
+                                "since_2021": 158
                             }
                         },
                         {
@@ -467,8 +467,8 @@
                         },
                         {
                             "i10_index": {
-                                "all": 7,
-                                "since_2021": 7
+                                "all": 6,
+                                "since_2021": 6
                             }
                         }
                     ],
@@ -510,13 +510,13 @@
                         },
                         {
                             "year": 2025,
-                            "citations": 49,
+                            "citations": 48,
                             "publications": 3
                         },
                         {
                             "year": 2026,
-                            "citations": 1,
-                            "publications": 0
+                            "citations": 4,
+                            "publications": 1
                         }
                     ]
                 }
@@ -535,24 +535,24 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Genome‐enabled prediction through machine learning methods considering different levels of trait complexity",
-                    "year": "2021",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qjMakFHDy7sC",
-                    "journalTitle": "Crop Science 61 (3), 1890-1902, 2021",
+                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
+                    "year": "2022",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:UebtZRa9Y70C",
+                    "journalTitle": "Computational and Structural Biotechnology Journal 20, 5490-5499, 2022",
                     "cited_by": {
-                        "value": 16
+                        "value": 17
                     },
                     "source": "Google Scholar",
                     "doi": null,
                     "doiLink": null
                 },
                 {
-                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
-                    "year": "2022",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:UebtZRa9Y70C",
-                    "journalTitle": "Computational and Structural Biotechnology Journal 20, 5490-5499, 2022",
+                    "title": "Genome‐enabled prediction through machine learning methods considering different levels of trait complexity",
+                    "year": "2021",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qjMakFHDy7sC",
+                    "journalTitle": "Crop Science 61 (3), 1890-1902, 2021",
                     "cited_by": {
-                        "value": 15
+                        "value": 16
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -600,7 +600,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C",
                     "journalTitle": "N/A",
                     "cited_by": {
-                        "value": 10
+                        "value": 9
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -715,6 +715,18 @@
                     "doiLink": null
                 },
                 {
+                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "year": "2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
+                    "journalTitle": "Agronomy 14 (10), 2234, 2024",
+                    "cited_by": {
+                        "value": 2
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
                     "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
                     "year": "2021",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:eQOLeE2rZwMC",
@@ -731,18 +743,6 @@
                     "year": "2024",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qxL8FJ1GzNcC",
                     "journalTitle": "Revista Brasileira de Zootecnia 53, e20240001, 2024",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
-                    "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
-                    "journalTitle": "Agronomy 14 (10), 2234, 2024",
                     "cited_by": {
                         "value": 1
                     },
@@ -793,6 +793,18 @@
                     "journalTitle": "Crop Breeding and Applied Biotechnology 20 (4), e30032042, 2020",
                     "cited_by": {
                         "value": 1
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Comparison of Machine Learning Methods for Marker Identification in GWAS",
+                    "year": "2026",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:ZeXyd9-uunAC",
+                    "journalTitle": "International Journal of Plant Biology 17 (1), 6, 2026",
+                    "cited_by": {
+                        "value": null
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -916,8 +928,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 106,
-                                "since_2021": 73
+                                "all": 107,
+                                "since_2021": 74
                             }
                         },
                         {
@@ -1169,22 +1181,22 @@
                     "source": "Scopus"
                 },
                 {
-                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
-                    "year": "2021",
-                    "doi": "10.1111/pbr.12973",
-                    "link": "https://doi.org/10.1111/pbr.12973",
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
+                    "year": "2024",
+                    "doi": "10.3389/fpls.2024.1483340",
+                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
                     "cited_by": {
                         "value": 3
                     },
                     "source": "Scopus"
                 },
                 {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "doi": "10.3389/fpls.2024.1483340",
-                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
+                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+                    "year": "2021",
+                    "doi": "10.1111/pbr.12973",
+                    "link": "https://doi.org/10.1111/pbr.12973",
                     "cited_by": {
-                        "value": 2
+                        "value": 3
                     },
                     "source": "Scopus"
                 },
@@ -1561,6 +1573,15 @@
             "source_name": "ORCID",
             "articles": [
                 {
+                    "title": "Comparison of Machine Learning Methods for Marker Identification in GWAS",
+                    "doi": "10.3390/ijpb17010006",
+                    "doiLink": "https://doi.org/10.3390/ijpb17010006",
+                    "year": "2026",
+                    "journalTitle": "International Journal of Plant Biology",
+                    "link": "https://doi.org/10.3390/ijpb17010006",
+                    "source": "ORCID"
+                },
+                {
                     "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex Maiden and E. urophylla T. Blake",
                     "doi": "10.3390/ijpb16040124",
                     "doiLink": "https://doi.org/10.3390/ijpb16040124",
@@ -1816,12 +1837,12 @@
         },
         "maximized": {
             "source_name": "Maximized Dataset",
-            "total_publications": 30,
+            "total_publications": 31,
             "cited_by": {
                 "table": [
                     {
                         "citations": {
-                            "all": 165,
+                            "all": 167,
                             "since_2021": 0
                         }
                     },
@@ -1833,7 +1854,7 @@
                     },
                     {
                         "i10_index": {
-                            "all": 7,
+                            "all": 6,
                             "since_2021": 0
                         }
                     }
@@ -1966,13 +1987,13 @@
                     },
                     {
                         "year": 2025,
-                        "citations": 49,
+                        "citations": 48,
                         "publications": 3
                     },
                     {
                         "year": 2026,
-                        "citations": 1,
-                        "publications": 0
+                        "citations": 4,
+                        "publications": 1
                     }
                 ]
             },
@@ -1994,13 +2015,13 @@
                     ]
                 },
                 {
-                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
-                    "year": "2021",
-                    "doi": "10.1002/csc2.20488",
-                    "journalTitle": "Crop Science",
-                    "link": "https://doi.org/10.1002/csc2.20488",
+                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
+                    "year": "2022",
+                    "doi": "10.1016/J.CSBJ.2022.09.029",
+                    "journalTitle": "COMPUTATIONAL AND STRUCTURAL BIOTECHNOLOGY JOURNAL",
+                    "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
                     "cited_by": {
-                        "value": 16
+                        "value": 17
                     },
                     "sources": [
                         "Google Scholar",
@@ -2010,13 +2031,13 @@
                     ]
                 },
                 {
-                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
-                    "year": "2022",
-                    "doi": "10.1016/J.CSBJ.2022.09.029",
-                    "journalTitle": "COMPUTATIONAL AND STRUCTURAL BIOTECHNOLOGY JOURNAL",
-                    "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
+                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
+                    "year": "2021",
+                    "doi": "10.1002/csc2.20488",
+                    "journalTitle": "Crop Science",
+                    "link": "https://doi.org/10.1002/csc2.20488",
                     "cited_by": {
-                        "value": 15
+                        "value": 16
                     },
                     "sources": [
                         "Google Scholar",
@@ -2080,7 +2101,7 @@
                     "journalTitle": "Genetics and Molecular Research",
                     "link": "https://doi.org/10.4238/gmr18434",
                     "cited_by": {
-                        "value": 10
+                        "value": 9
                     },
                     "sources": [
                         "Google Scholar",
@@ -2232,6 +2253,22 @@
                     ]
                 },
                 {
+                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "year": "2024",
+                    "doi": "10.3390/agronomy14102234",
+                    "journalTitle": "Agronomy",
+                    "link": "https://doi.org/10.3390/agronomy14102234",
+                    "cited_by": {
+                        "value": 2
+                    },
+                    "sources": [
+                        "Google Scholar",
+                        "ORCID",
+                        "Scopus",
+                        "Web of Science"
+                    ]
+                },
+                {
                     "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
                     "year": "2021",
                     "doi": "10.1111/pbr.12972",
@@ -2255,22 +2292,6 @@
                     "link": "https://doi.org/10.1590/1984-70332020v20n4a55",
                     "cited_by": {
                         "value": 2
-                    },
-                    "sources": [
-                        "Google Scholar",
-                        "ORCID",
-                        "Scopus",
-                        "Web of Science"
-                    ]
-                },
-                {
-                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
-                    "year": "2024",
-                    "doi": "10.3390/agronomy14102234",
-                    "journalTitle": "Agronomy",
-                    "link": "https://doi.org/10.3390/agronomy14102234",
-                    "cited_by": {
-                        "value": 1
                     },
                     "sources": [
                         "Google Scholar",
@@ -2316,6 +2337,20 @@
                     "link": "https://doi.org/10.33158/ASB.r145.v8.2022",
                     "cited_by": {
                         "value": 1
+                    },
+                    "sources": [
+                        "Google Scholar",
+                        "ORCID"
+                    ]
+                },
+                {
+                    "title": "Comparison of Machine Learning Methods for Marker Identification in GWAS",
+                    "year": "2026",
+                    "doi": "10.3390/ijpb17010006",
+                    "journalTitle": "International Journal of Plant Biology",
+                    "link": "https://doi.org/10.3390/ijpb17010006",
+                    "cited_by": {
+                        "value": 0
                     },
                     "sources": [
                         "Google Scholar",
