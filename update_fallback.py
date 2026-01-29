@@ -626,7 +626,7 @@ def fetch_orcid_works(orcid_id):
         return []
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS – SCOPUS
+# FUNÇÕES DE BUSCA DE DADOS – SCOPUS (CORRIGIDO)
 # ==============================================================================
 
 def fetch_scopus_data(author_id, api_key):
@@ -715,7 +715,7 @@ def fetch_scopus_data(author_id, api_key):
     logging.info(f"✓ {len(articles)} artigos recuperados. {len(scopus_ids)} IDs válidos para histórico.")
 
     # ==========================================================================
-    # PASSO 2: CITATION OVERVIEW API
+    # PASSO 2: CITATION OVERVIEW API (CORRIGIDO)
     # ==========================================================================
     api_overview_success = False
 
@@ -723,12 +723,27 @@ def fetch_scopus_data(author_id, api_key):
         try:
             logging.info("Tentando Citation Overview API...")
             
-            batch_size = 20
-            curr_year = datetime.now().year
-            start_year = 2017
-            date_range = f"{start_year}-{curr_year}"
+            # --- CORREÇÃO 1: Cálculo dinâmico do ano inicial ---
+            valid_years = []
+            for art in articles:
+                if art.get("year", "").isdigit():
+                    y_val = int(art["year"])
+                    if y_val > 1950: 
+                        valid_years.append(y_val)
             
-            overview_failed = False 
+            # Se encontrou anos, pega o menor. Se não, usa 2010 como fallback.
+            min_article_year = min(valid_years) if valid_years else 2010
+            
+            # Subtrai 2 anos para garantir (citações de pre-prints ou erros de data)
+            # e limita a 1990 para não quebrar a API com datas muito antigas
+            start_year = max(1990, min_article_year - 2)
+            curr_year = datetime.now().year
+            
+            date_range = f"{start_year}-{curr_year}"
+            logging.info(f"Intervalo de busca de citações definido: {date_range}")
+            # ---------------------------------------------------
+            
+            batch_size = 20
             
             for i in range(0, len(scopus_ids), batch_size):
                 batch = scopus_ids[i : i + batch_size]
@@ -736,11 +751,10 @@ def fetch_scopus_data(author_id, api_key):
 
                 ids_chunk = ",".join(batch)
                 
-                # DEBUG CRÍTICO: Mostra o que estamos enviando
                 logging.info(f"Enviando Batch {i//batch_size + 1}: IDs={ids_chunk[:20]}... (Total: {len(batch)})")
                 
                 params_over = {
-                    "scopus_id": ids_chunk, # O parametro deve ser exatamente este
+                    "scopus_id": ids_chunk,
                     "date": date_range,
                     "httpAccept": "application/json"
                 }
@@ -749,39 +763,44 @@ def fetch_scopus_data(author_id, api_key):
                     "https://api.elsevier.com/content/abstract/citation-overview",
                     headers=headers,
                     params=params_over,
-                    timeout=20
+                    timeout=30 # Timeout levemente aumentado para batches grandes
                 )
 
                 if ov_resp.status_code == 200:
                     data = ov_resp.json()
                     overview_base = data.get("citation-overview", {})
                     docs = overview_base.get("document", [])
+                    
+                    # Normalização: se for um único documento, a API retorna dict, não list
                     if isinstance(docs, dict): docs = [docs]
 
                     for doc in docs:
-                        matrix = (
-                            doc.get("citeInfoMatrix", {})
-                            .get("citeInfoMatrixXML", {})
-                            .get("citationMatrix", {})
-                            .get("citeInfo", [])
-                        )
-                        for col in matrix:
+                        # Navegação defensiva no JSON
+                        matrix_root = doc.get("citeInfoMatrix", {}).get("citeInfoMatrixXML", {}).get("citationMatrix", {})
+                        cite_info = matrix_root.get("citeInfo", [])
+                        
+                        # --- CORREÇÃO 2: Garante que seja lista ---
+                        # Scopus retorna dict se houver apenas 1 ano com citação
+                        if isinstance(cite_info, dict): cite_info = [cite_info]
+
+                        for col in cite_info:
                             y = col.get("dc:coverage-text") or col.get("@year")
                             v = col.get("$")
+                            
                             if y and v:
                                 try:
-                                    yearly_citation_totals[int(y)] = yearly_citation_totals.get(int(y), 0) + int(v)
-                                except: pass
+                                    y_int = int(y)
+                                    v_int = int(v)
+                                    yearly_citation_totals[y_int] = yearly_citation_totals.get(y_int, 0) + v_int
+                                except ValueError: pass
                 else:
-                    logging.warning(f"Batch falhou ({ov_resp.status_code}).")
-                    if ov_resp.status_code == 400:
-                        logging.error(f"ERRO 400 RETORNO: {ov_resp.text}")
-                    overview_failed = True
-                    break 
+                    logging.warning(f"Batch falhou ({ov_resp.status_code}): {ov_resp.text[:100]}")
+                    # Não marcamos overview_failed=True aqui para tentar salvar os outros batches
             
-            if not overview_failed:
+            # Se coletamos algum dado, consideramos sucesso
+            if yearly_citation_totals:
                 api_overview_success = True
-                logging.info("✓ Histórico de citações obtido via API.")
+                logging.info(f"✓ Histórico recuperado: {len(yearly_citation_totals)} anos com dados.")
 
         except Exception as e:
             logging.warning(f"Citation Overview falhou com exceção: {e}")
@@ -1726,17 +1745,31 @@ if __name__ == "__main__":
     logging.info("--- Etapa 4: Análise de Mudanças ---")
     report_lines, _ = analyze_changes(old_data, new_data)
 
+    # LÓGICA DE PERSISTÊNCIA CORRIGIDA
     if report_lines:
         print("\n" + "=" * 60)
         print(" RELATÓRIO DE ATUALIZAÇÃO")
         print("=" * 60)
         for line in report_lines: print(line)
         print("=" * 60 + "\n")
+        
+        logging.info("Mudanças identificadas. Gerando e atualizando arquivo...")
+        
+        # Só gera o arquivo se houver mudança
+        if generate_fallback_file(new_data, TEMP_FILENAME):
+            _ = update_main_file(MAIN_FILENAME, TEMP_FILENAME)
+            
     else:
-        print("\n=== Nenhuma alteração relevante detectada. ===\n")
-
-    if generate_fallback_file(new_data, TEMP_FILENAME):
-        _ = update_main_file(MAIN_FILENAME, TEMP_FILENAME)
+        print("\n=== Nenhuma alteração relevante detectada. Mantendo versão anterior. ===\n")
+        logging.info("Nenhuma mudança nos dados. O arquivo principal será mantido.")
+        
+        # Garante a exclusão do temporário caso ele tenha sobrado de alguma execução anterior
+        if os.path.exists(TEMP_FILENAME):
+            try:
+                os.remove(TEMP_FILENAME)
+                logging.info(f"Limpeza: Arquivo temporário {TEMP_FILENAME} excluído.")
+            except Exception as e:
+                logging.warning(f"Erro ao excluir arquivo temporário: {e}")
 
     logging.info("--- Processo concluído com sucesso ---")
 
