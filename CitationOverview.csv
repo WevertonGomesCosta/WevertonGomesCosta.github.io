@@ -1,24 +1,25 @@
 ,"Author: Costa, Weverton Gomes da",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,"h-index = 6 (Of the 17 documents considered for the h-index, 6 have been cited at least 6 times.)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,"h-index = 6 (Of the 18 documents considered for the h-index, 6 have been cited at least 6 times.)",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-,,,,,,<2000,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,Subtotal,>2025,Total
-Publication Year,Document Title,ISSN,Journal Title,Volume,Issue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,16,11,15,24,31,99,1,100
-2024,"Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",20734395,"Agronomy","14","10",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1
-2024,"Body weight prediction in crossbred pigs from digital images using computer vision",18711413,"Livestock Science","282","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,6,0,6
-2024,"Optimizing drought tolerance in cassava through genomic selection",1664462X,"Frontiers in Plant Science","15","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,2
-2023,"Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",20734395,"Agronomy","13","5",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,5,0,5
-2023,"Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial Eucalyptus Clones",20734395,"Agronomy","13","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,3,1,8,0,8
-2022,"Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",0011183X,"Crop Science","62","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1
-2022,"Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",00142336,"Euphytica","218","9",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,1,5,0,5
-2022,"Genomic prediction through machine learning and neural networks for traits with epistasis",20010370,"Computational and Structural Biotechnology Journal","20","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,6,12,0,12
-2021,"Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",01799541,"Plant Breeding","140","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,2,0,2
-2021,"Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",01799541,"Plant Breeding","140","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,3,0,3
-2021,"Genome-enabled prediction through machine learning methods considering different levels of trait complexity",0011183X,"Crop Science","61","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,4,3,13,0,13
-2021,"Potential of dry matter yield from alfalfa germplasm in composing base population",15187853,"Crop Breeding and Applied Biotechnology","21","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1
-2021,"Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",19326203,"Plos One","16","1 January",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,2,2,9,0,9
-2020,"Dynamics, diversity and experimental precision in final irrigated rice testing: A time meta-analysis",15187853,"Crop Breeding and Applied Biotechnology","20","4",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,2,0,2
-2020,"Methods of adaptability and stability applied to the improvement of flooded rice",16765680,"Genetics and Molecular Research","19","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,4,1,5
-2019,"Recommendation of Coffea arabica genotypes by factor analysis",00142336,"Euphytica","215","10",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,9,6,1,2,2,21,0,21
-2019,"Performance of a breeding program for irrigated rice in southeast Brazil",16765680,"Genetics and Molecular Research","18","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,1,0,4,0,4
+,,,,,,<2001,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026,Subtotal,>2026,Total
+Publication Year,Document Title,ISSN,Journal Title,Volume,Issue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,16,11,15,24,37,2,107,0,107
+2024,"Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",02546299,"South African Journal of Botany","175","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1
+2024,"Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",20734395,"Agronomy","14","10",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1
+2024,"Body weight prediction in crossbred pigs from digital images using computer vision",18711413,"Livestock Science","282","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,6,0,7,0,7
+2024,"Optimizing drought tolerance in cassava through genomic selection",1664462X,"Frontiers in Plant Science","15","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,0,3
+2023,"Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",20734395,"Agronomy","13","5",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,0,6,0,6
+2023,"Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial Eucalyptus Clones",20734395,"Agronomy","13","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,3,2,0,9,0,9
+2022,"Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",0011183X,"Crop Science","62","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1
+2022,"Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",00142336,"Euphytica","218","9",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,1,1,0,5,0,5
+2022,"Genomic prediction through machine learning and neural networks for traits with epistasis",20010370,"Computational and Structural Biotechnology Journal","20","",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,5,6,0,12,0,12
+2021,"Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",01799541,"Plant Breeding","140","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,2,0,2
+2021,"Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",01799541,"Plant Breeding","140","6",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,2,0,3,0,3
+2021,"Genome-enabled prediction through machine learning methods considering different levels of trait complexity",0011183X,"Crop Science","61","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,1,3,4,3,0,13,0,13
+2021,"Potential of dry matter yield from alfalfa germplasm in composing base population",15187853,"Crop Breeding and Applied Biotechnology","21","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1
+2021,"Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",19326203,"Plos One","16","1 January",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,1,2,3,0,10,0,10
+2020,"Dynamics, diversity and experimental precision in final irrigated rice testing: A time meta-analysis",15187853,"Crop Breeding and Applied Biotechnology","20","4",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,2,0,2
+2020,"Methods of adaptability and stability applied to the improvement of flooded rice",16765680,"Genetics and Molecular Research","19","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,1,5,0,5
+2019,"Recommendation of Coffea arabica genotypes by factor analysis",00142336,"Euphytica","215","10",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,9,6,1,2,3,0,22,0,22
+2019,"Performance of a breeding program for irrigated rice in southeast Brazil",16765680,"Genetics and Molecular Research","18","3",0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,0,0,1,0,0,4,0,4
