@@ -8,7 +8,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-01-29T20:50:09Z",
+            "updated_at": "2026-01-29T21:09:57Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -444,7 +444,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "29/01/2026 17:55",
+    "lastUpdated": "30/01/2026 17:27",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -505,12 +505,12 @@
                         },
                         {
                             "year": 2024,
-                            "citations": 39,
+                            "citations": 38,
                             "publications": 7
                         },
                         {
                             "year": 2025,
-                            "citations": 48,
+                            "citations": 49,
                             "publications": 3
                         },
                         {
@@ -929,7 +929,7 @@
                         {
                             "citations": {
                                 "all": 107,
-                                "since_2021": 74
+                                "since_2021": 105
                             }
                         },
                         {
@@ -946,76 +946,6 @@
                         }
                     ],
                     "graph": [
-                        {
-                            "year": 2001,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2002,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2003,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2004,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2005,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2006,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2007,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2008,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2009,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2010,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2011,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2012,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2013,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2014,
-                            "citations": 0,
-                            "publications": 0
-                        },
                         {
                             "year": 2015,
                             "citations": 0,
@@ -1043,37 +973,37 @@
                         },
                         {
                             "year": 2020,
-                            "citations": 4,
+                            "citations": 2,
                             "publications": 2
                         },
                         {
                             "year": 2021,
-                            "citations": 32,
+                            "citations": 16,
                             "publications": 5
                         },
                         {
                             "year": 2022,
-                            "citations": 22,
+                            "citations": 11,
                             "publications": 3
                         },
                         {
                             "year": 2023,
-                            "citations": 30,
+                            "citations": 15,
                             "publications": 2
                         },
                         {
                             "year": 2024,
-                            "citations": 48,
+                            "citations": 24,
                             "publications": 5
                         },
                         {
                             "year": 2025,
-                            "citations": 74,
+                            "citations": 37,
                             "publications": 2
                         },
                         {
                             "year": 2026,
-                            "citations": 4,
+                            "citations": 2,
                             "publications": 0
                         }
                     ]
@@ -1089,7 +1019,8 @@
                     "cited_by": {
                         "value": 22
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85073253514"
                 },
                 {
                     "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
@@ -1100,7 +1031,8 @@
                     "cited_by": {
                         "value": 13
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85104263465"
                 },
                 {
                     "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
@@ -1111,7 +1043,8 @@
                     "cited_by": {
                         "value": 12
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85139307465"
                 },
                 {
                     "title": "Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",
@@ -1122,7 +1055,8 @@
                     "cited_by": {
                         "value": 10
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85099892397"
                 },
                 {
                     "title": "Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial Eucalyptus Clones",
@@ -1133,7 +1067,8 @@
                     "cited_by": {
                         "value": 9
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85152360293"
                 },
                 {
                     "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
@@ -1144,7 +1079,8 @@
                     "cited_by": {
                         "value": 7
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85187690139"
                 },
                 {
                     "title": "Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",
@@ -1155,7 +1091,8 @@
                     "cited_by": {
                         "value": 6
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85160444099"
                 },
                 {
                     "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
@@ -1166,7 +1103,8 @@
                     "cited_by": {
                         "value": 5
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85090047441"
                 },
                 {
                     "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
@@ -1177,7 +1115,8 @@
                     "cited_by": {
                         "value": 5
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85135566113"
                 },
                 {
                     "title": "Performance of a breeding program for irrigated rice in southeast Brazil",
@@ -1188,7 +1127,8 @@
                     "cited_by": {
                         "value": 4
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85071667621"
                 },
                 {
                     "title": "Optimizing drought tolerance in cassava through genomic selection",
@@ -1199,7 +1139,8 @@
                     "cited_by": {
                         "value": 3
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85213532603"
                 },
                 {
                     "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
@@ -1210,7 +1151,8 @@
                     "cited_by": {
                         "value": 3
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85117190747"
                 },
                 {
                     "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
@@ -1221,7 +1163,8 @@
                     "cited_by": {
                         "value": 2
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85117372664"
                 },
                 {
                     "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: A time meta-analysis",
@@ -1232,7 +1175,8 @@
                     "cited_by": {
                         "value": 2
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85095700543"
                 },
                 {
                     "title": "Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",
@@ -1243,7 +1187,8 @@
                     "cited_by": {
                         "value": 1
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85208483551"
                 },
                 {
                     "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
@@ -1254,7 +1199,8 @@
                     "cited_by": {
                         "value": 1
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85207560508"
                 },
                 {
                     "title": "Potential of dry matter yield from alfalfa germplasm in composing base population",
@@ -1265,7 +1211,8 @@
                     "cited_by": {
                         "value": 1
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85122793528"
                 },
                 {
                     "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
@@ -1276,7 +1223,8 @@
                     "cited_by": {
                         "value": 1
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85138658502"
                 },
                 {
                     "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
@@ -1287,7 +1235,8 @@
                     "cited_by": {
                         "value": 0
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "85188537023"
                 },
                 {
                     "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex Maiden and E. urophylla T. Blake",
@@ -1298,7 +1247,8 @@
                     "cited_by": {
                         "value": 0
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "105025783242"
                 },
                 {
                     "title": "Multi-trait selection and the relationship between sensory analysis and postharvest variables in Coffea arabica",
@@ -1309,7 +1259,8 @@
                     "cited_by": {
                         "value": 0
                     },
-                    "source": "Scopus"
+                    "source": "Scopus",
+                    "scopus_id": "105024199202"
                 }
             ]
         },
@@ -1887,76 +1838,6 @@
                 ],
                 "graph": [
                     {
-                        "year": 2001,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2002,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2003,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2004,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2005,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2006,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2007,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2008,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2009,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2010,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2011,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2012,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2013,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
-                        "year": 2014,
-                        "citations": 0,
-                        "publications": 0
-                    },
-                    {
                         "year": 2015,
                         "citations": 0,
                         "publications": 0
@@ -1988,27 +1869,27 @@
                     },
                     {
                         "year": 2021,
-                        "citations": 32,
+                        "citations": 18,
                         "publications": 6
                     },
                     {
                         "year": 2022,
-                        "citations": 22,
+                        "citations": 20,
                         "publications": 5
                     },
                     {
                         "year": 2023,
-                        "citations": 30,
+                        "citations": 29,
                         "publications": 4
                     },
                     {
                         "year": 2024,
-                        "citations": 48,
+                        "citations": 38,
                         "publications": 7
                     },
                     {
                         "year": 2025,
-                        "citations": 74,
+                        "citations": 49,
                         "publications": 3
                     },
                     {
