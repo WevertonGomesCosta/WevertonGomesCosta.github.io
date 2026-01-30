@@ -5,18 +5,16 @@
 # - GitHub (Repositórios)
 # - Google Scholar (via SerpApi)
 # - ORCID
-# - Scopus (Elsevier API + fallback CSV)
-# - Web of Science (Clarivate API)
+# - Scopus (Elsevier API)
+# - Web of Science (fallback CSV)
 #
 # O script combina os dados e gera um arquivo JSON puro para o frontend.
 # As chaves e configurações são carregadas de um arquivo 'keys.json' unificado.
 # Implementa fallback automático e trata falhas de conexão.
 #
 # Autor: Weverton Gomes Costa
-# Versão: 11.0.0
-#   - Base estável
-#   - Preparação para Scopus híbrido (API + Citation Overview manual)
-#   - Melhorias de validação e robustez
+# Versão: 12.0.0
+#   - Correção para Scopus API
 
 import requests
 import json
@@ -626,272 +624,193 @@ def fetch_orcid_works(orcid_id):
         return []
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS – SCOPUS (CORRIGIDO)
+# FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Versão Final Validada)
 # ==============================================================================
 def fetch_scopus_data(author_id, api_key):
     """
-    Fluxo Sequencial:
-    1. Busca todos os artigos (Search API) -> Obtém IDs, Títulos, Anos, Total de Citações.
-    2. Busca histórico de citações (Overview API) -> Obtém citações ano a ano.
-    3. Consolida métricas -> Calcula h-index, i10 e monta o gráfico.
+    Busca dados do Scopus via Elsevier API.
+    Gera gráfico de citações somando o histórico anual de TODOS os artigos.
     """
     if not author_id or not api_key:
         return None
 
-    logging.info(f"--- [Scopus] Iniciando busca sequencial para ID: {author_id} ---")
+    logging.info(f"--- [Scopus] Iniciando módulo Scopus para ID: {author_id} ---")
 
     headers = {
         "X-ELS-APIKey": api_key,
         "Accept": "application/json"
     }
 
-    # Estruturas de dados principais
-    articles_list = []          # Armazena os metadados (Passo 1)
-    scopus_ids_list = []        # Lista limpa de IDs para a API de Overview (Passo 1 -> Passo 2)
+    cleaned_articles = []
+    scopus_ids_list = []
     
-    yearly_citation_counts = {} # Dicionário {ano: numero_citações} (Passo 2)
-    yearly_publication_counts = {} # Dicionário {ano: numero_artigos} (Passo 1)
+    # Acumuladores globais
+    yearly_citation_totals = {} # Soma de citações de todos os artigos por ano
+    yearly_pub_counts = {}      # Contagem de publicações por ano
 
     # ==========================================================================
-    # PASSO 1: OBTER DADOS BRUTOS (Search API)
-    # Objetivo: Listar obras, pegar totais acumulados e preparar IDs.
+    # 1. LISTA DE ARTIGOS (Search API)
     # ==========================================================================
-    logging.info(">>> Passo 1: Coletando metadados dos artigos...")
-    
     start_index = 0
     items_per_page = 25
     has_more_items = True
 
     while has_more_items:
-        params_search = {
-            "query": f"AU-ID({author_id})",
-            "count": items_per_page,
-            "start": start_index,
-            "view": "STANDARD",     # Garante retorno de identificadores
-            "sort": "-citedby-count" # Ordena por mais citados (ajuda no h-index)
-        }
-
         try:
             resp = requests.get(
                 "https://api.elsevier.com/content/search/scopus",
                 headers=headers,
-                params=params_search,
+                params={
+                    "query": f"AU-ID({author_id})",
+                    "count": items_per_page,
+                    "start": start_index,
+                    "view": "STANDARD",
+                    "sort": "-citedby-count"
+                },
                 timeout=20
             )
 
             if resp.status_code != 200:
-                logging.warning(f"Erro na Search API: {resp.status_code}")
                 break
 
             data = resp.json().get("search-results", {})
             entries = data.get("entry", [])
             
-            if not entries:
-                break
+            if not entries: break
 
             for entry in entries:
-                # 1.1 Extração e Limpeza do ID
+                # ID
                 raw_sid = entry.get("dc:identifier", "")
                 clean_sid = raw_sid.replace("SCOPUS_ID:", "").strip()
-
-                # Validação de integridade do ID
-                if clean_sid and clean_sid.isdigit() and len(clean_sid) > 5:
+                if clean_sid:
                     scopus_ids_list.append(clean_sid)
 
-                # 1.2 Extração de Metadados Básicos
-                doi = entry.get("prism:doi")
-                title = entry.get("dc:title")
-                journal = entry.get("prism:publicationName", "N/A")
-                cited_total = int(entry.get("citedby-count", 0))
-                
-                # Tratamento de Data
+                # Ano de Publicação
                 raw_date = entry.get("prism:coverDate") or ""
-                pub_year = raw_date[:4] if len(raw_date) >= 4 else ""
-                
-                # Contagem de publicações por ano (para o gráfico)
-                if pub_year.isdigit():
-                    y_int = int(pub_year)
-                    yearly_publication_counts[y_int] = yearly_publication_counts.get(y_int, 0) + 1
+                pub_year_str = raw_date[:4] if len(raw_date) >= 4 else ""
+                if pub_year_str.isdigit():
+                    y_int = int(pub_year_str)
+                    yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
 
-                # Adiciona à lista final de artigos
-                articles_list.append({
-                    "title": title,
-                    "year": pub_year,
-                    "journalTitle": journal,
+                # Dados do Artigo
+                cited_total = int(entry.get("citedby-count", 0))
+                doi = entry.get("prism:doi")
+
+                cleaned_articles.append({
+                    "title": entry.get("dc:title"),
+                    "year": pub_year_str,
+                    "journalTitle": entry.get("prism:publicationName", "N/A"),
                     "doi": doi,
                     "link": f"https://doi.org/{doi}" if doi else None,
-                    "cited_by": {"value": cited_total},
+                    "cited_by": {"value": cited_total}, 
                     "source": "Scopus",
-                    "scopus_id": clean_sid # Útil para debug
+                    "scopus_id": clean_sid 
                 })
 
             start_index += len(entries)
-            # Verifica se chegamos ao total disponível
             total_results = int(data.get("opensearch:totalResults", 0))
             has_more_items = start_index < total_results
 
         except Exception as e:
-            logging.error(f"Falha durante o Passo 1 (Search): {e}")
+            logging.error(f"Erro Scopus Search: {e}")
             break
 
-    logging.info(f"✓ Metadados coletados: {len(articles_list)} artigos encontrados.")
-
     # ==========================================================================
-    # PASSO 2: OBTER HISTÓRICO DE CITAÇÕES (Citation Overview API)
-    # Objetivo: Buscar quantas citações cada artigo recebeu em cada ano.
+    # 2. HISTÓRICO DE CITAÇÕES (Soma acumulativa)
     # ==========================================================================
-    logging.info(">>> Passo 2: Coletando histórico de citações por ano...")
-    api_overview_success = False
-
     if scopus_ids_list:
         try:
-            # 2.1 Definição Dinâmica do Intervalo de Tempo
-            # Pegamos o ano do artigo mais antigo encontrado no Passo 1
-            years_found = [int(a["year"]) for a in articles_list if a["year"].isdigit()]
-            min_year = min(years_found) if years_found else 2010
-            
-            # Margem de segurança: começamos 2 anos antes do artigo mais antigo
-            start_year = max(1990, min_year - 2)
+            # Configuração de data (Range amplo para cobrir todo histórico)
+            START_YEAR = 2010 
             current_year = datetime.now().year
-            date_range_str = f"{start_year}-{current_year}"
+            date_range_str = f"{START_YEAR}-{current_year + 1}"
             
-            logging.info(f"Intervalo de análise definido: {date_range_str}")
-
-            # 2.2 Função Auxiliar de Processamento (Parser do XML/JSON da Elsevier)
-            def parse_overview_json(json_data):
-                overview_core = json_data.get("citation-overview", {})
-                documents = overview_core.get("document", [])
-                
-                # Normaliza para lista (API retorna dict se for apenas 1 doc)
-                if isinstance(documents, dict): documents = [documents]
-
-                for doc in documents:
-                    # Navegação profunda na estrutura da Elsevier
-                    matrix = doc.get("citeInfoMatrix", {}).get("citeInfoMatrixXML", {}).get("citationMatrix", {})
-                    cite_info = matrix.get("citeInfo", [])
-                    
-                    if isinstance(cite_info, dict): cite_info = [cite_info]
-
-                    for year_col in cite_info:
-                        y_str = year_col.get("dc:coverage-text") or year_col.get("@year")
-                        count_str = year_col.get("$")
-                        
-                        if y_str and count_str:
-                            try:
-                                y = int(y_str)
-                                val = int(count_str)
-                                yearly_citation_counts[y] = yearly_citation_counts.get(y, 0) + val
-                            except ValueError:
-                                pass
-
-            # 2.3 Estratégia de Busca em Lote (Batching) com Retry
+            base_url = "https://api.elsevier.com/content/abstract/citations"
+            
+            # Divide em lotes de 20 (limite da API)
             batch_size = 20
-            
-            for i in range(0, len(scopus_ids_list), batch_size):
-                batch = scopus_ids_list[i : i + batch_size]
-                if not batch: continue
-                
-                ids_param = ",".join(batch)
+            batches = [scopus_ids_list[i:i + batch_size] for i in range(0, len(scopus_ids_list), batch_size)]
+
+            for batch in batches:
+                ids_str = ",".join(batch)
+                manual_url = f"{base_url}?scopus_id={ids_str}&date={date_range_str}&apiKey={api_key}&httpAccept=application/json"
                 
                 try:
-                    # Tentativa principal: Lote completo
-                    resp = requests.get(
-                        "https://api.elsevier.com/content/abstract/citation-overview",
-                        headers=headers,
-                        params={"scopus_id": ids_param, "date": date_range_str},
-                        timeout=30
-                    )
-
+                    resp = requests.get(manual_url, headers={}, timeout=25)
                     if resp.status_code == 200:
-                        parse_overview_json(resp.json())
-                    else:
-                        # Fallback: Se o lote falhar, tenta um por um
-                        logging.warning(f"Batch {i//batch_size + 1} falhou ({resp.status_code}). Tentando individualmente...")
-                        for single_id in batch:
-                            try:
-                                resp_ind = requests.get(
-                                    "https://api.elsevier.com/content/abstract/citation-overview",
-                                    headers=headers,
-                                    params={"scopus_id": single_id, "date": date_range_str},
-                                    timeout=10
-                                )
-                                if resp_ind.status_code == 200:
-                                    parse_overview_json(resp_ind.json())
-                            except: pass
+                        data = resp.json()
+                        root = data.get("abstract-citations-response") or data.get("citation-overview") or {}
+                        matrix_root = root.get("citeInfoMatrix", {}).get("citeInfoMatrixXML", {}).get("citationMatrix", {})
+                        cite_info_list = matrix_root.get("citeInfo", [])
+                        
+                        if isinstance(cite_info_list, dict): cite_info_list = [cite_info_list]
 
-                except Exception as e:
-                    logging.error(f"Erro de conexão no lote de citações: {e}")
-
-            if yearly_citation_counts:
-                api_overview_success = True
-                logging.info(f"✓ Histórico processado. Dados distribuídos entre {min(yearly_citation_counts.keys())}-{max(yearly_citation_counts.keys())}")
+                        # Loop de SOMA
+                        for article_data in cite_info_list:
+                            cc_list = article_data.get("cc", [])
+                            if isinstance(cc_list, dict): cc_list = [cc_list]
+                            
+                            for idx, item in enumerate(cc_list):
+                                try:
+                                    val = int(item.get("$", "0"))
+                                    year_mapped = START_YEAR + idx
+                                    
+                                    if val > 0 and year_mapped <= current_year + 1:
+                                        yearly_citation_totals[year_mapped] = yearly_citation_totals.get(year_mapped, 0) + val
+                                except: pass
+                except Exception:
+                    pass
 
         except Exception as e:
-            logging.error(f"Falha geral no Passo 2: {e}")
-
-    # Fallback CSV (se API falhar) - Mantido para compatibilidade
-    if not api_overview_success:
-        # (Código de leitura do CSV existente entraria aqui, se necessário)
-        pass 
+            logging.error(f"Erro Scopus Citations: {e}")
 
     # ==========================================================================
-    # PASSO 3: CÁLCULO DE ÍNDICES E CONSOLIDAÇÃO
-    # Objetivo: Gerar h-index, i10 e estrutura final.
+    # 3. FORMATAÇÃO FINAL
     # ==========================================================================
-    logging.info(">>> Passo 3: Calculando índices e formatando saída...")
-
-    # 3.1 Listas auxiliares de citações (baseadas no total acumulado do Passo 1)
-    all_citations = [a["cited_by"]["value"] for a in articles_list]
     
-    # Filtra citações recentes (artigos publicados >= 2021)
-    recent_citations = [
-        a["cited_by"]["value"] 
-        for a in articles_list 
-        if a["year"].isdigit() and int(a["year"]) >= 2021
-    ]
-
-    # 3.2 Montagem do Gráfico (Merge de Publicações + Citações anuais)
-    graph_data = []
-    # Une todos os anos encontrados nas duas coletas
-    all_years_set = set(yearly_publication_counts.keys()) | set(yearly_citation_counts.keys())
-    sorted_years = sorted(all_years_set)
+    # Totais
+    total_cites_all = sum(a["cited_by"]["value"] for a in cleaned_articles)
     
-    max_year_limit = datetime.now().year + 1
+    # Since 2021 (Baseado no gráfico somado, que é mais preciso)
+    since_2021_sum = sum(v for k, v in yearly_citation_totals.items() if k >= 2021)
+    
+    # Filtro para índices (artigos recentes)
+    recent_cites = [a["cited_by"]["value"] for a in cleaned_articles if a["year"].isdigit() and int(a["year"]) >= 2021]
 
-    for y in sorted_years:
-        if 1990 <= y <= max_year_limit:
-            graph_data.append({
-                "year": y,
-                "citations": yearly_citation_counts.get(y, 0),   # Do Passo 2
-                "publications": yearly_publication_counts.get(y, 0) # Do Passo 1
-            })
-
-    # 3.3 Montagem da Tabela de Métricas
     metrics_table = [
-        {"citations": {
-            "all": sum(all_citations), 
-            "since_2021": sum(recent_citations)
-        }},
+        {"citations": {"all": total_cites_all, "since_2021": since_2021_sum}},
         {"h_index": {
-            "all": calculate_h_index(all_citations), 
-            "since_2021": calculate_h_index(recent_citations)
+            "all": calculate_h_index([a["cited_by"]["value"] for a in cleaned_articles]), 
+            "since_2021": calculate_h_index(recent_cites)
         }},
         {"i10_index": {
-            "all": calculate_i10(all_citations), 
-            "since_2021": calculate_i10(recent_citations)
+            "all": calculate_i10([a["cited_by"]["value"] for a in cleaned_articles]), 
+            "since_2021": calculate_i10(recent_cites)
         }}
     ]
+
+    # Montagem do Gráfico
+    graph_data = []
+    all_years = sorted(set(yearly_pub_counts.keys()) | set(yearly_citation_totals.keys()))
+    
+    for y in all_years:
+        if 2010 <= y <= datetime.now().year + 1: # Filtro visual
+            graph_data.append({
+                "year": y,
+                "citations": yearly_citation_totals.get(y, 0),
+                "publications": yearly_pub_counts.get(y, 0)
+            })
 
     return {
         "source_name": "Scopus",
         "profile": {
-            "total_publications": len(articles_list),
+            "total_publications": len(cleaned_articles),
             "cited_by": {
                 "table": metrics_table,
                 "graph": graph_data
             }
         },
-        "articles": articles_list
+        "articles": cleaned_articles
     }
 
 # ==============================================================================
@@ -1440,33 +1359,36 @@ def is_valid_string(s):
 def merge_article_into_map(main_map, new_article, source_name):
     """
     Integra um artigo unificando fontes.
-    Prioridade:
-    1. Citações: Máximo valor encontrado.
-    2. Journal/Título: Fonte 'Premium' (Scopus/WoS) vence, mas aceita fonte 'Standard' 
-       (Scholar/ORCID) se o campo estiver vazio.
-    3. Link: Link original vence, mas gera link DOI se vazio.
+    [CORREÇÃO]: Agora maximiza também as citações recentes (Since 2021).
     """
     raw_title = (new_article.get("title") or "").strip()
     if not raw_title: return
 
     norm_title = normalize_title(raw_title)
     
-    # --- Extração e Limpeza de Dados da Nova Fonte ---
+    # --- Extração e Limpeza ---
     new_doi = str(new_article.get("doi") or "").strip()
     new_year = get_year_safe(new_article.get("year"))
+    
+    # Extração robusta de citações (Total e Recente)
+    cited_obj = new_article.get("cited_by") or {}
     try:
-        new_cites = int((new_article.get("cited_by") or {}).get("value") or 0)
+        new_cites = int(cited_obj.get("value") or 0)
     except:
         new_cites = 0
 
-    # Normaliza Journal: verifica vários campos possíveis
+    try:
+        # Tenta pegar 'recent' ou 'since_2021' ou 0
+        new_cites_recent = int(cited_obj.get("recent") or cited_obj.get("since_2021") or 0)
+    except:
+        new_cites_recent = 0
+
+    # Normalizações básicas
     raw_journal = (new_article.get("journal") or new_article.get("journalTitle") or new_article.get("publication") or "")
     new_journal = raw_journal.strip() if is_valid_string(raw_journal) else None
-
-    # Normaliza Link
+    
     new_link = new_article.get("link")
-    if not is_valid_string(new_link):
-        new_link = None
+    if not is_valid_string(new_link): new_link = None
 
     # --- 1. MATCHING (Encontrar duplicatas) ---
     match_key = None
@@ -1484,13 +1406,12 @@ def merge_article_into_map(main_map, new_article, source_name):
         if norm_title in main_map:
             match_key = norm_title
         else:
-            # Match difuso seguro
+            # Match difuso seguro (evita falsos positivos em títulos curtos)
             for key in main_map.keys():
-                # Só compara se as strings tiverem tamanho razoável para evitar falsos positivos
                 if len(key) > 30 and (key in norm_title or norm_title in key):
-                    # Validação cruzada com ano para evitar erros
                     ex_year = get_year_safe(main_map[key].get("year"))
-                    if new_year and ex_year and new_year != ex_year:
+                    # Se os anos diferem por > 1, provavelmente são artigos diferentes
+                    if new_year and ex_year and abs(int(new_year) - int(ex_year)) > 1:
                         continue
                     match_key = key
                     break
@@ -1499,54 +1420,58 @@ def merge_article_into_map(main_map, new_article, source_name):
     if match_key:
         existing = main_map[match_key]
         
-        # --- A) CITAÇÕES: Lógica de Maximização ---
-        # Se a nova fonte diz que tem mais citações, atualizamos.
+        # --- A) MAXIMIZAÇÃO DE CITAÇÕES ---
         old_cites = 0
-        try: old_cites = int((existing.get("cited_by") or {}).get("value") or 0)
+        old_cites_recent = 0
+        try: 
+            old_cites = int((existing.get("cited_by") or {}).get("value") or 0)
+            old_cites_recent = int((existing.get("cited_by") or {}).get("recent") or 0)
         except: pass
         
-        if new_cites > old_cites:
-            existing["cited_by"] = {"value": new_cites}
+        # Lógica: Se o TOTAL novo for maior, confiamos na fonte nova para o total E para o recente.
+        # Se forem iguais, pegamos o maior 'recente' disponível.
+        final_total = old_cites
+        final_recent = old_cites_recent
 
-        # --- B) METADADOS: Lógica de Melhoria Contínua ---
+        if new_cites > old_cites:
+            final_total = new_cites
+            final_recent = new_cites_recent
+        elif new_cites == old_cites:
+            final_recent = max(old_cites_recent, new_cites_recent)
+        
+        existing["cited_by"] = {
+            "value": final_total, 
+            "recent": final_recent
+        }
+
+        # --- B) MELHORIA DE METADADOS (Gap Filling) ---
         is_premium_source = source_name in ["Scopus", "Web of Science"]
         
-        # DOI: Se não tem, pega o novo. Se é ORCID, confia mais.
         if not is_valid_string(existing.get("doi")):
             if is_valid_string(new_doi): existing["doi"] = new_doi
         elif source_name == "ORCID" and is_valid_string(new_doi):
-             existing["doi"] = new_doi
+             existing["doi"] = new_doi # ORCID costuma ter DOIs muito confiáveis
 
-        # JOURNAL: 
-        # 1. Se a fonte é premium e tem jornal válido -> Sobrescreve.
-        # 2. Se a fonte atual está vazia/N/A e a nova tem jornal válido -> Preenche (Gap Filling).
         existing_journal = existing.get("journalTitle")
-        has_existing_journal = is_valid_string(existing_journal)
-        
         if is_premium_source and new_journal:
             existing["journalTitle"] = new_journal
-        elif not has_existing_journal and new_journal:
+        elif not is_valid_string(existing_journal) and new_journal:
             existing["journalTitle"] = new_journal
             
-        # TÍTULO E ANO:
-        # Premium sobrescreve.
+        # Título e Ano
         if is_premium_source:
             if is_valid_string(raw_title): existing["title"] = raw_title
             if new_year: existing["year"] = str(new_year)
         else:
-            # Se não é premium, só melhora se o título for muito maior (correção de cortes)
-            curr_len = len(existing.get("title", ""))
-            if len(raw_title) > curr_len + 15: # 15 chars a mais indicam um título mais completo
+            # Só substitui se o título atual for muito curto ou inexistente
+            if len(raw_title) > len(existing.get("title", "")) + 15:
                 existing["title"] = raw_title
-            # Preenche ano se faltar
             if new_year and not get_year_safe(existing.get("year")):
                 existing["year"] = str(new_year)
 
-        # LINK: Prioriza link explícito. Se não tiver, mantém.
         if new_link and not existing.get("link"):
             existing["link"] = new_link
 
-        # Registra a fonte
         if "sources" not in existing: existing["sources"] = []
         if source_name not in existing["sources"]:
             existing["sources"].append(source_name)
@@ -1554,7 +1479,6 @@ def merge_article_into_map(main_map, new_article, source_name):
 
     else:
         # --- 3. NOVO ARTIGO ---
-        # Se não tem link, mas tem DOI, cria link DOI automaticamente
         final_link = new_link
         if not final_link and is_valid_string(new_doi):
             final_link = f"https://doi.org/{new_doi}"
@@ -1565,7 +1489,10 @@ def merge_article_into_map(main_map, new_article, source_name):
             "doi": new_doi if is_valid_string(new_doi) else None,
             "journalTitle": new_journal if new_journal else "N/A",
             "link": final_link,
-            "cited_by": {"value": new_cites},
+            "cited_by": {
+                "value": new_cites,
+                "recent": new_cites_recent # Guarda o valor recente
+            },
             "sources": [source_name]
         }
         main_map[norm_title] = article
@@ -1576,83 +1503,118 @@ def merge_article_into_map(main_map, new_article, source_name):
 def calculate_maximized_metrics(articles, scholar_data=None, scopus_data=None, wos_data=None):
     """
     Calcula índices H e i10 a partir da lista unificada.
-    Gera gráfico combinando o MELHOR dado de cada ano entre as plataformas.
+    [CORREÇÃO]: Calcula métricas 'Since 2021' reais e garante consistência com o gráfico.
     """
     
-    # 1. Recupera lista de todas as citações (já maximizadas no merge)
-    citations_list = []
-    for art in articles:
-        val = int((art.get("cited_by") or {}).get("value") or 0)
-        citations_list.append(val)
+    # 1. Recupera listas de citações (Total e Recent)
+    citations_all = []
+    citations_recent = []
     
-    # 2. Recalcula Índices
-    h_index = calculate_h_index(citations_list)
-    i10_index = calculate_i10(citations_list)
-    total_citations = sum(citations_list)
+    current_year = datetime.now().year
+    since_year = 2021
 
-    # 3. Tabela de Métricas
-    table = [
-        {"citations": {"all": total_citations, "since_2021": 0}}, 
-        {"h_index": {"all": h_index, "since_2021": 0}},
-        {"i10_index": {"all": i10_index, "since_2021": 0}}
-    ]
+    for art in articles:
+        c_obj = art.get("cited_by") or {}
+        val_all = int(c_obj.get("value") or 0)
+        val_recent = int(c_obj.get("recent") or 0)
+        
+        citations_all.append(val_all)
+        citations_recent.append(val_recent)
+    
+    # 2. Recalcula Índices (All Time vs Since 2021)
+    h_index_all = calculate_h_index(citations_all)
+    i10_index_all = calculate_i10(citations_all)
+    
+    h_index_recent = calculate_h_index(citations_recent)
+    i10_index_recent = calculate_i10(citations_recent)
 
-    # 4. Construção do Gráfico (Máximo por Ano)
-    years_map = {} # { 2023: {'cits': [], 'pubs': []} }
+    # 3. Construção do Gráfico Unificado (Máximo por Ano)
+    years_map = {} 
 
-    # Função auxiliar para extrair dados dos gráficos originais das APIs
     def absorb_graph(platform_data):
         if not platform_data: return
-        # Tenta pegar estrutura padrão do Scholar/Scopus se disponível
+        # Tenta pegar estrutura padrão
         graph = platform_data.get("profile", {}).get("cited_by", {}).get("graph", [])
-        if not graph: 
-             # Fallback: Tenta pegar de wos se tiver estrutura diferente ou de scopus
-             pass 
-        
         for item in graph:
-            y = int(item.get("year", 0))
-            if y < 1990: continue # Filtro de ruído
-            
-            if y not in years_map: years_map[y] = {'cits': [0], 'pubs': [0]}
-            
-            c = int(item.get("citations", 0))
-            p = int(item.get("publications", 0))
-            years_map[y]['cits'].append(c)
-            years_map[y]['pubs'].append(p)
+            try:
+                y = int(item.get("year", 0))
+                if y < 1990 or y > current_year + 1: continue 
+                
+                if y not in years_map: years_map[y] = {'cits': [0], 'pubs': [0]}
+                
+                c = int(item.get("citations", 0))
+                p = int(item.get("publications", 0))
+                years_map[y]['cits'].append(c)
+                years_map[y]['pubs'].append(p)
+            except: pass
 
-    # Absorve dados de todas as fontes disponíveis
     absorb_graph(scholar_data)
     absorb_graph(scopus_data)
     absorb_graph(wos_data)
 
-    # Verifica os artigos unificados para garantir contagem correta de publicações
-    # (Caso as APIs tenham falhado em retornar o gráfico histórico)
+    # Verifica contagem real de artigos (fallback para pubs)
     real_pub_counts = {}
     for art in articles:
         y = get_year_safe(art.get("year"))
-        if y > 1900:
+        if y and y > 1900:
             real_pub_counts[y] = real_pub_counts.get(y, 0) + 1
 
-    # Mescla contagem real nos dados do gráfico
     all_years = set(years_map.keys()) | set(real_pub_counts.keys())
     
     final_graph = []
+    graph_citations_since_2021 = 0 # Acumulador para consistência
+
     for y in sorted(all_years):
         data = years_map.get(y, {'cits': [0], 'pubs': [0]})
         
-        # Citações: O maior valor reportado por qualquer plataforma naquele ano
+        # Citações: O maior valor reportado
         max_c = max(data['cits'])
         
-        # Publicações: O maior entre (Reportado pelas plataformas) VS (Contagem real dos artigos)
+        # Publicações: O maior entre APIs vs Contagem Real
         max_p_apis = max(data['pubs'])
         real_p = real_pub_counts.get(y, 0)
         final_p = max(max_p_apis, real_p)
 
-        final_graph.append({
-            "year": y,
-            "citations": max_c,
-            "publications": final_p
-        })
+        if max_c > 0 or final_p > 0:
+            final_graph.append({
+                "year": y,
+                "citations": max_c,
+                "publications": final_p
+            })
+            
+            # Soma citações recentes diretamente do gráfico final
+            if y >= since_year:
+                graph_citations_since_2021 += max_c
+
+    # 4. Montagem da Tabela (Garantindo coerência)
+    # Total de citações All Time vem da soma dos artigos (mais granular)
+    # Total Recent vem do Gráfico (para bater visualmente com as barras)
+    
+    total_citations_all = sum(citations_all)
+    
+    # Fallback de segurança: se o gráfico estiver vazio, usa a soma dos artigos
+    final_cits_recent = graph_citations_since_2021 if graph_citations_since_2021 > 0 else sum(citations_recent)
+
+    table = [
+        {
+            "citations": {
+                "all": total_citations_all, 
+                "since_2021": final_cits_recent
+            }
+        }, 
+        {
+            "h_index": {
+                "all": h_index_all, 
+                "since_2021": h_index_recent
+            }
+        },
+        {
+            "i10_index": {
+                "all": i10_index_all, 
+                "since_2021": i10_index_recent
+            }
+        }
+    ]
 
     return {
         "source_name": "Maximized Dataset",
