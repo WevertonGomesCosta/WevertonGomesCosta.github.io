@@ -156,20 +156,11 @@ def get_year_safe(val):
 
 def normalize_title(title: str) -> str:
     """
-    Normaliza títulos para facilitar matching entre fontes diferentes
-    (ORCID, Scholar, Scopus, WoS).
-
-    Etapas:
-    - Remove HTML
-    - Remove acentos
-    - Remove pontuação
-    - Normaliza espaços
-    - Converte para lowercase
+    Normaliza títulos para facilitar matching (Essencial para comparação).
     """
     if not title:
         return ""
 
-    # Garante que seja string
     if not isinstance(title, str):
         title = str(title)
 
@@ -1149,144 +1140,106 @@ def fetch_wos_data(researcher_id, api_key):
     }
 
 # ==============================================================================
-# FUNÇÃO DE COMPARAÇÃO E GERAÇÃO DE RELATÓRIO
+# FUNÇÃO DE COMPARAÇÃO E GERAÇÃO DE RELATÓRIO (COM MATCHING DE ARTIGOS)
 # ==============================================================================
 def analyze_changes(old_data, new_data):
     """
-    Compara dados antigos e novos e gera relatório textual.
-    Robusta contra dados faltantes, fontes híbridas e métricas derivadas.
+    Compara dados antigos e novos e gera relatório textual detalhado.
+    Usa normalize_title para encontrar correspondências de artigos.
     """
 
     if old_data is None:
-        return (["  [!] Arquivo de dados antigo não encontrado."],
-                ["initial_generation"])
+        return (["  [!] Arquivo de dados antigo não encontrado (Primeira execução)."], ["initial_generation"])
 
     report_lines = []
     modification_notes = []
 
-    # --------------------------------------------------------------------------
-    # Funções auxiliares
-    # --------------------------------------------------------------------------
+    # --- Helper para chaves de artigos ---
+    def get_art_key(a):
+        # Prioridade absoluta para DOI
+        if a.get("doi"):
+            return f"doi:{str(a['doi']).lower().strip()}"
+        # Fallback para Título Normalizado + Ano
+        title = normalize_title(a.get("title"))
+        year = str(a.get("year", "")).strip()
+        return f"{title}_{year}"
+
+    # --- Helper para extrair valor numérico ---
     def force_int(val):
         try:
-            if val is None:
-                return 0
+            if val is None: return 0
+            if isinstance(val, dict): return int(float(val.get("value", 0)))
             return int(float(val))
         except (ValueError, TypeError):
             return 0
 
-    def get_metrics(data, source_key):
-        src = data.get("academicData", {}).get(source_key)
-
-        # compatibilidade Scholar legado
-        if not src and source_key == "google_scholar":
-            src = data.get("scholarData")
-
-        if not src:
-            return {"citations": 0, "h": 0}
-
-        cites = h = 0
-        for item in src.get("profile", {}).get("cited_by", {}).get("table", []):
-            if "citations" in item:
-                cites = force_int(item["citations"].get("all"))
-            elif "h_index" in item:
-                h = force_int(item["h_index"].get("all"))
-
-        return {"citations": cites, "h": h}
-
-    def get_articles(data):
-        """
-        Retorna artigos priorizando 'maximized', com fallback explícito.
-        """
-        acad = data.get("academicData", {})
-        if acad.get("maximized", {}).get("articles"):
-            return acad["maximized"]["articles"], "maximized"
-        if data.get("scholarData", {}).get("articles"):
-            return data["scholarData"]["articles"], "scholar"
-        return [], "none"
-
-    # --------------------------------------------------------------------------
-    # 1. GitHub
-    # --------------------------------------------------------------------------
+    # 1. Comparação do GitHub
     old_repos = {r.get("name") for r in old_data.get("githubRepos", []) if r.get("name")}
     new_repos = {r.get("name") for r in new_data.get("githubRepos", []) if r.get("name")}
+    added_repos = new_repos - old_repos
+    if added_repos:
+        report_lines.append(f"  [+] GitHub: {len(added_repos)} repositórios adicionados.")
 
-    added = new_repos - old_repos
-    if added:
-        report_lines.append(f"  [+] Repositórios adicionados: {len(added)}")
-
-    # --------------------------------------------------------------------------
-    # 2. Métricas globais
-    # --------------------------------------------------------------------------
-    sources = [
+    # 2. Comparação Detalhada por Fonte Acadêmica
+    # Vamos olhar dentro de cada fonte para ver novos artigos ou mudanças de citação
+    sources_to_check = [
         ("google_scholar", "Scholar"),
         ("scopus", "Scopus"),
-        ("web_of_science", "WoS"),
-        ("maximized", "Total (Agregado)")
+        ("web_of_science", "WoS")
     ]
 
-    for key, label in sources:
-        old_m = get_metrics(old_data, key)
-        new_m = get_metrics(new_data, key)
+    for source_key, label in sources_to_check:
+        # Pega as listas de artigos antiga e nova
+        old_list = old_data.get("academicData", {}).get(source_key, {}).get("articles", [])
+        new_list = new_data.get("academicData", {}).get(source_key, {}).get("articles", [])
 
-        if new_m["citations"] != old_m["citations"]:
-            diff = new_m["citations"] - old_m["citations"]
-            sign = "+" if diff > 0 else ""
-            report_lines.append(
-                f"  [*] {label} Citações: "
-                f"{old_m['citations']} → {new_m['citations']} ({sign}{diff})"
-            )
+        # Se for fallback do Scholar antigo
+        if not old_list and source_key == "google_scholar":
+            old_list = old_data.get("scholarData", {}).get("articles", [])
 
-        if new_m["h"] != old_m["h"]:
-            report_lines.append(
-                f"  [*] {label} H-index: {old_m['h']} → {new_m['h']}"
-            )
+        if not new_list and not old_list:
+            continue
 
-    # --------------------------------------------------------------------------
-    # 3. Comparação de artigos (DOI > título+ano)
-    # --------------------------------------------------------------------------
-    old_articles, _ = get_articles(old_data)
-    new_articles, src_name = get_articles(new_data)
+        # Cria mapas {chave: artigo} para comparação rápida
+        old_map = {get_art_key(a): a for a in old_list}
+        new_map = {get_art_key(a): a for a in new_list}
 
-    def art_key(a):
-        if a.get("doi"):
-            return f"doi:{a['doi'].lower()}"
-        return f"{normalize_title(a.get('title'))}_{a.get('year','')}"
+        # Verifica artigos ADICIONADOS
+        added_keys = set(new_map.keys()) - set(old_map.keys())
+        if added_keys:
+            report_lines.append(f"  [+] {label}: {len(added_keys)} novos artigos encontrados.")
+            # Opcional: Listar os títulos dos novos
+            for k in list(added_keys)[:3]: # Mostra apenas os 3 primeiros
+                title = new_map[k].get("title", "Sem título")
+                report_lines.append(f"      - {title[:60]}...")
 
-    old_map = {art_key(a): a for a in old_articles if a.get("title")}
-    new_map = {art_key(a): a for a in new_articles if a.get("title")}
+        # Verifica MUDANÇA DE CITAÇÕES em artigos existentes
+        citation_changes = 0
+        citation_diff_total = 0
+        
+        for k, new_art in new_map.items():
+            if k in old_map:
+                old_art = old_map[k]
+                
+                # Normaliza a leitura das citações (pode ser int ou dict {'value': int})
+                c_new = force_int(new_art.get("cited_by"))
+                c_old = force_int(old_art.get("cited_by"))
+                
+                if c_new > c_old:
+                    citation_changes += 1
+                    diff = c_new - c_old
+                    citation_diff_total += diff
+                    
+                    # Se quiser muito detalhe, descomente a linha abaixo:
+                    # report_lines.append(f"      * {new_art.get('title')[:30]}...: {c_old} -> {c_new}")
 
-    added_keys = set(new_map) - set(old_map)
-    if added_keys:
-        report_lines.append(f"\n--- {len(added_keys)} novas publicações ({src_name}) ---")
-        for k in list(added_keys)[:3]:
-            report_lines.append(f"  - {new_map[k].get('title', '')[:70]}...")
-
-    # --------------------------------------------------------------------------
-    # 4. Atualizações de citações por artigo
-    # --------------------------------------------------------------------------
-    citation_updates = []
-    for k, new_art in new_map.items():
-        if k in old_map:
-            old_c = force_int((old_map[k].get("cited_by") or {}).get("value"))
-            new_c = force_int((new_art.get("cited_by") or {}).get("value"))
-            if new_c > old_c:
-                citation_updates.append(
-                    f"  - {new_art.get('title','')[:40]}...: "
-                    f"{old_c} → {new_c} (+{new_c - old_c})"
-                )
-
-    if citation_updates:
-        report_lines.append(
-            f"\n--- {len(citation_updates)} artigos com novas citações ---"
-        )
-        report_lines.extend(citation_updates[:5])
+        if citation_changes > 0:
+            report_lines.append(f"  [*] {label}: {citation_changes} artigos receberam novas citações (Total: +{citation_diff_total}).")
 
     return report_lines, modification_notes
 
-
 # ==============================================================================
-# FUNÇÕES DE GERAÇÃO E ATUALIZAÇÃO DE ARQUIVOS
+# FUNÇÕES DE GERAÇÃO E ATUALIZAÇÃO DE ARQUIVOS (MANTIDAS COMO PEDIDO)
 # ==============================================================================
 def generate_fallback_file(data, filename):
     """
@@ -1311,19 +1264,15 @@ def generate_fallback_file(data, filename):
         return False
 
     finally:
-        # Limpeza defensiva
         if os.path.exists(temp_writing_filename):
             try:
                 os.remove(temp_writing_filename)
             except OSError:
                 pass
 
-
 def update_main_file(main_file, temp_file):
     """
     Atualiza o arquivo principal a partir de um temporário.
-    Usa shutil.move para suportar diferentes filesystems.
-    Retorna True em sucesso, False em falha.
     """
     if not os.path.exists(temp_file):
         logging.error(f"Arquivo temporário '{temp_file}' não encontrado.")
@@ -1336,303 +1285,20 @@ def update_main_file(main_file, temp_file):
 
     except Exception as e:
         logging.error(f"Erro crítico ao atualizar '{main_file}': {e}")
-
-        # Limpeza de segurança
         if os.path.exists(temp_file):
             try:
                 os.remove(temp_file)
             except OSError:
                 pass
-
         return False
 
 # ==============================================================================
-# LÓGICA DE FUSÃO (MERGE) - AUTOMATIZADA E ROBUSTA
-# ==============================================================================
-def is_valid_string(s):
-    """Retorna True se a string contém informação útil (não é None, vazia ou N/A)."""
-    if not s or not isinstance(s, str):
-        return False
-    bad_values = {"n/a", "na", "null", "none", "unknown", "undefined"}
-    return s.strip().lower() not in bad_values
-
-def merge_article_into_map(main_map, new_article, source_name):
-    """
-    Integra um artigo unificando fontes.
-    [CORREÇÃO]: Agora maximiza também as citações recentes (Since 2021).
-    """
-    raw_title = (new_article.get("title") or "").strip()
-    if not raw_title: return
-
-    norm_title = normalize_title(raw_title)
-    
-    # --- Extração e Limpeza ---
-    new_doi = str(new_article.get("doi") or "").strip()
-    new_year = get_year_safe(new_article.get("year"))
-    
-    # Extração robusta de citações (Total e Recente)
-    cited_obj = new_article.get("cited_by") or {}
-    try:
-        new_cites = int(cited_obj.get("value") or 0)
-    except:
-        new_cites = 0
-
-    try:
-        # Tenta pegar 'recent' ou 'since_2021' ou 0
-        new_cites_recent = int(cited_obj.get("recent") or cited_obj.get("since_2021") or 0)
-    except:
-        new_cites_recent = 0
-
-    # Normalizações básicas
-    raw_journal = (new_article.get("journal") or new_article.get("journalTitle") or new_article.get("publication") or "")
-    new_journal = raw_journal.strip() if is_valid_string(raw_journal) else None
-    
-    new_link = new_article.get("link")
-    if not is_valid_string(new_link): new_link = None
-
-    # --- 1. MATCHING (Encontrar duplicatas) ---
-    match_key = None
-    
-    # A) Por DOI
-    if is_valid_string(new_doi):
-        for key, existing in main_map.items():
-            ex_doi = str(existing.get("doi") or "").strip()
-            if is_valid_string(ex_doi) and ex_doi.lower() == new_doi.lower():
-                match_key = key
-                break
-    
-    # B) Por Título (Se não achou por DOI)
-    if not match_key:
-        if norm_title in main_map:
-            match_key = norm_title
-        else:
-            # Match difuso seguro (evita falsos positivos em títulos curtos)
-            for key in main_map.keys():
-                if len(key) > 30 and (key in norm_title or norm_title in key):
-                    ex_year = get_year_safe(main_map[key].get("year"))
-                    # Se os anos diferem por > 1, provavelmente são artigos diferentes
-                    if new_year and ex_year and abs(int(new_year) - int(ex_year)) > 1:
-                        continue
-                    match_key = key
-                    break
-
-    # --- 2. FUSÃO (MERGE) OU CRIAÇÃO ---
-    if match_key:
-        existing = main_map[match_key]
-        
-        # --- A) MAXIMIZAÇÃO DE CITAÇÕES ---
-        old_cites = 0
-        old_cites_recent = 0
-        try: 
-            old_cites = int((existing.get("cited_by") or {}).get("value") or 0)
-            old_cites_recent = int((existing.get("cited_by") or {}).get("recent") or 0)
-        except: pass
-        
-        # Lógica: Se o TOTAL novo for maior, confiamos na fonte nova para o total E para o recente.
-        # Se forem iguais, pegamos o maior 'recente' disponível.
-        final_total = old_cites
-        final_recent = old_cites_recent
-
-        if new_cites > old_cites:
-            final_total = new_cites
-            final_recent = new_cites_recent
-        elif new_cites == old_cites:
-            final_recent = max(old_cites_recent, new_cites_recent)
-        
-        existing["cited_by"] = {
-            "value": final_total, 
-            "recent": final_recent
-        }
-
-        # --- B) MELHORIA DE METADADOS (Gap Filling) ---
-        is_premium_source = source_name in ["Scopus", "Web of Science"]
-        
-        if not is_valid_string(existing.get("doi")):
-            if is_valid_string(new_doi): existing["doi"] = new_doi
-        elif source_name == "ORCID" and is_valid_string(new_doi):
-             existing["doi"] = new_doi # ORCID costuma ter DOIs muito confiáveis
-
-        existing_journal = existing.get("journalTitle")
-        if is_premium_source and new_journal:
-            existing["journalTitle"] = new_journal
-        elif not is_valid_string(existing_journal) and new_journal:
-            existing["journalTitle"] = new_journal
-            
-        # Título e Ano
-        if is_premium_source:
-            if is_valid_string(raw_title): existing["title"] = raw_title
-            if new_year: existing["year"] = str(new_year)
-        else:
-            # Só substitui se o título atual for muito curto ou inexistente
-            if len(raw_title) > len(existing.get("title", "")) + 15:
-                existing["title"] = raw_title
-            if new_year and not get_year_safe(existing.get("year")):
-                existing["year"] = str(new_year)
-
-        if new_link and not existing.get("link"):
-            existing["link"] = new_link
-
-        if "sources" not in existing: existing["sources"] = []
-        if source_name not in existing["sources"]:
-            existing["sources"].append(source_name)
-            existing["sources"].sort()
-
-    else:
-        # --- 3. NOVO ARTIGO ---
-        final_link = new_link
-        if not final_link and is_valid_string(new_doi):
-            final_link = f"https://doi.org/{new_doi}"
-
-        article = {
-            "title": raw_title,
-            "year": str(new_year) if new_year else "",
-            "doi": new_doi if is_valid_string(new_doi) else None,
-            "journalTitle": new_journal if new_journal else "N/A",
-            "link": final_link,
-            "cited_by": {
-                "value": new_cites,
-                "recent": new_cites_recent # Guarda o valor recente
-            },
-            "sources": [source_name]
-        }
-        main_map[norm_title] = article
-
-# ==============================================================================
-# CÁLCULO DE MÉTRICAS MAXIMIZADAS E GRÁFICO HÍBRIDO
-# ==============================================================================
-def calculate_maximized_metrics(articles, scholar_data=None, scopus_data=None, wos_data=None):
-    """
-    Calcula índices H e i10 a partir da lista unificada.
-    [CORREÇÃO]: Calcula métricas 'Since 2021' reais e garante consistência com o gráfico.
-    """
-    
-    # 1. Recupera listas de citações (Total e Recent)
-    citations_all = []
-    citations_recent = []
-    
-    current_year = datetime.now().year
-    since_year = 2021
-
-    for art in articles:
-        c_obj = art.get("cited_by") or {}
-        val_all = int(c_obj.get("value") or 0)
-        val_recent = int(c_obj.get("recent") or 0)
-        
-        citations_all.append(val_all)
-        citations_recent.append(val_recent)
-    
-    # 2. Recalcula Índices (All Time vs Since 2021)
-    h_index_all = calculate_h_index(citations_all)
-    i10_index_all = calculate_i10(citations_all)
-    
-    h_index_recent = calculate_h_index(citations_recent)
-    i10_index_recent = calculate_i10(citations_recent)
-
-    # 3. Construção do Gráfico Unificado (Máximo por Ano)
-    years_map = {} 
-
-    def absorb_graph(platform_data):
-        if not platform_data: return
-        # Tenta pegar estrutura padrão
-        graph = platform_data.get("profile", {}).get("cited_by", {}).get("graph", [])
-        for item in graph:
-            try:
-                y = int(item.get("year", 0))
-                if y < 1990 or y > current_year + 1: continue 
-                
-                if y not in years_map: years_map[y] = {'cits': [0], 'pubs': [0]}
-                
-                c = int(item.get("citations", 0))
-                p = int(item.get("publications", 0))
-                years_map[y]['cits'].append(c)
-                years_map[y]['pubs'].append(p)
-            except: pass
-
-    absorb_graph(scholar_data)
-    absorb_graph(scopus_data)
-    absorb_graph(wos_data)
-
-    # Verifica contagem real de artigos (fallback para pubs)
-    real_pub_counts = {}
-    for art in articles:
-        y = get_year_safe(art.get("year"))
-        if y and y > 1900:
-            real_pub_counts[y] = real_pub_counts.get(y, 0) + 1
-
-    all_years = set(years_map.keys()) | set(real_pub_counts.keys())
-    
-    final_graph = []
-    graph_citations_since_2021 = 0 # Acumulador para consistência
-
-    for y in sorted(all_years):
-        data = years_map.get(y, {'cits': [0], 'pubs': [0]})
-        
-        # Citações: O maior valor reportado
-        max_c = max(data['cits'])
-        
-        # Publicações: O maior entre APIs vs Contagem Real
-        max_p_apis = max(data['pubs'])
-        real_p = real_pub_counts.get(y, 0)
-        final_p = max(max_p_apis, real_p)
-
-        if max_c > 0 or final_p > 0:
-            final_graph.append({
-                "year": y,
-                "citations": max_c,
-                "publications": final_p
-            })
-            
-            # Soma citações recentes diretamente do gráfico final
-            if y >= since_year:
-                graph_citations_since_2021 += max_c
-
-    # 4. Montagem da Tabela (Garantindo coerência)
-    # Total de citações All Time vem da soma dos artigos (mais granular)
-    # Total Recent vem do Gráfico (para bater visualmente com as barras)
-    
-    total_citations_all = sum(citations_all)
-    
-    # Fallback de segurança: se o gráfico estiver vazio, usa a soma dos artigos
-    final_cits_recent = graph_citations_since_2021 if graph_citations_since_2021 > 0 else sum(citations_recent)
-
-    table = [
-        {
-            "citations": {
-                "all": total_citations_all, 
-                "since_2021": final_cits_recent
-            }
-        }, 
-        {
-            "h_index": {
-                "all": h_index_all, 
-                "since_2021": h_index_recent
-            }
-        },
-        {
-            "i10_index": {
-                "all": i10_index_all, 
-                "since_2021": i10_index_recent
-            }
-        }
-    ]
-
-    return {
-        "source_name": "Maximized Dataset",
-        "total_publications": len(articles),
-        "cited_by": {
-            "table": table,
-            "graph": final_graph
-        },
-        "articles": articles
-    }
-
-# ==============================================================================
-# EXECUÇÃO PRINCIPAL
+# EXECUÇÃO PRINCIPAL (LIMPA E OTIMIZADA)
 # ==============================================================================
 if __name__ == "__main__":
     logging.info("--- Iniciando atualização de dados acadêmicos ---")
 
-    # 1. Carregar dados antigos (Cache/Histórico)
+    # 1. Carregar dados antigos para comparação
     old_data = load_json_data(MAIN_FILENAME)
 
     # 2. Coleta de Dados
@@ -1640,74 +1306,26 @@ if __name__ == "__main__":
     
     github_repos = fetch_github_repos(GITHUB_USERNAME)
 
-    # Scholar
+    # Scholar (com rotação de chaves)
     scholar_data = None
     for api_key in SERPAPI_KEYS:
         scholar_data = fetch_scholar_data(SCHOLAR_AUTHOR_ID, api_key)
         if scholar_data: break
-    if not scholar_data:
-        # Fallback para cache antigo se API falhar
-        if old_data: scholar_data = old_data.get("academicData", {}).get("google_scholar")
-        if not scholar_data: scholar_data = {"profile": {}, "articles": []}
-
-    # Outras Fontes
+    
+    # Scopus, WoS, ORCID
     scopus_data = fetch_scopus_data(SCOPUS_AUTHOR_ID, SCOPUS_API_KEY) if SCOPUS_API_KEY and SCOPUS_AUTHOR_ID else None
     wos_data = fetch_wos_data(WOS_RESEARCHER_ID, WOS_API_KEY) if WOS_RESEARCHER_ID else None
-    orcid_data = fetch_orcid_works(ORCID_ID) if ORCID_ID else []
     
-    # ------------------------------------------------------------------
-    # 3. Merge Automatizado
-    # ------------------------------------------------------------------
-    logging.info("--- Etapa 2: Unificação e Processamento ---")
+    # Tratamento específico para ORCID (lista ou dict)
+    orcid_raw = fetch_orcid_works(ORCID_ID) if ORCID_ID else []
+    if isinstance(orcid_raw, dict):
+         orcid_list = orcid_raw.get("articles", [])
+         # Se a função retornar perfil completo, ajustamos aqui
+    else:
+         orcid_list = orcid_raw
 
-    master_map = {}
-
-    # A ordem de inserção ajuda, mas a função `merge_article_into_map` agora é inteligente
-    # o suficiente para decidir qual dado manter independente da ordem.
-    
-    # Inserimos ORCID/Scopus/WoS primeiro (Metadados Estruturados)
-    if scopus_data:
-        for art in scopus_data.get("articles", []):
-            merge_article_into_map(master_map, art, "Scopus")
-
-    if wos_data:
-        for art in wos_data.get("articles", []):
-            merge_article_into_map(master_map, art, "Web of Science")
-
-    orcid_list = orcid_data if isinstance(orcid_data, list) else orcid_data.get("articles", [])
-    for art in orcid_list:
-        merge_article_into_map(master_map, art, "ORCID")
-
-    # Inserimos Scholar (Rico em Citações, mas sujo em Metadados)
-    for art in scholar_data.get("articles", []):
-        merge_article_into_map(master_map, art, "Google Scholar")
-
-    # ------------------------------------------------------------------
-    # 4. Finalização
-    # ------------------------------------------------------------------
-    final_articles = list(master_map.values())
-
-    # Ordenação Final: Citações > Ano
-    final_articles.sort(
-        key=lambda x: (
-            int((x.get("cited_by") or {}).get("value") or 0),
-            get_year_safe(x.get("year"))
-        ),
-        reverse=True
-    )
-
-    # [AUTOMÁTICO] Gera métricas e gráfico combinando o melhor de cada fonte
-    maximized_obj = calculate_maximized_metrics(
-        final_articles, 
-        scholar_data=scholar_data,
-        scopus_data=scopus_data,
-        wos_data=wos_data
-    )
-
-    # ------------------------------------------------------------------
-    # 5. Montagem do JSON e Persistência
-    # ------------------------------------------------------------------
-    logging.info("--- Etapa 3: Montagem do JSON Final ---")
+    # 3. Montagem do JSON Final (Sem Merge/Maximization)
+    logging.info("--- Etapa 2: Montagem do JSON Final ---")
 
     new_data = {
         "githubRepos": github_repos,
@@ -1719,15 +1337,17 @@ if __name__ == "__main__":
             "orcid": {
                 "source_name": "ORCID",
                 "articles": orcid_list
-            },
-            "maximized": maximized_obj
+            }
+            # "maximized" foi removido conforme solicitado
         }
     }
 
-    logging.info("--- Etapa 4: Análise de Mudanças ---")
+    # 4. Análise de Mudanças e Persistência
+    logging.info("--- Etapa 3: Análise de Mudanças ---")
+    
+    # Chama a função adaptada
     report_lines, _ = analyze_changes(old_data, new_data)
 
-    # LÓGICA DE PERSISTÊNCIA CORRIGIDA
     if report_lines:
         print("\n" + "=" * 60)
         print(" RELATÓRIO DE ATUALIZAÇÃO")
@@ -1737,7 +1357,7 @@ if __name__ == "__main__":
         
         logging.info("Mudanças identificadas. Gerando e atualizando arquivo...")
         
-        # Só gera o arquivo se houver mudança
+        # Gera no temporário e move para o principal
         if generate_fallback_file(new_data, TEMP_FILENAME):
             _ = update_main_file(MAIN_FILENAME, TEMP_FILENAME)
             
@@ -1745,7 +1365,7 @@ if __name__ == "__main__":
         print("\n=== Nenhuma alteração relevante detectada. Mantendo versão anterior. ===\n")
         logging.info("Nenhuma mudança nos dados. O arquivo principal será mantido.")
         
-        # Garante a exclusão do temporário caso ele tenha sobrado de alguma execução anterior
+        # Limpeza do temporário se existir
         if os.path.exists(TEMP_FILENAME):
             try:
                 os.remove(TEMP_FILENAME)
@@ -1753,5 +1373,4 @@ if __name__ == "__main__":
             except Exception as e:
                 logging.warning(f"Erro ao excluir arquivo temporário: {e}")
 
-    logging.info("--- Processo concluído com sucesso ---")
-
+    logging.info("--- Processo concluído ---")
