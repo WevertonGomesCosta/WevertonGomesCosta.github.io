@@ -13,8 +13,7 @@
 # Implementa fallback automático e trata falhas de conexão.
 #
 # Autor: Weverton Gomes Costa
-# Versão: 12.0.0
-#   - Correção para Scopus API
+# Versão: 13.0.0 (Final - Sem Merge)
 
 import requests
 import json
@@ -805,11 +804,23 @@ def fetch_scopus_data(author_id, api_key):
     }
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS – WEB OF SCIENCE
+# FUNÇÕES DE BUSCA DE DADOS – WEB OF SCIENCE (Modo Offline / Fallback)
 # ==============================================================================
 
 def fetch_wos_data(researcher_id, api_key):
-    logging.info(f"--- Iniciando módulo Web of Science para ID: {researcher_id} ---")
+    """
+    Processa dados do Web of Science a partir de um arquivo local 'savedrecs.txt'.
+    A API foi removida temporariamente.
+    """
+    txt_file = "savedrecs.txt"
+    
+    # Se o arquivo não existir, retorna imediatamente
+    if not os.path.exists(txt_file):
+        logging.warning(f"Arquivo '{txt_file}' não encontrado. WoS será ignorado.")
+        return None
+
+    logging.info(f"--- Iniciando módulo Web of Science (Local) ---")
+    logging.info(f"Lendo arquivo: {txt_file}")
 
     articles = []
     
@@ -818,304 +829,140 @@ def fetch_wos_data(researcher_id, api_key):
     yearly_pub_counts = {}
     
     # Lista auxiliar para calcular métricas "Since 2021"
-    # Cada item será o total de citações recentes de um artigo específico
     recent_citations_per_article = [] 
-    
-    api_success = False
 
-    # ==========================================================================
-    # TENTATIVA 1 e 2: APIs (Expanded → Lite)
-    # ==========================================================================
-    if api_key:
-        headers = {"X-ApiKey": api_key, "Accept": "application/json"}
-
+    try:
         # ----------------------------------------------------------------------
-        # A) WoS Expanded (com paginação)
+        # 1. DETECÇÃO DE FORMATO (Tab vs Vírgula e Cabeçalho)
         # ----------------------------------------------------------------------
-        try:
-            logging.info("Tentando WoS API Expanded...")
-            start = 1
-            count = 50
-
-            while True:
-                params = {
-                    "databaseId": "WOS",
-                    "usrQuery": f"AI=({researcher_id})",
-                    "count": count,
-                    "firstRecord": start
-                }
-
-                resp = requests.get(
-                    "https://api.clarivate.com/api/wos/search",
-                    headers=headers,
-                    params=params,
-                    timeout=20
-                )
-
-                if resp.status_code == 200:
-                    data = resp.json()
-                    records = (
-                        data.get("Data", {})
-                        .get("Records", {})
-                        .get("records", [])
-                    )
-
-                    if not records:
-                        break
-
-                    for r in records:
-                        static = r.get("static_data", {})
-                        dynamic = r.get("dynamic_data", {})
-
-                        title = (
-                            static.get("summary", {})
-                            .get("titles", {})
-                            .get("title", [{}])[0]
-                            .get("content", "")
-                        )
-
-                        year = str(
-                            static.get("summary", {})
-                            .get("pub_info", {})
-                            .get("pubyear", "")
-                        )
-
-                        cites = int(
-                            dynamic.get("citation_related", {})
-                            .get("tc_list", {})
-                            .get("silo_tc", {})
-                            .get("local_count", 0)
-                        )
-
-                        doi = None
-                        for id_obj in (
-                            dynamic.get("cluster_related", {})
-                            .get("identifiers", {})
-                            .get("identifier", [])
-                        ):
-                            if id_obj.get("type") == "doi":
-                                doi = id_obj.get("value")
-                                break
-
-                        articles.append({
-                            "title": title or "Untitled",
-                            "year": year,
-                            "doi": doi,
-                            "link": f"https://doi.org/{doi}" if doi else None,
-                            "cited_by": {"value": cites},
-                            "source": "Web of Science"
-                        })
-                        
-                        # Nota: A API Expanded requer lógica complexa para histórico anual.
-                        # Focaremos a correção principal no fallback local conforme solicitado.
-
-                    start += len(records)
-                    if len(records) < count:
-                        break
-
-                    api_success = True
-
-                elif resp.status_code in [401, 403, 404]:
-                    logging.warning("WoS Expanded não autorizado.")
+        delimiter = '\t' 
+        header_pos = 0
+        
+        # Lê as primeiras linhas para descobrir onde começa o cabeçalho
+        with open(txt_file, 'r', encoding='utf-8-sig', errors='replace') as f:
+            lines = [f.readline() for _ in range(10)]
+            for i, line in enumerate(lines):
+                # O cabeçalho do WoS geralmente contém estes campos
+                if "Title" in line and "Authors" in line:
+                    header_pos = i
+                    # Se tiver aspas com vírgula, provavelmente é CSV, senão é TSV
+                    if '","' in line or ',"' in line: 
+                        delimiter = ','
                     break
-                else:
-                    logging.warning(f"WoS Expanded falhou ({resp.status_code}).")
-                    break
-
-            if api_success:
-                logging.info("✓ Dados obtidos via WoS API Expanded.")
-
-        except Exception as e:
-            logging.error(f"Erro WoS Expanded: {e}")
-
+        
         # ----------------------------------------------------------------------
-        # B) WoS Lite (se Expanded falhou)
+        # 2. PROCESSAMENTO DOS DADOS
         # ----------------------------------------------------------------------
-        if not api_success:
-            try:
-                logging.info("Tentando WoS API Lite...")
-                start = 1
-                count = 100
+        with open(txt_file, 'r', encoding='utf-8-sig', errors='replace') as f:
+            # Pula as linhas de metadados antes do cabeçalho
+            for _ in range(header_pos): 
+                next(f)
+            
+            reader = csv.DictReader(f, delimiter=delimiter)
+            
+            for row in reader:
+                # Tenta pegar o título em colunas comuns do WoS
+                title = row.get("Title") or row.get("Article Title")
+                if not title: continue 
 
-                while True:
-                    params = {
-                        "databaseId": "WOS",
-                        "usrQuery": f"AI=({researcher_id})",
-                        "count": count,
-                        "firstRecord": start
-                    }
-
-                    resp = requests.get(
-                        "https://api.clarivate.com/api/woslite/search",
-                        headers=headers,
-                        params=params,
-                        timeout=20
-                    )
-
-                    if resp.status_code != 200:
-                        logging.warning(f"WoS Lite falhou ({resp.status_code}).")
-                        break
-
-                    data = resp.json()
-                    records = data.get("Data", [])
-                    if not records:
-                        break
-
-                    for r in records:
-                        title = r.get("title", {}).get("value", [""])[0]
-                        cites = int(r.get("other", {}).get("timesCited", 0))
-                        doi = r.get("other", {}).get("identifier_doi", [None])[0]
-                        year = str(
-                            r.get("source", [{}])[0]
-                            .get("publishYear", "")
-                        )
-
-                        articles.append({
-                            "title": title,
-                            "year": year,
-                            "doi": doi,
-                            "link": f"https://doi.org/{doi}" if doi else None,
-                            "cited_by": {"value": cites},
-                            "source": "Web of Science"
-                        })
-
-                    start += len(records)
-                    if len(records) < count:
-                        break
-
-                if articles:
-                    api_success = True
-                    logging.info("✓ Dados obtidos via WoS API Lite.")
-
-            except Exception as e:
-                logging.error(f"Erro WoS Lite: {e}")
-
-    # ==========================================================================
-    # TENTATIVA 3: FALLBACK LOCAL (savedrecs.txt)
-    # ==========================================================================
-    if not api_success:
-        txt_file = "savedrecs.txt"
-        if os.path.exists(txt_file):
-            logging.info("Lendo fallback local: savedrecs.txt")
-            try:
-                # 1. Detecta cabeçalho e delimitador
-                delimiter = '\t' 
-                header_pos = 0
+                doi = row.get("DOI", "")
+                year_str = row.get("Publication Year", "")
                 
-                with open(txt_file, 'r', encoding='utf-8-sig', errors='replace') as f:
-                    lines = [f.readline() for _ in range(10)]
-                    for i, line in enumerate(lines):
-                        if "Title" in line and "Authors" in line:
-                            header_pos = i
-                            if '","' in line or ',"' in line: delimiter = ','
-                            break
-                
-                # 2. Processa os dados
-                with open(txt_file, 'r', encoding='utf-8-sig', errors='replace') as f:
-                    for _ in range(header_pos): next(f) # Pula metadados
-                    
-                    reader = csv.DictReader(f, delimiter=delimiter)
-                    
-                    for row in reader:
-                        title = row.get("Title") or row.get("Article Title")
-                        if not title: continue 
+                # Citações Totais (All Time) - Limpeza de string "1,200" para int 1200
+                raw_cites = row.get("Times Cited, WoS Core") or row.get("Total Citations") or "0"
+                try:
+                    cites_all_time = int(raw_cites.replace(',', '').strip())
+                except:
+                    cites_all_time = 0
 
-                        doi = row.get("DOI", "")
-                        year_str = row.get("Publication Year", "")
-                        
-                        # Citações Totais (All Time)
-                        raw_cites = row.get("Times Cited, WoS Core") or row.get("Total Citations") or "0"
+                # Adiciona Artigo à lista final
+                articles.append({
+                    "title": title,
+                    "year": year_str,
+                    "doi": doi,
+                    "link": f"https://doi.org/{doi}" if doi else None,
+                    "cited_by": {"value": cites_all_time},
+                    "source": "Web of Science"
+                })
+
+                # --- LÓGICA DE GRÁFICO E MÉTRICAS RECENTES ---
+                
+                # A. Contagem de Publicações por Ano (para o Gráfico)
+                if year_str and year_str.isdigit():
+                    y_int = int(year_str)
+                    yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
+
+                # B. Iterar colunas dinâmicas para achar anos de citação (ex: "2021", "2022")
+                # O export do WoS cria uma coluna para cada ano que teve citação.
+                cites_recent_for_this_article = 0
+                
+                for key, val in row.items():
+                    # Verifica se a coluna é um ano (4 dígitos numéricos)
+                    if key and key.isdigit() and len(key) == 4:
                         try:
-                            cites_all_time = int(raw_cites.replace(',', '').strip())
+                            c_year = int(key)
+                            c_val = int(val) if val and val.strip() else 0
+                            
+                            if c_val > 0:
+                                # 1. Soma ao gráfico global de citações
+                                yearly_citation_totals[c_year] = yearly_citation_totals.get(c_year, 0) + c_val
+                                
+                                # 2. Se for >= 2021, conta para as métricas "Since 2021"
+                                if c_year >= 2021:
+                                    cites_recent_for_this_article += c_val
                         except:
-                            cites_all_time = 0
+                            continue
+                
+                # Guarda o total recente deste artigo para calcular H-index/i10 depois
+                recent_citations_per_article.append(cites_recent_for_this_article)
 
-                        # Adiciona Artigo
-                        articles.append({
-                            "title": title,
-                            "year": year_str,
-                            "doi": doi,
-                            "link": f"https://doi.org/{doi}" if doi else None,
-                            "cited_by": {"value": cites_all_time},
-                            "source": "Web of Science"
-                        })
+        logging.info(f"✓ WoS Local: {len(articles)} artigos processados.")
 
-                        # --- LÓGICA DE GRÁFICO E MÉTRICAS RECENTES ---
-                        
-                        # 1. Publicações por Ano (Gráfico)
-                        if year_str and year_str.isdigit():
-                            y_int = int(year_str)
-                            yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
-
-                        # 2. Iterar colunas para Citações (Gráfico + Since 2021)
-                        cites_recent_for_this_article = 0
-                        
-                        for key, val in row.items():
-                            # Se a coluna é um ano (ex: "2021")
-                            if key and key.isdigit() and len(key) == 4:
-                                try:
-                                    c_year = int(key)
-                                    c_val = int(val) if val and val.strip() else 0
-                                    
-                                    if c_val > 0:
-                                        # A) Soma ao gráfico global
-                                        yearly_citation_totals[c_year] = yearly_citation_totals.get(c_year, 0) + c_val
-                                        
-                                        # B) Se for >= 2021, conta como recente para este artigo
-                                        if c_year >= 2021:
-                                            cites_recent_for_this_article += c_val
-                                except:
-                                    continue
-                        
-                        # Guarda o total recente deste artigo para calcular H-index/i10 depois
-                        recent_citations_per_article.append(cites_recent_for_this_article)
-
-                logging.info(f"✓ WoS Local: {len(articles)} artigos processados.")
-
-            except Exception as e:
-                logging.error(f"Erro crítico ao ler savedrecs.txt: {e}")
+    except Exception as e:
+        logging.error(f"Erro ao ler savedrecs.txt: {e}")
+        return None
 
     if not articles:
         return None
 
     # ==========================================================================
-    # CÁLCULO DE MÉTRICAS (ALL vs SINCE 2021)
+    # 3. CÁLCULO DE MÉTRICAS (ALL vs SINCE 2021)
     # ==========================================================================
-    # Lista de todas as citações (All Time)
-    cites_vals_all = [a["cited_by"]["value"] for a in articles]
     
-    # Já temos a lista de citações recentes populada no loop acima:
-    # recent_citations_per_article
+    # Lista simples de todas as citações
+    cites_vals_all = [a["cited_by"]["value"] for a in articles]
     
     metrics = [
         {
             "citations": {
                 "all": sum(cites_vals_all), 
-                "since_2021": sum(recent_citations_per_article) # Soma das listas recentes
+                "since_2021": sum(recent_citations_per_article) 
             }
         },
         {
             "h_index": {
                 "all": calculate_h_index(cites_vals_all), 
-                "since_2021": calculate_h_index(recent_citations_per_article) # H-index da lista recente
+                "since_2021": calculate_h_index(recent_citations_per_article)
             }
         },
         {
             "i10_index": {
                 "all": calculate_i10(cites_vals_all), 
-                "since_2021": calculate_i10(recent_citations_per_article) # i10 da lista recente
+                "since_2021": calculate_i10(recent_citations_per_article)
             }
         }
     ]
 
     # ==========================================================================
-    # MONTAGEM DO GRÁFICO
+    # 4. MONTAGEM DO GRÁFICO
     # ==========================================================================
     graph_data = []
+    # Une os anos onde houve publicações OU citações
     all_years = sorted(set(yearly_citation_totals.keys()) | set(yearly_pub_counts.keys()))
     current_year = datetime.now().year
 
     for y in all_years:
+        # Filtro de sanidade visual (ex: 1990 até ano que vem)
         if 1990 <= y <= current_year + 1:
             c_count = yearly_citation_totals.get(y, 0)
             p_count = yearly_pub_counts.get(y, 0)
