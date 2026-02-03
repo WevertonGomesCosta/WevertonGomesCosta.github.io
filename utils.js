@@ -657,7 +657,7 @@ const scholarScript = (function() {
         }
     }
 
-    // --- GRÁFICO FINAL (Animação Corrigida com Eixos Travados) ---
+    // --- GRÁFICO (ANIMAÇÃO SEQUENCIAL ANO A ANO + LAYOUT FIXO) ---
     function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -669,34 +669,37 @@ const scholarScript = (function() {
 
         const years = active.map(d => parseInt(d.year)).filter(y => !isNaN(y));
         const minYear = Math.min(...years), maxYear = Math.max(...years);
-        const processed = [];
         
-        // Preenche anos vazios para continuidade
+        // Dados processados completos
+        const processed = [];
         for (let y = minYear; y <= maxYear; y++) {
             const ext = rawData.find(d => parseInt(d.year) === y);
             processed.push({ year: y, cit: ext?.citations || 0, pub: ext?.publications || 0 });
         }
 
-        // --- CÁLCULO DOS MÁXIMOS (O SEGREDO DA ANIMAÇÃO) ---
-        // Precisamos saber o topo do gráfico ANTES de animar
+        // --- CÁLCULOS DE LIMITES (Fixar o palco) ---
         const maxPubVal = Math.max(...processed.map(d => d.pub));
         const maxCitVal = Math.max(...processed.map(d => d.cit));
-        
-        // Adiciona uma margem de 10% no topo para ficar bonito
         const rangePub = [0, maxPubVal > 0 ? maxPubVal * 1.1 : 5]; 
         const rangeCit = [0, maxCitVal > 0 ? maxCitVal * 1.1 : 10];
+        // Importante: Fixar o range do X para o gráfico não "pular" horizontalmente
+        const rangeX = [minYear - 0.5, maxYear + 0.5];
 
         const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6', max: '#F59E0B' }[platform] || '#10b981';
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
-        // Cálculo de Largura
+        // Dimensões (Mantendo sua correção de layout)
         const isMobile = window.innerWidth < 768;
         let targetWidth = container.getBoundingClientRect().width;
         if (targetWidth < 50) targetWidth = window.innerWidth - (isMobile ? 40 : 80);
         const chartHeight = isMobile ? 260 : 350; 
 
-        // Layout Base
+        // Configuração de Velocidade da Animação
+        // Se tiver muitos anos, acelera. Se tiver poucos, vai mais devagar.
+        const totalDurationTarget = 1500; // Queremos que tudo demore ~1.5s
+        const stepDuration = Math.max(50, Math.min(300, totalDurationTarget / processed.length));
+
         const layout = {
             width: targetWidth, 
             height: chartHeight,
@@ -706,65 +709,81 @@ const scholarScript = (function() {
             legend: { orientation: 'h', x: 0, y: isMobile ? 1.2 : 1.1 },
             margin: { t: 40, l: 30, r: 30, b: 30 }, 
             xaxis: { 
-                gridcolor: '#333', showgrid: false, type: 'category', fixedrange: true,
-                tickfont: { size: isMobile ? 10 : 12 }
+                gridcolor: '#333', showgrid: false, type: 'linear', fixedrange: true, // Type linear ajuda na animação
+                tickfont: { size: isMobile ? 10 : 12 },
+                range: rangeX // <--- FIXA O EIXO X
             },
-            // EIXO Y (CITAÇÕES) - COM RANGE FIXO
             yaxis: { 
                 title: { text: isMobile ? '' : lblCits, font:{color, size:11}}, 
                 gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true,
-                range: rangeCit // <--- TRAVA A ESCALA
+                range: rangeCit // <--- FIXA O EIXO Y
             },
-            // EIXO Y2 (PUBLICAÇÕES) - COM RANGE FIXO
             yaxis2: { 
                 title: { text: isMobile ? '' : lblPubs, font:{color:'#999', size:11}}, 
                 overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true,
-                range: rangePub // <--- TRAVA A ESCALA
+                range: rangePub // <--- FIXA O EIXO Y2
             },
             dragmode: false, 
             hovermode: 'x unified',
+            // Transição suave entre cada passo da sequência
             transition: {
-                duration: 1500,
-                easing: 'cubic-out' // Efeito mais suave
+                duration: stepDuration, 
+                easing: 'linear'
             }
         };
 
         const config = { responsive: true, displayModeBar: false, staticPlot: false };
 
-        const tracePubs = { 
-            x: processed.map(d=>d.year), 
-            y: processed.map(d=>d.pub), 
-            name: lblPubs, type: 'bar', yaxis: 'y2', 
-            marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} 
-        };
-        
-        const traceCits = { 
-            x: processed.map(d=>d.year), 
-            y: processed.map(d=>d.cit), 
-            name: lblCits, type: 'scatter', mode:'lines+markers', 
-            line:{color, width:3, shape:'spline'}, 
-            marker:{size:6, color, line:{color:'#fff', width:1}} 
+        // Função auxiliar para criar os traços (traces) baseados num subset de dados
+        const getTraces = (dataSubset) => {
+            return [
+                { 
+                    x: dataSubset.map(d=>d.year), 
+                    y: dataSubset.map(d=>d.pub), 
+                    name: lblPubs, type: 'bar', yaxis: 'y2', 
+                    marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} 
+                },
+                { 
+                    x: dataSubset.map(d=>d.year), 
+                    y: dataSubset.map(d=>d.cit), 
+                    name: lblCits, type: 'scatter', mode:'lines+markers', 
+                    line:{color, width:3, shape:'spline'}, // shape spline deixa a linha curva/suave
+                    marker:{size:6, color, line:{color:'#fff', width:1}} 
+                }
+            ];
         };
 
-        // --- LÓGICA DE ANIMAÇÃO ---
+        // --- LÓGICA DE EXECUÇÃO ---
+        
         if (shouldAnimate) {
-            // 1. Dados Zerados
-            const tracePubsZero = { ...tracePubs, y: processed.map(() => 0) };
-            const traceCitsZero = { ...traceCits, y: processed.map(() => 0) };
-            
-            // 2. Renderiza VAZIO, mas com a ESCALA TOTAL (graças ao range no layout)
-            Plotly.newPlot(container, [tracePubsZero, traceCitsZero], { ...layout, transition: { duration: 0 } }, config)
+            // 1. Renderiza o "Palco Vazio" (Layout fixo, mas arrays vazios)
+            Plotly.newPlot(container, getTraces([]), { ...layout, transition: { duration: 0 } }, config)
             .then(() => {
-                // 3. Aguarda um momento e ordena a subida
-                requestAnimationFrame(() => {
-                    setTimeout(() => {
-                        Plotly.react(container, [tracePubs, traceCits], layout, config);
-                    }, 100);
-                });
+                // 2. Inicia o Loop Sequencial
+                let currentIndex = 0;
+                
+                function runSequence() {
+                    if (currentIndex >= processed.length) return; // Fim
+
+                    // Pega dados do início até o índice atual (efeito cumulativo)
+                    const currentSubset = processed.slice(0, currentIndex + 1);
+                    
+                    // Atualiza o gráfico
+                    Plotly.react(container, getTraces(currentSubset), layout, config);
+                    
+                    currentIndex++;
+                    setTimeout(runSequence, stepDuration);
+                }
+                
+                // Pequeno delay inicial antes de começar a desenhar
+                setTimeout(runSequence, 100);
             });
+
         } else {
-            // Renderização Estática (Redimensionamento)
-            Plotly.newPlot(container, [tracePubs, traceCits], { ...layout, transition: { duration: 0 } }, config);
+            // Sem animação (Resize ou troca de idioma): Renderiza tudo de uma vez
+            // Removemos a transição lenta para ser instantâneo
+            const staticLayout = { ...layout, transition: { duration: 0 } };
+            Plotly.newPlot(container, getTraces(processed), staticLayout, config);
         }
         
         container.on('plotly_click', d => {
