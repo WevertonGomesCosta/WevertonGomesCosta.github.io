@@ -657,7 +657,7 @@ const scholarScript = (function() {
         }
     }
 
-    // --- GRÁFICO (ANIMAÇÃO SEQUENCIAL ANO A ANO + LAYOUT FIXO) ---
+    // --- GRÁFICO (CORRIGIDO: MOSTRAR TODOS OS ANOS) ---
     function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -677,27 +677,25 @@ const scholarScript = (function() {
             processed.push({ year: y, cit: ext?.citations || 0, pub: ext?.publications || 0 });
         }
 
-        // --- CÁLCULOS DE LIMITES (Fixar o palco) ---
+        // --- CÁLCULOS DE LIMITES ---
         const maxPubVal = Math.max(...processed.map(d => d.pub));
         const maxCitVal = Math.max(...processed.map(d => d.cit));
         const rangePub = [0, maxPubVal > 0 ? maxPubVal * 1.1 : 5]; 
         const rangeCit = [0, maxCitVal > 0 ? maxCitVal * 1.1 : 10];
-        // Importante: Fixar o range do X para o gráfico não "pular" horizontalmente
         const rangeX = [minYear - 0.5, maxYear + 0.5];
 
         const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6', max: '#F59E0B' }[platform] || '#10b981';
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
-        // Dimensões (Mantendo sua correção de layout)
+        // Dimensões
         const isMobile = window.innerWidth < 768;
         let targetWidth = container.getBoundingClientRect().width;
         if (targetWidth < 50) targetWidth = window.innerWidth - (isMobile ? 40 : 80);
         const chartHeight = isMobile ? 260 : 350; 
 
-        // Configuração de Velocidade da Animação
-        // Se tiver muitos anos, acelera. Se tiver poucos, vai mais devagar.
-        const totalDurationTarget = 1500; // Queremos que tudo demore ~1.5s
+        // Configuração de Velocidade
+        const totalDurationTarget = 1500; 
         const stepDuration = Math.max(50, Math.min(300, totalDurationTarget / processed.length));
 
         const layout = {
@@ -709,23 +707,27 @@ const scholarScript = (function() {
             legend: { orientation: 'h', x: 0, y: isMobile ? 1.2 : 1.1 },
             margin: { t: 40, l: 30, r: 30, b: 30 }, 
             xaxis: { 
-                gridcolor: '#333', showgrid: false, type: 'linear', fixedrange: true, // Type linear ajuda na animação
+                gridcolor: '#333', showgrid: false, type: 'linear', fixedrange: true,
                 tickfont: { size: isMobile ? 10 : 12 },
-                range: rangeX // <--- FIXA O EIXO X
+                range: rangeX,
+                // --- CORREÇÃO AQUI: FORÇAR EXIBIÇÃO DE TODOS OS ANOS ---
+                tickmode: 'linear',
+                dtick: 1, // Um tick por ano
+                tickangle: isMobile ? -45 : 0 // Inclina no celular para não encavalar
+                // -------------------------------------------------------
             },
             yaxis: { 
                 title: { text: isMobile ? '' : lblCits, font:{color, size:11}}, 
                 gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true,
-                range: rangeCit // <--- FIXA O EIXO Y
+                range: rangeCit 
             },
             yaxis2: { 
                 title: { text: isMobile ? '' : lblPubs, font:{color:'#999', size:11}}, 
                 overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true,
-                range: rangePub // <--- FIXA O EIXO Y2
+                range: rangePub 
             },
             dragmode: false, 
             hovermode: 'x unified',
-            // Transição suave entre cada passo da sequência
             transition: {
                 duration: stepDuration, 
                 easing: 'linear'
@@ -734,7 +736,6 @@ const scholarScript = (function() {
 
         const config = { responsive: true, displayModeBar: false, staticPlot: false };
 
-        // Função auxiliar para criar os traços (traces) baseados num subset de dados
         const getTraces = (dataSubset) => {
             return [
                 { 
@@ -747,7 +748,7 @@ const scholarScript = (function() {
                     x: dataSubset.map(d=>d.year), 
                     y: dataSubset.map(d=>d.cit), 
                     name: lblCits, type: 'scatter', mode:'lines+markers', 
-                    line:{color, width:3, shape:'spline'}, // shape spline deixa a linha curva/suave
+                    line:{color, width:3, shape:'spline'}, 
                     marker:{size:6, color, line:{color:'#fff', width:1}} 
                 }
             ];
@@ -756,32 +757,24 @@ const scholarScript = (function() {
         // --- LÓGICA DE EXECUÇÃO ---
         
         if (shouldAnimate) {
-            // 1. Renderiza o "Palco Vazio" (Layout fixo, mas arrays vazios)
             Plotly.newPlot(container, getTraces([]), { ...layout, transition: { duration: 0 } }, config)
             .then(() => {
-                // 2. Inicia o Loop Sequencial
                 let currentIndex = 0;
                 
                 function runSequence() {
-                    if (currentIndex >= processed.length) return; // Fim
+                    if (currentIndex >= processed.length) return; 
 
-                    // Pega dados do início até o índice atual (efeito cumulativo)
                     const currentSubset = processed.slice(0, currentIndex + 1);
-                    
-                    // Atualiza o gráfico
                     Plotly.react(container, getTraces(currentSubset), layout, config);
                     
                     currentIndex++;
                     setTimeout(runSequence, stepDuration);
                 }
                 
-                // Pequeno delay inicial antes de começar a desenhar
                 setTimeout(runSequence, 100);
             });
 
         } else {
-            // Sem animação (Resize ou troca de idioma): Renderiza tudo de uma vez
-            // Removemos a transição lenta para ser instantâneo
             const staticLayout = { ...layout, transition: { duration: 0 } };
             Plotly.newPlot(container, getTraces(processed), staticLayout, config);
         }
