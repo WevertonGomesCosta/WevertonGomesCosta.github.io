@@ -476,7 +476,7 @@ const GithubReposModule = {
 };
 
 // =================================================================================
-// MÓDULO: DASHBOARD ACADÊMICO (CORRIGIDO: SWIPE + ZOOM BLOQUEADO)
+// MÓDULO: DASHBOARD ACADÊMICO (FINAL: ANIMAÇÃO NO SCROLL + SWIPE + ZOOM FIX)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
@@ -484,6 +484,10 @@ const scholarScript = (function() {
     const initialPubsToShow = 3; 
     const pubsPerLoad = 3;        
     
+    // Mapeia a ordem dos slides para as chaves de dados
+    // IMPORTANTE: A ordem aqui deve bater com a ordem das divs .carousel-slide no seu HTML
+    const platformOrder = ['scholar', 'scopus', 'wos', 'max'];
+
     let dashboardData = {
         scholar: null, scopus: null, wos: null, max: null
     };
@@ -492,6 +496,7 @@ const scholarScript = (function() {
     let showingPubsCount = 0;
     let activeYearFilter = null;
     let currentSlideIndex = 0;
+    let hasViewedSection = false; // Controle para primeira visualização
 
     // --- UI References ---
     const UI = {
@@ -499,7 +504,8 @@ const scholarScript = (function() {
         nextBtn: null, prevBtn: null, dots: [],
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
-        pubsShownCount: null, pubsLoadMoreBtn: null
+        pubsShownCount: null, pubsLoadMoreBtn: null,
+        dashboardSection: null // Referência para o observer
     };
 
     // --- CARREGAMENTO ---
@@ -537,25 +543,44 @@ const scholarScript = (function() {
         };
     };
 
-    // Animação de Números
+    // --- ANIMAÇÃO DE NÚMEROS (Melhorada para Reiniciar) ---
     function animateCountUp(el, value) {
         if (!el) return;
+        
+        // Cancela animação anterior se houver (para evitar conflito ao trocar slide rápido)
+        if (el.dataset.animId) {
+            cancelAnimationFrame(el.dataset.animId);
+        }
+
         if (value === null || value === undefined) { el.textContent = "-"; return; }
+        
         let target = parseInt(value, 10);
         if (isNaN(target)) { el.textContent = value; return; }
 
-        const duration = 1000;
+        // RESET VISUAL: Começa do zero para dar o efeito
+        el.textContent = "0";
+
+        const duration = 1500; // Duração um pouco maior para ficar mais suave
         const startTime = performance.now();
 
         function update(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            const ease = 1 - Math.pow(1 - progress, 3);
-            el.textContent = Math.floor(ease * target).toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
-            if (progress < 1) requestAnimationFrame(update);
-            else el.textContent = target.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+            
+            // Easing function (easeOutExpo) para desacelerar no final
+            const ease = (progress === 1) ? 1 : 1 - Math.pow(2, -10 * progress);
+            
+            const currentVal = Math.floor(ease * target);
+            el.textContent = currentVal.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+
+            if (progress < 1) {
+                el.dataset.animId = requestAnimationFrame(update);
+            } else {
+                el.textContent = target.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+                delete el.dataset.animId;
+            }
         }
-        requestAnimationFrame(update);
+        el.dataset.animId = requestAnimationFrame(update);
     }
 
     // --- PROCESSAMENTO DE DADOS ---
@@ -611,8 +636,8 @@ const scholarScript = (function() {
         return result;
     }
 
-    // --- RENDERIZAÇÃO ---
-    function renderPlatform(platformPrefix) {
+    // --- RENDERIZAÇÃO (Com trigger de animação) ---
+    function renderPlatform(platformPrefix, shouldAnimate = true) {
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
@@ -621,19 +646,34 @@ const scholarScript = (function() {
         const i10El = document.getElementById(`${platformPrefix}-i10`);
         const pubsEl = document.getElementById(`${platformPrefix}-pubs`);
 
-        if (citEl) animateCountUp(citEl, data.metrics.cit.all);
-        if (hEl) animateCountUp(hEl, data.metrics.h.all);
-        if (i10El) animateCountUp(i10El, data.metrics.i10.all);
-        if (pubsEl) animateCountUp(pubsEl, data.metrics.pubs);
+        // Se deve animar, chama animateCountUp. Se não, define o texto direto.
+        // No caso atual, sempre queremos a animação quando chamado (scroll ou swipe)
+        if (shouldAnimate) {
+            if (citEl) animateCountUp(citEl, data.metrics.cit.all);
+            if (hEl) animateCountUp(hEl, data.metrics.h.all);
+            if (i10El) animateCountUp(i10El, data.metrics.i10.all);
+            if (pubsEl) animateCountUp(pubsEl, data.metrics.pubs);
+        } else {
+            // Define valor estático (usado na carga inicial fora de vista)
+            const fmt = n => n.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+            if (citEl) citEl.textContent = fmt(data.metrics.cit.all);
+            if (hEl) hEl.textContent = fmt(data.metrics.h.all);
+            if (i10El) i10El.textContent = fmt(data.metrics.i10.all);
+            if (pubsEl) pubsEl.textContent = fmt(data.metrics.pubs);
+        }
 
         updatePeriodLabels(platformPrefix, data.metrics);
 
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
         if (chartDiv) {
-            if (data.graphData && data.graphData.length > 0) {
-                renderDualAxisChart(chartDiv, data.graphData, platformPrefix);
-            } else {
-                chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
+            // Verifica se o gráfico já foi desenhado para não redesenhar do zero e perder performance
+            // exceto se for o primeiro render
+            if (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados')) {
+                if (data.graphData && data.graphData.length > 0) {
+                    renderDualAxisChart(chartDiv, data.graphData, platformPrefix);
+                } else {
+                    chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
+                }
             }
         }
     }
@@ -671,16 +711,21 @@ const scholarScript = (function() {
         ensureAndSetLabel(`${platformPrefix}-i10`, metrics.i10);
     }
 
-    // --- ATUALIZAÇÃO GLOBAL ---
+    // --- ATUALIZAÇÃO GLOBAL (Chamada ao trocar idioma) ---
     function updateAllTexts() {
-        renderPlatform('scholar');
-        renderPlatform('scopus');
-        renderPlatform('wos');
-        renderPlatform('max'); 
+        // Renderiza tudo (pode ser sem animação se não estiver visível, mas vamos simplificar)
+        // Aqui renderizamos tudo para atualizar traduções
+        platformOrder.forEach(p => renderPlatform(p, false)); // Atualiza textos sem re-animar tudo de uma vez
         renderPublications(); 
         
+        // Força a animação apenas do slide ATUAL se já tivermos visto a seção
+        if (hasViewedSection) {
+            const currentPlatform = platformOrder[currentSlideIndex];
+            if(currentPlatform) renderPlatform(currentPlatform, true);
+        }
+
         setTimeout(() => {
-            ['scholar', 'scopus', 'wos', 'max'].forEach(prefix => {
+            platformOrder.forEach(prefix => {
                 const el = document.getElementById(`${prefix}-chart`);
                 if (el && typeof Plotly !== 'undefined') {
                     try { Plotly.Plots.resize(el); } catch(e){}
@@ -721,6 +766,7 @@ const scholarScript = (function() {
         if (platform === 'scholar') colorLine = '#4285F4'; 
         if (platform === 'scopus') colorLine = '#ff7f0e';  
         if (platform === 'wos') colorLine = '#8b5cf6';     
+        if (platform === 'max') colorLine = '#F59E0B';     
 
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
@@ -745,37 +791,16 @@ const scholarScript = (function() {
             margin: { t: 30, l: 40, r: 40, b: 40 },
             height: 350, 
             autosize: true,
-            
-            // --- BLOQUEIO TOTAL DE ZOOM E PAN ---
-            xaxis: { 
-                gridcolor: '#333', 
-                showgrid: false, 
-                zeroline: false, 
-                type: 'category',
-                fixedrange: true // Impede zoom no eixo X
-            },
-            yaxis: { 
-                title: { text: lblCits, font: { color: colorLine, size: 12 } }, 
-                gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine },
-                fixedrange: true // Impede zoom no eixo Y
-            },
-            yaxis2: { 
-                title: { text: lblPubs, font: { color: '#999', size: 12 } }, 
-                overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' },
-                fixedrange: true // Impede zoom no eixo Y2
-            },
-            dragmode: false, // Desativa o arrastar para zoom
+            xaxis: { gridcolor: '#333', showgrid: false, zeroline: false, type: 'category', fixedrange: true },
+            yaxis: { title: { text: lblCits, font: { color: colorLine, size: 12 } }, gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine }, fixedrange: true },
+            yaxis2: { title: { text: lblPubs, font: { color: '#999', size: 12 } }, overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' }, fixedrange: true },
+            dragmode: false,
             hovermode: 'x unified'
         };
         
-        // --- REMOÇÃO DA BARRA DE FERRAMENTAS ---
-        const config = { 
-            responsive: true, 
-            displayModeBar: false // Remove ícones de zoom/pan/download
-        };
+        const config = { responsive: true, displayModeBar: false };
 
         Plotly.react(container, [tracePubs, traceCits], layout, config);
-        
         setTimeout(() => { try { Plotly.Plots.resize(container); } catch(e) {} }, 50);
 
         container.on('plotly_click', data => {
@@ -787,19 +812,29 @@ const scholarScript = (function() {
         });
     }
 
-    // --- CARROSSEL (COM SWIPE) ---
+    // --- CARROSSEL (COM TRIGGER DE ANIMAÇÃO) ---
     function updateCarouselPosition() {
         if (!UI.track || UI.slides.length === 0) return;
+        
         const width = UI.slides[0].getBoundingClientRect().width;
         UI.track.style.transform = `translateX(-${width * currentSlideIndex}px)`;
+        
         UI.slides.forEach((s, i) => s.classList.toggle('current-slide', i === currentSlideIndex));
         UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
+
+        // TRIGGER DE ANIMAÇÃO: Quando muda o slide, anima os números da plataforma atual
+        const currentPlatform = platformOrder[currentSlideIndex];
+        if (currentPlatform) {
+            // Pequeno delay para a transição do carrossel começar antes dos números rodarem
+            setTimeout(() => {
+                renderPlatform(currentPlatform, true);
+            }, 200);
+        }
     }
 
     function initCarouselLogic() {
         if (!UI.track) return;
 
-        // Funções de navegação
         const moveNext = () => {
             currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length;
             updateCarouselPosition();
@@ -810,34 +845,24 @@ const scholarScript = (function() {
             updateCarouselPosition();
         };
 
-        // Eventos de clique
         if(UI.nextBtn) UI.nextBtn.addEventListener('click', moveNext);
         if(UI.prevBtn) UI.prevBtn.addEventListener('click', movePrev);
         UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { currentSlideIndex = idx; updateCarouselPosition(); }));
 
-        // --- LÓGICA DE SWIPE (ARRASTAR O DEDO) ---
         let touchStartX = 0;
         let touchEndX = 0;
 
-        UI.track.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, {passive: true});
-
+        UI.track.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
         UI.track.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         }, {passive: true});
 
         function handleSwipe() {
-            const threshold = 50; // Mínimo de pixels para considerar um swipe
-            if (touchEndX < touchStartX - threshold) { 
-                moveNext(); // Deslizou para esquerda -> Próximo
-            }
-            if (touchEndX > touchStartX + threshold) {
-                movePrev(); // Deslizou para direita -> Anterior
-            }
+            const threshold = 50; 
+            if (touchEndX < touchStartX - threshold) moveNext(); 
+            if (touchEndX > touchStartX + threshold) movePrev(); 
         }
-        // ------------------------------------------
 
         window.addEventListener('resize', updateCarouselPosition);
     }
@@ -907,6 +932,7 @@ const scholarScript = (function() {
         UI.nextBtn = document.querySelector('.next-btn');
         UI.prevBtn = document.querySelector('.prev-btn');
         UI.dots = Array.from(document.querySelectorAll('.carousel-indicator'));
+        UI.dashboardSection = document.getElementById('dashboard-academico') || document.getElementById('publicacoes'); // Tenta achar a seção pai
         
         UI.pubsGrid = document.getElementById("publicacoes-grid");
         UI.pubSearchInput = document.getElementById('publication-search');
@@ -914,13 +940,13 @@ const scholarScript = (function() {
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
 
-        // Popula Dados do Dashboard
+        // Popula Dados
         dashboardData.scholar = processPlatformData('scholar', 'google_scholar');
         dashboardData.scopus = processPlatformData('scopus', 'scopus');
         dashboardData.wos = processPlatformData('wos', 'web_of_science');
         dashboardData.max = processPlatformData('max', 'maximized');
 
-        // Popula Lista Principal de Artigos
+        // Popula Artigos
         const fb = window.fallbackData;
         if (fb) {
             const acad = fb.academicData || fb;
@@ -930,15 +956,33 @@ const scholarScript = (function() {
         }
 
         const isPubsPage = window.location.pathname.includes('publicacoes');
-        
-        if (isPubsPage) {
-            showingPubsCount = allArticles.length;
-        } else {
-            showingPubsCount = initialPubsToShow;
-        }
+        showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow;
 
-        updateAllTexts();
+        // Renderiza lista de publicações (texto estático)
+        renderPublications();
         initCarouselLogic();
+
+        // --- OBSERVER PARA ANIMAÇÃO NO SCROLL ---
+        // Popula os gráficos/números, mas SEM animar (texto estático) na carga inicial
+        platformOrder.forEach(p => renderPlatform(p, false));
+
+        if (UI.dashboardSection) {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !hasViewedSection) {
+                    hasViewedSection = true;
+                    // Dispara a animação APENAS para o slide visível (currentSlideIndex)
+                    const currentPlatform = platformOrder[currentSlideIndex];
+                    if(currentPlatform) renderPlatform(currentPlatform, true);
+                    observer.disconnect(); // Só precisa animar a entrada uma vez
+                }
+            }, { threshold: 0.3 }); // Dispara quando 30% da seção estiver visível
+            observer.observe(UI.dashboardSection);
+        } else {
+            // Fallback se não achar a seção: anima logo de cara
+            hasViewedSection = true;
+            updateAllTexts();
+        }
+        // ----------------------------------------
         
         if(UI.pubSearchInput) UI.pubSearchInput.addEventListener('input', () => { 
             showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; 
