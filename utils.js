@@ -657,7 +657,7 @@ const scholarScript = (function() {
         }
     }
 
-    // --- GRÁFICO (VERSÃO BLINDADA CONTRA ERROS DE TAMANHO) ---
+    // --- GRÁFICO FINAL (Animação Corrigida com Eixos Travados) ---
     function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -670,76 +670,100 @@ const scholarScript = (function() {
         const years = active.map(d => parseInt(d.year)).filter(y => !isNaN(y));
         const minYear = Math.min(...years), maxYear = Math.max(...years);
         const processed = [];
+        
+        // Preenche anos vazios para continuidade
         for (let y = minYear; y <= maxYear; y++) {
             const ext = rawData.find(d => parseInt(d.year) === y);
             processed.push({ year: y, cit: ext?.citations || 0, pub: ext?.publications || 0 });
         }
 
+        // --- CÁLCULO DOS MÁXIMOS (O SEGREDO DA ANIMAÇÃO) ---
+        // Precisamos saber o topo do gráfico ANTES de animar
+        const maxPubVal = Math.max(...processed.map(d => d.pub));
+        const maxCitVal = Math.max(...processed.map(d => d.cit));
+        
+        // Adiciona uma margem de 10% no topo para ficar bonito
+        const rangePub = [0, maxPubVal > 0 ? maxPubVal * 1.1 : 5]; 
+        const rangeCit = [0, maxCitVal > 0 ? maxCitVal * 1.1 : 10];
+
         const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6', max: '#F59E0B' }[platform] || '#10b981';
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
-        // --- CÁLCULO DE DIMENSÃO MANUAL ---
+        // Cálculo de Largura
         const isMobile = window.innerWidth < 768;
-        
-        // 1. Tenta pegar a largura real do container
         let targetWidth = container.getBoundingClientRect().width;
-        
-        // 2. Se for 0 (está escondido) ou muito pequeno, usa a largura da janela menos margens
-        if (targetWidth < 50) {
-            targetWidth = window.innerWidth - (isMobile ? 40 : 80); // 40px de margem total no mobile
-        }
-        
+        if (targetWidth < 50) targetWidth = window.innerWidth - (isMobile ? 40 : 80);
         const chartHeight = isMobile ? 260 : 350; 
 
+        // Layout Base
         const layout = {
-            width: targetWidth, // FORÇA A LARGURA EXATA
+            width: targetWidth, 
             height: chartHeight,
             paper_bgcolor: 'rgba(0,0,0,0)', 
             plot_bgcolor: 'rgba(0,0,0,0)',
             font: { color: '#888', family: 'Inter, sans-serif' },
             legend: { orientation: 'h', x: 0, y: isMobile ? 1.2 : 1.1 },
-            // Margens ajustadas para não cortar números
             margin: { t: 40, l: 30, r: 30, b: 30 }, 
             xaxis: { 
                 gridcolor: '#333', showgrid: false, type: 'category', fixedrange: true,
                 tickfont: { size: isMobile ? 10 : 12 }
             },
+            // EIXO Y (CITAÇÕES) - COM RANGE FIXO
             yaxis: { 
                 title: { text: isMobile ? '' : lblCits, font:{color, size:11}}, 
-                gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true 
+                gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true,
+                range: rangeCit // <--- TRAVA A ESCALA
             },
+            // EIXO Y2 (PUBLICAÇÕES) - COM RANGE FIXO
             yaxis2: { 
                 title: { text: isMobile ? '' : lblPubs, font:{color:'#999', size:11}}, 
-                overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true 
+                overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true,
+                range: rangePub // <--- TRAVA A ESCALA
             },
             dragmode: false, 
             hovermode: 'x unified',
-            transition: { duration: 1000, easing: 'cubic-in-out' }
+            transition: {
+                duration: 1500,
+                easing: 'cubic-out' // Efeito mais suave
+            }
         };
 
-        const config = { 
-            responsive: true, 
-            displayModeBar: false,
-            staticPlot: false 
+        const config = { responsive: true, displayModeBar: false, staticPlot: false };
+
+        const tracePubs = { 
+            x: processed.map(d=>d.year), 
+            y: processed.map(d=>d.pub), 
+            name: lblPubs, type: 'bar', yaxis: 'y2', 
+            marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} 
+        };
+        
+        const traceCits = { 
+            x: processed.map(d=>d.year), 
+            y: processed.map(d=>d.cit), 
+            name: lblCits, type: 'scatter', mode:'lines+markers', 
+            line:{color, width:3, shape:'spline'}, 
+            marker:{size:6, color, line:{color:'#fff', width:1}} 
         };
 
-        const tracePubs = { x: processed.map(d=>d.year), y: processed.map(d=>d.pub), name: lblPubs, type: 'bar', yaxis: 'y2', marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} };
-        const traceCits = { x: processed.map(d=>d.year), y: processed.map(d=>d.cit), name: lblCits, type: 'scatter', mode:'lines+markers', line:{color, width:3, shape:'spline'}, marker:{size:6, color, line:{color:'#fff', width:1}} };
-
+        // --- LÓGICA DE ANIMAÇÃO ---
         if (shouldAnimate) {
+            // 1. Dados Zerados
             const tracePubsZero = { ...tracePubs, y: processed.map(() => 0) };
             const traceCitsZero = { ...traceCits, y: processed.map(() => 0) };
             
+            // 2. Renderiza VAZIO, mas com a ESCALA TOTAL (graças ao range no layout)
             Plotly.newPlot(container, [tracePubsZero, traceCitsZero], { ...layout, transition: { duration: 0 } }, config)
             .then(() => {
+                // 3. Aguarda um momento e ordena a subida
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         Plotly.react(container, [tracePubs, traceCits], layout, config);
-                    }, 50);
+                    }, 100);
                 });
             });
         } else {
+            // Renderização Estática (Redimensionamento)
             Plotly.newPlot(container, [tracePubs, traceCits], { ...layout, transition: { duration: 0 } }, config);
         }
         
