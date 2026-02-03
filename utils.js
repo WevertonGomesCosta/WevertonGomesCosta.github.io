@@ -801,11 +801,59 @@ const scholarScript = (function() {
         UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
     }
 
+// No arquivo utils.js, dentro de scholarScript...
+
     function initCarouselLogic() {
         if (!UI.track) return;
-        if(UI.nextBtn) UI.nextBtn.addEventListener('click', () => { currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length; updateCarouselPosition(); });
-        if(UI.prevBtn) UI.prevBtn.addEventListener('click', () => { currentSlideIndex = (currentSlideIndex - 1 + UI.slides.length) % UI.slides.length; updateCarouselPosition(); });
-        UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { currentSlideIndex = idx; updateCarouselPosition(); }));
+
+        // Funções de navegação auxiliares
+        const moveNext = () => {
+            currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length;
+            updateCarouselPosition();
+        };
+
+        const movePrev = () => {
+            currentSlideIndex = (currentSlideIndex - 1 + UI.slides.length) % UI.slides.length;
+            updateCarouselPosition();
+        };
+
+        // Eventos dos Botões (Clique)
+        if(UI.nextBtn) UI.nextBtn.addEventListener('click', moveNext);
+        if(UI.prevBtn) UI.prevBtn.addEventListener('click', movePrev);
+        
+        // Eventos dos Pontinhos (Dots)
+        UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { 
+            currentSlideIndex = idx; 
+            updateCarouselPosition(); 
+        }));
+
+        // --- NOVA LÓGICA: SWIPE (Toque na tela) ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Detecta onde o dedo tocou na tela
+        UI.track.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        // Detecta onde o dedo soltou a tela
+        UI.track.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, {passive: true});
+
+        function handleSwipe() {
+            // Se deslizou para a esquerda (próximo slide)
+            if (touchEndX < touchStartX - 50) { 
+                moveNext();
+            }
+            // Se deslizou para a direita (slide anterior)
+            if (touchEndX > touchStartX + 50) {
+                movePrev();
+            }
+        }
+        // ------------------------------------------
+
         window.addEventListener('resize', updateCarouselPosition);
     }
 

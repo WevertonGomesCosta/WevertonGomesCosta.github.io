@@ -952,3 +952,32 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
         min-height: 250px !important;
     }
 }
+
+/* --- style.css --- */
+
+@media (max-width: 768px) {
+    /* Força a exibição dos botões do carrossel */
+    .carousel-button {
+        display: flex !important; /* Garante que apareçam */
+        width: 30px;  /* Menores que no desktop */
+        height: 30px;
+        font-size: 1rem;
+        background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente para não atrapalhar leitura */
+    }
+
+    /* Ajuste de posição para não ficar em cima do texto */
+    .carousel-button.prev-btn { left: 5px; }
+    .carousel-button.next-btn { right: 5px; }
+    
+    /* Opcional: Se preferir que fiquem embaixo do gráfico */
+    /*
+    .carousel-container {
+        padding-bottom: 40px; 
+    }
+    .carousel-button {
+        top: auto;
+        bottom: 0;
+        transform: none;
+    }
+    */
+}
