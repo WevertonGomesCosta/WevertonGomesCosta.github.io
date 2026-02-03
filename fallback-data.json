@@ -8,7 +8,7 @@
             "language": "JavaScript",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-02-03T14:44:01Z",
+            "updated_at": "2026-02-03T14:50:28Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -444,7 +444,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "03/02/2026 11:48",
+    "lastUpdated": "03/02/2026 12:48",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -929,7 +929,7 @@
                         {
                             "citations": {
                                 "all": 107,
-                                "since_2021": 0
+                                "since_2021": 105
                             }
                         },
                         {
@@ -947,39 +947,64 @@
                     ],
                     "graph": [
                         {
+                            "year": 2015,
+                            "citations": 0,
+                            "publications": 0
+                        },
+                        {
+                            "year": 2016,
+                            "citations": 0,
+                            "publications": 0
+                        },
+                        {
+                            "year": 2017,
+                            "citations": 0,
+                            "publications": 0
+                        },
+                        {
+                            "year": 2018,
+                            "citations": 0,
+                            "publications": 0
+                        },
+                        {
                             "year": 2019,
                             "citations": 0,
                             "publications": 2
                         },
                         {
                             "year": 2020,
-                            "citations": 0,
+                            "citations": 2,
                             "publications": 2
                         },
                         {
                             "year": 2021,
-                            "citations": 0,
+                            "citations": 16,
                             "publications": 5
                         },
                         {
                             "year": 2022,
-                            "citations": 0,
+                            "citations": 11,
                             "publications": 3
                         },
                         {
                             "year": 2023,
-                            "citations": 0,
+                            "citations": 15,
                             "publications": 2
                         },
                         {
                             "year": 2024,
-                            "citations": 0,
+                            "citations": 24,
                             "publications": 5
                         },
                         {
                             "year": 2025,
-                            "citations": 0,
+                            "citations": 37,
                             "publications": 2
+                        },
+                        {
+                            "year": 2026,
+                            "citations": 2,
+                            "publications": 0
                         }
                     ]
                 }
