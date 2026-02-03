@@ -614,17 +614,22 @@ def fetch_orcid_works(orcid_id):
         return []
 
 # ==============================================================================
-# FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Versão Final Validada)
+# FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Com Proteção de IP/Home Office)
 # ==============================================================================
-def fetch_scopus_data(author_id, api_key):
+def fetch_scopus_data(author_id, api_key, previous_data=None):
     """
     Busca dados do Scopus via Elsevier API.
-    Gera gráfico de citações somando o histórico anual de TODOS os artigos.
+    
+    PROTEÇÃO "HOME OFFICE":
+    Se a API retornar a lista de artigos, mas FALHAR em obter o histórico 
+    detalhado de citações (comum fora da rede da universidade), 
+    a função descarta os dados novos incompletos e retorna o 'previous_data'.
     """
     if not author_id or not api_key:
-        return None
+        logging.warning("--- [Scopus] Pulei: ID ou API Key ausentes ---")
+        return previous_data
 
-    logging.info(f"--- [Scopus] Iniciando módulo Scopus para ID: {author_id} ---")
+    logging.info(f"--- [Scopus] Iniciando conexão para Author ID: {author_id} ---")
 
     headers = {
         "X-ELS-APIKey": api_key,
@@ -635,15 +640,20 @@ def fetch_scopus_data(author_id, api_key):
     scopus_ids_list = []
     
     # Acumuladores globais
-    yearly_citation_totals = {} # Soma de citações de todos os artigos por ano
-    yearly_pub_counts = {}      # Contagem de publicações por ano
+    yearly_citation_totals = {} 
+    yearly_pub_counts = {}      
+
+    # Flag para controlar falha crítica
+    critical_error = False
 
     # ==========================================================================
-    # 1. LISTA DE ARTIGOS (Search API)
+    # 1. LISTA DE ARTIGOS (Search API - Geralmente funciona de casa)
     # ==========================================================================
     start_index = 0
     items_per_page = 25
     has_more_items = True
+
+    logging.info("--- [Scopus] Etapa 1: Buscando lista de artigos ---")
 
     while has_more_items:
         try:
@@ -661,9 +671,12 @@ def fetch_scopus_data(author_id, api_key):
             )
 
             if resp.status_code != 200:
+                logging.error(f"!!! [Scopus] Erro na API Search. Status: {resp.status_code}")
+                critical_error = True
                 break
 
             data = resp.json().get("search-results", {})
+            total_results = int(data.get("opensearch:totalResults", 0))
             entries = data.get("entry", [])
             
             if not entries: break
@@ -698,26 +711,32 @@ def fetch_scopus_data(author_id, api_key):
                 })
 
             start_index += len(entries)
-            total_results = int(data.get("opensearch:totalResults", 0))
             has_more_items = start_index < total_results
 
         except Exception as e:
-            logging.error(f"Erro Scopus Search: {e}")
+            logging.error(f"!!! [Scopus] Exceção durante a busca: {e}")
+            critical_error = True
             break
 
+    # Se falhou na busca básica, aborta e usa o antigo
+    if (critical_error or not cleaned_articles) and previous_data:
+        logging.warning("⚠️  [Scopus] Falha na busca de artigos. Mantendo dados antigos.")
+        return previous_data
+
     # ==========================================================================
-    # 2. HISTÓRICO DE CITAÇÕES (Soma acumulativa)
+    # 2. HISTÓRICO DE CITAÇÕES (Bloqueado fora da Universidade)
     # ==========================================================================
+    history_success = False # Flag para saber se conseguimos o detalhe anual
+
     if scopus_ids_list:
+        logging.info(f"--- [Scopus] Etapa 2: Tentando histórico para {len(scopus_ids_list)} IDs ---")
         try:
-            # Configuração de data (Range amplo para cobrir todo histórico)
             START_YEAR = 2010 
             current_year = datetime.now().year
             date_range_str = f"{START_YEAR}-{current_year + 1}"
             
             base_url = "https://api.elsevier.com/content/abstract/citations"
             
-            # Divide em lotes de 20 (limite da API)
             batch_size = 20
             batches = [scopus_ids_list[i:i + batch_size] for i in range(0, len(scopus_ids_list), batch_size)]
 
@@ -730,12 +749,13 @@ def fetch_scopus_data(author_id, api_key):
                     if resp.status_code == 200:
                         data = resp.json()
                         root = data.get("abstract-citations-response") or data.get("citation-overview") or {}
+                        
+                        # Verifica se o retorno é válido (API de erro retorna XML ou JSON vazio as vezes)
                         matrix_root = root.get("citeInfoMatrix", {}).get("citeInfoMatrixXML", {}).get("citationMatrix", {})
                         cite_info_list = matrix_root.get("citeInfo", [])
                         
                         if isinstance(cite_info_list, dict): cite_info_list = [cite_info_list]
 
-                        # Loop de SOMA
                         for article_data in cite_info_list:
                             cc_list = article_data.get("cc", [])
                             if isinstance(cc_list, dict): cc_list = [cc_list]
@@ -744,31 +764,48 @@ def fetch_scopus_data(author_id, api_key):
                                 try:
                                     val = int(item.get("$", "0"))
                                     year_mapped = START_YEAR + idx
-                                    
-                                    if val > 0 and year_mapped <= current_year + 1:
+                                    if val > 0:
                                         yearly_citation_totals[year_mapped] = yearly_citation_totals.get(year_mapped, 0) + val
                                 except: pass
+                    else:
+                        logging.warning(f"    [Scopus] API Histórico recusada (Status {resp.status_code}). Provável restrição de IP.")
                 except Exception:
                     pass
 
         except Exception as e:
-            logging.error(f"Erro Scopus Citations: {e}")
+            logging.error(f"!!! [Scopus] Erro ao conectar na API de histórico: {e}")
 
     # ==========================================================================
-    # 3. FORMATAÇÃO FINAL
+    # TRAVA DE SEGURANÇA (HOME OFFICE CHECK)
+    # ==========================================================================
+    total_cited_in_search = sum(a["cited_by"]["value"] for a in cleaned_articles)
+    total_cited_in_history = sum(yearly_citation_totals.values())
+
+    # Lógica: Se a busca diz que temos citações (ex: 100), mas o histórico diz 0,
+    # significa que a API de histórico falhou (bloqueio de IP).
+    # Nesse caso, NÃO podemos usar os dados novos, pois o gráfico ficará vazio.
+    if total_cited_in_search > 0 and total_cited_in_history == 0:
+        logging.warning("⚠️  [Scopus] DETECTADO BLOQUEIO DE IP (Home Office).")
+        logging.warning("    A lista de artigos foi baixada, mas o histórico de citações veio vazio.")
+        
+        if previous_data:
+            logging.warning("    >>> AÇÃO: Descartando dados incompletos e MANTENDO DADOS ANTIGOS.")
+            return previous_data
+        else:
+            logging.warning("    >>> AÇÃO: Nenhum dado antigo disponível. O gráfico ficará vazio.")
+
+    # ==========================================================================
+    # 3. FORMATAÇÃO FINAL (Se chegou aqui, os dados são válidos)
     # ==========================================================================
     
-    # Totais
-    total_cites_all = sum(a["cited_by"]["value"] for a in cleaned_articles)
-    
-    # Since 2021 (Baseado no gráfico somado, que é mais preciso)
+    # Since 2021
     since_2021_sum = sum(v for k, v in yearly_citation_totals.items() if k >= 2021)
     
-    # Filtro para índices (artigos recentes)
+    # Filtro para índices
     recent_cites = [a["cited_by"]["value"] for a in cleaned_articles if a["year"].isdigit() and int(a["year"]) >= 2021]
 
     metrics_table = [
-        {"citations": {"all": total_cites_all, "since_2021": since_2021_sum}},
+        {"citations": {"all": total_cited_in_search, "since_2021": since_2021_sum}},
         {"h_index": {
             "all": calculate_h_index([a["cited_by"]["value"] for a in cleaned_articles]), 
             "since_2021": calculate_h_index(recent_cites)
@@ -784,13 +821,15 @@ def fetch_scopus_data(author_id, api_key):
     all_years = sorted(set(yearly_pub_counts.keys()) | set(yearly_citation_totals.keys()))
     
     for y in all_years:
-        if 2010 <= y <= datetime.now().year + 1: # Filtro visual
+        if 2010 <= y <= datetime.now().year + 1:
             graph_data.append({
                 "year": y,
                 "citations": yearly_citation_totals.get(y, 0),
                 "publications": yearly_pub_counts.get(y, 0)
             })
 
+    logging.info(f"--- [Scopus] Sucesso! Dados atualizados corretamente. ---")
+    
     return {
         "source_name": "Scopus",
         "profile": {
@@ -1139,40 +1178,66 @@ def update_main_file(main_file, temp_file):
                 pass
         return False
 
+
 # ==============================================================================
-# EXECUÇÃO PRINCIPAL (LIMPA E OTIMIZADA)
+# EXECUÇÃO PRINCIPAL (ATUALIZADA)
 # ==============================================================================
 if __name__ == "__main__":
-    logging.info("--- Iniciando atualização de dados acadêmicos ---")
+    logging.info("\n" + "="*60)
+    logging.info(" INICIANDO SCRIPT DE ATUALIZAÇÃO ACADÊMICA")
+    logging.info("="*60)
 
     # 1. Carregar dados antigos para comparação
+    logging.info(">>> 1. Carregando dados anteriores...")
     old_data = load_json_data(MAIN_FILENAME)
+    
+    # Extrai o "cache" antigo do Scopus para caso de falha
+    old_scopus_data = old_data.get("academicData", {}).get("scopus")
+    if old_scopus_data:
+        logging.info(f"    [Cache] Scopus antigo encontrado ({len(old_scopus_data.get('articles', []))} artigos).")
+    else:
+        logging.info("    [Cache] Nenhum dado Scopus anterior.")
 
     # 2. Coleta de Dados
-    logging.info("--- Etapa 1: Coleta de Dados ---")
+    logging.info("\n>>> 2. Iniciando Coleta de Dados das APIs...")
     
+    # GITHUB
+    logging.info("    > GitHub...")
     github_repos = fetch_github_repos(GITHUB_USERNAME)
 
-    # Scholar (com rotação de chaves)
+    # SCHOLAR
+    logging.info("    > Google Scholar...")
     scholar_data = None
     for api_key in SERPAPI_KEYS:
         scholar_data = fetch_scholar_data(SCHOLAR_AUTHOR_ID, api_key)
-        if scholar_data: break
-    
-    # Scopus, WoS, ORCID
-    scopus_data = fetch_scopus_data(SCOPUS_AUTHOR_ID, SCOPUS_API_KEY) if SCOPUS_API_KEY and SCOPUS_AUTHOR_ID else None
+        if scholar_data: 
+            logging.info("      [Scholar] Coleta realizada com sucesso.")
+            break
+    if not scholar_data: logging.warning("      [Scholar] Falha em todas as chaves.")
+
+    # SCOPUS (Agora passamos o old_scopus_data)
+    logging.info("    > Scopus...")
+    scopus_data = None
+    if SCOPUS_API_KEY and SCOPUS_AUTHOR_ID:
+        scopus_data = fetch_scopus_data(SCOPUS_AUTHOR_ID, SCOPUS_API_KEY, previous_data=old_scopus_data)
+    else:
+        logging.warning("      [Scopus] Chaves não configuradas.")
+
+    # WEB OF SCIENCE
+    logging.info("    > Web of Science...")
     wos_data = fetch_wos_data(WOS_RESEARCHER_ID, WOS_API_KEY) if WOS_RESEARCHER_ID else None
     
-    # Tratamento específico para ORCID (lista ou dict)
+    # ORCID
+    logging.info("    > ORCID...")
     orcid_raw = fetch_orcid_works(ORCID_ID) if ORCID_ID else []
     if isinstance(orcid_raw, dict):
          orcid_list = orcid_raw.get("articles", [])
-         # Se a função retornar perfil completo, ajustamos aqui
     else:
          orcid_list = orcid_raw
+    logging.info(f"      [ORCID] {len(orcid_list)} itens recuperados.")
 
-    # 3. Montagem do JSON Final (Sem Merge/Maximization)
-    logging.info("--- Etapa 2: Montagem do JSON Final ---")
+    # 3. Montagem do JSON Final
+    logging.info("\n>>> 3. Montando estrutura do JSON Final...")
 
     new_data = {
         "githubRepos": github_repos,
@@ -1185,39 +1250,34 @@ if __name__ == "__main__":
                 "source_name": "ORCID",
                 "articles": orcid_list
             }
-            # "maximized" foi removido conforme solicitado
         }
     }
 
-    # 4. Análise de Mudanças e Persistência
-    logging.info("--- Etapa 3: Análise de Mudanças ---")
+    # 4. Análise de Mudanças
+    logging.info("\n>>> 4. Analisando diferenças (Diff)...")
     
-    # Chama a função adaptada
     report_lines, _ = analyze_changes(old_data, new_data)
 
     if report_lines:
         print("\n" + "=" * 60)
-        print(" RELATÓRIO DE ATUALIZAÇÃO")
+        print(" RELATÓRIO DE MUDANÇAS DETECTADAS")
         print("=" * 60)
         for line in report_lines: print(line)
         print("=" * 60 + "\n")
         
-        logging.info("Mudanças identificadas. Gerando e atualizando arquivo...")
+        logging.info(">>> Mudanças válidas. Salvando arquivo...")
         
-        # Gera no temporário e move para o principal
         if generate_fallback_file(new_data, TEMP_FILENAME):
             _ = update_main_file(MAIN_FILENAME, TEMP_FILENAME)
+            logging.info(">>> PROCESSO CONCLUÍDO COM SUCESSO: Arquivo atualizado.")
             
     else:
         print("\n=== Nenhuma alteração relevante detectada. Mantendo versão anterior. ===\n")
-        logging.info("Nenhuma mudança nos dados. O arquivo principal será mantido.")
+        logging.info(">>> Sem mudanças relevantes. Arquivo original mantido.")
         
-        # Limpeza do temporário se existir
         if os.path.exists(TEMP_FILENAME):
             try:
                 os.remove(TEMP_FILENAME)
-                logging.info(f"Limpeza: Arquivo temporário {TEMP_FILENAME} excluído.")
-            except Exception as e:
-                logging.warning(f"Erro ao excluir arquivo temporário: {e}")
+            except: pass
 
-    logging.info("--- Processo concluído ---")
+    logging.info("="*60 + "\n")
