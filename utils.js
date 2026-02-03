@@ -476,27 +476,21 @@ const GithubReposModule = {
 };
 
 // =================================================================================
-// MÓDULO: DASHBOARD ACADÊMICO (FINAL: ANIMAÇÃO NO SCROLL + SWIPE + ZOOM FIX)
+// MÓDULO: DASHBOARD ACADÊMICO (MOBILE FIX: SWIPE SUAVE + ANIMAÇÃO ROBUSTA)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
 
     const initialPubsToShow = 3; 
     const pubsPerLoad = 3;        
-    
-    // Mapeia a ordem dos slides para as chaves de dados
-    // IMPORTANTE: A ordem aqui deve bater com a ordem das divs .carousel-slide no seu HTML
     const platformOrder = ['scholar', 'scopus', 'wos', 'max'];
 
-    let dashboardData = {
-        scholar: null, scopus: null, wos: null, max: null
-    };
-
+    let dashboardData = { scholar: null, scopus: null, wos: null, max: null };
     let allArticles = []; 
     let showingPubsCount = 0;
     let activeYearFilter = null;
     let currentSlideIndex = 0;
-    let hasViewedSection = false; // Controle para primeira visualização
+    let hasViewedSection = false;
 
     // --- UI References ---
     const UI = {
@@ -505,7 +499,7 @@ const scholarScript = (function() {
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
         pubsShownCount: null, pubsLoadMoreBtn: null,
-        dashboardSection: null // Referência para o observer
+        dashboardSection: null
     };
 
     // --- CARREGAMENTO ---
@@ -515,60 +509,48 @@ const scholarScript = (function() {
             const response = await fetch('translations.json');
             if (!response.ok) throw new Error('HTTP');
             window.translations = await response.json();
-        } catch (e) { console.error("Erro Traduções:", e); window.translations = { pt: {}, en: {} }; }
+        } catch (e) { window.translations = { pt: {}, en: {} }; }
     }
 
     // --- HELPERS ---
-    const normalizeTitle = (str) => {
-        if (!str) return '';
-        return str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim();
-    };
-
+    const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
+    
     const normalizeArticle = (rawArt) => {
         let cites = 0;
         if (rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
         else cites = parseInt(rawArt.cited_by) || 0;
-        
-        let year = (rawArt.year || rawArt.ano || '0000').toString();
-        year = year.replace(/\D/g, '').substring(0, 4);
-
+        let year = (rawArt.year || rawArt.ano || '0000').toString().replace(/\D/g, '').substring(0, 4);
         return {
-            title: rawArt.title || 'Sem título',
-            year: year,
+            title: rawArt.title || 'Sem título', year: year,
             journalTitle: rawArt.journalTitle || rawArt.journal || '',
-            link: rawArt.link || rawArt.doiLink || '#',
-            doi: rawArt.doi || '',
+            link: rawArt.link || rawArt.doiLink || '#', doi: rawArt.doi || '',
             doiLink: rawArt.doiLink || (rawArt.doi ? `https://doi.org/${rawArt.doi}` : null),
             cited_by: { value: cites }
         };
     };
 
-    // --- ANIMAÇÃO DE NÚMEROS (Melhorada para Reiniciar) ---
+    // --- ANIMAÇÃO DE NÚMEROS (OTIMIZADA PARA MOBILE) ---
     function animateCountUp(el, value) {
         if (!el) return;
         
-        // Cancela animação anterior se houver (para evitar conflito ao trocar slide rápido)
-        if (el.dataset.animId) {
-            cancelAnimationFrame(el.dataset.animId);
-        }
+        // Cancela animação anterior
+        if (el.dataset.animId) cancelAnimationFrame(el.dataset.animId);
 
         if (value === null || value === undefined) { el.textContent = "-"; return; }
-        
         let target = parseInt(value, 10);
         if (isNaN(target)) { el.textContent = value; return; }
 
-        // RESET VISUAL: Começa do zero para dar o efeito
-        el.textContent = "0";
+        el.textContent = "0"; // Reset visual
 
-        const duration = 1500; // Duração um pouco maior para ficar mais suave
+        const duration = 1200; 
         const startTime = performance.now();
 
         function update(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             
-            // Easing function (easeOutExpo) para desacelerar no final
-            const ease = (progress === 1) ? 1 : 1 - Math.pow(2, -10 * progress);
+            // Easing: Começa rápido, desacelera no fim
+            const ease = 1 - Math.pow(1 - progress, 3);
             
             const currentVal = Math.floor(ease * target);
             el.textContent = currentVal.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
@@ -583,356 +565,237 @@ const scholarScript = (function() {
         el.dataset.animId = requestAnimationFrame(update);
     }
 
-    // --- PROCESSAMENTO DE DADOS ---
+    // --- PROCESSAMENTO ---
     function processPlatformData(platformPrefix, dataKey) {
         const fb = window.fallbackData;
         if (!fb) return null;
         const acad = fb.academicData || fb;
         const data = acad[dataKey]; 
 
-        let result = {
-            metrics: { 
-                cit: { all: 0, recent: null }, 
-                h: { all: 0, recent: null }, 
-                i10: { all: 0, recent: null },
-                pubs: 0 
-            },
-            graphData: []
-        };
-
+        let result = { metrics: { cit: { all: 0, recent: null }, h: { all: 0, recent: null }, i10: { all: 0, recent: null }, pubs: 0 }, graphData: [] };
         if (data) {
-            const citedByNode = data.cited_by || data.profile?.cited_by;
-            const totalPubsNode = data.total_publications || data.profile?.total_publications;
+            const citedBy = data.cited_by || data.profile?.cited_by;
+            const totalPubs = data.total_publications || data.profile?.total_publications;
 
-            if (citedByNode?.table) {
-                const table = citedByNode.table;
+            if (citedBy?.table) {
                 const getVals = (row) => {
                     if (!row) return { all: 0, recent: null };
-                    const key = Object.keys(row)[0]; 
-                    const obj = row[key];
+                    const key = Object.keys(row)[0]; const obj = row[key];
                     const recentKey = Object.keys(obj).find(k => k.startsWith('since_') || k.startsWith('desde_'));
-                    return { 
-                        all: (obj.all !== undefined && obj.all !== null) ? obj.all : 0, 
-                        recent: (recentKey && obj[recentKey] !== undefined) ? obj[recentKey] : null 
-                    };
+                    return { all: (obj.all != null) ? obj.all : 0, recent: (recentKey && obj[recentKey] != null) ? obj[recentKey] : null };
                 };
-                if(table[0]) result.metrics.cit = getVals(table[0]);
-                if(table[1]) result.metrics.h = getVals(table[1]);
-                if(table[2]) result.metrics.i10 = getVals(table[2]);
-            } else if (Array.isArray(data.articles)) {
-                result.metrics.cit.all = data.articles.length; 
-            }
+                if(citedBy.table[0]) result.metrics.cit = getVals(citedBy.table[0]);
+                if(citedBy.table[1]) result.metrics.h = getVals(citedBy.table[1]);
+                if(citedBy.table[2]) result.metrics.i10 = getVals(citedBy.table[2]);
+            } else if (Array.isArray(data.articles)) result.metrics.cit.all = data.articles.length;
 
-            if (totalPubsNode !== undefined && totalPubsNode !== null) {
-                result.metrics.pubs = totalPubsNode;
-            } else if (Array.isArray(data.articles)) {
-                result.metrics.pubs = data.articles.length;
-            }
-
-            if (citedByNode?.graph) {
-                result.graphData = citedByNode.graph;
-            }
+            if (totalPubs != null) result.metrics.pubs = totalPubs;
+            else if (Array.isArray(data.articles)) result.metrics.pubs = data.articles.length;
+            if (citedBy?.graph) result.graphData = citedBy.graph;
         }
         return result;
     }
 
-    // --- RENDERIZAÇÃO (Com trigger de animação) ---
+    // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
-        const citEl = document.getElementById(`${platformPrefix}-cit`);
-        const hEl = document.getElementById(`${platformPrefix}-h`);
-        const i10El = document.getElementById(`${platformPrefix}-i10`);
-        const pubsEl = document.getElementById(`${platformPrefix}-pubs`);
-
-        // Se deve animar, chama animateCountUp. Se não, define o texto direto.
-        // No caso atual, sempre queremos a animação quando chamado (scroll ou swipe)
-        if (shouldAnimate) {
-            if (citEl) animateCountUp(citEl, data.metrics.cit.all);
-            if (hEl) animateCountUp(hEl, data.metrics.h.all);
-            if (i10El) animateCountUp(i10El, data.metrics.i10.all);
-            if (pubsEl) animateCountUp(pubsEl, data.metrics.pubs);
-        } else {
-            // Define valor estático (usado na carga inicial fora de vista)
-            const fmt = n => n.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
-            if (citEl) citEl.textContent = fmt(data.metrics.cit.all);
-            if (hEl) hEl.textContent = fmt(data.metrics.h.all);
-            if (i10El) i10El.textContent = fmt(data.metrics.i10.all);
-            if (pubsEl) pubsEl.textContent = fmt(data.metrics.pubs);
-        }
+        ['cit', 'h', 'i10', 'pubs'].forEach(metric => {
+            const el = document.getElementById(`${platformPrefix}-${metric}`);
+            if(el) {
+                const val = (metric === 'pubs') ? data.metrics.pubs : data.metrics[metric].all;
+                if (shouldAnimate) animateCountUp(el, val);
+                else el.textContent = val.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+            }
+        });
 
         updatePeriodLabels(platformPrefix, data.metrics);
 
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
-        if (chartDiv) {
-            // Verifica se o gráfico já foi desenhado para não redesenhar do zero e perder performance
-            // exceto se for o primeiro render
-            if (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados')) {
-                if (data.graphData && data.graphData.length > 0) {
-                    renderDualAxisChart(chartDiv, data.graphData, platformPrefix);
-                } else {
-                    chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
-                }
-            }
+        if (chartDiv && (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados'))) {
+            if (data.graphData?.length > 0) renderDualAxisChart(chartDiv, data.graphData, platformPrefix);
+            else chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
         }
     }
 
-    function updatePeriodLabels(platformPrefix, metrics) {
+    function updatePeriodLabels(prefix, metrics) {
         const t = window.translations?.[window.currentLang] || {};
-        let sinceTextRaw = t['metric-since'] || 'Since 2021';
-        let sinceText = sinceTextRaw.replace(/\d{4}/, '2021');
+        const sinceText = (t['metric-since'] || 'Since 2021').replace(/\d{4}/, '2021');
 
-        const ensureAndSetLabel = (idBase, valObj) => {
-            const periodId = `${idBase}-period`;
+        ['cit', 'h', 'i10'].forEach(key => {
+            const valObj = metrics[key];
+            const periodId = `${prefix}-${key}-period`;
             let elPeriod = document.getElementById(periodId);
-            const elMain = document.getElementById(idBase);
+            const elMain = document.getElementById(`${prefix}-${key}`);
 
             if (!elPeriod && elMain) {
-                elPeriod = document.createElement('span');
-                elPeriod.id = periodId;
+                elPeriod = document.createElement('span'); elPeriod.id = periodId;
                 elMain.insertAdjacentElement('afterend', elPeriod);
             }
-
             if (elPeriod) {
-                if (valObj.recent !== null && valObj.recent !== undefined && valObj.recent !== 0) {
-                    elPeriod.innerHTML = ` / ${valObj.recent} <span style="font-size:0.7em; opacity:0.8; white-space:nowrap;">(${sinceText})</span>`;
-                    elPeriod.style.display = 'inline';
-                    elPeriod.style.marginLeft = '5px'; 
-                    elPeriod.style.fontWeight = 'normal';
-                } else {
-                    elPeriod.style.display = 'none';
-                }
+                if (valObj.recent) {
+                    elPeriod.innerHTML = ` / ${valObj.recent} <span style="font-size:0.7em; opacity:0.8;">(${sinceText})</span>`;
+                    elPeriod.style.display = 'inline'; elPeriod.style.marginLeft = '5px'; elPeriod.style.fontWeight = 'normal';
+                } else elPeriod.style.display = 'none';
             }
-        };
-
-        ensureAndSetLabel(`${platformPrefix}-cit`, metrics.cit);
-        ensureAndSetLabel(`${platformPrefix}-h`, metrics.h);
-        ensureAndSetLabel(`${platformPrefix}-i10`, metrics.i10);
+        });
     }
 
-    // --- ATUALIZAÇÃO GLOBAL (Chamada ao trocar idioma) ---
     function updateAllTexts() {
-        // Renderiza tudo (pode ser sem animação se não estiver visível, mas vamos simplificar)
-        // Aqui renderizamos tudo para atualizar traduções
-        platformOrder.forEach(p => renderPlatform(p, false)); // Atualiza textos sem re-animar tudo de uma vez
-        renderPublications(); 
-        
-        // Força a animação apenas do slide ATUAL se já tivermos visto a seção
-        if (hasViewedSection) {
-            const currentPlatform = platformOrder[currentSlideIndex];
-            if(currentPlatform) renderPlatform(currentPlatform, true);
-        }
-
-        setTimeout(() => {
-            platformOrder.forEach(prefix => {
-                const el = document.getElementById(`${prefix}-chart`);
-                if (el && typeof Plotly !== 'undefined') {
-                    try { Plotly.Plots.resize(el); } catch(e){}
-                }
-            });
-        }, 300);
+        platformOrder.forEach(p => renderPlatform(p, false));
+        renderPublications();
+        if (hasViewedSection) renderPlatform(platformOrder[currentSlideIndex], true);
+        setTimeout(() => { platformOrder.forEach(p => { try { Plotly.Plots.resize(document.getElementById(`${p}-chart`)); } catch(e){} }); }, 300);
     }
 
-    // --- GRÁFICO (ZOOM E TOOLBAR REMOVIDOS) ---
+    // --- GRÁFICO (MOBILE OPTIMIZED) ---
     function renderDualAxisChart(container, rawData, platform) {
         const t = window.translations?.[window.currentLang] || {};
-        const activeYears = rawData.filter(d => (d.citations > 0 || d.publications > 0));
-        
-        if (activeYears.length === 0) {
-            container.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem atividade registrada</div>";
-            return;
-        }
+        const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
+        if (!active.length) { container.innerHTML = "<div style='text-align:center;padding:20px;color:#888;'>Sem atividade</div>"; return; }
 
-        const yearsNum = activeYears.map(d => parseInt(d.year)).filter(y => !isNaN(y));
-        const minYear = Math.min(...yearsNum);
-        const maxYear = Math.max(...yearsNum);
-
-        const processedData = [];
+        const years = active.map(d => parseInt(d.year)).filter(y => !isNaN(y));
+        const minYear = Math.min(...years), maxYear = Math.max(...years);
+        const processed = [];
         for (let y = minYear; y <= maxYear; y++) {
-            const existing = rawData.find(d => parseInt(d.year) === y);
-            processedData.push({
-                year: y,
-                citations: existing ? (existing.citations || 0) : 0,
-                publications: existing ? (existing.publications || 0) : 0
-            });
+            const ext = rawData.find(d => parseInt(d.year) === y);
+            processed.push({ year: y, cit: ext?.citations || 0, pub: ext?.publications || 0 });
         }
 
-        const xVal = processedData.map(d => d.year);
-        const yCitations = processedData.map(d => d.citations);
-        const yPubs = processedData.map(d => d.publications);
-
-        let colorLine = '#10b981'; 
-        if (platform === 'scholar') colorLine = '#4285F4'; 
-        if (platform === 'scopus') colorLine = '#ff7f0e';  
-        if (platform === 'wos') colorLine = '#8b5cf6';     
-        if (platform === 'max') colorLine = '#F59E0B';     
-
+        const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6', max: '#F59E0B' }[platform] || '#10b981';
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
-
-        const tracePubs = {
-            x: xVal, y: yPubs, name: lblPubs, type: 'bar', yaxis: 'y2',
-            marker: { color: 'rgba(255, 255, 255, 0.15)', line: { color: 'rgba(255, 255, 255, 0.3)', width: 1 } },
-            hovertemplate: `<b>%{x}</b><br>${lblPubs}: %{y}<extra></extra>`
-        };
-
-        const traceCits = {
-            x: xVal, y: yCitations, name: lblCits, type: 'scatter', mode: 'lines+markers',
-            line: { color: colorLine, width: 3, shape: 'spline' },
-            marker: { size: 6, color: colorLine, line: { color: '#fff', width: 1 } },
-            hovertemplate: `<b>%{x}</b><br>${lblCits}: %{y}<extra></extra>`
-        };
 
         const layout = {
             paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
             font: { color: '#888', family: 'Inter, sans-serif' },
-            legend: { orientation: 'h', x: 0, y: 1.1 },
-            margin: { t: 30, l: 40, r: 40, b: 40 },
-            height: 350, 
-            autosize: true,
-            xaxis: { gridcolor: '#333', showgrid: false, zeroline: false, type: 'category', fixedrange: true },
-            yaxis: { title: { text: lblCits, font: { color: colorLine, size: 12 } }, gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine }, fixedrange: true },
-            yaxis2: { title: { text: lblPubs, font: { color: '#999', size: 12 } }, overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' }, fixedrange: true },
-            dragmode: false,
-            hovermode: 'x unified'
+            legend: { orientation: 'h', x: 0, y: 1.2 },
+            margin: { t: 30, l: 35, r: 35, b: 30 }, height: 350, autosize: true,
+            xaxis: { gridcolor: '#333', showgrid: false, type: 'category', fixedrange: true },
+            yaxis: { title: { text: lblCits, font:{color, size:11}}, gridcolor: '#333', showgrid: true, tickfont:{color}, fixedrange: true },
+            yaxis2: { title: { text: lblPubs, font:{color:'#999', size:11}}, overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999'}, fixedrange: true },
+            dragmode: false, hovermode: 'x unified'
         };
+
+        Plotly.react(container, [
+            { x: processed.map(d=>d.year), y: processed.map(d=>d.pub), name: lblPubs, type: 'bar', yaxis: 'y2', marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} },
+            { x: processed.map(d=>d.year), y: processed.map(d=>d.cit), name: lblCits, type: 'scatter', mode:'lines+markers', line:{color, width:3, shape:'spline'}, marker:{size:6, color, line:{color:'#fff', width:1}} }
+        ], layout, { responsive: true, displayModeBar: false });
         
-        const config = { responsive: true, displayModeBar: false };
-
-        Plotly.react(container, [tracePubs, traceCits], layout, config);
-        setTimeout(() => { try { Plotly.Plots.resize(container); } catch(e) {} }, 50);
-
-        container.on('plotly_click', data => {
-            const year = data.points[0].x;
-            activeYearFilter = (activeYearFilter == year) ? null : year;
-            showingPubsCount = initialPubsToShow;
-            renderPublications();
-            updateFilterUI();
+        container.on('plotly_click', d => {
+            const y = d.points[0].x; activeYearFilter = (activeYearFilter == y) ? null : y;
+            showingPubsCount = initialPubsToShow; renderPublications(); updateFilterUI();
         });
     }
 
-    // --- CARROSSEL (COM TRIGGER DE ANIMAÇÃO) ---
+    // --- CARROSSEL (COM SUPORTE REAL A GESTOS MOBILE) ---
     function updateCarouselPosition() {
-        if (!UI.track || UI.slides.length === 0) return;
-        
+        if (!UI.track || !UI.slides.length) return;
         const width = UI.slides[0].getBoundingClientRect().width;
         UI.track.style.transform = `translateX(-${width * currentSlideIndex}px)`;
-        
         UI.slides.forEach((s, i) => s.classList.toggle('current-slide', i === currentSlideIndex));
         UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
 
-        // TRIGGER DE ANIMAÇÃO: Quando muda o slide, anima os números da plataforma atual
+        // Trigger Animação
         const currentPlatform = platformOrder[currentSlideIndex];
-        if (currentPlatform) {
-            // Pequeno delay para a transição do carrossel começar antes dos números rodarem
-            setTimeout(() => {
-                renderPlatform(currentPlatform, true);
-            }, 200);
+        if (currentPlatform && hasViewedSection) {
+            setTimeout(() => renderPlatform(currentPlatform, true), 150);
         }
     }
 
     function initCarouselLogic() {
         if (!UI.track) return;
-
-        const moveNext = () => {
-            currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length;
-            updateCarouselPosition();
-        };
-
-        const movePrev = () => {
-            currentSlideIndex = (currentSlideIndex - 1 + UI.slides.length) % UI.slides.length;
-            updateCarouselPosition();
-        };
+        const moveNext = () => { currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length; updateCarouselPosition(); };
+        const movePrev = () => { currentSlideIndex = (currentSlideIndex - 1 + UI.slides.length) % UI.slides.length; updateCarouselPosition(); };
 
         if(UI.nextBtn) UI.nextBtn.addEventListener('click', moveNext);
         if(UI.prevBtn) UI.prevBtn.addEventListener('click', movePrev);
-        UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { currentSlideIndex = idx; updateCarouselPosition(); }));
+        UI.dots.forEach((dot, i) => dot.addEventListener('click', () => { currentSlideIndex = i; updateCarouselPosition(); }));
 
+        // --- GESTOS MOBILE AVANÇADOS (SWIPE + SCROLL LOCK) ---
         let touchStartX = 0;
-        let touchEndX = 0;
+        let touchStartY = 0;
+        let isSwiping = false;
 
-        UI.track.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+        UI.track.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            isSwiping = false; // Reset
+        }, {passive: true}); // Passive true ajuda performance no inicio
+
+        UI.track.addEventListener('touchmove', e => {
+            const touchCurrentX = e.changedTouches[0].screenX;
+            const touchCurrentY = e.changedTouches[0].screenY;
+            
+            const diffX = Math.abs(touchCurrentX - touchStartX);
+            const diffY = Math.abs(touchCurrentY - touchStartY);
+
+            // Se o usuário moveu mais para o lado do que para baixo, assume intenção de Carrossel
+            // e bloqueia o scroll da página.
+            if (diffX > diffY && diffX > 10) {
+                isSwiping = true;
+                if(e.cancelable) e.preventDefault(); // Impede a tela de subir/descer
+            }
+        }, {passive: false}); // Passive false é NECESSÁRIO para funcionar o preventDefault
+
         UI.track.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
+            if (!isSwiping) return; // Se foi só scroll vertical, ignora
+            
+            const touchEndX = e.changedTouches[0].screenX;
+            const threshold = 40; // Sensibilidade do swipe
+
+            if (touchEndX < touchStartX - threshold) moveNext();
+            if (touchEndX > touchStartX + threshold) movePrev();
         }, {passive: true});
-
-        function handleSwipe() {
-            const threshold = 50; 
-            if (touchEndX < touchStartX - threshold) moveNext(); 
-            if (touchEndX > touchStartX + threshold) movePrev(); 
-        }
-
+        
         window.addEventListener('resize', updateCarouselPosition);
     }
 
-    // --- LISTA DE PUBLICAÇÕES ---
+    // --- LISTA PUBLICAÇÕES ---
     function renderPublications() {
         const grid = UI.pubsGrid;
         if (!grid) return;
-        
         const t = window.translations?.[window.currentLang] || {};
         const term = (UI.pubSearchInput?.value || '').toLowerCase();
-
+        
         let list = activeYearFilter ? allArticles.filter(a => a.year == activeYearFilter) : allArticles;
-        if (term) {
-            list = list.filter(a => 
-                normalizeTitle(a.title).includes(term) || 
-                a.year.includes(term) || 
-                normalizeTitle(a.journalTitle).includes(term)
-            );
-        }
-
+        if (term) list = list.filter(a => normalizeTitle(a.title).includes(term) || a.year.includes(term) || normalizeTitle(a.journalTitle).includes(term));
+        
         const visible = list.slice(0, showingPubsCount);
         grid.innerHTML = "";
-
-        if (visible.length === 0) {
-            grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p>${t.no_pubs_found || 'Nada encontrado.'}</p></div>`;
-        } else {
-            visible.forEach(art => {
-                const link = art.doiLink || art.link;
-                const doi = art.doi ? `<div class="publication-doi"><a href="${link}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" style="height:14px;margin-right:5px">${art.doi}</a></div>` : '';
-                const citText = art.cited_by.value ? `${t['pub-cited-by']||'Citado'} ${art.cited_by.value}x` : '-';
-                
-                const card = document.createElement('div');
-                card.className = 'card publication-card';
-                card.innerHTML = `<h3>${art.title}</h3>${doi}<div class="publication-meta">${art.year} • <em>${art.journalTitle}</em></div><div class="citations" style="color:var(--accent);font-weight:bold;margin-top:5px;">${citText}</div><a href="${link}" target="_blank" class="article-link" style="margin-top:auto;padding-top:10px;display:inline-block;">${t['pub-read']||'Ver'} &rarr;</a>`;
-                grid.appendChild(card);
-            });
-        }
-
+        
+        if (!visible.length) grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p>${t.no_pubs_found || 'Nada encontrado.'}</p></div>`;
+        else visible.forEach(art => {
+            const link = art.doiLink || art.link;
+            const cit = art.cited_by.value ? `${t['pub-cited-by']||'Citado'} ${art.cited_by.value}x` : '-';
+            const doi = art.doi ? `<div class="publication-doi"><a href="${link}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" style="height:14px;margin-right:5px">${art.doi}</a></div>` : '';
+            grid.innerHTML += `<div class="card publication-card"><h3>${art.title}</h3>${doi}<div class="publication-meta">${art.year} • <em>${art.journalTitle}</em></div><div class="citations" style="color:var(--accent);font-weight:bold;margin-top:5px;">${cit}</div><a href="${link}" target="_blank" class="article-link" style="margin-top:auto;padding-top:10px;display:inline-block;">${t['pub-read']||'Ver'} &rarr;</a></div>`;
+        });
+        
         if(UI.pubsShownCount) UI.pubsShownCount.textContent = `${visible.length} / ${list.length}`;
-        if(UI.pubsLoadMoreBtn) {
-            UI.pubsLoadMoreBtn.style.display = (visible.length >= list.length) ? 'none' : 'inline-block';
-        }
+        if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.style.display = (visible.length >= list.length) ? 'none' : 'inline-block';
     }
 
     function updateFilterUI() {
         const div = document.querySelector('#publicacoes .controls');
         let chip = document.getElementById('year-filter-chip');
         if (activeYearFilter) {
-            if (!chip) {
-                chip = document.createElement('div');
-                chip.id = 'year-filter-chip';
-                chip.style.cssText = "background:var(--primary);color:#fff;padding:5px 12px;border-radius:15px;margin-top:10px;cursor:pointer;display:inline-block;";
-                div.appendChild(chip);
-            }
+            if(!chip) { chip = document.createElement('div'); chip.id='year-filter-chip'; chip.style.cssText="background:var(--primary);color:#fff;padding:5px 12px;border-radius:15px;margin-top:10px;cursor:pointer;display:inline-block;"; div.appendChild(chip); }
             chip.innerHTML = `Filtro: ${activeYearFilter} &times;`;
             chip.onclick = () => { activeYearFilter = null; renderPublications(); updateFilterUI(); };
-        } else if (chip) chip.remove();
+        } else if(chip) chip.remove();
     }
 
     // --- INIT ---
     async function init() {
         await ensureTranslationsLoaded();
-
         UI.track = document.querySelector('.carousel-track');
         UI.slides = Array.from(document.querySelectorAll('.carousel-slide'));
         UI.nextBtn = document.querySelector('.next-btn');
         UI.prevBtn = document.querySelector('.prev-btn');
         UI.dots = Array.from(document.querySelectorAll('.carousel-indicator'));
-        UI.dashboardSection = document.getElementById('dashboard-academico') || document.getElementById('publicacoes'); // Tenta achar a seção pai
+        UI.dashboardSection = document.getElementById('dashboard-academico') || document.getElementById('publicacoes');
         
         UI.pubsGrid = document.getElementById("publicacoes-grid");
         UI.pubSearchInput = document.getElementById('publication-search');
@@ -940,69 +803,49 @@ const scholarScript = (function() {
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
 
-        // Popula Dados
         dashboardData.scholar = processPlatformData('scholar', 'google_scholar');
         dashboardData.scopus = processPlatformData('scopus', 'scopus');
         dashboardData.wos = processPlatformData('wos', 'web_of_science');
         dashboardData.max = processPlatformData('max', 'maximized');
 
-        // Popula Artigos
         const fb = window.fallbackData;
         if (fb) {
             const acad = fb.academicData || fb;
             let raw = acad.maximized?.articles || acad.google_scholar?.articles || [];
-            allArticles = raw.map(normalizeArticle);
-            allArticles.sort((a, b) => b.cited_by.value - a.cited_by.value);
+            allArticles = raw.map(normalizeArticle).sort((a,b) => b.cited_by.value - a.cited_by.value);
         }
 
         const isPubsPage = window.location.pathname.includes('publicacoes');
         showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow;
-
-        // Renderiza lista de publicações (texto estático)
+        
+        platformOrder.forEach(p => renderPlatform(p, false)); // Renderiza estático
         renderPublications();
         initCarouselLogic();
 
-        // --- OBSERVER PARA ANIMAÇÃO NO SCROLL ---
-        // Popula os gráficos/números, mas SEM animar (texto estático) na carga inicial
-        platformOrder.forEach(p => renderPlatform(p, false));
-
+        // --- OBSERVER CORRIGIDO PARA MOBILE ---
         if (UI.dashboardSection) {
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && !hasViewedSection) {
                     hasViewedSection = true;
-                    // Dispara a animação APENAS para o slide visível (currentSlideIndex)
-                    const currentPlatform = platformOrder[currentSlideIndex];
-                    if(currentPlatform) renderPlatform(currentPlatform, true);
-                    observer.disconnect(); // Só precisa animar a entrada uma vez
+                    // Força animação imediata
+                    const cur = platformOrder[currentSlideIndex];
+                    if(cur) renderPlatform(cur, true);
+                    observer.disconnect();
                 }
-            }, { threshold: 0.3 }); // Dispara quando 30% da seção estiver visível
+            }, { 
+                threshold: 0.1, // FIX: Baixei para 10% para garantir disparo no celular
+                rootMargin: "0px" 
+            });
             observer.observe(UI.dashboardSection);
         } else {
-            // Fallback se não achar a seção: anima logo de cara
-            hasViewedSection = true;
-            updateAllTexts();
+            hasViewedSection = true; updateAllTexts();
         }
-        // ----------------------------------------
-        
-        if(UI.pubSearchInput) UI.pubSearchInput.addEventListener('input', () => { 
-            showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; 
-            renderPublications(); 
-        });
-        
-        if(UI.pubClearBtn) UI.pubClearBtn.addEventListener('click', () => { 
-            UI.pubSearchInput.value = ''; 
-            showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; 
-            renderPublications(); 
-        });
-        
-        if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.addEventListener('click', () => { 
-            showingPubsCount += pubsPerLoad; 
-            renderPublications(); 
-        });
 
+        if(UI.pubSearchInput) UI.pubSearchInput.addEventListener('input', () => { showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
+        if(UI.pubClearBtn) UI.pubClearBtn.addEventListener('click', () => { UI.pubSearchInput.value = ''; showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
+        if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.addEventListener('click', () => { showingPubsCount += pubsPerLoad; renderPublications(); });
         if (window.AppEvents) window.AppEvents.on('languageChanged', updateAllTexts);
     }
-
     return { init };
 })();
 
