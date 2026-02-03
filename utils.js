@@ -657,7 +657,7 @@ const scholarScript = (function() {
         }
     }
 
-    // --- GRÁFICO (CORRIGIDO: MOSTRAR TODOS OS ANOS) ---
+    // --- GRÁFICO OTIMIZADO (DESIGN MODERNO + MOBILE TOUCH) ---
     function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -694,40 +694,71 @@ const scholarScript = (function() {
         if (targetWidth < 50) targetWidth = window.innerWidth - (isMobile ? 40 : 80);
         const chartHeight = isMobile ? 260 : 350; 
 
-        // Configuração de Velocidade
+        // Configuração de Velocidade da Animação
         const totalDurationTarget = 1500; 
         const stepDuration = Math.max(50, Math.min(300, totalDurationTarget / processed.length));
 
+        // --- CONFIGURAÇÃO VISUAL (LAYOUT) ---
         const layout = {
             width: targetWidth, 
             height: chartHeight,
             paper_bgcolor: 'rgba(0,0,0,0)', 
             plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { color: '#888', family: 'Inter, sans-serif' },
-            legend: { orientation: 'h', x: 0, y: isMobile ? 1.2 : 1.1 },
+            font: { color: '#94a3b8', family: 'Inter, sans-serif' }, // Cor Slate-400
+            
+            // Lenda
+            legend: { 
+                orientation: 'h', 
+                x: 0, 
+                y: isMobile ? 1.2 : 1.1,
+                font: { size: 12, color: '#cbd5e1' } // Texto mais claro
+            },
+            
             margin: { t: 40, l: 30, r: 30, b: 30 }, 
+
+            // --- INTERAÇÃO MOBILE E DESIGN DO TOOLTIP (AQUI ESTÁ A MUDANÇA) ---
+            hovermode: 'x unified', // Garante que uma linha vertical mostre todos os dados (bom para celular)
+            hoverlabel: {
+                bgcolor: 'rgba(15, 23, 42, 0.95)', // Fundo Slate-900 quase opaco (Efeito Glass)
+                bordercolor: 'rgba(255, 255, 255, 0.1)', // Borda sutil
+                font: { 
+                    family: 'Inter, sans-serif', 
+                    size: 14, 
+                    color: '#f8fafc' // Texto branco brilhante
+                },
+                namelength: -1 // Mostra nome completo sempre
+            },
+            // ------------------------------------------------------------------
+
             xaxis: { 
-                gridcolor: '#333', showgrid: false, type: 'linear', fixedrange: true,
-                tickfont: { size: isMobile ? 10 : 12 },
+                gridcolor: 'rgba(255,255,255,0.05)', // Grid muito sutil
+                showgrid: false, 
+                type: 'linear', 
+                fixedrange: true, // Impede zoom acidental no celular
+                tickfont: { size: isMobile ? 10 : 11, color: '#64748b' },
                 range: rangeX,
-                // --- CORREÇÃO AQUI: FORÇAR EXIBIÇÃO DE TODOS OS ANOS ---
                 tickmode: 'linear',
-                dtick: 1, // Um tick por ano
-                tickangle: isMobile ? -45 : 0 // Inclina no celular para não encavalar
-                // -------------------------------------------------------
+                dtick: 1, 
+                tickangle: isMobile ? -45 : 0 
             },
             yaxis: { 
                 title: { text: isMobile ? '' : lblCits, font:{color, size:11}}, 
-                gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true,
+                gridcolor: 'rgba(255,255,255,0.05)', 
+                showgrid: true, 
+                tickfont:{color, size: 10}, 
+                fixedrange: true,
                 range: rangeCit 
             },
             yaxis2: { 
-                title: { text: isMobile ? '' : lblPubs, font:{color:'#999', size:11}}, 
-                overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true,
+                title: { text: isMobile ? '' : lblPubs, font:{color:'#64748b', size:11}}, 
+                overlaying: 'y', 
+                side: 'right', 
+                showgrid:false, 
+                tickfont:{color:'#64748b', size: 10}, 
+                fixedrange: true,
                 range: rangePub 
             },
             dragmode: false, 
-            hovermode: 'x unified',
             transition: {
                 duration: stepDuration, 
                 easing: 'linear'
@@ -741,47 +772,54 @@ const scholarScript = (function() {
                 { 
                     x: dataSubset.map(d=>d.year), 
                     y: dataSubset.map(d=>d.pub), 
-                    name: lblPubs, type: 'bar', yaxis: 'y2', 
-                    marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} 
+                    name: lblPubs, 
+                    type: 'bar', 
+                    yaxis: 'y2', 
+                    // Barras com cor branca sutil e transparente
+                    marker:{color:'rgba(255,255,255,0.1)', line:{color:'rgba(255,255,255,0.2)', width:1}},
+                    hoverinfo: 'y+name' // Mostra apenas valor e nome no tooltip
                 },
                 { 
                     x: dataSubset.map(d=>d.year), 
                     y: dataSubset.map(d=>d.cit), 
-                    name: lblCits, type: 'scatter', mode:'lines+markers', 
-                    line:{color, width:3, shape:'spline'}, 
-                    marker:{size:6, color, line:{color:'#fff', width:1}} 
+                    name: lblCits, 
+                    type: 'scatter', 
+                    mode:'lines+markers', 
+                    // Linha mais grossa e suave
+                    line:{color, width:3, shape:'spline', smoothing: 1.3}, 
+                    marker:{size:6, color: '#0f172a', line:{color: color, width: 2}}, // Bolinha escura com borda colorida
+                    hoverinfo: 'y+name'
                 }
             ];
         };
 
-        // --- LÓGICA DE EXECUÇÃO ---
-        
+        // --- LÓGICA DE EXECUÇÃO (Animação vs Estático) ---
         if (shouldAnimate) {
             Plotly.newPlot(container, getTraces([]), { ...layout, transition: { duration: 0 } }, config)
-            .then(() => {
-                let currentIndex = 0;
-                
-                function runSequence() {
-                    if (currentIndex >= processed.length) return; 
-
-                    const currentSubset = processed.slice(0, currentIndex + 1);
-                    Plotly.react(container, getTraces(currentSubset), layout, config);
-                    
-                    currentIndex++;
-                    setTimeout(runSequence, stepDuration);
-                }
-                
-                setTimeout(runSequence, 100);
-            });
-
+                .then(() => {
+                    let currentIndex = 0;
+                    function runSequence() {
+                        if (currentIndex >= processed.length) return;
+                        const currentSubset = processed.slice(0, currentIndex + 1);
+                        Plotly.react(container, getTraces(currentSubset), layout, config);
+                        currentIndex++;
+                        setTimeout(runSequence, stepDuration);
+                    }
+                    setTimeout(runSequence, 100);
+                });
         } else {
             const staticLayout = { ...layout, transition: { duration: 0 } };
             Plotly.newPlot(container, getTraces(processed), staticLayout, config);
         }
-        
+
+        // --- INTERAÇÃO AO CLICAR ---
         container.on('plotly_click', d => {
-            const y = d.points[0].x; activeYearFilter = (activeYearFilter == y) ? null : y;
-            showingPubsCount = initialPubsToShow; renderPublications(); updateFilterUI();
+            if (!d.points || !d.points[0]) return;
+            const y = d.points[0].x;
+            activeYearFilter = (activeYearFilter == y) ? null : y;
+            showingPubsCount = initialPubsToShow;
+            renderPublications();
+            updateFilterUI(); // Função auxiliar para destacar o botão/filtro visualmente se existir
         });
     }
 
