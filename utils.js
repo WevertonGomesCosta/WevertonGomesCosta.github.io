@@ -476,7 +476,7 @@ const GithubReposModule = {
 };
 
 // =================================================================================
-// MÓDULO: DASHBOARD ACADÊMICO (AJUSTADO: REMOÇÃO DE ZOOM E TOOLBAR)
+// MÓDULO: DASHBOARD ACADÊMICO (CORRIGIDO: SWIPE + ZOOM BLOQUEADO)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
@@ -579,7 +579,6 @@ const scholarScript = (function() {
             const citedByNode = data.cited_by || data.profile?.cited_by;
             const totalPubsNode = data.total_publications || data.profile?.total_publications;
 
-            // 1. Processar Tabela de Métricas
             if (citedByNode?.table) {
                 const table = citedByNode.table;
                 const getVals = (row) => {
@@ -599,14 +598,12 @@ const scholarScript = (function() {
                 result.metrics.cit.all = data.articles.length; 
             }
 
-            // 2. Processar Total de Publicações
             if (totalPubsNode !== undefined && totalPubsNode !== null) {
                 result.metrics.pubs = totalPubsNode;
             } else if (Array.isArray(data.articles)) {
                 result.metrics.pubs = data.articles.length;
             }
 
-            // 3. Processar Gráfico
             if (citedByNode?.graph) {
                 result.graphData = citedByNode.graph;
             }
@@ -692,7 +689,7 @@ const scholarScript = (function() {
         }, 300);
     }
 
-    // --- GRÁFICO (CORES ATUALIZADAS E ZOOM REMOVIDO) ---
+    // --- GRÁFICO (ZOOM E TOOLBAR REMOVIDOS) ---
     function renderDualAxisChart(container, rawData, platform) {
         const t = window.translations?.[window.currentLang] || {};
         const activeYears = rawData.filter(d => (d.citations > 0 || d.publications > 0));
@@ -724,7 +721,6 @@ const scholarScript = (function() {
         if (platform === 'scholar') colorLine = '#4285F4'; 
         if (platform === 'scopus') colorLine = '#ff7f0e';  
         if (platform === 'wos') colorLine = '#8b5cf6';     
-        if (platform === 'max') colorLine = '#F59E0B';     
 
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
@@ -750,33 +746,32 @@ const scholarScript = (function() {
             height: 350, 
             autosize: true,
             
-            // --- CORREÇÃO: Desabilitar Zoom e Pan no Eixo X/Y ---
+            // --- BLOQUEIO TOTAL DE ZOOM E PAN ---
             xaxis: { 
                 gridcolor: '#333', 
                 showgrid: false, 
                 zeroline: false, 
                 type: 'category',
-                fixedrange: true // <--- TRAVA O ZOOM NO EIXO X
+                fixedrange: true // Impede zoom no eixo X
             },
             yaxis: { 
                 title: { text: lblCits, font: { color: colorLine, size: 12 } }, 
                 gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine },
-                fixedrange: true // <--- TRAVA O ZOOM NO EIXO Y (CITAÇÕES)
+                fixedrange: true // Impede zoom no eixo Y
             },
             yaxis2: { 
                 title: { text: lblPubs, font: { color: '#999', size: 12 } }, 
                 overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' },
-                fixedrange: true // <--- TRAVA O ZOOM NO EIXO Y2 (PUBLICAÇÕES)
+                fixedrange: true // Impede zoom no eixo Y2
             },
-            // ----------------------------------------------------
-            
+            dragmode: false, // Desativa o arrastar para zoom
             hovermode: 'x unified'
         };
         
-        // --- CORREÇÃO: Remover a Toolbar (displayModeBar: false) ---
+        // --- REMOÇÃO DA BARRA DE FERRAMENTAS ---
         const config = { 
             responsive: true, 
-            displayModeBar: false // <--- REMOVE A BARRA DE FERRAMENTAS (ZOOM, PAN, DOWNLOAD)
+            displayModeBar: false // Remove ícones de zoom/pan/download
         };
 
         Plotly.react(container, [tracePubs, traceCits], layout, config);
@@ -792,7 +787,7 @@ const scholarScript = (function() {
         });
     }
 
-    // --- CARROSSEL ---
+    // --- CARROSSEL (COM SWIPE) ---
     function updateCarouselPosition() {
         if (!UI.track || UI.slides.length === 0) return;
         const width = UI.slides[0].getBoundingClientRect().width;
@@ -801,12 +796,10 @@ const scholarScript = (function() {
         UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
     }
 
-// No arquivo utils.js, dentro de scholarScript...
-
     function initCarouselLogic() {
         if (!UI.track) return;
 
-        // Funções de navegação auxiliares
+        // Funções de navegação
         const moveNext = () => {
             currentSlideIndex = (currentSlideIndex + 1) % UI.slides.length;
             updateCarouselPosition();
@@ -817,39 +810,31 @@ const scholarScript = (function() {
             updateCarouselPosition();
         };
 
-        // Eventos dos Botões (Clique)
+        // Eventos de clique
         if(UI.nextBtn) UI.nextBtn.addEventListener('click', moveNext);
         if(UI.prevBtn) UI.prevBtn.addEventListener('click', movePrev);
-        
-        // Eventos dos Pontinhos (Dots)
-        UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { 
-            currentSlideIndex = idx; 
-            updateCarouselPosition(); 
-        }));
+        UI.dots.forEach((dot, idx) => dot.addEventListener('click', () => { currentSlideIndex = idx; updateCarouselPosition(); }));
 
-        // --- NOVA LÓGICA: SWIPE (Toque na tela) ---
+        // --- LÓGICA DE SWIPE (ARRASTAR O DEDO) ---
         let touchStartX = 0;
         let touchEndX = 0;
 
-        // Detecta onde o dedo tocou na tela
         UI.track.addEventListener('touchstart', e => {
             touchStartX = e.changedTouches[0].screenX;
         }, {passive: true});
 
-        // Detecta onde o dedo soltou a tela
         UI.track.addEventListener('touchend', e => {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
         }, {passive: true});
 
         function handleSwipe() {
-            // Se deslizou para a esquerda (próximo slide)
-            if (touchEndX < touchStartX - 50) { 
-                moveNext();
+            const threshold = 50; // Mínimo de pixels para considerar um swipe
+            if (touchEndX < touchStartX - threshold) { 
+                moveNext(); // Deslizou para esquerda -> Próximo
             }
-            // Se deslizou para a direita (slide anterior)
-            if (touchEndX > touchStartX + 50) {
-                movePrev();
+            if (touchEndX > touchStartX + threshold) {
+                movePrev(); // Deslizou para direita -> Anterior
             }
         }
         // ------------------------------------------
@@ -939,14 +924,11 @@ const scholarScript = (function() {
         const fb = window.fallbackData;
         if (fb) {
             const acad = fb.academicData || fb;
-            // AQUI ESTÁ A CHAVE: Prioriza a lista unificada 'maximized'
-            // Se ela não existir, tenta google_scholar, senão lista vazia
             let raw = acad.maximized?.articles || acad.google_scholar?.articles || [];
             allArticles = raw.map(normalizeArticle);
             allArticles.sort((a, b) => b.cited_by.value - a.cited_by.value);
         }
 
-        // Lógica de Paginação (Home vs Página Dedicada)
         const isPubsPage = window.location.pathname.includes('publicacoes');
         
         if (isPubsPage) {

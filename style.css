@@ -955,29 +955,26 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 
 /* --- style.css --- */
 
+/* Forçar exibição das setas no celular */
 @media (max-width: 768px) {
-    /* Força a exibição dos botões do carrossel */
-    .carousel-button {
-        display: flex !important; /* Garante que apareçam */
-        width: 30px;  /* Menores que no desktop */
-        height: 30px;
-        font-size: 1rem;
-        background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente para não atrapalhar leitura */
+    .carousel-btn {
+        display: flex !important; /* Força aparecer */
+        opacity: 1 !important;    /* Remove transparência se houver */
+        visibility: visible !important;
+        
+        /* Ajuste de tamanho e posição para toque */
+        width: 35px;
+        height: 35px;
+        background: rgba(0, 0, 0, 0.6); /* Fundo escuro para contraste */
+        color: #fff;
+        z-index: 100; /* Garante que fique em cima do gráfico */
     }
 
-    /* Ajuste de posição para não ficar em cima do texto */
-    .carousel-button.prev-btn { left: 5px; }
-    .carousel-button.next-btn { right: 5px; }
-    
-    /* Opcional: Se preferir que fiquem embaixo do gráfico */
-    /*
-    .carousel-container {
-        padding-bottom: 40px; 
+    /* Posicionar nas bordas da tela para não cobrir o gráfico */
+    .carousel-btn.prev-btn {
+        left: 5px;
     }
-    .carousel-button {
-        top: auto;
-        bottom: 0;
-        transform: none;
+    .carousel-btn.next-btn {
+        right: 5px;
     }
-    */
 }
