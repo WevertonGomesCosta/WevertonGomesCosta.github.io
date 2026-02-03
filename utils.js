@@ -476,7 +476,7 @@ const GithubReposModule = {
 };
 
 // =================================================================================
-// MÓDULO: DASHBOARD ACADÊMICO (MOBILE FIX: SWIPE SUAVE + ANIMAÇÃO ROBUSTA)
+// MÓDULO: DASHBOARD ACADÊMICO (FINAL: ANIMAÇÃO DE NÚMEROS E GRÁFICOS)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
@@ -499,7 +499,8 @@ const scholarScript = (function() {
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
         pubsShownCount: null, pubsLoadMoreBtn: null,
-        dashboardSection: null
+        dashboardSection: null,
+        exportBtn: null // Referência para botão de exportar
     };
 
     // --- CARREGAMENTO ---
@@ -529,14 +530,12 @@ const scholarScript = (function() {
         };
     };
 
-    // --- ANIMAÇÃO DE NÚMEROS (OTIMIZADA PARA MOBILE) ---
+    // --- ANIMAÇÃO DE NÚMEROS ---
     function animateCountUp(el, value) {
         if (!el) return;
-        
-        // Cancela animação anterior
         if (el.dataset.animId) cancelAnimationFrame(el.dataset.animId);
-
         if (value === null || value === undefined) { el.textContent = "-"; return; }
+        
         let target = parseInt(value, 10);
         if (isNaN(target)) { el.textContent = value; return; }
 
@@ -548,8 +547,6 @@ const scholarScript = (function() {
         function update(currentTime) {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing: Começa rápido, desacelera no fim
             const ease = 1 - Math.pow(1 - progress, 3);
             
             const currentVal = Math.floor(ease * target);
@@ -601,6 +598,7 @@ const scholarScript = (function() {
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
+        // Animação dos Números
         ['cit', 'h', 'i10', 'pubs'].forEach(metric => {
             const el = document.getElementById(`${platformPrefix}-${metric}`);
             if(el) {
@@ -612,10 +610,17 @@ const scholarScript = (function() {
 
         updatePeriodLabels(platformPrefix, data.metrics);
 
+        // Renderização do Gráfico (passando shouldAnimate)
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
-        if (chartDiv && (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados'))) {
-            if (data.graphData?.length > 0) renderDualAxisChart(chartDiv, data.graphData, platformPrefix);
-            else chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
+        if (chartDiv) {
+             // Se o container estiver vazio ou com mensagem de erro, ou se for para animar, renderiza
+            if (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados') || shouldAnimate) {
+                if (data.graphData?.length > 0) {
+                    renderDualAxisChart(chartDiv, data.graphData, platformPrefix, shouldAnimate);
+                } else {
+                    chartDiv.innerHTML = "<div style='text-align:center;padding:20px;color:#888;font-size:0.9rem'>Sem dados históricos</div>";
+                }
+            }
         }
     }
 
@@ -645,15 +650,22 @@ const scholarScript = (function() {
     function updateAllTexts() {
         platformOrder.forEach(p => renderPlatform(p, false));
         renderPublications();
-        if (hasViewedSection) renderPlatform(platformOrder[currentSlideIndex], true);
-        setTimeout(() => { platformOrder.forEach(p => { try { Plotly.Plots.resize(document.getElementById(`${p}-chart`)); } catch(e){} }); }, 300);
+        // Se já viu a seção, reanima apenas o gráfico atual ao trocar idioma (opcional, aqui deixei false para não distrair)
+        if (hasViewedSection) {
+             // Ajuste de resize
+             setTimeout(() => { platformOrder.forEach(p => { try { Plotly.Plots.resize(document.getElementById(`${p}-chart`)); } catch(e){} }); }, 300);
+        }
     }
 
-    // --- GRÁFICO (MOBILE OPTIMIZED) ---
-    function renderDualAxisChart(container, rawData, platform) {
+    // --- GRÁFICO (VERSÃO BLINDADA CONTRA ERROS DE TAMANHO) ---
+    function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
-        if (!active.length) { container.innerHTML = "<div style='text-align:center;padding:20px;color:#888;'>Sem atividade</div>"; return; }
+        
+        if (!active.length) { 
+            container.innerHTML = "<div style='text-align:center;padding:20px;color:#888;'>Sem atividade</div>"; 
+            return; 
+        }
 
         const years = active.map(d => parseInt(d.year)).filter(y => !isNaN(y));
         const minYear = Math.min(...years), maxYear = Math.max(...years);
@@ -667,21 +679,69 @@ const scholarScript = (function() {
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
+        // --- CÁLCULO DE DIMENSÃO MANUAL ---
+        const isMobile = window.innerWidth < 768;
+        
+        // 1. Tenta pegar a largura real do container
+        let targetWidth = container.getBoundingClientRect().width;
+        
+        // 2. Se for 0 (está escondido) ou muito pequeno, usa a largura da janela menos margens
+        if (targetWidth < 50) {
+            targetWidth = window.innerWidth - (isMobile ? 40 : 80); // 40px de margem total no mobile
+        }
+        
+        const chartHeight = isMobile ? 260 : 350; 
+
         const layout = {
-            paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+            width: targetWidth, // FORÇA A LARGURA EXATA
+            height: chartHeight,
+            paper_bgcolor: 'rgba(0,0,0,0)', 
+            plot_bgcolor: 'rgba(0,0,0,0)',
             font: { color: '#888', family: 'Inter, sans-serif' },
-            legend: { orientation: 'h', x: 0, y: 1.2 },
-            margin: { t: 30, l: 35, r: 35, b: 30 }, height: 350, autosize: true,
-            xaxis: { gridcolor: '#333', showgrid: false, type: 'category', fixedrange: true },
-            yaxis: { title: { text: lblCits, font:{color, size:11}}, gridcolor: '#333', showgrid: true, tickfont:{color}, fixedrange: true },
-            yaxis2: { title: { text: lblPubs, font:{color:'#999', size:11}}, overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999'}, fixedrange: true },
-            dragmode: false, hovermode: 'x unified'
+            legend: { orientation: 'h', x: 0, y: isMobile ? 1.2 : 1.1 },
+            // Margens ajustadas para não cortar números
+            margin: { t: 40, l: 30, r: 30, b: 30 }, 
+            xaxis: { 
+                gridcolor: '#333', showgrid: false, type: 'category', fixedrange: true,
+                tickfont: { size: isMobile ? 10 : 12 }
+            },
+            yaxis: { 
+                title: { text: isMobile ? '' : lblCits, font:{color, size:11}}, 
+                gridcolor: '#333', showgrid: true, tickfont:{color, size: 10}, fixedrange: true 
+            },
+            yaxis2: { 
+                title: { text: isMobile ? '' : lblPubs, font:{color:'#999', size:11}}, 
+                overlaying: 'y', side: 'right', showgrid:false, tickfont:{color:'#999', size: 10}, fixedrange: true 
+            },
+            dragmode: false, 
+            hovermode: 'x unified',
+            transition: { duration: 1000, easing: 'cubic-in-out' }
         };
 
-        Plotly.react(container, [
-            { x: processed.map(d=>d.year), y: processed.map(d=>d.pub), name: lblPubs, type: 'bar', yaxis: 'y2', marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} },
-            { x: processed.map(d=>d.year), y: processed.map(d=>d.cit), name: lblCits, type: 'scatter', mode:'lines+markers', line:{color, width:3, shape:'spline'}, marker:{size:6, color, line:{color:'#fff', width:1}} }
-        ], layout, { responsive: true, displayModeBar: false });
+        const config = { 
+            responsive: true, 
+            displayModeBar: false,
+            staticPlot: false 
+        };
+
+        const tracePubs = { x: processed.map(d=>d.year), y: processed.map(d=>d.pub), name: lblPubs, type: 'bar', yaxis: 'y2', marker:{color:'rgba(255,255,255,0.15)', line:{color:'rgba(255,255,255,0.3)', width:1}} };
+        const traceCits = { x: processed.map(d=>d.year), y: processed.map(d=>d.cit), name: lblCits, type: 'scatter', mode:'lines+markers', line:{color, width:3, shape:'spline'}, marker:{size:6, color, line:{color:'#fff', width:1}} };
+
+        if (shouldAnimate) {
+            const tracePubsZero = { ...tracePubs, y: processed.map(() => 0) };
+            const traceCitsZero = { ...traceCits, y: processed.map(() => 0) };
+            
+            Plotly.newPlot(container, [tracePubsZero, traceCitsZero], { ...layout, transition: { duration: 0 } }, config)
+            .then(() => {
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        Plotly.react(container, [tracePubs, traceCits], layout, config);
+                    }, 50);
+                });
+            });
+        } else {
+            Plotly.newPlot(container, [tracePubs, traceCits], { ...layout, transition: { duration: 0 } }, config);
+        }
         
         container.on('plotly_click', d => {
             const y = d.points[0].x; activeYearFilter = (activeYearFilter == y) ? null : y;
@@ -689,7 +749,7 @@ const scholarScript = (function() {
         });
     }
 
-    // --- CARROSSEL (COM SUPORTE REAL A GESTOS MOBILE) ---
+    // --- CARROSSEL ---
     function updateCarouselPosition() {
         if (!UI.track || !UI.slides.length) return;
         const width = UI.slides[0].getBoundingClientRect().width;
@@ -697,10 +757,11 @@ const scholarScript = (function() {
         UI.slides.forEach((s, i) => s.classList.toggle('current-slide', i === currentSlideIndex));
         UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
 
-        // Trigger Animação
+        // TRIGGER DE ANIMAÇÃO AO TROCAR SLIDE
         const currentPlatform = platformOrder[currentSlideIndex];
         if (currentPlatform && hasViewedSection) {
-            setTimeout(() => renderPlatform(currentPlatform, true), 150);
+            // Espera o carrossel deslizar um pouco e dispara a animação
+            setTimeout(() => renderPlatform(currentPlatform, true), 200);
         }
     }
 
@@ -713,38 +774,22 @@ const scholarScript = (function() {
         if(UI.prevBtn) UI.prevBtn.addEventListener('click', movePrev);
         UI.dots.forEach((dot, i) => dot.addEventListener('click', () => { currentSlideIndex = i; updateCarouselPosition(); }));
 
-        // --- GESTOS MOBILE AVANÇADOS (SWIPE + SCROLL LOCK) ---
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let isSwiping = false;
+        // GESTOS MOBILE (SWIPE + SCROLL LOCK)
+        let touchStartX = 0; let touchStartY = 0; let isSwiping = false;
 
         UI.track.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-            isSwiping = false; // Reset
-        }, {passive: true}); // Passive true ajuda performance no inicio
+            touchStartX = e.changedTouches[0].screenX; touchStartY = e.changedTouches[0].screenY; isSwiping = false;
+        }, {passive: true}); 
 
         UI.track.addEventListener('touchmove', e => {
-            const touchCurrentX = e.changedTouches[0].screenX;
-            const touchCurrentY = e.changedTouches[0].screenY;
-            
-            const diffX = Math.abs(touchCurrentX - touchStartX);
-            const diffY = Math.abs(touchCurrentY - touchStartY);
-
-            // Se o usuário moveu mais para o lado do que para baixo, assume intenção de Carrossel
-            // e bloqueia o scroll da página.
-            if (diffX > diffY && diffX > 10) {
-                isSwiping = true;
-                if(e.cancelable) e.preventDefault(); // Impede a tela de subir/descer
-            }
-        }, {passive: false}); // Passive false é NECESSÁRIO para funcionar o preventDefault
+            const touchCurrentX = e.changedTouches[0].screenX; const touchCurrentY = e.changedTouches[0].screenY;
+            const diffX = Math.abs(touchCurrentX - touchStartX); const diffY = Math.abs(touchCurrentY - touchStartY);
+            if (diffX > diffY && diffX > 10) { isSwiping = true; if(e.cancelable) e.preventDefault(); }
+        }, {passive: false});
 
         UI.track.addEventListener('touchend', e => {
-            if (!isSwiping) return; // Se foi só scroll vertical, ignora
-            
-            const touchEndX = e.changedTouches[0].screenX;
-            const threshold = 40; // Sensibilidade do swipe
-
+            if (!isSwiping) return; 
+            const touchEndX = e.changedTouches[0].screenX; const threshold = 40;
             if (touchEndX < touchStartX - threshold) moveNext();
             if (touchEndX > touchStartX + threshold) movePrev();
         }, {passive: true});
@@ -752,7 +797,7 @@ const scholarScript = (function() {
         window.addEventListener('resize', updateCarouselPosition);
     }
 
-    // --- LISTA PUBLICAÇÕES ---
+    // --- LISTA E EXPORTAÇÃO ---
     function renderPublications() {
         const grid = UI.pubsGrid;
         if (!grid) return;
@@ -775,6 +820,25 @@ const scholarScript = (function() {
         
         if(UI.pubsShownCount) UI.pubsShownCount.textContent = `${visible.length} / ${list.length}`;
         if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.style.display = (visible.length >= list.length) ? 'none' : 'inline-block';
+    }
+
+    function generateBibTeX() {
+        let list = activeYearFilter ? allArticles.filter(a => a.year == activeYearFilter) : allArticles;
+        const term = (UI.pubSearchInput?.value || '').toLowerCase();
+        if (term) list = list.filter(a => normalizeTitle(a.title).includes(term) || a.year.includes(term));
+
+        if (list.length === 0) { alert("Nenhuma publicação para exportar."); return; }
+
+        let bibContent = "";
+        list.forEach((art) => {
+            const key = `${art.title.split(' ')[0].replace(/[^a-zA-Z]/g, '')}${art.year || '0000'}`;
+            bibContent += `@article{${key},\n  title = {${art.title}},\n${art.journalTitle ? `  journal = {${art.journalTitle}},\n` : ''}${art.year ? `  year = {${art.year}},\n` : ''}${art.doi ? `  doi = {${art.doi}},\n` : ''}${art.link ? `  url = {${art.link}},\n` : ''}}\n\n`;
+        });
+
+        const blob = new Blob([bibContent], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'publicacoes.bib';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
     }
 
     function updateFilterUI() {
@@ -802,6 +866,7 @@ const scholarScript = (function() {
         UI.pubClearBtn = document.getElementById('publication-clear-btn');
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
+        UI.exportBtn = document.getElementById('export-bibtex-btn');
 
         dashboardData.scholar = processPlatformData('scholar', 'google_scholar');
         dashboardData.scopus = processPlatformData('scopus', 'scopus');
@@ -818,24 +883,19 @@ const scholarScript = (function() {
         const isPubsPage = window.location.pathname.includes('publicacoes');
         showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow;
         
-        platformOrder.forEach(p => renderPlatform(p, false)); // Renderiza estático
+        platformOrder.forEach(p => renderPlatform(p, false));
         renderPublications();
         initCarouselLogic();
 
-        // --- OBSERVER CORRIGIDO PARA MOBILE ---
         if (UI.dashboardSection) {
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting && !hasViewedSection) {
                     hasViewedSection = true;
-                    // Força animação imediata
                     const cur = platformOrder[currentSlideIndex];
                     if(cur) renderPlatform(cur, true);
                     observer.disconnect();
                 }
-            }, { 
-                threshold: 0.1, // FIX: Baixei para 10% para garantir disparo no celular
-                rootMargin: "0px" 
-            });
+            }, { threshold: 0.1, rootMargin: "0px" });
             observer.observe(UI.dashboardSection);
         } else {
             hasViewedSection = true; updateAllTexts();
@@ -844,7 +904,26 @@ const scholarScript = (function() {
         if(UI.pubSearchInput) UI.pubSearchInput.addEventListener('input', () => { showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
         if(UI.pubClearBtn) UI.pubClearBtn.addEventListener('click', () => { UI.pubSearchInput.value = ''; showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
         if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.addEventListener('click', () => { showingPubsCount += pubsPerLoad; renderPublications(); });
+        if(UI.exportBtn) UI.exportBtn.addEventListener('click', generateBibTeX);
         if (window.AppEvents) window.AppEvents.on('languageChanged', updateAllTexts);
+
+        // --- CORREÇÃO DE RESIZE GLOBAL ---
+        // Garante que o gráfico se ajuste se o usuário girar a tela ou redimensionar a janela
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                platformOrder.forEach(p => { 
+                    try { 
+                        // Força o Plotly a recalcular o tamanho do container pai
+                        const chartDiv = document.getElementById(`${p}-chart`);
+                        if(chartDiv) Plotly.Plots.resize(chartDiv);
+                        // Opcional: Re-renderizar completo se mudar drasticamente de Mobile <-> Desktop
+                        // renderPlatform(p, false); 
+                    } catch(e){} 
+                });
+            }, 200);
+        });
     }
     return { init };
 })();
@@ -1941,10 +2020,6 @@ function initializePageComponents() {
     }
     console.log("initializePageComponents: Módulos inicializados."); // Log para depuração
 }
-
-// --- ALTERAÇÃO: Função removida, lógica integrada no LanguageManager.init ---
-// function waitForFallbackDataAndInitialize() { /* ... REMOVIDO ... */ }
-// --- FIM ALTERAÇÃO ---
 
 // =================================================================================
 // PONTO DE ENTRADA PRINCIPAL

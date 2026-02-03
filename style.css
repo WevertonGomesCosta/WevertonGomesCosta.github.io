@@ -978,3 +978,17 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
         right: 5px;
     }
 }
+
+/* Correção para Gráficos Responsivos */
+.chart-wrapper, .chart-container, .js-plotly-plot {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden; /* Corta qualquer excesso */
+}
+
+/* Garante que o slide do carrossel respeite a largura */
+.carousel-slide {
+    width: 100%;
+    box-sizing: border-box; /* Conta o padding dentro da largura */
+    padding: 0 10px; /* Um pouco de respiro nas laterais */
+}
