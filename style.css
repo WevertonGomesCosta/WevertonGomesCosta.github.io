@@ -943,3 +943,12 @@ body:not(#index-page) nav.scrolled .nav-title { opacity: 1; visibility: visible;
 }
 @media (max-width: 520px) { #page-projects .project-top { flex-direction: column; gap: 6px; } #page-projects .project-meta { gap: 8px; } }
 @media (max-width: 480px) { body:not(#index-page) .nav-brand-text { display: none; } }
+/* Adicione isso ao final do arquivo style.css, dentro das Media Queries ou no final de tudo */
+
+@media (max-width: 768px) {
+    .chart-container {
+        /* Reduz a altura para 250px em celulares (o padrão desktop costuma ser 350px) */
+        height: 250px !important; 
+        min-height: 250px !important;
+    }
+}

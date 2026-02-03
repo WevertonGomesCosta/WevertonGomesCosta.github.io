@@ -476,13 +476,13 @@ const GithubReposModule = {
 };
 
 // =================================================================================
-// MÓDULO: DASHBOARD ACADÊMICO (AJUSTADO PARA ESTRUTURA HÍBRIDA DO JSON)
+// MÓDULO: DASHBOARD ACADÊMICO (AJUSTADO: REMOÇÃO DE ZOOM E TOOLBAR)
 // =================================================================================
 const scholarScript = (function() {
     'use strict';
 
     const initialPubsToShow = 3; 
-    const pubsPerLoad = 3;       
+    const pubsPerLoad = 3;        
     
     let dashboardData = {
         scholar: null, scopus: null, wos: null, max: null
@@ -559,13 +559,11 @@ const scholarScript = (function() {
     }
 
     // --- PROCESSAMENTO DE DADOS ---
-    // Esta função foi alterada para lidar tanto com a estrutura aninhada do Scholar (profile.cited_by)
-    // quanto com a estrutura direta do Maximized (cited_by na raiz).
     function processPlatformData(platformPrefix, dataKey) {
         const fb = window.fallbackData;
         if (!fb) return null;
         const acad = fb.academicData || fb;
-        const data = acad[dataKey]; // Ex: acad['maximized'] ou acad['google_scholar']
+        const data = acad[dataKey]; 
 
         let result = {
             metrics: { 
@@ -578,8 +576,6 @@ const scholarScript = (function() {
         };
 
         if (data) {
-            // DETECÇÃO INTELIGENTE DE ESTRUTURA
-            // Verifica se as chaves estão na raiz (Maximized) ou dentro de 'profile' (Scholar)
             const citedByNode = data.cited_by || data.profile?.cited_by;
             const totalPubsNode = data.total_publications || data.profile?.total_publications;
 
@@ -588,9 +584,8 @@ const scholarScript = (function() {
                 const table = citedByNode.table;
                 const getVals = (row) => {
                     if (!row) return { all: 0, recent: null };
-                    const key = Object.keys(row)[0]; // ex: "citations"
+                    const key = Object.keys(row)[0]; 
                     const obj = row[key];
-                    // Procura chave que começa com 'since_' ou 'desde_'
                     const recentKey = Object.keys(obj).find(k => k.startsWith('since_') || k.startsWith('desde_'));
                     return { 
                         all: (obj.all !== undefined && obj.all !== null) ? obj.all : 0, 
@@ -601,7 +596,6 @@ const scholarScript = (function() {
                 if(table[1]) result.metrics.h = getVals(table[1]);
                 if(table[2]) result.metrics.i10 = getVals(table[2]);
             } else if (Array.isArray(data.articles)) {
-                // Fallback se não houver tabela calculada
                 result.metrics.cit.all = data.articles.length; 
             }
 
@@ -664,7 +658,6 @@ const scholarScript = (function() {
             }
 
             if (elPeriod) {
-                // Só mostra o label "Recente" se houver valor e for diferente de 0/null
                 if (valObj.recent !== null && valObj.recent !== undefined && valObj.recent !== 0) {
                     elPeriod.innerHTML = ` / ${valObj.recent} <span style="font-size:0.7em; opacity:0.8; white-space:nowrap;">(${sinceText})</span>`;
                     elPeriod.style.display = 'inline';
@@ -686,7 +679,7 @@ const scholarScript = (function() {
         renderPlatform('scholar');
         renderPlatform('scopus');
         renderPlatform('wos');
-        renderPlatform('max'); // Renderiza o Maximizado
+        renderPlatform('max'); 
         renderPublications(); 
         
         setTimeout(() => {
@@ -699,7 +692,7 @@ const scholarScript = (function() {
         }, 300);
     }
 
-    // --- GRÁFICO (CORES ATUALIZADAS) ---
+    // --- GRÁFICO (CORES ATUALIZADAS E ZOOM REMOVIDO) ---
     function renderDualAxisChart(container, rawData, platform) {
         const t = window.translations?.[window.currentLang] || {};
         const activeYears = rawData.filter(d => (d.citations > 0 || d.publications > 0));
@@ -727,12 +720,11 @@ const scholarScript = (function() {
         const yCitations = processedData.map(d => d.citations);
         const yPubs = processedData.map(d => d.publications);
 
-        // Cores específicas para cada plataforma
-        let colorLine = '#10b981'; // Cor Default (Verde)
-        if (platform === 'scholar') colorLine = '#4285F4'; // Azul Google
-        if (platform === 'scopus') colorLine = '#ff7f0e';  // Laranja Scopus
-        if (platform === 'wos') colorLine = '#8b5cf6';     // Roxo WoS
-        if (platform === 'max') colorLine = '#F59E0B';     // Dourado/Amarelo para o "Maximized"
+        let colorLine = '#10b981'; 
+        if (platform === 'scholar') colorLine = '#4285F4'; 
+        if (platform === 'scopus') colorLine = '#ff7f0e';  
+        if (platform === 'wos') colorLine = '#8b5cf6';     
+        if (platform === 'max') colorLine = '#F59E0B';     
 
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
@@ -757,13 +749,38 @@ const scholarScript = (function() {
             margin: { t: 30, l: 40, r: 40, b: 40 },
             height: 350, 
             autosize: true,
-            xaxis: { gridcolor: '#333', showgrid: false, zeroline: false, type: 'category' },
-            yaxis: { title: { text: lblCits, font: { color: colorLine, size: 12 } }, gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine } },
-            yaxis2: { title: { text: lblPubs, font: { color: '#999', size: 12 } }, overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' } },
+            
+            // --- CORREÇÃO: Desabilitar Zoom e Pan no Eixo X/Y ---
+            xaxis: { 
+                gridcolor: '#333', 
+                showgrid: false, 
+                zeroline: false, 
+                type: 'category',
+                fixedrange: true // <--- TRAVA O ZOOM NO EIXO X
+            },
+            yaxis: { 
+                title: { text: lblCits, font: { color: colorLine, size: 12 } }, 
+                gridcolor: '#333', showgrid: true, zeroline: false, tickfont: { color: colorLine },
+                fixedrange: true // <--- TRAVA O ZOOM NO EIXO Y (CITAÇÕES)
+            },
+            yaxis2: { 
+                title: { text: lblPubs, font: { color: '#999', size: 12 } }, 
+                overlaying: 'y', side: 'right', showgrid: false, zeroline: false, tickfont: { color: '#999' },
+                fixedrange: true // <--- TRAVA O ZOOM NO EIXO Y2 (PUBLICAÇÕES)
+            },
+            // ----------------------------------------------------
+            
             hovermode: 'x unified'
         };
+        
+        // --- CORREÇÃO: Remover a Toolbar (displayModeBar: false) ---
+        const config = { 
+            responsive: true, 
+            displayModeBar: false // <--- REMOVE A BARRA DE FERRAMENTAS (ZOOM, PAN, DOWNLOAD)
+        };
 
-        Plotly.react(container, [tracePubs, traceCits], layout, { responsive: true, displayModeBar: false });
+        Plotly.react(container, [tracePubs, traceCits], layout, config);
+        
         setTimeout(() => { try { Plotly.Plots.resize(container); } catch(e) {} }, 50);
 
         container.on('plotly_click', data => {
