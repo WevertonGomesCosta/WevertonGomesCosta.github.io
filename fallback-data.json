@@ -5,13 +5,31 @@
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
             "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "JavaScript",
+            "language": "HTML",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-02-03T14:50:28Z",
+            "updated_at": "2026-02-20T15:48:07Z",
             "topics": [
                 "pessoal",
                 "site"
+            ]
+        },
+        {
+            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
+            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
+            "description": "Bem-vindo ao repositório oficial. Este estudo realiza um benchmark computacional comparando a eficácia de métodos de Machine Learning (ML) contra modelos estatísticos clássicos e modernos (Modelos Mistos / GWAS) na identificação de marcadores moleculares (QTLs).",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-02-19T13:27:16Z",
+            "topics": [
+                "genomic-wide-association-studies",
+                "gwas",
+                "machine-learning",
+                "mars",
+                "neural-network",
+                "splines"
             ]
         },
         {
@@ -35,24 +53,6 @@
             "forks_count": 0,
             "updated_at": "2025-12-19T04:37:48Z",
             "topics": []
-        },
-        {
-            "name": "Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "html_url": "https://github.com/WevertonGomesCosta/Importance-of-markers-for-QTL-detection-by-machine-learning-methods",
-            "homepage": "https://wevertongomescosta.github.io/Importance-of-markers-for-QTL-detection-by-machine-learning-methods/",
-            "description": "Bem-vindo ao repositório oficial. Este estudo realiza um benchmark computacional comparando a eficácia de métodos de Machine Learning (ML) contra modelos estatísticos clássicos e modernos (Modelos Mistos / GWAS) na identificação de marcadores moleculares (QTLs).",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-12-19T04:22:04Z",
-            "topics": [
-                "genomic-wide-association-studies",
-                "gwas",
-                "machine-learning",
-                "mars",
-                "neural-network",
-                "splines"
-            ]
         },
         {
             "name": "Genomic-prediction-through-machine-learning-and-neural-networks-for-traits-with-epistasis",
@@ -135,9 +135,9 @@
             "homepage": "https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/",
             "description": "This website is a project for analysis of the Genomic Selection for Drought Tolerance Using Genome Wide GBS and/or DART in Cassava by EMBRAPA Mandioca.",
             "language": "R",
-            "stargazers_count": 2,
+            "stargazers_count": 3,
             "forks_count": 0,
-            "updated_at": "2025-10-07T02:44:24Z",
+            "updated_at": "2026-02-10T01:40:05Z",
             "topics": [
                 "cassava",
                 "eda",
@@ -444,19 +444,19 @@
             "topics": []
         }
     ],
-    "lastUpdated": "03/02/2026 12:48",
+    "lastUpdated": "20/02/2026 12:48",
     "academicData": {
         "google_scholar": {
             "profile": {
                 "source": "Google Scholar",
                 "source_name": "Google Scholar",
-                "total_publications": 33,
+                "total_publications": 32,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 168,
-                                "since_2021": 159
+                                "all": 167,
+                                "since_2021": 158
                             }
                         },
                         {
@@ -474,7 +474,12 @@
                     ],
                     "graph": [
                         {
-                            "year": 2017,
+                            "year": 2015,
+                            "citations": 0,
+                            "publications": 1
+                        },
+                        {
+                            "year": 2018,
                             "citations": 0,
                             "publications": 1
                         },
@@ -485,27 +490,27 @@
                         },
                         {
                             "year": 2020,
-                            "citations": 6,
-                            "publications": 3
+                            "citations": 7,
+                            "publications": 2
                         },
                         {
                             "year": 2021,
-                            "citations": 18,
+                            "citations": 19,
                             "publications": 6
                         },
                         {
                             "year": 2022,
-                            "citations": 20,
+                            "citations": 18,
                             "publications": 5
                         },
                         {
                             "year": 2023,
-                            "citations": 29,
-                            "publications": 4
+                            "citations": 27,
+                            "publications": 3
                         },
                         {
                             "year": 2024,
-                            "citations": 38,
+                            "citations": 35,
                             "publications": 7
                         },
                         {
@@ -515,7 +520,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 4,
+                            "citations": 9,
                             "publications": 1
                         }
                     ]
@@ -528,7 +533,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                     "journalTitle": "Euphytica 215 (10), 178, 2019",
                     "cited_by": {
-                        "value": 38
+                        "value": 37
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -540,7 +545,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:UebtZRa9Y70C",
                     "journalTitle": "Computational and Structural Biotechnology Journal 20, 5490-5499, 2022",
                     "cited_by": {
-                        "value": 17
+                        "value": 18
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -576,7 +581,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:8k81kl-MbHgC",
                     "journalTitle": "Agronomy 13 (3), 937, 2023",
                     "cited_by": {
-                        "value": 12
+                        "value": 11
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -619,18 +624,6 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
-                    "year": "2023",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:5nxA0vEk-isC",
-                    "journalTitle": "Agronomy Science and Biotechnology 9, 1-24, 2023",
-                    "cited_by": {
-                        "value": 6
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
                     "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self‐organizing maps",
                     "year": "2022",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
@@ -655,6 +648,18 @@
                     "doiLink": null
                 },
                 {
+                    "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
+                    "year": "2023",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:5nxA0vEk-isC",
+                    "journalTitle": "Agronomy Science and Biotechnology 9, 1-24, 2023",
+                    "cited_by": {
+                        "value": 5
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
                     "title": "Application of fuzzy logic for adaptability and stability studies in flood‐irrigated rice (Oryza sativa)",
                     "year": "2021",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YsMSGLbcyi4C",
@@ -667,10 +672,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Performance of a breeding program for irrigated rice in Southeast Brazil.",
-                    "year": "2019",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC",
-                    "journalTitle": "Gene Conserve 18 (72), 2019",
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
+                    "year": "2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
                     "cited_by": {
                         "value": 4
                     },
@@ -679,12 +684,12 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
-                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
+                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
+                    "year": "2021",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:eQOLeE2rZwMC",
+                    "journalTitle": "Plant Breeding 140 (6), 990-1001, 2021",
                     "cited_by": {
-                        "value": 3
+                        "value": 4
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -695,6 +700,18 @@
                     "year": "2021",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:W7OEmFMy1HYC",
                     "journalTitle": "Crop Breeding and Applied Biotechnology 21 (3), 2021",
+                    "cited_by": {
+                        "value": 3
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Performance of a breeding program for irrigated rice in Southeast Brazil.",
+                    "year": "2019",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC",
+                    "journalTitle": "Gene Conserve 18 (72), 2019",
                     "cited_by": {
                         "value": 3
                     },
@@ -727,10 +744,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
-                    "year": "2021",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:eQOLeE2rZwMC",
-                    "journalTitle": "Plant Breeding 140 (6), 990-1001, 2021",
+                    "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: a time meta-analysis",
+                    "year": "2020",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:2osOgNQ5qMEC",
+                    "journalTitle": "Crop Breeding and Applied Biotechnology 20 (4), e30032042, 2020",
                     "cited_by": {
                         "value": 2
                     },
@@ -751,46 +768,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
-                    "year": "2023",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:mVmsd5A6BfQC",
-                    "journalTitle": "N/A",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
                     "title": "Multi-information analysis for recommendation of flooded-irrigated rice for adaptability and phenotypic stability",
                     "year": "2022",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:3fE2CSJIrl8C",
                     "journalTitle": "Agronomy Science and Biotechnology 8, 1-15, 2022",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Eficiência de técnicas de machine learning e de redes neurais na predição genômica e identificação de marcadores",
-                    "year": "2022",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:0EnyYjriUFMC",
-                    "journalTitle": "N/A",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: a time meta-analysis",
-                    "year": "2020",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:2osOgNQ5qMEC",
-                    "journalTitle": "Crop Breeding and Applied Biotechnology 20 (4), e30032042, 2020",
                     "cited_by": {
                         "value": 1
                     },
@@ -871,9 +852,9 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity.",
-                    "year": "2021",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Se3iqnhoufwC",
+                    "title": "Eficiência de técnicas de machine learning e de redes neurais na predição genômica e identificação de marcadores",
+                    "year": "2022",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:0EnyYjriUFMC",
                     "journalTitle": "N/A",
                     "cited_by": {
                         "value": null
@@ -883,10 +864,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "RESEARCH ARTICLE METHODS OF ADAPTABILITY AND STABILITY APPLIED TO THE IMPROVEMENT OF FLOODED RICE",
-                    "year": "2020",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:L8Ckcad2t8MC",
-                    "journalTitle": "GENETICS AND MOLECULAR RESEARCH 19 (3), 2020",
+                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity.",
+                    "year": "2021",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Se3iqnhoufwC",
+                    "journalTitle": "N/A",
                     "cited_by": {
                         "value": null
                     },
@@ -907,8 +888,20 @@
                     "doiLink": null
                 },
                 {
+                    "title": "Meta-análise das estimativas de parâmetros em genótipos de arroz irrigado em Minas Gerais",
+                    "year": "2018",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:IWHjjKOFINEC",
+                    "journalTitle": "N/A",
+                    "cited_by": {
+                        "value": null
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
                     "title": "BRSMG Rubelita: cultivar de arroz para cultivo em várzeas mineiras.",
-                    "year": "2017",
+                    "year": "2015",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Tyk-4Ss8FVUC",
                     "journalTitle": "N/A",
                     "cited_by": {
@@ -1272,8 +1265,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 89,
-                                "since_2021": 87
+                                "all": 92,
+                                "since_2021": 90
                             }
                         },
                         {
@@ -1322,12 +1315,12 @@
                         },
                         {
                             "year": 2025,
-                            "citations": 31,
+                            "citations": 32,
                             "publications": 1
                         },
                         {
                             "year": 2026,
-                            "citations": 1,
+                            "citations": 3,
                             "publications": 0
                         }
                     ]
@@ -1345,22 +1338,22 @@
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
-                    "year": "2021",
-                    "doi": "10.1002/csc2.20488",
-                    "link": "https://doi.org/10.1002/csc2.20488",
+                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
+                    "year": "2022",
+                    "doi": "10.1016/j.csbj.2022.09.029",
+                    "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
                     "cited_by": {
                         "value": 11
                     },
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
-                    "year": "2022",
-                    "doi": "10.1016/j.csbj.2022.09.029",
-                    "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
+                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
+                    "year": "2021",
+                    "doi": "10.1002/csc2.20488",
+                    "link": "https://doi.org/10.1002/csc2.20488",
                     "cited_by": {
-                        "value": 10
+                        "value": 11
                     },
                     "source": "Web of Science"
                 },
@@ -1425,6 +1418,16 @@
                     "source": "Web of Science"
                 },
                 {
+                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+                    "year": "2021",
+                    "doi": "10.1111/pbr.12973",
+                    "link": "https://doi.org/10.1111/pbr.12973",
+                    "cited_by": {
+                        "value": 4
+                    },
+                    "source": "Web of Science"
+                },
+                {
                     "title": "Optimizing drought tolerance in cassava through genomic selection",
                     "year": "2024",
                     "doi": "10.3389/fpls.2024.1483340",
@@ -1435,10 +1438,10 @@
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
                     "year": "2021",
-                    "doi": "10.1111/pbr.12973",
-                    "link": "https://doi.org/10.1111/pbr.12973",
+                    "doi": "10.1111/pbr.12972",
+                    "link": "https://doi.org/10.1111/pbr.12972",
                     "cited_by": {
                         "value": 3
                     },
@@ -1459,16 +1462,6 @@
                     "year": "2022",
                     "doi": "10.1002/csc2.20816",
                     "link": "https://doi.org/10.1002/csc2.20816",
-                    "cited_by": {
-                        "value": 2
-                    },
-                    "source": "Web of Science"
-                },
-                {
-                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
-                    "year": "2021",
-                    "doi": "10.1111/pbr.12972",
-                    "link": "https://doi.org/10.1111/pbr.12972",
                     "cited_by": {
                         "value": 2
                     },
