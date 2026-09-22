@@ -1,6 +1,158 @@
 {
     "githubRepos": [
         {
+            "name": "Bayesian-ridge-regression-papaya",
+            "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
+            "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
+            "description": "Genomic prediction and selection in papaya using Bayesian regression, RR-BLUP, and GBLUP",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-09-16T13:49:06Z",
+            "topics": []
+        },
+        {
+            "name": "Robustez-Predicao-Genomica-n-p",
+            "html_url": "https://github.com/WevertonGomesCosta/Robustez-Predicao-Genomica-n-p",
+            "homepage": null,
+            "description": null,
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-09-10T17:04:39Z",
+            "topics": []
+        },
+        {
+            "name": "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
+            "html_url": "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
+            "homepage": "https://wevertongomescosta.github.io/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks/",
+            "description": "Reproducible genomic prediction study comparing L1/L2-regularized artificial neural networks with GBLUP-ADE under a frozen cross-validation design, using canonical simulated-data workflows, workflowr, and renv.",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-09-08T18:20:16Z",
+            "topics": [
+                "animal-breeding",
+                "artificial-neural-networks-ann",
+                "bioinformatics-pipeline",
+                "computational-biology-datasets",
+                "cross-validation",
+                "gblup",
+                "gebvs",
+                "genomic-prediction",
+                "genomic-selection",
+                "l1-regularization",
+                "l2-regularization",
+                "machine-learning-algorithms",
+                "overfitting-reduced",
+                "plant-breeding-data",
+                "quantitative-genetics",
+                "regularization-methods",
+                "reproducible-research",
+                "rstats",
+                "statistical-genetics",
+                "workflowr"
+            ]
+        },
+        {
+            "name": "genomic-prediction-data-augmentation",
+            "html_url": "https://github.com/WevertonGomesCosta/genomic-prediction-data-augmentation",
+            "homepage": "https://wevertongomescosta.github.io/genomic-prediction-data-augmentation/",
+            "description": "Workflow reprodutível para avaliar predição genômica com GBLUP, redução do conjunto de treinamento, testes de equivalência e aumento de dados com Mixup.",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-08-20T20:11:03Z",
+            "topics": []
+        },
+        {
+            "name": "payment-investment-allocation",
+            "html_url": "https://github.com/WevertonGomesCosta/payment-investment-allocation",
+            "homepage": "",
+            "description": "Lot-based cashflow and liquidity allocation engine for payments, investments, and intertemporal redemption analysis.",
+            "language": "Python",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-08-05T18:28:53Z",
+            "topics": [
+                "cashflow",
+                "data-analysis",
+                "decision-engine",
+                "finance",
+                "financial-modeling",
+                "liquidity",
+                "lot-based-accounting",
+                "optimization",
+                "pandas",
+                "portfolio",
+                "python",
+                "simulation"
+            ]
+        },
+        {
+            "name": "nonlinear-ge-interaction-shap",
+            "html_url": "https://github.com/WevertonGomesCosta/nonlinear-ge-interaction-shap",
+            "homepage": "https://wevertongomescosta.github.io/nonlinear-ge-interaction-shap/",
+            "description": "A reproducible workflowr tutorial for non-linear modeling of genotype-by-environment interaction using tree-based learning and Shapley decomposition.",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-08-03T17:45:20Z",
+            "topics": []
+        },
+        {
+            "name": "sorteador-pelada",
+            "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
+            "homepage": "https://sorteador-pelada.streamlit.app/",
+            "description": "Aplicação web em Streamlit para montar times de pelada de forma equilibrada, utilizando otimização baseada em notas e atributos dos jogadores.",
+            "language": "Python",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-07-15T18:52:11Z",
+            "topics": [
+                "google-sheets",
+                "optimization",
+                "pulp",
+                "python",
+                "sports-analytics",
+                "streamlit",
+                "streamlit-app",
+                "team-balancer",
+                "team-generator",
+                "web-app"
+            ]
+        },
+        {
+            "name": "Integrating-nir-genomic-kernel",
+            "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
+            "homepage": "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
+            "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-05-21T16:32:19Z",
+            "topics": [
+                "agriculture",
+                "data-fusion",
+                "genomic-selection",
+                "genomics",
+                "kernel-methods",
+                "kernel-ridge-regression",
+                "machine-learning",
+                "nir-spectroscopy",
+                "non-linear-models",
+                "phenomics",
+                "plant-breeding",
+                "predictive-modeling",
+                "python",
+                "r",
+                "reproducible-research",
+                "rstats",
+                "snps",
+                "spectroscopy"
+            ]
+        },
+        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -8,7 +160,7 @@
             "language": "HTML",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-02-20T15:48:07Z",
+            "updated_at": "2026-02-20T15:49:11Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -31,17 +183,6 @@
                 "neural-network",
                 "splines"
             ]
-        },
-        {
-            "name": "sorteador-pelada",
-            "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
-            "homepage": null,
-            "description": "Sorteador de times para pelada",
-            "language": "Python",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2026-01-08T19:03:09Z",
-            "topics": []
         },
         {
             "name": "shiny-plant-disease",
@@ -100,44 +241,14 @@
             ]
         },
         {
-            "name": "Integrating-nir-genomic-kernel",
-            "html_url": "https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel",
-            "homepage": "https://wevertongomescosta.github.io/Integrating-nir-genomic-kernel/",
-            "description": "Demonstrar que a fusão de dados espectrais e genômicos pode aumentar significativamente a acurácia da predição fenotípica, contribuindo para decisões mais eficientes em programas de seleção",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-11-04T18:51:41Z",
-            "topics": [
-                "agriculture",
-                "data-fusion",
-                "genomic-selection",
-                "genomics",
-                "kernel-methods",
-                "kernel-ridge-regression",
-                "machine-learning",
-                "nir-spectroscopy",
-                "non-linear-models",
-                "phenomics",
-                "plant-breeding",
-                "predictive-modeling",
-                "python",
-                "r",
-                "reproducible-research",
-                "rstats",
-                "snps",
-                "spectroscopy"
-            ]
-        },
-        {
             "name": "Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
             "html_url": "https://github.com/WevertonGomesCosta/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava",
             "homepage": "https://wevertongomescosta.github.io/Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava/",
             "description": "This website is a project for analysis of the Genomic Selection for Drought Tolerance Using Genome Wide GBS and/or DART in Cassava by EMBRAPA Mandioca.",
             "language": "R",
-            "stargazers_count": 3,
+            "stargazers_count": 4,
             "forks_count": 0,
-            "updated_at": "2026-02-10T01:40:05Z",
+            "updated_at": "2026-02-26T09:13:35Z",
             "topics": [
                 "cassava",
                 "eda",
@@ -155,9 +266,9 @@
             "homepage": "https://wevertongomescosta.github.io/analisys-next-gen-2022/",
             "description": "Repositório com código e relatórios reprodutíveis do programa de melhoramento de mandioca da Embrapa no âmbito do NextGen Cassava (Year 6 – 2022/2023). Inclui análises de ensaios de campo, caracterização fenotípica, estimação de BLUPs, índices de seleção e integração de características de rendimento, qualidade e tolerância à seca.",
             "language": "R",
-            "stargazers_count": 0,
+            "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2025-10-04T19:25:12Z",
+            "updated_at": "2026-06-08T03:01:20Z",
             "topics": [
                 "blups",
                 "cassava-breeding",
@@ -218,9 +329,9 @@
             "homepage": "",
             "description": "Projeto de visão computacional que utiliza Mask R-CNN com Keras e TensorFlow para segmentar bovinos em imagens, extrair medidas morfométricas (área, perímetro, comprimento e largura) e estimar o peso de forma automatizada e não invasiva.",
             "language": "Python",
-            "stargazers_count": 1,
-            "forks_count": 1,
-            "updated_at": "2025-10-03T16:51:09Z",
+            "stargazers_count": 2,
+            "forks_count": 2,
+            "updated_at": "2026-09-07T11:20:52Z",
             "topics": [
                 "agritech",
                 "animal-monitoring",
@@ -303,32 +414,6 @@
             ]
         },
         {
-            "name": "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
-            "html_url": "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
-            "homepage": "",
-            "description": "O objetivo do presente projeto é propor e avaliar o uso da regularização no desempenho de RNAs em modelos de predição genômica (GP). Tal estudo visa melhorar a predição de valores genéticos genômicos (GEBV), evitando o chamado o problema de ‘overfitting’, e estimação de parâmetros genéticos. Para isso, dados simulados e reais serão utilizados. ",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2025-10-23T18:24:22Z",
-            "topics": [
-                "animal-breeding",
-                "artificial-neural-networks",
-                "bioinformatics",
-                "computational-biology",
-                "deep-learning",
-                "gebv",
-                "genomic-prediction",
-                "genomic-selection",
-                "machine-learning",
-                "neural-networks",
-                "overfitting",
-                "plant-breeding",
-                "quantitative-genetics",
-                "regularization"
-            ]
-        },
-        {
             "name": "Manipulacao-dados-e-Analise-Grafica-R",
             "html_url": "https://github.com/WevertonGomesCosta/Manipulacao-dados-e-Analise-Grafica-R",
             "homepage": "https://wevertongomescosta.github.io/Manipulacao-dados-e-Analise-Grafica-R/",
@@ -362,9 +447,9 @@
             "homepage": "https://wevertongomescosta.github.io/Pig-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow/",
             "description": "Google Colab notebook using Mask R-CNN (Keras/TensorFlow) for pig instance segmentation to estimate measurements (area, length) and predict weight. 🐷",
             "language": "Python",
-            "stargazers_count": 0,
-            "forks_count": 3,
-            "updated_at": "2025-10-23T18:15:22Z",
+            "stargazers_count": 3,
+            "forks_count": 4,
+            "updated_at": "2026-05-18T03:44:21Z",
             "topics": [
                 "agriculture",
                 "animal-science",
@@ -444,19 +529,19 @@
             "topics": []
         }
     ],
-    "lastUpdated": "20/02/2026 12:48",
+    "lastUpdated": "22/09/2026 09:40",
     "academicData": {
         "google_scholar": {
             "profile": {
                 "source": "Google Scholar",
                 "source_name": "Google Scholar",
-                "total_publications": 32,
+                "total_publications": 35,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 167,
-                                "since_2021": 158
+                                "all": 195,
+                                "since_2021": 186
                             }
                         },
                         {
@@ -490,12 +575,12 @@
                         },
                         {
                             "year": 2020,
-                            "citations": 7,
+                            "citations": 6,
                             "publications": 2
                         },
                         {
                             "year": 2021,
-                            "citations": 19,
+                            "citations": 20,
                             "publications": 6
                         },
                         {
@@ -505,23 +590,23 @@
                         },
                         {
                             "year": 2023,
-                            "citations": 27,
+                            "citations": 25,
                             "publications": 3
                         },
                         {
                             "year": 2024,
-                            "citations": 35,
-                            "publications": 7
+                            "citations": 38,
+                            "publications": 8
                         },
                         {
                             "year": 2025,
-                            "citations": 50,
+                            "citations": 49,
                             "publications": 3
                         },
                         {
                             "year": 2026,
-                            "citations": 9,
-                            "publications": 1
+                            "citations": 36,
+                            "publications": 2
                         }
                     ]
                 }
@@ -533,7 +618,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                     "journalTitle": "Euphytica 215 (10), 178, 2019",
                     "cited_by": {
-                        "value": 37
+                        "value": 34
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -543,9 +628,21 @@
                     "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
                     "year": "2022",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:UebtZRa9Y70C",
-                    "journalTitle": "Computational and Structural Biotechnology Journal 20, 5490-5499, 2022",
+                    "journalTitle": "N/A",
                     "cited_by": {
-                        "value": 18
+                        "value": 22
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "year": "2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
+                    "journalTitle": "Livestock Science 282, 105433, 2024",
+                    "cited_by": {
+                        "value": 21
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -557,7 +654,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qjMakFHDy7sC",
                     "journalTitle": "Crop Science 61 (3), 1890-1902, 2021",
                     "cited_by": {
-                        "value": 16
+                        "value": 18
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -569,7 +666,19 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:zYLM7Y9cAGgC",
                     "journalTitle": "PLoS One 16 (1), e0245298, 2021",
                     "cited_by": {
-                        "value": 13
+                        "value": 12
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Methods of adaptability and stability applied to the improvement of flooded rice.",
+                    "year": "2020",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C",
+                    "journalTitle": "N/A",
+                    "cited_by": {
+                        "value": 12
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -588,24 +697,12 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
                     "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
-                    "journalTitle": "Livestock Science 282, 105433, 2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
                     "cited_by": {
-                        "value": 10
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Methods of adaptability and stability applied to the improvement of flooded rice.",
-                    "year": "2020",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:d1gkVwhDpl0C",
-                    "journalTitle": "N/A",
-                    "cited_by": {
-                        "value": 10
+                        "value": 9
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -624,24 +721,24 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self‐organizing maps",
+                    "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
                     "year": "2022",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
-                    "journalTitle": "Crop Science 62 (6), 2233-2245, 2022",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:_FxGoFyzp5QC",
+                    "journalTitle": "Euphytica 218 (9), 124, 2022",
                     "cited_by": {
-                        "value": 6
+                        "value": 8
                     },
                     "source": "Google Scholar",
                     "doi": null,
                     "doiLink": null
                 },
                 {
-                    "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
+                    "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self‐organizing maps",
                     "year": "2022",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:_FxGoFyzp5QC",
-                    "journalTitle": "Euphytica 218 (9), 124, 2022",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:roLk4NBRz8UC",
+                    "journalTitle": "Crop Science 62 (6), 2233-2245, 2022",
                     "cited_by": {
-                        "value": 6
+                        "value": 7
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -653,31 +750,19 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:5nxA0vEk-isC",
                     "journalTitle": "Agronomy Science and Biotechnology 9, 1-24, 2023",
                     "cited_by": {
-                        "value": 5
+                        "value": 6
                     },
                     "source": "Google Scholar",
                     "doi": null,
                     "doiLink": null
                 },
                 {
-                    "title": "Application of fuzzy logic for adaptability and stability studies in flood‐irrigated rice (Oryza sativa)",
+                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
                     "year": "2021",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YsMSGLbcyi4C",
                     "journalTitle": "Plant Breeding 140 (6), 1002-1010, 2021",
                     "cited_by": {
                         "value": 5
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
-                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
-                    "cited_by": {
-                        "value": 4
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -696,10 +781,22 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Potential of dry matter yield from alfalfa germplasm in composing base populations",
-                    "year": "2021",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:W7OEmFMy1HYC",
-                    "journalTitle": "Crop Breeding and Applied Biotechnology 21 (3), 2021",
+                    "title": "Performance of a breeding program for irrigated rice in Southeast Brazil.",
+                    "year": "2019",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC",
+                    "journalTitle": "Gene Conserve 18 (72), 1, 2019",
+                    "cited_by": {
+                        "value": 4
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "year": "2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
+                    "journalTitle": "Agronomy 14 (10), 2234, 2024",
                     "cited_by": {
                         "value": 3
                     },
@@ -708,10 +805,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Performance of a breeding program for irrigated rice in Southeast Brazil.",
-                    "year": "2019",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:u-x6o8ySG0sC",
-                    "journalTitle": "Gene Conserve 18 (72), 2019",
+                    "title": "Potential of dry matter yield from alfalfa germplasm in composing base populations",
+                    "year": "2021",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:W7OEmFMy1HYC",
+                    "journalTitle": "Crop Breeding and Applied Biotechnology 21 (3), 2021",
                     "cited_by": {
                         "value": 3
                     },
@@ -732,10 +829,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "title": "Comparison of supervised machine learning and variable selection methods for body weight prediction of growth pigs using image processing data",
                     "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:4TOpqqG69KYC",
-                    "journalTitle": "Agronomy 14 (10), 2234, 2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qxL8FJ1GzNcC",
+                    "journalTitle": "Revista Brasileira de Zootecnia 53, e20240001, 2024",
                     "cited_by": {
                         "value": 2
                     },
@@ -756,10 +853,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Comparison of supervised machine learning and variable selection methods for body weight prediction of growth pigs using image processing data",
+                    "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
                     "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qxL8FJ1GzNcC",
-                    "journalTitle": "Revista Brasileira de Zootecnia 53, e20240001, 2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YOwf2qJgpHMC",
+                    "journalTitle": "Scientia Agricola 81, e20220233, 2024",
                     "cited_by": {
                         "value": 1
                     },
@@ -784,6 +881,18 @@
                     "year": "2026",
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:ZeXyd9-uunAC",
                     "journalTitle": "International Journal of Plant Biology 17 (1), 6, 2026",
+                    "cited_by": {
+                        "value": null
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Trait prediction through computational intelligence and machine learning applied to soybean breeding in shaded environments",
+                    "year": "2026",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:qUcmZB5y_30C",
+                    "journalTitle": "Agronomy Science and Biotechnology 12, 1-16, 2026",
                     "cited_by": {
                         "value": null
                     },
@@ -828,10 +937,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
+                    "title": "Trait prediction through computational intelligence and machine learning applied to soybean (Glycine max) breeding in shaded environments",
                     "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YOwf2qJgpHMC",
-                    "journalTitle": "Scientia Agricola 81, e20220233, 2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Zph67rFs4hoC",
+                    "journalTitle": "bioRxiv, 2024.01. 31.578252, 2024",
                     "cited_by": {
                         "value": null
                     },
@@ -840,10 +949,10 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Trait prediction through computational intelligence and machine learning applied to soybean (Glycine max) breeding in shaded environments",
+                    "title": "Bayesian inference applied to soybean grown under different shading levels",
                     "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Zph67rFs4hoC",
-                    "journalTitle": "bioRxiv, 2024.01. 31.578252, 2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:mB3voiENLucC",
+                    "journalTitle": "Sci. Agric 81, e20220233, 2024",
                     "cited_by": {
                         "value": null
                     },
@@ -910,55 +1019,47 @@
                     "source": "Google Scholar",
                     "doi": null,
                     "doiLink": null
+                },
+                {
+                    "title": "ASSEMBLY AND FUNCTIONAL ANNOTATION OF GENOMES OF",
+                    "year": "",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:-f6ydRqryjwC",
+                    "journalTitle": "UFPA–UNIVERSIDADE FEDERAL DO PARÁ (RUA AUGUSTO CORRÊA, 1, CEP 66.075-110 …, 0",
+                    "cited_by": {
+                        "value": null
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
                 }
             ]
         },
         "scopus": {
             "source_name": "Scopus",
             "profile": {
-                "total_publications": 21,
+                "total_publications": 22,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 107,
-                                "since_2021": 105
+                                "all": 132,
+                                "since_2021": 130
                             }
                         },
                         {
                             "h_index": {
-                                "all": 6,
+                                "all": 7,
                                 "since_2021": 6
                             }
                         },
                         {
                             "i10_index": {
-                                "all": 4,
-                                "since_2021": 3
+                                "all": 5,
+                                "since_2021": 4
                             }
                         }
                     ],
                     "graph": [
-                        {
-                            "year": 2015,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2016,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2017,
-                            "citations": 0,
-                            "publications": 0
-                        },
-                        {
-                            "year": 2018,
-                            "citations": 0,
-                            "publications": 0
-                        },
                         {
                             "year": 2019,
                             "citations": 0,
@@ -996,8 +1097,8 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 2,
-                            "publications": 0
+                            "citations": 27,
+                            "publications": 1
                         }
                     ]
                 }
@@ -1016,28 +1117,40 @@
                     "scopus_id": "85073253514"
                 },
                 {
-                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
-                    "year": "2021",
-                    "journalTitle": "Crop Science",
-                    "doi": "10.1002/csc2.20488",
-                    "link": "https://doi.org/10.1002/csc2.20488",
-                    "cited_by": {
-                        "value": 13
-                    },
-                    "source": "Scopus",
-                    "scopus_id": "85104263465"
-                },
-                {
                     "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
                     "year": "2022",
                     "journalTitle": "Computational and Structural Biotechnology Journal",
                     "doi": "10.1016/j.csbj.2022.09.029",
                     "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
                     "cited_by": {
-                        "value": 12
+                        "value": 19
                     },
                     "source": "Scopus",
                     "scopus_id": "85139307465"
+                },
+                {
+                    "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
+                    "year": "2021",
+                    "journalTitle": "Crop Science",
+                    "doi": "10.1002/csc2.20488",
+                    "link": "https://doi.org/10.1002/csc2.20488",
+                    "cited_by": {
+                        "value": 14
+                    },
+                    "source": "Scopus",
+                    "scopus_id": "85104263465"
+                },
+                {
+                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "year": "2024",
+                    "journalTitle": "Livestock Science",
+                    "doi": "10.1016/j.livsci.2024.105433",
+                    "link": "https://doi.org/10.1016/j.livsci.2024.105433",
+                    "cited_by": {
+                        "value": 13
+                    },
+                    "source": "Scopus",
+                    "scopus_id": "85187690139"
                 },
                 {
                     "title": "Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",
@@ -1064,16 +1177,16 @@
                     "scopus_id": "85152360293"
                 },
                 {
-                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
                     "year": "2024",
-                    "journalTitle": "Livestock Science",
-                    "doi": "10.1016/j.livsci.2024.105433",
-                    "link": "https://doi.org/10.1016/j.livsci.2024.105433",
+                    "journalTitle": "Frontiers in Plant Science",
+                    "doi": "10.3389/fpls.2024.1483340",
+                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
                     "cited_by": {
                         "value": 7
                     },
                     "source": "Scopus",
-                    "scopus_id": "85187690139"
+                    "scopus_id": "85213532603"
                 },
                 {
                     "title": "Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",
@@ -1100,6 +1213,18 @@
                     "scopus_id": "85090047441"
                 },
                 {
+                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
+                    "year": "2021",
+                    "journalTitle": "Plant Breeding",
+                    "doi": "10.1111/pbr.12972",
+                    "link": "https://doi.org/10.1111/pbr.12972",
+                    "cited_by": {
+                        "value": 5
+                    },
+                    "source": "Scopus",
+                    "scopus_id": "85117372664"
+                },
+                {
                     "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
                     "year": "2022",
                     "journalTitle": "Euphytica",
@@ -1110,6 +1235,18 @@
                     },
                     "source": "Scopus",
                     "scopus_id": "85135566113"
+                },
+                {
+                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "year": "2024",
+                    "journalTitle": "Agronomy",
+                    "doi": "10.3390/agronomy14102234",
+                    "link": "https://doi.org/10.3390/agronomy14102234",
+                    "cited_by": {
+                        "value": 4
+                    },
+                    "source": "Scopus",
+                    "scopus_id": "85207560508"
                 },
                 {
                     "title": "Performance of a breeding program for irrigated rice in southeast Brazil",
@@ -1124,18 +1261,6 @@
                     "scopus_id": "85071667621"
                 },
                 {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "journalTitle": "Frontiers in Plant Science",
-                    "doi": "10.3389/fpls.2024.1483340",
-                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
-                    "cited_by": {
-                        "value": 3
-                    },
-                    "source": "Scopus",
-                    "scopus_id": "85213532603"
-                },
-                {
                     "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
                     "year": "2021",
                     "journalTitle": "Plant Breeding",
@@ -1146,18 +1271,6 @@
                     },
                     "source": "Scopus",
                     "scopus_id": "85117190747"
-                },
-                {
-                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
-                    "year": "2021",
-                    "journalTitle": "Plant Breeding",
-                    "doi": "10.1111/pbr.12972",
-                    "link": "https://doi.org/10.1111/pbr.12972",
-                    "cited_by": {
-                        "value": 2
-                    },
-                    "source": "Scopus",
-                    "scopus_id": "85117372664"
                 },
                 {
                     "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: A time meta-analysis",
@@ -1184,18 +1297,6 @@
                     "scopus_id": "85208483551"
                 },
                 {
-                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
-                    "year": "2024",
-                    "journalTitle": "Agronomy",
-                    "doi": "10.3390/agronomy14102234",
-                    "link": "https://doi.org/10.3390/agronomy14102234",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Scopus",
-                    "scopus_id": "85207560508"
-                },
-                {
                     "title": "Potential of dry matter yield from alfalfa germplasm in composing base population",
                     "year": "2021",
                     "journalTitle": "Crop Breeding and Applied Biotechnology",
@@ -1206,6 +1307,18 @@
                     },
                     "source": "Scopus",
                     "scopus_id": "85122793528"
+                },
+                {
+                    "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
+                    "year": "2024",
+                    "journalTitle": "Scientia Agricola",
+                    "doi": "10.1590/1678-992X-2022-0233",
+                    "link": "https://doi.org/10.1590/1678-992X-2022-0233",
+                    "cited_by": {
+                        "value": 1
+                    },
+                    "source": "Scopus",
+                    "scopus_id": "85188537023"
                 },
                 {
                     "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
@@ -1220,16 +1333,16 @@
                     "scopus_id": "85138658502"
                 },
                 {
-                    "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
-                    "year": "2024",
-                    "journalTitle": "Scientia Agricola",
-                    "doi": "10.1590/1678-992X-2022-0233",
-                    "link": "https://doi.org/10.1590/1678-992X-2022-0233",
+                    "title": "Comparison of Machine Learning Methods for Marker Identification in GWAS",
+                    "year": "2026",
+                    "journalTitle": "International Journal of Plant Biology",
+                    "doi": "10.3390/ijpb17010006",
+                    "link": "https://doi.org/10.3390/ijpb17010006",
                     "cited_by": {
                         "value": 0
                     },
                     "source": "Scopus",
-                    "scopus_id": "85188537023"
+                    "scopus_id": "105029115097"
                 },
                 {
                     "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex Maiden and E. urophylla T. Blake",
@@ -1265,8 +1378,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 92,
-                                "since_2021": 90
+                                "all": 111,
+                                "since_2021": 109
                             }
                         },
                         {
@@ -1277,8 +1390,8 @@
                         },
                         {
                             "i10_index": {
-                                "all": 3,
-                                "since_2021": 3
+                                "all": 4,
+                                "since_2021": 4
                             }
                         }
                     ],
@@ -1320,7 +1433,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 3,
+                            "citations": 22,
                             "publications": 0
                         }
                     ]
@@ -1343,7 +1456,17 @@
                     "doi": "10.1016/j.csbj.2022.09.029",
                     "link": "https://doi.org/10.1016/j.csbj.2022.09.029",
                     "cited_by": {
-                        "value": 11
+                        "value": 15
+                    },
+                    "source": "Web of Science"
+                },
+                {
+                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "year": "2024",
+                    "doi": "10.1016/j.livsci.2024.105433",
+                    "link": "https://doi.org/10.1016/j.livsci.2024.105433",
+                    "cited_by": {
+                        "value": 13
                     },
                     "source": "Web of Science"
                 },
@@ -1368,10 +1491,10 @@
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
                     "year": "2024",
-                    "doi": "10.1016/j.livsci.2024.105433",
-                    "link": "https://doi.org/10.1016/j.livsci.2024.105433",
+                    "doi": "10.3389/fpls.2024.1483340",
+                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
                     "cited_by": {
                         "value": 7
                     },
@@ -1398,6 +1521,26 @@
                     "source": "Web of Science"
                 },
                 {
+                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
+                    "year": "2021",
+                    "doi": "10.1111/pbr.12972",
+                    "link": "https://doi.org/10.1111/pbr.12972",
+                    "cited_by": {
+                        "value": 5
+                    },
+                    "source": "Web of Science"
+                },
+                {
+                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+                    "year": "2021",
+                    "doi": "10.1111/pbr.12973",
+                    "link": "https://doi.org/10.1111/pbr.12973",
+                    "cited_by": {
+                        "value": 5
+                    },
+                    "source": "Web of Science"
+                },
+                {
                     "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
                     "year": "2020",
                     "doi": "10.4238/gmr18434",
@@ -1418,42 +1561,32 @@
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
-                    "year": "2021",
-                    "doi": "10.1111/pbr.12973",
-                    "link": "https://doi.org/10.1111/pbr.12973",
-                    "cited_by": {
-                        "value": 4
-                    },
-                    "source": "Web of Science"
-                },
-                {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "doi": "10.3389/fpls.2024.1483340",
-                    "link": "https://doi.org/10.3389/fpls.2024.1483340",
-                    "cited_by": {
-                        "value": 3
-                    },
-                    "source": "Web of Science"
-                },
-                {
-                    "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
-                    "year": "2021",
-                    "doi": "10.1111/pbr.12972",
-                    "link": "https://doi.org/10.1111/pbr.12972",
-                    "cited_by": {
-                        "value": 3
-                    },
-                    "source": "Web of Science"
-                },
-                {
                     "title": "Performance of a breeding program for irrigated rice in Southeast Brazil",
                     "year": "2019",
                     "doi": "10.4238/gmr18332",
                     "link": "https://doi.org/10.4238/gmr18332",
                     "cited_by": {
                         "value": 3
+                    },
+                    "source": "Web of Science"
+                },
+                {
+                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+                    "year": "2024",
+                    "doi": "10.3390/agronomy14102234",
+                    "link": "https://doi.org/10.3390/agronomy14102234",
+                    "cited_by": {
+                        "value": 2
+                    },
+                    "source": "Web of Science"
+                },
+                {
+                    "title": "Comparison of supervised machine learning and variable selection methods for body weight prediction of growth pigs using image processing data",
+                    "year": "2024",
+                    "doi": "10.37496/rbz5320240001",
+                    "link": "https://doi.org/10.37496/rbz5320240001",
+                    "cited_by": {
+                        "value": 2
                     },
                     "source": "Web of Science"
                 },
@@ -1474,26 +1607,6 @@
                     "link": "https://doi.org/10.1590/1984-70332020v20n4a55",
                     "cited_by": {
                         "value": 2
-                    },
-                    "source": "Web of Science"
-                },
-                {
-                    "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
-                    "year": "2024",
-                    "doi": "10.3390/agronomy14102234",
-                    "link": "https://doi.org/10.3390/agronomy14102234",
-                    "cited_by": {
-                        "value": 1
-                    },
-                    "source": "Web of Science"
-                },
-                {
-                    "title": "Comparison of supervised machine learning and variable selection methods for body weight prediction of growth pigs using image processing data",
-                    "year": "2024",
-                    "doi": "10.37496/rbz5320240001",
-                    "link": "https://doi.org/10.37496/rbz5320240001",
-                    "cited_by": {
-                        "value": 1
                     },
                     "source": "Web of Science"
                 },
