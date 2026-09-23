@@ -718,9 +718,13 @@ const scholarScript = (function() {
         platformOrder.forEach(p => renderPlatform(p, false));
         renderPublications();
         // Se já viu a seção, reanima apenas o gráfico atual ao trocar idioma (opcional, aqui deixei false para não distrair)
-        if (hasViewedSection) {
-             // Ajuste de resize
-             setTimeout(() => { platformOrder.forEach(p => { try { Plotly.Plots.resize(document.getElementById(`${p}-chart`)); } catch(e){} }); }, 300);
+        if (hasViewedSection && window.Plotly?.Plots?.resize) {
+            setTimeout(() => {
+                platformOrder.forEach(p => {
+                    const chartDiv = document.getElementById(`${p}-chart`);
+                    if (chartDiv) window.Plotly.Plots.resize(chartDiv);
+                });
+            }, 300);
         }
     }
 
@@ -1269,14 +1273,10 @@ const scholarScript = (function() {
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                platformOrder.forEach(p => { 
-                    try { 
-                        // Força o Plotly a recalcular o tamanho do container pai
-                        const chartDiv = document.getElementById(`${p}-chart`);
-                        if(chartDiv) Plotly.Plots.resize(chartDiv);
-                        // Opcional: Re-renderizar completo se mudar drasticamente de Mobile <-> Desktop
-                        // renderPlatform(p, false); 
-                    } catch(e){} 
+                if (!window.Plotly?.Plots?.resize) return;
+                platformOrder.forEach(p => {
+                    const chartDiv = document.getElementById(`${p}-chart`);
+                    if (chartDiv) window.Plotly.Plots.resize(chartDiv);
                 });
             }, 200);
         });
@@ -1983,42 +1983,54 @@ const LanguageManager = {
 
     /**
      * Ponto de entrada do módulo.
-     * Carrega translations.json e fallback-data.json, depois inicializa o resto.
+     * Traduções são globais; dados de fallback só são carregados em páginas que os consomem.
      */
     init() {
-        console.log("LanguageManager.init: Iniciando carregamento de JSONs...");
+        console.log("LanguageManager.init: Iniciando carregamento de dados da página...");
 
         // Expõe o listener do emitter imediatamente
         window.AppEvents = { on: this.emitter.on.bind(this.emitter) };
 
-        // --- ALTERAÇÃO: Carrega ambos os JSONs ---
-        Promise.all([
-            fetch('translations.json').then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
-                return response.json();
-            }),
-            fetch('fallback-data.json').then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar fallback-data.json`);
-                return response.json();
-            })
-        ])
+        const needsFallbackData = !!(
+            document.getElementById('projects-list') ||
+            document.getElementById('publicacoes-grid') ||
+            document.querySelector('[data-cv-type]') ||
+            document.querySelector('[id$="-chart"]')
+        );
+
+        const translationsRequest = fetch('translations.json').then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
+            return response.json();
+        });
+
+        const fallbackRequest = needsFallbackData
+            ? fetch('fallback-data.json')
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar fallback-data.json`);
+                    return response.json();
+                })
+                .catch(error => {
+                    console.warn("fallback-data.json indisponível; módulos dependentes continuarão em modo degradado.", error);
+                    return null;
+                })
+            : Promise.resolve(null);
+
+        Promise.all([translationsRequest, fallbackRequest])
         .then(([translationsData, fallbackData]) => {
-            console.log("LanguageManager.init: JSONs carregados com sucesso.");
-            window.translations = translationsData; // Armazena traduções globalmente
-            window.fallbackData = fallbackData;     // Armazena fallback data globalmente
+            console.log(`LanguageManager.init: traduções carregadas; fallback ${needsFallbackData ? (fallbackData ? 'carregado' : 'indisponível') : 'não necessário'}.`);
+            window.translations = translationsData;
+            window.fallbackData = fallbackData;
 
             // 1. Define o idioma inicial (dispara evento 'languageChanged')
             this.setLanguage(this.currentLang);
 
-            // 2. Inicializa os componentes da página AGORA que os dados estão prontos
+            // 2. Inicializa apenas os componentes pertinentes à página atual
             initializePageComponents();
-
         })
         .catch(error => {
-            console.error("FALHA CRÍTICA AO CARREGAR ARQUIVOS JSON:", error);
-            document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar dados essenciais (traduções ou fallback). Verifique o console.</div>';
+            console.error("FALHA CRÍTICA AO CARREGAR translations.json:", error);
+            document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar as traduções essenciais. Verifique o console.</div>';
         });
-        // --- FIM ALTERAÇÃO ---
     },
     
     subtitleState: {
@@ -2356,18 +2368,26 @@ const App = {
 // --- ALTERAÇÃO: Simplificada, chamada após carregamento dos JSONs ---
 // =================================================================================
 function initializePageComponents() {
-    console.log("initializePageComponents: Iniciando módulos..."); // Log para depuração
-    // Não precisa mais verificar window.fallbackData aqui
+    console.log("initializePageComponents: Iniciando módulos pertinentes à página...");
     ParticleBackground.init();
     MobileNavHandler.init();
-    PageSetup.init(); // PageSetup agora reage ao evento 'languageChanged' para a primeira atualização
+    PageSetup.init();
     ClipboardCopier.init();
     ContactForm.init();
-    CvPdfGenerator.init();
-    scholarScript.init();
-    App.init(); // App gerencia UI geral, observers, etc.
+    App.init();
 
-    // Inicializa GithubReposModule SE o elemento existir
+    if (document.querySelector('[data-cv-type]')) {
+        CvPdfGenerator.init();
+    }
+
+    const hasAcademicUi = !!(
+        document.getElementById('publicacoes-grid') ||
+        document.querySelector('[id$="-chart"]')
+    );
+    if (hasAcademicUi) {
+        scholarScript.init();
+    }
+
     if (document.getElementById('projects-list')) {
         GithubReposModule.init({
             listSelector: '#projects-list',
@@ -2381,7 +2401,7 @@ function initializePageComponents() {
             incrementCount: 3
         });
     }
-    console.log("initializePageComponents: Módulos inicializados."); // Log para depuração
+    console.log("initializePageComponents: Módulos inicializados.");
 }
 
 // =================================================================================
