@@ -1043,6 +1043,64 @@ body:not(#index-page) nav.scrolled .nav-title {
     transform: translateY(-2px);
 }
 
+/* Filtros canônicos de publicações */
+.publication-category-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 18px;
+}
+
+.publication-filter-btn {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+}
+
+.publication-filter-btn:hover {
+    border-color: var(--primary);
+    color: var(--text);
+    transform: translateY(-1px);
+}
+
+.publication-filter-btn.active,
+.publication-filter-btn[aria-pressed="true"] {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #042017;
+}
+
+.publication-type-badge {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.publication-authors {
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.publication-extra-meta {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
 /* Container da Lista de Projetos */
 .projects {
     display: flex;
