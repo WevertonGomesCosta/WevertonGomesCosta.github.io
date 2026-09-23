@@ -2200,9 +2200,7 @@ const App = {
         header: null,
         body: null,
         backToTopButton: null,
-        timeline: null,
-        copyEmailLink: null,
-        toast: null
+        timeline: null
     },
 
     init() {
@@ -2217,8 +2215,6 @@ const App = {
         this.UI.body = document.body;
         this.UI.backToTopButton = document.querySelector('.back-to-top');
         this.UI.timeline = document.querySelector('.timeline');
-        this.UI.copyEmailLink = document.getElementById('copy-email-link');
-        this.UI.toast = document.getElementById('toast-notification');
     },
 
     _initSetup() {
@@ -2295,9 +2291,6 @@ const App = {
         if (this.UI.timeline) {
             this.UI.timeline.addEventListener('click', this._handleTimelineToggle.bind(this));
         }
-        if (this.UI.copyEmailLink) {
-            this.UI.copyEmailLink.addEventListener('click', this._handleEmailCopy.bind(this));
-        }
     },
 
     // --- Manipuladores de Eventos (Handlers) ---
@@ -2345,27 +2338,7 @@ const App = {
         if (item.classList.contains('expanded') && details.dataset.key) {
             details.innerHTML = translations[lang][details.dataset.key] || '';
         }
-    },
-
-    _handleEmailCopy(event) {
-        event.preventDefault();
-        const emailToCopy = 'wevertonufv@gmail.com';
-        navigator.clipboard.writeText(emailToCopy)
-            .then(() => this.showToast(`Email: ${emailToCopy} copiado!`))
-            .catch(err => {
-                console.error('Falha ao copiar email: ', err);
-                this.showToast('Falha ao copiar o email.');
-            });
-    },
-
-    // --- Funções Utilitárias ---
-    showToast(message) {
-        if (this.UI.toast) {
-            this.UI.toast.textContent = message;
-            this.UI.toast.classList.add('show');
-            setTimeout(() => this.UI.toast.classList.remove('show'), 3000);
-        }
-    },
+    }
 };
 
 // =================================================================================
