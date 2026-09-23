@@ -718,9 +718,13 @@ const scholarScript = (function() {
         platformOrder.forEach(p => renderPlatform(p, false));
         renderPublications();
         // Se já viu a seção, reanima apenas o gráfico atual ao trocar idioma (opcional, aqui deixei false para não distrair)
-        if (hasViewedSection) {
-             // Ajuste de resize
-             setTimeout(() => { platformOrder.forEach(p => { try { Plotly.Plots.resize(document.getElementById(`${p}-chart`)); } catch(e){} }); }, 300);
+        if (hasViewedSection && window.Plotly?.Plots?.resize) {
+            setTimeout(() => {
+                platformOrder.forEach(p => {
+                    const chartDiv = document.getElementById(`${p}-chart`);
+                    if (chartDiv) window.Plotly.Plots.resize(chartDiv);
+                });
+            }, 300);
         }
     }
 
@@ -1269,14 +1273,10 @@ const scholarScript = (function() {
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                platformOrder.forEach(p => { 
-                    try { 
-                        // Força o Plotly a recalcular o tamanho do container pai
-                        const chartDiv = document.getElementById(`${p}-chart`);
-                        if(chartDiv) Plotly.Plots.resize(chartDiv);
-                        // Opcional: Re-renderizar completo se mudar drasticamente de Mobile <-> Desktop
-                        // renderPlatform(p, false); 
-                    } catch(e){} 
+                if (!window.Plotly?.Plots?.resize) return;
+                platformOrder.forEach(p => {
+                    const chartDiv = document.getElementById(`${p}-chart`);
+                    if (chartDiv) window.Plotly.Plots.resize(chartDiv);
                 });
             }, 200);
         });
