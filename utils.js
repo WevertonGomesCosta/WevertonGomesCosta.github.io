@@ -511,19 +511,76 @@ const scholarScript = (function() {
         } catch (e) { window.translations = { pt: {}, en: {} }; }
     }
 
+    async function ensureAcademicRegistryLoaded() {
+        if (window.academicRegistry?.works) return;
+        try {
+            const response = await fetch('academic-registry.json');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            window.academicRegistry = await response.json();
+        } catch (e) {
+            console.warn('Academic registry unavailable; falling back to bibliometric source data.', e);
+            window.academicRegistry = null;
+        }
+    }
+
     // --- HELPERS ---
-    const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
+    const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
+
+    const normalizeIdentityTitle = (str) => str
+        ? str.normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[‐‑‒–—−]/g, '-')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+        : '';
+
+    const scholarCitationCount = (work, scholarArticles = []) => {
+        const target = normalizeIdentityTitle(work?.title || '');
+        if (!target) return 0;
+
+        let match = scholarArticles.find(article =>
+            normalizeIdentityTitle(article?.title || '') === target
+        );
+
+        if (!match) {
+            match = scholarArticles.find(article => {
+                const rawTitle = article?.title || '';
+                if (!/[.…]$/.test(rawTitle.trim())) return false;
+                const candidate = normalizeIdentityTitle(rawTitle.replace(/[.…]+$/, ''));
+                return candidate.length >= 60 && target.startsWith(candidate);
+            });
+        }
+
+        const value = match?.cited_by?.value ?? match?.cited_by ?? 0;
+        return parseInt(value, 10) || 0;
+    };
     
-    const normalizeArticle = (rawArt) => {
+    const normalizeArticle = (rawArt, scholarArticles = []) => {
+        const isCanonical = !!(rawArt?.id && rawArt?.type && rawArt?.status);
         let cites = 0;
-        if (rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
+
+        if (isCanonical) cites = scholarCitationCount(rawArt, scholarArticles);
+        else if (rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
         else cites = parseInt(rawArt.cited_by) || 0;
-        let year = (rawArt.year || rawArt.ano || '0000').toString().replace(/\D/g, '').substring(0, 4);
+
+        const year = (rawArt.year || rawArt.ano || '0000').toString().replace(/\D/g, '').substring(0, 4);
+        const doi = rawArt.doi || '';
+        const doiLink = rawArt.doiLink || (doi ? `https://doi.org/${doi}` : null);
+
         return {
-            title: rawArt.title || 'Sem título', year: year,
-            journalTitle: rawArt.journalTitle || rawArt.journal || '',
-            link: rawArt.link || rawArt.doiLink || '#', doi: rawArt.doi || '',
-            doiLink: rawArt.doiLink || (rawArt.doi ? `https://doi.org/${rawArt.doi}` : null),
+            id: rawArt.id || null,
+            type: rawArt.type || 'journal_article',
+            status: rawArt.status || 'published',
+            title: rawArt.title || 'Sem título',
+            authors: Array.isArray(rawArt.authors) ? rawArt.authors : [],
+            year,
+            journalTitle: rawArt.container_title || rawArt.journalTitle || rawArt.journal || '',
+            link: doiLink || rawArt.link || '#',
+            doi,
+            doiLink,
+            lattesPosition: rawArt.lattes?.position ?? null,
             cited_by: { value: cites }
         };
     };
@@ -903,8 +960,13 @@ const scholarScript = (function() {
 
         let bibContent = "";
         list.forEach((art) => {
-            const key = `${art.title.split(' ')[0].replace(/[^a-zA-Z]/g, '')}${art.year || '0000'}`;
-            bibContent += `@article{${key},\n  title = {${art.title}},\n${art.journalTitle ? `  journal = {${art.journalTitle}},\n` : ''}${art.year ? `  year = {${art.year}},\n` : ''}${art.doi ? `  doi = {${art.doi}},\n` : ''}${art.link ? `  url = {${art.link}},\n` : ''}}\n\n`;
+            const key = art.id
+                ? art.id.replace(/[^a-zA-Z0-9]+/g, '_')
+                : `${art.title.split(' ')[0].replace(/[^a-zA-Z]/g, '')}${art.year || '0000'}`;
+            const authorLine = art.authors?.length
+                ? `  author = {${art.authors.join(' and ')}},\n`
+                : '';
+            bibContent += `@article{${key},\n  title = {${art.title}},\n${authorLine}${art.journalTitle ? `  journal = {${art.journalTitle}},\n` : ''}${art.year ? `  year = {${art.year}},\n` : ''}${art.doi ? `  doi = {${art.doi}},\n` : ''}${art.link ? `  url = {${art.link}},\n` : ''}}\n\n`;
         });
 
         const blob = new Blob([bibContent], { type: 'text/plain' });
@@ -925,7 +987,10 @@ const scholarScript = (function() {
 
     // --- INIT ---
     async function init() {
-        await ensureTranslationsLoaded();
+        await Promise.all([
+            ensureTranslationsLoaded(),
+            ensureAcademicRegistryLoaded()
+        ]);
         UI.track = document.querySelector('.carousel-track');
         UI.slides = Array.from(document.querySelectorAll('.carousel-slide'));
         UI.nextBtn = document.querySelector('.next-btn');
@@ -946,10 +1011,27 @@ const scholarScript = (function() {
         dashboardData.max = processPlatformData('max', 'maximized');
 
         const fb = window.fallbackData;
-        if (fb) {
-            const acad = fb.academicData || fb;
-            let raw = acad.maximized?.articles || acad.google_scholar?.articles || [];
-            allArticles = raw.map(normalizeArticle).sort((a,b) => b.cited_by.value - a.cited_by.value);
+        const acad = fb ? (fb.academicData || fb) : {};
+        const scholarArticles = acad.google_scholar?.articles || [];
+        const registryWorks = window.academicRegistry?.works;
+
+        if (Array.isArray(registryWorks)) {
+            const canonicalPublishedArticles = registryWorks.filter(work =>
+                work.type === 'journal_article' && work.status === 'published'
+            );
+
+            allArticles = canonicalPublishedArticles
+                .map(work => normalizeArticle(work, scholarArticles))
+                .sort((a, b) => {
+                    const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
+                    const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
+                    return posA - posB;
+                });
+        } else {
+            const raw = acad.maximized?.articles || scholarArticles;
+            allArticles = raw
+                .map(article => normalizeArticle(article))
+                .sort((a, b) => b.cited_by.value - a.cited_by.value);
         }
 
         const isPubsPage = window.location.pathname.includes('publicacoes');
@@ -997,7 +1079,10 @@ const scholarScript = (function() {
             }, 200);
         });
     }
-    return { init };
+    return {
+        init,
+        allArticles: () => [...allArticles]
+    };
 })();
 
 // =================================================================================
