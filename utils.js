@@ -1158,6 +1158,7 @@ const scholarScript = (function() {
         UI.pubsGrid = document.getElementById("publicacoes-grid");
         UI.pubSearchInput = document.getElementById('publication-search');
         UI.pubClearBtn = document.getElementById('publication-clear-btn');
+        UI.pubTypeButtons = Array.from(document.querySelectorAll('[data-publication-filter]'));
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
         UI.exportBtn = document.getElementById('export-bibtex-btn');
@@ -1173,26 +1174,30 @@ const scholarScript = (function() {
         const registryWorks = window.academicRegistry?.works;
 
         if (Array.isArray(registryWorks)) {
-            const canonicalPublishedArticles = registryWorks.filter(work =>
-                work.type === 'journal_article' && work.status === 'published'
-            );
-
-            allArticles = canonicalPublishedArticles
+            allWorks = registryWorks
                 .map(work => normalizeArticle(work, scholarArticles))
                 .sort((a, b) => {
+                    const yearDiff = (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
+                    if (yearDiff !== 0) return yearDiff;
+
                     const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
                     const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
                     return posA - posB;
                 });
+
+            allArticles = allWorks.filter(work =>
+                work.type === 'journal_article' && work.status === 'published'
+            );
         } else {
             const raw = acad.maximized?.articles || scholarArticles;
             allArticles = raw
                 .map(article => normalizeArticle(article))
                 .sort((a, b) => b.cited_by.value - a.cited_by.value);
+            allWorks = [...allArticles];
         }
 
-        const isPubsPage = window.location.pathname.includes('publicacoes');
-        showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow;
+        isPublicationsPage = window.location.pathname.includes('publicacoes');
+        showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
         
         platformOrder.forEach(p => renderPlatform(p, false));
         renderPublications();
@@ -1212,8 +1217,31 @@ const scholarScript = (function() {
             hasViewedSection = true; updateAllTexts();
         }
 
-        if(UI.pubSearchInput) UI.pubSearchInput.addEventListener('input', () => { showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
-        if(UI.pubClearBtn) UI.pubClearBtn.addEventListener('click', () => { UI.pubSearchInput.value = ''; showingPubsCount = isPubsPage ? allArticles.length : initialPubsToShow; renderPublications(); });
+        if(UI.pubSearchInput) {
+            UI.pubSearchInput.addEventListener('input', () => {
+                showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
+                renderPublications();
+            });
+        }
+
+        if(UI.pubClearBtn) {
+            UI.pubClearBtn.addEventListener('click', () => {
+                UI.pubSearchInput.value = '';
+                showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
+                renderPublications();
+            });
+        }
+
+        UI.pubTypeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                activePublicationCategory = button.dataset.publicationFilter || 'articles';
+                activeYearFilter = null;
+                showingPubsCount = allWorks.length;
+                renderPublications();
+                updateFilterUI();
+            });
+        });
+
         if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.addEventListener('click', () => { showingPubsCount += pubsPerLoad; renderPublications(); });
         if(UI.exportBtn) UI.exportBtn.addEventListener('click', generateBibTeX);
         if (window.AppEvents) window.AppEvents.on('languageChanged', updateAllTexts);
