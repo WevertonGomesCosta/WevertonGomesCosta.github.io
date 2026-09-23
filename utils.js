@@ -939,52 +939,197 @@ const scholarScript = (function() {
     }
 
     // --- LISTA E EXPORTAÇÃO ---
+    const publicationCategoryMatches = (work, category) => {
+        if (category === 'chapters') return work.type === 'book_chapter' && work.status === 'published';
+        if (category === 'accepted') return work.type === 'journal_article' && work.status === 'accepted';
+        if (category === 'preprints') return work.type === 'preprint';
+        return work.type === 'journal_article' && work.status === 'published';
+    };
+
+    const publicationCategoryKey = (category) => ({
+        articles: 'filter-articles',
+        chapters: 'filter-chapters',
+        accepted: 'filter-accepted',
+        preprints: 'filter-preprints'
+    }[category] || 'filter-articles');
+
+    const publicationTypeKey = (work) => {
+        if (work.type === 'book_chapter') return 'pub-type-chapter';
+        if (work.type === 'preprint') return 'pub-type-preprint';
+        if (work.status === 'accepted') return 'pub-type-accepted';
+        return 'pub-type-article';
+    };
+
+    const escapeHtml = (value) => String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    function getPublicationBaseList() {
+        if (!isPublicationsPage) return allArticles;
+        return allWorks.filter(work => publicationCategoryMatches(work, activePublicationCategory));
+    }
+
+    function getFilteredPublicationList() {
+        const term = normalizeTitle(UI.pubSearchInput?.value || '');
+        let list = getPublicationBaseList();
+
+        if (activeYearFilter) {
+            list = list.filter(work => work.year == activeYearFilter);
+        }
+
+        if (term) {
+            list = list.filter(work => {
+                const haystack = [
+                    work.title,
+                    work.year,
+                    work.journalTitle,
+                    work.publisher,
+                    work.isbn,
+                    ...(work.authors || [])
+                ].map(normalizeTitle).join(' ');
+
+                return haystack.includes(term);
+            });
+        }
+
+        return list;
+    }
+
+    function updateCategoryFilterUI() {
+        if (!UI.pubTypeButtons.length) return;
+        const t = window.translations?.[window.currentLang] || {};
+
+        UI.pubTypeButtons.forEach(button => {
+            const category = button.dataset.publicationFilter;
+            const count = allWorks.filter(work => publicationCategoryMatches(work, category)).length;
+            const label = t[publicationCategoryKey(category)] || button.textContent || category;
+            const isActive = category === activePublicationCategory;
+
+            button.textContent = `${label} (${count})`;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+    }
+
     function renderPublications() {
         const grid = UI.pubsGrid;
         if (!grid) return;
+
         const t = window.translations?.[window.currentLang] || {};
-        const term = (UI.pubSearchInput?.value || '').toLowerCase();
-        
-        let list = activeYearFilter ? allArticles.filter(a => a.year == activeYearFilter) : allArticles;
-        if (term) list = list.filter(a => normalizeTitle(a.title).includes(term) || a.year.includes(term) || normalizeTitle(a.journalTitle).includes(term));
-        
+        const list = getFilteredPublicationList();
         const visible = list.slice(0, showingPubsCount);
-        grid.innerHTML = "";
-        
-        if (!visible.length) grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p>${t.no_pubs_found || 'Nada encontrado.'}</p></div>`;
-        else visible.forEach(art => {
-            const link = art.doiLink || art.link;
-            const cit = art.cited_by.value ? `${t['pub-cited-by']||'Citado'} ${art.cited_by.value}x` : '-';
-            const doi = art.doi ? `<div class="publication-doi"><a href="${link}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" style="height:14px;margin-right:5px">${art.doi}</a></div>` : '';
-            grid.innerHTML += `<div class="card publication-card"><h3>${art.title}</h3>${doi}<div class="publication-meta">${art.year} • <em>${art.journalTitle}</em></div><div class="citations" style="color:var(--accent);font-weight:bold;margin-top:5px;">${cit}</div><a href="${link}" target="_blank" class="article-link" style="margin-top:auto;padding-top:10px;display:inline-block;">${t['pub-read']||'Ver'} &rarr;</a></div>`;
-        });
-        
-        if(UI.pubsShownCount) UI.pubsShownCount.textContent = `${visible.length} / ${list.length}`;
-        if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.style.display = (visible.length >= list.length) ? 'none' : 'inline-block';
+
+        updateCategoryFilterUI();
+        grid.innerHTML = '';
+
+        if (!visible.length) {
+            grid.innerHTML = `<div class="card" style="grid-column:1/-1;text-align:center;padding:2rem;"><p>${escapeHtml(t.no_pubs_found || 'Nada encontrado.')}</p></div>`;
+        } else {
+            visible.forEach(work => {
+                const typeLabel = t[publicationTypeKey(work)] || 'Publicação';
+                const typeBadge = isPublicationsPage
+                    ? `<span class="publication-type-badge">${escapeHtml(typeLabel)}</span>`
+                    : '';
+
+                const authors = isPublicationsPage && work.authors?.length
+                    ? `<div class="publication-authors">${escapeHtml(work.authors.join('; '))}</div>`
+                    : '';
+
+                const metaParts = [work.year, work.journalTitle].filter(Boolean);
+                const meta = `<div class="publication-meta">${metaParts.map((part, index) => index === 1 ? `<em>${escapeHtml(part)}</em>` : escapeHtml(part)).join(' • ')}</div>`;
+
+                const extraParts = [];
+                if (work.status === 'accepted') extraParts.push(t['pub-accepted-status'] || 'Aceito para publicação');
+                if (work.type === 'book_chapter' && work.publisher) extraParts.push(work.publisher);
+                if (work.type === 'book_chapter' && work.pages) extraParts.push(`${t['pub-pages'] || 'p.'} ${work.pages}`);
+                if (work.isbn) extraParts.push(`${t['pub-isbn'] || 'ISBN'}: ${work.isbn}`);
+                const extraMeta = extraParts.length
+                    ? `<div class="publication-extra-meta">${escapeHtml(extraParts.join(' • '))}</div>`
+                    : '';
+
+                const link = work.doiLink || work.link;
+                const doi = work.doi
+                    ? `<div class="publication-doi"><a href="${escapeHtml(link)}" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/1/11/DOI_logo.svg" alt="DOI" style="height:14px;margin-right:5px">${escapeHtml(work.doi)}</a></div>`
+                    : '';
+
+                const canShowCitation = (work.type === 'journal_article' && work.status === 'published') || work.type === 'preprint';
+                const citation = canShowCitation
+                    ? `<div class="citations">${work.cited_by.value
+                        ? `${escapeHtml(t['pub-cited-by'] || 'Citado')} ${work.cited_by.value}x`
+                        : escapeHtml(t['pub-no-citation'] || 'Sem dados de citação')}</div>`
+                    : '';
+
+                const readLink = link
+                    ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener" class="article-link" style="margin-top:auto;padding-top:10px;display:inline-block;">${escapeHtml(t['pub-read'] || 'Ver publicação')} &rarr;</a>`
+                    : '';
+
+                grid.innerHTML += `<div class="card publication-card">${typeBadge}<h3>${escapeHtml(work.title)}</h3>${authors}${meta}${extraMeta}${doi}${citation}${readLink}</div>`;
+            });
+        }
+
+        if (UI.pubsShownCount) {
+            const template = t.showing_pubs_template || '{shown} / {total}';
+            UI.pubsShownCount.textContent = template
+                .replace('{shown}', visible.length)
+                .replace('{total}', list.length);
+        }
+
+        if (UI.pubsLoadMoreBtn) {
+            UI.pubsLoadMoreBtn.style.display = (visible.length >= list.length) ? 'none' : 'inline-block';
+        }
     }
 
     function generateBibTeX() {
-        let list = activeYearFilter ? allArticles.filter(a => a.year == activeYearFilter) : allArticles;
-        const term = (UI.pubSearchInput?.value || '').toLowerCase();
-        if (term) list = list.filter(a => normalizeTitle(a.title).includes(term) || a.year.includes(term));
+        const list = getFilteredPublicationList();
+        if (list.length === 0) {
+            alert(window.translations?.[window.currentLang]?.no_pubs_found || 'Nenhuma publicação para exportar.');
+            return;
+        }
 
-        if (list.length === 0) { alert("Nenhuma publicação para exportar."); return; }
+        let bibContent = '';
+        list.forEach(work => {
+            const key = work.id
+                ? work.id.replace(/[^a-zA-Z0-9]+/g, '_')
+                : `${work.title.split(' ')[0].replace(/[^a-zA-Z]/g, '')}${work.year || '0000'}`;
 
-        let bibContent = "";
-        list.forEach((art) => {
-            const key = art.id
-                ? art.id.replace(/[^a-zA-Z0-9]+/g, '_')
-                : `${art.title.split(' ')[0].replace(/[^a-zA-Z]/g, '')}${art.year || '0000'}`;
-            const authorLine = art.authors?.length
-                ? `  author = {${art.authors.join(' and ')}},\n`
-                : '';
-            bibContent += `@article{${key},\n  title = {${art.title}},\n${authorLine}${art.journalTitle ? `  journal = {${art.journalTitle}},\n` : ''}${art.year ? `  year = {${art.year}},\n` : ''}${art.doi ? `  doi = {${art.doi}},\n` : ''}${art.link ? `  url = {${art.link}},\n` : ''}}\n\n`;
+            const entryType = work.type === 'book_chapter'
+                ? 'incollection'
+                : (work.type === 'preprint' ? 'misc' : 'article');
+
+            const fields = [];
+            fields.push(`  title = {${work.title}}`);
+            if (work.authors?.length) fields.push(`  author = {${work.authors.join(' and ')}}`);
+
+            if (work.type === 'book_chapter') {
+                if (work.journalTitle) fields.push(`  booktitle = {${work.journalTitle}}`);
+                if (work.publisher) fields.push(`  publisher = {${work.publisher}}`);
+                if (work.pages) fields.push(`  pages = {${work.pages}}`);
+                if (work.isbn) fields.push(`  isbn = {${work.isbn}}`);
+            } else if (work.journalTitle) {
+                fields.push(`  journal = {${work.journalTitle}}`);
+            }
+
+            if (work.year) fields.push(`  year = {${work.year}}`);
+            if (work.doi) fields.push(`  doi = {${work.doi}}`);
+            if (work.link) fields.push(`  url = {${work.link}}`);
+            if (work.status === 'accepted') fields.push('  note = {Accepted for publication}');
+            if (work.type === 'preprint') fields.push('  note = {Preprint}');
+
+            bibContent += `@${entryType}{${key},\n${fields.join(',\n')}\n}\n\n`;
         });
 
-        const blob = new Blob([bibContent], { type: 'text/plain' });
+        const blob = new Blob([bibContent], { type: 'text/plain;charset=utf-8' });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'publicacoes.bib';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a); window.URL.revokeObjectURL(url);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'publicacoes.bib';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
     }
 
     function updateFilterUI() {
