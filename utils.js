@@ -900,7 +900,12 @@ const scholarScript = (function() {
         const width = UI.slides[0].getBoundingClientRect().width;
         UI.track.style.transform = `translateX(-${width * currentSlideIndex}px)`;
         UI.slides.forEach((s, i) => s.classList.toggle('current-slide', i === currentSlideIndex));
-        UI.dots.forEach((d, i) => d.classList.toggle('current-slide', i === currentSlideIndex));
+        UI.dots.forEach((d, i) => {
+            const isCurrent = i === currentSlideIndex;
+            d.classList.toggle('current-slide', isCurrent);
+            if (isCurrent) d.setAttribute('aria-current', 'true');
+            else d.removeAttribute('aria-current');
+        });
 
         // TRIGGER DE ANIMAÇÃO AO TROCAR SLIDE
         const currentPlatform = platformOrder[currentSlideIndex];
