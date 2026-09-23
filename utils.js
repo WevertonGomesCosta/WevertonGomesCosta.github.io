@@ -484,9 +484,12 @@ const scholarScript = (function() {
     const platformOrder = ['scholar', 'scopus', 'wos', 'max'];
 
     let dashboardData = { scholar: null, scopus: null, wos: null, max: null };
-    let allArticles = []; 
+    let allArticles = [];
+    let allWorks = [];
     let showingPubsCount = 0;
     let activeYearFilter = null;
+    let activePublicationCategory = 'articles';
+    let isPublicationsPage = false;
     let currentSlideIndex = 0;
     let hasViewedSection = false;
 
@@ -496,9 +499,10 @@ const scholarScript = (function() {
         nextBtn: null, prevBtn: null, dots: [],
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
+        pubTypeButtons: [],
         pubsShownCount: null, pubsLoadMoreBtn: null,
         dashboardSection: null,
-        exportBtn: null // Referência para botão de exportar
+        exportBtn: null
     };
 
     // --- CARREGAMENTO ---
@@ -561,9 +565,14 @@ const scholarScript = (function() {
         const isCanonical = !!(rawArt?.id && rawArt?.type && rawArt?.status);
         let cites = 0;
 
-        if (isCanonical) cites = scholarCitationCount(rawArt, scholarArticles);
-        else if (rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
-        else cites = parseInt(rawArt.cited_by) || 0;
+        const isCitableCanonicalWork = isCanonical && (
+            (rawArt.type === 'journal_article' && rawArt.status === 'published') ||
+            rawArt.type === 'preprint'
+        );
+
+        if (isCitableCanonicalWork) cites = scholarCitationCount(rawArt, scholarArticles);
+        else if (!isCanonical && rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
+        else if (!isCanonical) cites = parseInt(rawArt.cited_by) || 0;
 
         const year = (rawArt.year || rawArt.ano || '0000').toString().replace(/\D/g, '').substring(0, 4);
         const doi = rawArt.doi || '';
@@ -577,7 +586,10 @@ const scholarScript = (function() {
             authors: Array.isArray(rawArt.authors) ? rawArt.authors : [],
             year,
             journalTitle: rawArt.container_title || rawArt.journalTitle || rawArt.journal || '',
-            link: doiLink || rawArt.link || '#',
+            publisher: rawArt.publisher || '',
+            pages: rawArt.pages || '',
+            isbn: rawArt.isbn || '',
+            link: doiLink || rawArt.link || null,
             doi,
             doiLink,
             lattesPosition: rawArt.lattes?.position ?? null,
