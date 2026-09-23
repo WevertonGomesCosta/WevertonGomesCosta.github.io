@@ -1106,8 +1106,13 @@ const scholarScript = (function() {
             if (work.type === 'book_chapter') {
                 if (work.journalTitle) fields.push(`  booktitle = {${work.journalTitle}}`);
                 if (work.publisher) fields.push(`  publisher = {${work.publisher}}`);
-                if (work.pages) fields.push(`  pages = {${work.pages}}`);
+                if (work.pages) {
+                    const bibPages = work.pages.replace(/\s*[-–—]\s*/g, '--');
+                    fields.push(`  pages = {${bibPages}}`);
+                }
                 if (work.isbn) fields.push(`  isbn = {${work.isbn}}`);
+            } else if (work.type === 'preprint') {
+                if (work.journalTitle) fields.push(`  howpublished = {${work.journalTitle}}`);
             } else if (work.journalTitle) {
                 fields.push(`  journal = {${work.journalTitle}}`);
             }
@@ -1185,9 +1190,21 @@ const scholarScript = (function() {
                     return posA - posB;
                 });
 
-            allArticles = allWorks.filter(work =>
-                work.type === 'journal_article' && work.status === 'published'
-            );
+            allArticles = allWorks
+                .filter(work =>
+                    work.type === 'journal_article' && work.status === 'published'
+                )
+                .sort((a, b) => {
+                    const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
+                    if (citationDiff !== 0) return citationDiff;
+
+                    const yearDiff = (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
+                    if (yearDiff !== 0) return yearDiff;
+
+                    const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
+                    const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
+                    return posA - posB;
+                });
         } else {
             const raw = acad.maximized?.articles || scholarArticles;
             allArticles = raw
