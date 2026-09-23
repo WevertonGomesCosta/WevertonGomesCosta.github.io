@@ -90,13 +90,11 @@ const PageSetup = {
         // Atualização específica para a página de privacidade
         const privacyUpdateEl = document.getElementById('privacy-update-date');
         if (privacyUpdateEl) {
-            const formattedDate = DateFormatter.format(lastModifiedDate);
-            // --- LOGGING PARA DEBUG ---
-            console.log(`PageSetup.updateDates: Encontrado #privacy-update-date. Tentando definir data para: ${formattedDate} (Raw: ${lastModifiedDate})`);
-            // --- FIM LOGGING ---
-            privacyUpdateEl.textContent = formattedDate;
+            const explicitDate = privacyUpdateEl.dataset.lastUpdated;
+            const privacyDate = explicitDate ? new Date(`${explicitDate}T12:00:00`) : lastModifiedDate;
+            privacyUpdateEl.textContent = DateFormatter.format(privacyDate);
         } else if (document.body.id === 'page-privacy') {
-             console.warn("PageSetup.updateDates: Na página de privacidade, mas #privacy-update-date não foi encontrado.");
+            console.warn("PageSetup.updateDates: Na página de privacidade, mas #privacy-update-date não foi encontrado.");
         }
     }
 };
@@ -1371,9 +1369,13 @@ const CvPdfGenerator = {
                         type: 'group',
                         group_title: 'cv-edu-postdocs-title', // Chave "Pós-Doutorados"
                         items: [
-                            // Pós-doc UFV
+                            // Pós-doc UFV — CNPq (2025)
+                            { date: 'edu-date-postdoc-cnpq-2025', title: 'edu-title-postdoc-cnpq-2025', institution: 'Universidade Federal de Viçosa (UFV) — CNPq', advisor: null, details: 'edu-desc-postdoc-cnpq-2025' },
+                            // Pós-doc UFV — FAPEMIG (2023–2025)
                             { date: 'edu-date2', title: 'edu-title2', institution: 'Universidade Federal de Viçosa (UFV) — FAPEMIG', advisor: 'edu-advisor2', details: 'edu-desc2' },
-                            // Pós-doc Embrapa
+                            // Pós-doc UFV — CNPq (2022–2023)
+                            { date: 'edu-date3', title: 'edu-title3', institution: 'Universidade Federal de Viçosa (UFV) — CNPq', advisor: 'edu-advisor3', details: 'edu-desc3' },
+                            // Pós-doc Embrapa — CNPq (2022)
                             { date: null, title: 'edu-title4', institution: 'EMBRAPA Mandioca e Fruticultura — CNPq', advisor: 'edu-advisor4', details: 'edu-desc4', year: '2022' }
                         ]
                     },
