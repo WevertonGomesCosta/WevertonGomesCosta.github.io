@@ -1,0 +1,1033 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-09-23",
+  "source_basis": {
+    "lattes_generated_at": "2026-09-23T11:20:32-03:00",
+    "note": "Canonical bibliography reconciled from the updated Lattes export and the repository bibliometric fallback sources. Bibliographic identity is kept separate from citation metrics."
+  },
+  "summary": {
+    "total_records": 32,
+    "published_journal_articles": 27,
+    "published_preprints": 1,
+    "accepted_journal_articles": 1,
+    "published_book_chapters": 3,
+    "lattes_periodical_section_records": 28
+  },
+  "works": [
+    {
+      "id": "journal-2026-comparison-ml-marker-identification-gwas",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Comparison of Machine Learning Methods for Marker Identification in GWAS",
+      "authors": [
+        "COSTA, W. G.",
+        "PEREIRA, H. D.",
+        "SILVA, G. N.",
+        "BORÉM, A.",
+        "CAIXETA, E. T.",
+        "OLIVEIRA, A. C. B.",
+        "CRUZ, C. D.",
+        "NASCIMENTO, M."
+      ],
+      "year": 2026,
+      "container_title": "International Journal of Plant Biology",
+      "doi": "10.3390/ijpb17010006",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 1
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": false
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2026-trait-prediction-soybean-shaded",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Trait prediction through computational intelligence and machine learning applied to soybean breeding in shaded environments",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "COSTA, W. G.",
+        "GUIMARÃES, A. G.",
+        "MOURA, W. M.",
+        "BHERING, L. L.",
+        "CRUZ, C. D.",
+        "BATISTA, R. O.",
+        "SANTOS, J. B.",
+        "CAMPOS, W. F.",
+        "EVARISTO, A. B."
+      ],
+      "year": 2026,
+      "container_title": "Agronomy Science and Biotechnology",
+      "doi": "10.33158/asb.r255.v12.2026",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 2
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": false,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": false
+      },
+      "relations": [
+        {
+          "type": "has_preprint",
+          "target_id": "preprint-2024-trait-prediction-soybean-shaded"
+        }
+      ],
+      "source_notes": [
+        "Final journal version of the 2024 bioRxiv preprint."
+      ]
+    },
+    {
+      "id": "journal-2025-beyond-wood-log-eucalyptus-epd",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Beyond the Wood Log: Relationships Among Bark Anatomy, Stem Diameter, and Tolerance to Eucalypt Physiological Disorder (EPD) in Cultivated Clones of Eucalyptus grandis Hill Ex Maiden and E. urophylla T. Blake",
+      "authors": [
+        "PICOLI, E. A. T.",
+        "COSTA, W. G.",
+        "LADEIRA, J. S.",
+        "JACOMINI, F. A.",
+        "ALMEIDA, M. N. F.",
+        "KLEINE, A. A.",
+        "VIDAURRE, G. B.",
+        "MOULIN, J. C.",
+        "BALMANT, K. M.",
+        "CECON, P. R.",
+        "ZAUZA, E. A. V.",
+        "GUIMARÃES, L. M. S."
+      ],
+      "year": 2025,
+      "container_title": "International Journal of Plant Biology",
+      "doi": "10.3390/ijpb16040124",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 3
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": false
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2025-linking-bark-anatomy-eucalyptus-epd",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Linking bark anatomy to Eucalyptus Physiological Disorder (EPD) in commercial clones",
+      "authors": [
+        "PICOLI, E. A. T.",
+        "JACOMINI, F. A.",
+        "LADEIRA, J. S.",
+        "ALMEIDA, M. N. F.",
+        "VIDAURRE, G. B.",
+        "MOULIN, J. C.",
+        "ZAUZA, E. A. V.",
+        "GUIMARÃES, L. M. S.",
+        "ISAIAS, R. M. S.",
+        "BALMANT, K. M.",
+        "COSTA, W. G."
+      ],
+      "year": 2025,
+      "container_title": "International Journal of Horticultural Science",
+      "doi": "10.31421/ijhs/31/2025/15419",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 4
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": false
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2025-multitrait-selection-coffee-postharvest",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Multi-trait selection and the relationship between sensory analysis and post-harvest variables in Coffea arabica",
+      "authors": [
+        "MOREIRA, D. B.",
+        "SILVA, S. A.",
+        "COSTA, W. G.",
+        "CAIXETA, E. T.",
+        "NASCIMENTO, M.",
+        "GOOD GOD, P. I. V."
+      ],
+      "year": 2025,
+      "container_title": "Scientia Agricola",
+      "doi": "10.1590/1678-992x-2025-0020",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 5
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-bayesian-soybean-shading-multitrait",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Bayesian inference applied to soybean grown under different shading levels using the multiple-trait model",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "COSTA, W. G.",
+        "GUIMARÃES, A. G.",
+        "MOURA, W. M.",
+        "CAMPOS, L. J. M.",
+        "RODRIGUES, R. C.",
+        "BHERING, L. L.",
+        "CRUZ, C. D.",
+        "EVARISTO, A. B."
+      ],
+      "year": 2024,
+      "container_title": "Scientia Agricola",
+      "doi": "10.1590/1678-992x-2022-0233",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 6
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-pig-body-weight-computer-vision",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Body weight prediction in crossbred pigs from digital images using computer vision",
+      "authors": [
+        "CUNHA, A. C. R.",
+        "ANTUNES, R. C.",
+        "COSTA, W. G.",
+        "REBOUÇAS, G. F.",
+        "LEITE, C. D. S.",
+        "CARMO, A. S."
+      ],
+      "year": 2024,
+      "container_title": "Livestock Science",
+      "doi": "10.1016/j.livsci.2024.105433",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 7
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-pig-body-weight-supervised-ml",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Comparison of supervised machine learning and variable selection methods for body weight prediction of growth pigs using image processing data",
+      "authors": [
+        "CARRARA, E. R.",
+        "OLIVEIRA, P. C. S.",
+        "DIAS, L. C. C. M.",
+        "COSTA, W. G.",
+        "CONCEIÇÃO, A. R.",
+        "BRAGA, P. H. S.",
+        "CHIZZOTTI, M. L.",
+        "VERONEZE, R.",
+        "SCHULTZ, E. B."
+      ],
+      "year": 2024,
+      "container_title": "Revista Brasileira de Zootecnia",
+      "doi": "10.37496/rbz5320240001",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 8
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-mars-genomic-prediction-nonadditive",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Multivariate Adaptive Regression Splines Enhance Genomic Prediction of Non-Additive Traits",
+      "authors": [
+        "CELERI, M. O.",
+        "COSTA, W. G.",
+        "NASCIMENTO, A. C. C.",
+        "AZEVEDO, C. F.",
+        "CRUZ, C. D.",
+        "SAGAE, V. S.",
+        "NASCIMENTO, M."
+      ],
+      "year": 2024,
+      "container_title": "Agronomy",
+      "doi": "10.3390/agronomy14102234",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 9
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-cassava-drought-genomic-selection",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Optimizing drought tolerance in cassava through genomic selection",
+      "authors": [
+        "COSTA, W. G.",
+        "BANDEIRA E SOUZA, M.",
+        "AZEVEDO, C. F.",
+        "NASCIMENTO, M.",
+        "MORGANTE, C. V.",
+        "BOREL, J. C.",
+        "OLIVEIRA, E. J."
+      ],
+      "year": 2024,
+      "container_title": "Frontiers in Plant Science",
+      "doi": "10.3389/fpls.2024.1483340",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 10
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2024-eucalyptus-biomarkers-physiological-disorder",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Rapid detection of bromatological and chemical biomarkers of clones tolerant to eucalyptus physiological disorder",
+      "authors": [
+        "NASCIMENTO, D. L.",
+        "AGUIAR, V. P.",
+        "JACOMINI, F. A.",
+        "COSTA, W. G.",
+        "RIBEIRO, W. S.",
+        "DOMOKOS-SZABOLCSY, É.",
+        "KLEINE, A. A.",
+        "BALMANT, K. M.",
+        "PICOLI, E. A. T.",
+        "ZAUZA, E. A. V.",
+        "GUIMARÃES, L. M. S."
+      ],
+      "year": 2024,
+      "container_title": "South African Journal of Botany",
+      "doi": "10.1016/j.sajb.2024.10.052",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 11
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "preprint-2024-trait-prediction-soybean-shaded",
+      "type": "preprint",
+      "status": "published_preprint",
+      "title": "Trait prediction through computational intelligence and machine learning applied to soybean (Glycine max) breeding in shaded environments",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "COSTA, W. G.",
+        "GUIMARÃES, A. G.",
+        "MOURA, W. M.",
+        "BHERING, L. L.",
+        "CRUZ, C. D.",
+        "BATISTA, R. O.",
+        "SANTOS, J. B.",
+        "CAMPOS, W. F.",
+        "EVARISTO, A. B."
+      ],
+      "year": 2024,
+      "container_title": "bioRxiv",
+      "doi": "10.1101/2024.01.31.578252",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 12,
+        "doi_recorded": false
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": false
+      },
+      "relations": [
+        {
+          "type": "is_preprint_of",
+          "target_id": "journal-2026-trait-prediction-soybean-shaded"
+        }
+      ],
+      "source_notes": [
+        "DOI is retained in the canonical registry even though the current Lattes interface does not allow it to be recorded for this bioRxiv entry."
+      ]
+    },
+    {
+      "id": "journal-2023-eucalyptus-water-deficit-metabolic",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Metabolic, Nutritional and Morphophysiological Behavior of Eucalypt Genotypes Differing in Dieback Resistance in Field When Submitted to PEG-Induced Water Deficit",
+      "authors": [
+        "CAETANO-MADEIRA, D. D.",
+        "OMENA-GARCIA, R. P.",
+        "ELERATI, T. L.",
+        "LOPES, C. B. S.",
+        "CORRÊA, T. R.",
+        "SOUZA, G. A.",
+        "OLIVEIRA, L. A.",
+        "CRUZ, C. D.",
+        "BHERING, L. L.",
+        "NUNES-NESI, A.",
+        "COSTA, W. G.",
+        "PICOLI, E. A. T."
+      ],
+      "year": 2023,
+      "container_title": "Agronomy",
+      "doi": "10.3390/agronomy13051261",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 13
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2023-prediction-importance-predictors-ci-ml",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "MOURA, W. M.",
+        "BHERING, L. L.",
+        "SIQUEIRA, M. J. S.",
+        "COSTA, W. G.",
+        "NASCIMENTO, M.",
+        "CRUZ, C. D."
+      ],
+      "year": 2023,
+      "container_title": "Agronomy Science and Biotechnology",
+      "doi": "10.33158/asb.r179.v9.2023",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 14
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": false
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2023-early-biomarkers-eucalyptus-water-deficit",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Very Early Biomarkers Screening for Water Deficit Tolerance in Commercial Eucalyptus Clones",
+      "authors": [
+        "CORRÊA, T. R.",
+        "PICOLI, E. A. T.",
+        "PEREIRA, W. L.",
+        "CONDÉ, S. A.",
+        "RESENDE, R. T.",
+        "RESENDE, M. D. V.",
+        "COSTA, W. G.",
+        "CRUZ, C. D.",
+        "ZAUZA, E. A. V."
+      ],
+      "year": 2023,
+      "container_title": "Agronomy",
+      "doi": "10.3390/agronomy13030937",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 15
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2022-soybean-maintainers-self-organizing-maps",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
+      "authors": [
+        "COSTA, W. G.",
+        "VALADARES, C. B.",
+        "SILVA JÚNIOR, A. C.",
+        "ARCANJO, E. S.",
+        "ALMEIDA, H. C. F.",
+        "CRUZ, C. D.",
+        "CARVALHO, I. R.",
+        "SILVA, J. A. G.",
+        "AZEVEDO, C. F.",
+        "NASCIMENTO, M.",
+        "NASCIMENTO, A. C. C."
+      ],
+      "year": 2022,
+      "container_title": "Crop Science",
+      "doi": "10.1002/csc2.20816",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 16
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2022-genomic-prediction-ml-nn-epistasis",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Genomic prediction through machine learning and neural networks for traits with epistasis",
+      "authors": [
+        "COSTA, W. G.",
+        "CELERI, M. O.",
+        "BARBOSA, I. P.",
+        "SILVA, G. N.",
+        "AZEVEDO, C. F.",
+        "BORÉM, A.",
+        "NASCIMENTO, M.",
+        "CRUZ, C. D."
+      ],
+      "year": 2022,
+      "container_title": "Computational and Structural Biotechnology Journal",
+      "doi": "10.1016/j.csbj.2022.09.029",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 17
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2022-multitrait-bayesian-flooded-rice",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Multiple-trait model through Bayesian inference applied to flood-irrigated rice (Oryza sativa L)",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "SANT'ANNA, I. C.",
+        "PEIXOTO, M. A.",
+        "TORRES, L. G.",
+        "SIQUEIRA, M. J.",
+        "COSTA, W. G.",
+        "AZEVEDO, C. F.",
+        "SOARES, P. C.",
+        "CRUZ, C. D."
+      ],
+      "year": 2022,
+      "container_title": "Euphytica",
+      "doi": "10.1007/s10681-022-03077-x",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 18
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2021-fuzzy-adaptability-flooded-rice",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "SILVA, M. J.",
+        "COSTA, W. G.",
+        "SOUZA, I. C.",
+        "CRUZ, C. D.",
+        "NASCIMENTO, M.",
+        "SOARES, P. C."
+      ],
+      "year": 2021,
+      "container_title": "Plant Breeding",
+      "doi": "10.1111/pbr.12973",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 19
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2021-genome-enabled-prediction-trait-complexity",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Genome-enabled prediction through machine learning methods considering different levels of trait complexity",
+      "authors": [
+        "BARBOSA, I. P.",
+        "SILVA, M. J.",
+        "COSTA, W. G.",
+        "SANT'ANNA, I. C.",
+        "NASCIMENTO, M.",
+        "CRUZ, C. D."
+      ],
+      "year": 2021,
+      "container_title": "Crop Science",
+      "doi": "10.1002/csc2.20488",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 20
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2021-ml-statistics-coffee-environments",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Machine learning and statistics to qualify environments through multi-traits in Coffea arabica",
+      "authors": [
+        "COSTA, W. G.",
+        "BARBOSA, I. P.",
+        "SOUZA, J. E.",
+        "CRUZ, C. D.",
+        "NASCIMENTO, M.",
+        "OLIVEIRA, A. C. B."
+      ],
+      "year": 2021,
+      "container_title": "PLOS ONE",
+      "doi": "10.1371/journal.pone.0245298",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 21
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2021-multiinformation-flooded-rice-stability",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Multi-information analysis for recommendation of flooded-irrigated rice for adaptability and phenotypic stability",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "SILVA, M. J.",
+        "COSTA, W. G.",
+        "SOUZA, I. C.",
+        "NASCIMENTO, M.",
+        "SOARES, P. C. S.",
+        "CRUZ, C. D."
+      ],
+      "year": 2021,
+      "container_title": "Agronomy Science and Biotechnology",
+      "doi": "10.33158/asb.r145.v8.2022",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 22
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": false,
+        "web_of_science": false
+      },
+      "relations": [],
+      "source_notes": [
+        "Published online in 2021 in a volume labeled 2022."
+      ]
+    },
+    {
+      "id": "journal-2021-alfalfa-dry-matter-base-populations",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Potential of dry matter yield from alfalfa germplasm in composing base populations",
+      "authors": [
+        "COSTA, W. G.",
+        "SANTOS, I. G.",
+        "SILVA JÚNIOR, A. C.",
+        "CRUZ, C. D.",
+        "NASCIMENTO, M.",
+        "FERREIRA, R. P.",
+        "VILELA, D."
+      ],
+      "year": 2021,
+      "container_title": "Crop Breeding and Applied Biotechnology",
+      "doi": "10.1590/1984-70332021v21n3a41",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 23
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": [],
+      "source_notes": [
+        "Canonical DOI follows the current journal record; historical source variants used ...v21n2a41."
+      ]
+    },
+    {
+      "id": "journal-2021-quarter-century-genetic-progress-rice",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Quarter century genetic progress in irrigated rice (Oryza sativa) in Southeast Brazil",
+      "authors": [
+        "COSTA, W. G.",
+        "SILVA JÚNIOR, A. C.",
+        "BARBOSA, I. P.",
+        "CRUZ, C. D.",
+        "BORÉM, A.",
+        "SOARES, P. C.",
+        "GONÇALVES, R. P.",
+        "TORGA, P. P.",
+        "CONDÉ, A. B. T."
+      ],
+      "year": 2021,
+      "container_title": "Plant Breeding",
+      "doi": "10.1111/pbr.12972",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 24
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2020-rice-testing-time-meta-analysis",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: a time meta-analysis",
+      "authors": [
+        "COSTA, W. G.",
+        "BORÉM, A. O.",
+        "CRUZ, C. D.",
+        "ROSADO, R. D. S.",
+        "SOARES, P. C."
+      ],
+      "year": 2020,
+      "container_title": "Crop Breeding and Applied Biotechnology",
+      "doi": "10.1590/1984-70332020v20n4a55",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 25
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2020-adaptability-stability-flooded-rice",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Methods of adaptability and stability applied to the improvement of flooded rice",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "CARNEIRO, V. Q.",
+        "SANTOS, I. G.",
+        "COSTA, W. G.",
+        "SILVA, G. N.",
+        "CRUZ, C. D.",
+        "SOARES, P. C."
+      ],
+      "year": 2020,
+      "container_title": "Genetics and Molecular Research",
+      "doi": "10.4238/gmr18434",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 26
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2019-rice-breeding-program-southeast-brazil",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Performance of a breeding program for irrigated rice in Southeast Brazil",
+      "authors": [
+        "SILVA JÚNIOR, A. C.",
+        "CARNEIRO, V. Q.",
+        "SANTOS, I. G.",
+        "COSTA, W. G.",
+        "ROSADO, R. D. S.",
+        "CRUZ, C. D.",
+        "SOARES, P. C."
+      ],
+      "year": 2019,
+      "container_title": "Genetics and Molecular Research",
+      "doi": "10.4238/gmr18332",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 27
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "journal-2019-coffee-factor-analysis",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Recommendation of Coffea arabica genotypes by factor analysis",
+      "authors": [
+        "BARBOSA, I. P.",
+        "COSTA, W. G.",
+        "NASCIMENTO, M.",
+        "CRUZ, C. D.",
+        "OLIVEIRA, A. C. B."
+      ],
+      "year": 2019,
+      "container_title": "Euphytica",
+      "doi": "10.1007/s10681-019-2499-x",
+      "lattes": {
+        "section": "Artigos completos publicados em periódicos",
+        "position": 28
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": []
+    },
+    {
+      "id": "accepted-2026-bt-cotton-biosafety-meta-analysis",
+      "type": "journal_article",
+      "status": "accepted",
+      "title": "META-ANÁLISE DE 20 ANOS DE BIOSSEGURANÇA DO ALGODÃO BT NO MUNDO: Meta-análise da biossegurança do algodão Bt",
+      "authors": [
+        "NUNES, N.",
+        "BORÉM, A.",
+        "CRUZ, C. D.",
+        "COSTA, W. G."
+      ],
+      "year": 2026,
+      "container_title": "Acta Scientiarum. Agronomy",
+      "doi": null,
+      "lattes": {
+        "section": "Artigos aceitos para publicação",
+        "position": 1
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": null,
+        "google_scholar": null,
+        "scopus": null,
+        "web_of_science": null
+      },
+      "relations": []
+    },
+    {
+      "id": "chapter-2026-aprendizado-maquina-agricultura",
+      "type": "book_chapter",
+      "status": "published",
+      "title": "Aprendizado de Máquina na Agricultura",
+      "authors": [
+        "COSTA, W. G.",
+        "NASCIMENTO, A. C. C.",
+        "AZEVEDO, C. F.",
+        "JARQUIN, D.",
+        "NASCIMENTO, M."
+      ],
+      "year": 2026,
+      "container_title": "Inteligência Artificial no Agro",
+      "publisher": "Editora UFV",
+      "pages": "57-73",
+      "isbn": "9786559250936",
+      "doi": null,
+      "lattes": {
+        "section": "Capítulos de livros publicados",
+        "position": 1
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": null,
+        "google_scholar": null,
+        "scopus": null,
+        "web_of_science": null
+      },
+      "relations": []
+    },
+    {
+      "id": "chapter-2026-big-data",
+      "type": "book_chapter",
+      "status": "published",
+      "title": "Big data",
+      "authors": [
+        "CRUZ, C. D.",
+        "COSTA, W. G.",
+        "SILVA JÚNIOR, A. C.",
+        "CARNEIRO, P. C. S.",
+        "DIAS, K. O. G."
+      ],
+      "year": 2026,
+      "container_title": "Inteligência Artificial no Agro",
+      "publisher": "Editora UFV",
+      "pages": "25-39",
+      "isbn": "9786559250936",
+      "doi": null,
+      "lattes": {
+        "section": "Capítulos de livros publicados",
+        "position": 2
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": null,
+        "google_scholar": null,
+        "scopus": null,
+        "web_of_science": null
+      },
+      "relations": []
+    },
+    {
+      "id": "chapter-2026-redes-neurais-agricultura",
+      "type": "book_chapter",
+      "status": "published",
+      "title": "Redes Neurais Aplicadas à Agricultura",
+      "authors": [
+        "CRUZ, C. D.",
+        "COSTA, W. G.",
+        "SILVA JÚNIOR, A. C.",
+        "NASCIMENTO, M.",
+        "BHERING, L. L."
+      ],
+      "year": 2026,
+      "container_title": "Inteligência Artificial no Agro",
+      "publisher": "Editora UFV",
+      "pages": "40-56",
+      "isbn": "9786559250936",
+      "doi": null,
+      "lattes": {
+        "section": "Capítulos de livros publicados",
+        "position": 3
+      },
+      "source_presence": {
+        "lattes": true,
+        "orcid": null,
+        "google_scholar": null,
+        "scopus": null,
+        "web_of_science": null
+      },
+      "relations": []
+    }
+  ]
+}
