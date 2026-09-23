@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://wevertongomescosta.github.io/sitemap.xml
