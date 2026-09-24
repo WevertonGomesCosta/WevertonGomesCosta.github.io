@@ -134,7 +134,7 @@ class TestIdentityAndBaseline(unittest.TestCase):
         )
 ~~~
 
-Use importlib.util to import scripts/audit_repository.py by path and tempfile.TemporaryDirectory for fixtures.
+Use `sys.path.insert(0, str(ROOT / "scripts"))` once per test module (or a shared test helper) and `import repository_audit as audit`; use `tempfile.TemporaryDirectory` for fixture repositories. Tests must import package code, not the CLI wrapper.
 
 - [ ] **Step 2: Run RED**
 
@@ -208,8 +208,8 @@ Pin:
 
 ~~~bash
 python -m unittest \
-  tests.test_repository_audit.TestPolicyAndBaselineLoading \
-  tests.test_repository_audit.TestBaselineComparison -v
+  tests.test_audit_core.TestPolicyAndBaselineLoading \
+  tests.test_audit_core.TestBaselineComparison -v
 ~~~
 
 - [ ] **Step 7: Implement strict loaders/comparison**
@@ -237,7 +237,8 @@ Validate paths, rule IDs, non-empty reason/subject, duplicate identities, schema
 - [ ] **Step 9: Commit**
 
 ~~~bash
-git add scripts/repository_audit/__init__.py scripts/repository_audit/core.py   tests/test_audit_core.py
+git add scripts/repository_audit/__init__.py scripts/repository_audit/core.py \
+  tests/test_audit_core.py
 git commit -m "feat: add audit identity and baseline core"
 ~~~
 
@@ -533,7 +534,8 @@ CSP: each audited HTML page requires a non-empty meta `http-equiv="Content-Secur
 - [ ] **Step 8: Commit**
 
 ~~~bash
-git add scripts/repository_audit/data_rules.py scripts/repository_audit/runtime_rules.py   tests/test_audit_data.py tests/test_audit_runtime.py
+git add scripts/repository_audit/data_rules.py scripts/repository_audit/runtime_rules.py \
+  tests/test_audit_data.py tests/test_audit_runtime.py
 git commit -m "feat: audit academic and runtime debt"
 ~~~
 
