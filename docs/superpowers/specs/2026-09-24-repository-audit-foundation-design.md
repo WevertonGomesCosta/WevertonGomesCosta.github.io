@@ -275,12 +275,12 @@ The first version should favor deterministic structural rules over subjective st
 - `HTML_INTERNAL_LINK_TARGET`: relative internal file links resolve.
 - `HTML_TARGET_BLANK_NO_NOOPENER`: external/new-tab links include `noopener`.
 - `HTML_DUPLICATE_ATTRIBUTE`: invalid repeated attributes such as duplicate `rel`.
-- `HTML_SELF_LINK`: redundant links to the current page. Legitimate exceptions, if ever needed, must be explicit in `.audit/policy.json`; the default is to reject a link whose resolved target is the same HTML document.
+- `HTML_SELF_LINK`: redundant explicit links to the current HTML file when the link has no meaningful fragment target. Fragment-only navigation such as `#contact`, and links such as `index.html#contact`, are not self-link violations. A bare `href="#"` is handled separately by `HTML_ACTION_HASH_LINK`. Legitimate same-file exceptions, if ever needed, must be explicit in `.audit/policy.json`.
 
 ### 7.3 Control semantics
 
 - `HTML_BUTTON_MISSING_TYPE`: every button has explicit `type`.
-- `HTML_ACTION_HASH_LINK`: interactive actions must not be modeled as `<a href="#">` when they are not navigation.
+- `HTML_ACTION_HASH_LINK`: every bare `<a href="#">` is a violation. Real navigation to the top or to a section must use an explicit fragment target such as `#top` or `#contact`; non-navigation actions must use the appropriate control element. This keeps the rule deterministic and avoids guessing intent.
 
 The initial known occurrences are baseline debt. New occurrences are blocked immediately.
 
