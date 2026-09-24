@@ -102,6 +102,7 @@ These five failure modes are easy to miss even if the happy path passes. Each is
   - `render_all(root: Path) -> dict[Path, str]`
   - `check_all(root: Path) -> tuple[Path, ...]`
   - `write_all(root: Path) -> tuple[Path, ...]`
+  - `atomic_write_text(path: Path, text: str) -> None`
   - `main(argv: Sequence[str] | None = None) -> int`
 
 - [ ] **Step 1: Create the implementation branch from the approved design branch**
@@ -602,7 +603,29 @@ def check_all(root: Path) -> tuple[Path, ...]:
     return tuple(drift)
 ```
 
-`write_all()` must call `render_all()` before writing anything. For each changed page, encode the fully rendered string to UTF-8, write to a temporary file in the same directory, flush/fsync, then `os.replace(temp_path, path)`. Clean any remaining temp file in `finally`.
+`write_all()` must call `render_all()` before writing anything. Use this cross-platform helper for each changed page:
+
+```python
+def atomic_write_text(path: Path, text: str) -> None:
+    payload = text.encode("utf-8")
+    fd, temp_name = tempfile.mkstemp(
+        dir=path.parent,
+        prefix=f".{path.name}.",
+        suffix=".tmp",
+    )
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_path, path)
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
+```
+
+`write_all()` calls `atomic_write_text()` only after all configured targets have rendered successfully. `mkstemp()` is used instead of an open `NamedTemporaryFile` so Windows does not hold an incompatible open handle during `os.replace()`.
 
 CLI contract:
 
@@ -1093,7 +1116,14 @@ git diff --check origin/main...HEAD
 git status --short
 ```
 
-Then use the local browser at `http://localhost:8000` and explicitly validate:
+For the visual gate, start a fresh server in a **separate terminal** and keep that terminal open for the duration of the browser checks:
+
+```bash
+cd ~/OneDrive/GitHub/WevertonGomesCosta.github.io
+python -B -m http.server 8000
+```
+
+Use the browser at `http://localhost:8000` and explicitly validate:
 
 - home desktop and mobile;
 - all three inner pages desktop; at least one inner page mobile;
@@ -1101,7 +1131,8 @@ Then use the local browser at `http://localhost:8000` and explicitly validate:
 - back-to-top appears after scrolling and lands at the real top target;
 - both CV buttons in hero and both CV actions in contact section still initiate the same generator behavior;
 - contact `#copy-email-link` and footer email copy still work;
-- timeline toggles, clear/show-more controls, publication controls, and contact-form submit remain functional;
+- timeline toggles, clear/show-more controls, and publication controls remain functional;
+- for the contact form, verify the button is still `type="submit"`, the form still has `method="POST"` and the existing Formspree `action`, and keyboard focus/activation remains native; **do not actually submit the form during validation**;
 - footer has privacy link on home/publications/projects and no privacy self-link or orphan `|` on privacy page;
 - no unapproved change in spacing, typography, color, borders, icon alignment, cursor, hover, focus, or responsive layout.
 
@@ -1299,7 +1330,22 @@ git diff --check origin/main...HEAD
 git status --short
 ```
 
-Run the five-page HTTP 200 smoke test again. No visual change is expected from Task 3; inspect home and footer once to confirm decorative-icon changes did not affect rendering.
+Run the five-page HTTP 200 smoke test explicitly:
+
+```bash
+python -B -m http.server 8000 >/tmp/block2-task3-http.log 2>&1 &
+SERVER_PID=$!
+sleep 2
+for path in / /publicacoes.html /projetos.html /politica-de-privacidade.html /404.html
+do
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000docs/superpowers/plans/2026-09-24-shared-site-architecture.md")
+  echo "$code  $path"
+done
+kill $SERVER_PID
+wait $SERVER_PID 2>/dev/null || true
+```
+
+Expected: five HTTP 200 responses. No visual change is expected from Task 3; open a fresh dedicated local server only if needed to inspect home/footer once and confirm decorative-icon changes did not affect rendering.
 
 **STOP. Do not begin Task 4 until the user returns this gate and it passes.**
 
@@ -1655,7 +1701,14 @@ Expected: five HTTP 200 responses.
 
 - [ ] **Step 6: Complete the final visual/interaction acceptance matrix**
 
-With the local server running, validate and record:
+The Step 5 smoke-test server has already been stopped. Start a fresh server in a **separate terminal** and leave it running during this manual validation:
+
+```bash
+cd ~/OneDrive/GitHub/WevertonGomesCosta.github.io
+python -B -m http.server 8000
+```
+
+Then validate and record:
 
 1. home desktop;
 2. home mobile;
@@ -1670,10 +1723,12 @@ With the local server running, validate and record:
 11. footer email copy on all rendered page types;
 12. timeline toggles;
 13. project/publication clear and show-more controls;
-14. contact-form submit semantics;
+14. contact-form button remains `type="submit"`, the form retains its existing POST/Formspree attributes, and native focus/activation works; do not send the form;
 15. privacy link present on non-privacy pages;
 16. privacy self-link and orphan separator absent on privacy page;
 17. focus, hover, cursor, spacing, typography, icon alignment, borders, colors, and responsive layout unchanged.
+
+After recording the matrix, stop the dedicated server with `Ctrl+C`.
 
 Any discrepancy is a failure, not a cosmetic follow-up.
 
