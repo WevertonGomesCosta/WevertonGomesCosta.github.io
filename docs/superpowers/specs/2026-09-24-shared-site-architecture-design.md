@@ -1,8 +1,8 @@
 # Block 2 — Shared Site Architecture Design
 
-**Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
-**Date:** 2026-09-24  
-**Status:** Audited design; pending user review before implementation planning  
+**Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`
+**Date:** 2026-09-24
+**Status:** Audited design; pending user review before implementation planning
 **Base:** `main@2ec6c0121d56350cb2443e1c97367aa906fbefac`
 
 ## 1. Purpose
