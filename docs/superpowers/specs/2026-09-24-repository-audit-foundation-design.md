@@ -387,8 +387,11 @@ Useful options should include:
 
 ```bash
 python scripts/audit_repository.py --json
+python scripts/audit_repository.py --root .
+python scripts/audit_repository.py --policy .audit/policy.json
 python scripts/audit_repository.py --baseline .audit/known-debt.json
 python scripts/audit_repository.py --reference-baseline /tmp/base-known-debt.json
+python scripts/audit_repository.py --emit-current-debt .audit/known-debt.generated.json
 ```
 
 The baseline-generation mode is `--emit-current-debt <path>`. It is the only mode allowed to run before `.audit/known-debt.json` exists. In this mode the engine runs all rules, validates/applies policy, rejects stale policy exceptions, and writes the current unsuppressed violations as a proposed baseline without classifying them against a candidate baseline. It refuses to overwrite the output path.
@@ -399,8 +402,9 @@ Generated output always requires explicit review before being versioned.
 
 ### Exit codes
 
-- `0`: only PASS and KNOWN states exist; no stale baseline entries.
-- non-zero: NEW violation, RESOLVED baseline item, BASELINE_GROWTH, malformed policy/baseline, or fatal audit error.
+- `0`: audit passes; only PASS, KNOWN, and optionally active EXEMPTED policy matches exist, with zero NEW, RESOLVED, and GROWTH.
+- `1`: audit-policy result failure: at least one NEW, RESOLVED, or BASELINE_GROWTH item.
+- `2`: fatal configuration/runtime/CLI failure, including malformed or stale policy, malformed baseline, schema violations, or internal audit error.
 
 ## 11. Human-readable output
 
