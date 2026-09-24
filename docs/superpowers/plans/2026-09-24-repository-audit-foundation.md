@@ -95,8 +95,19 @@ Expected: all commands exit 0, proving the branch is not behind current `origin/
 - Create scripts/repository_audit/core.py
 - Create tests/test_audit_core.py
 
-**Produces**
-RULE_IDS, REQUIRED_HTML, AuditConfigError, Violation, PolicyException, AuditPolicy, BaselineEntry, Baseline, AuditComparison, normalize_repo_path(), make_fingerprint(), load_policy(), load_baseline(), classify_violations(), find_baseline_growth().
+**Interfaces / Produces**
+- `RULE_IDS: frozenset[str]`
+- `REQUIRED_HTML: tuple[str, ...]`
+- `Violation(rule_id: str, path: str, subject: str, message: str, severity: str = "error", line: int | None = None, metadata: dict[str, object] | None = None)`
+- `PolicyException(rule_id: str, path: str, subject: str, reason: str)`
+- `BaselineEntry(rule_id: str, path: str, subject: str, fingerprint: str, reason: str)`
+- `normalize_repo_path(value: str) -> str`
+- `make_fingerprint(rule_id: str, path: str, subject: str) -> str`
+- `load_policy(path: Path) -> AuditPolicy`
+- `load_baseline(path: Path) -> Baseline`
+- `classify_violations(current: Sequence[Violation], baseline: Baseline) -> AuditComparison`
+- `find_baseline_growth(candidate: Baseline, reference: Baseline) -> tuple[BaselineEntry, ...]`
+- `AuditConfigError`, `AuditPolicy`, `Baseline`, and `AuditComparison` dataclasses/types consumed by later tasks.
 
 - [ ] **Step 1: Write failing identity tests**
 
@@ -252,11 +263,15 @@ git commit -m "feat: add audit identity and baseline core"
 - Create scripts/repository_audit/html_rules.py
 - Create tests/test_audit_html.py
 
-**Consumes**
-Task 1 core models, rule IDs and REQUIRED_HTML.
+**Interfaces / Consumes**
+Task 1 core models/rule IDs and `REQUIRED_HTML`.
 
-**Produces**
-HtmlElement, HtmlDocument, discover_audited_html(), parse_html(), element_subject(), audit_html_structure().
+**Interfaces / Produces**
+- `HtmlElement` and `HtmlDocument` dataclasses used by HTML/i18n/runtime checks.
+- `discover_audited_html(root: Path) -> tuple[str, ...]`
+- `parse_html(path: str, source: str) -> HtmlDocument`
+- `element_subject(element: HtmlElement) -> str`
+- `audit_html_structure(root: Path) -> list[Violation]`
 
 - [ ] **Step 1: Write failing DOM identity tests**
 
@@ -346,11 +361,16 @@ git commit -m "feat: audit HTML structure and controls"
 - Create tests/test_audit_data.py
 - Create .audit/policy.json
 
-**Consumes**
-Task 1 core models/rule IDs and Task 2 parsed HTML documents.
+**Interfaces / Consumes**
+Task 1 core models/rule IDs and Task 2 `discover_audited_html()` / `parse_html()`.
 
-**Produces**
-REQUIRED_FILES, REQUIRED_DATA_JSON, read_repository_json(), audit_repository_data(). Policy filtering itself is owned by Task 5 engine so stale exceptions can be validated against the complete raw violation set.
+**Interfaces / Produces**
+- `REQUIRED_FILES: tuple[str, ...]`
+- `REQUIRED_DATA_JSON: tuple[str, ...]`
+- `read_repository_json(root: Path, relative: str) -> tuple[object | None, str | None]`
+- `audit_repository_data(root: Path) -> list[Violation]`
+
+Policy filtering is owned by Task 5 engine so stale exceptions can be validated against the complete raw violation set.
 
 - [ ] **Step 1: Write failing required-file/JSON tests**
 
@@ -443,11 +463,17 @@ git commit -m "feat: audit repository data and translations"
 - Modify tests/test_audit_data.py
 - Create tests/test_audit_runtime.py
 
-**Produces**
-normalize_title(), normalize_doi(), audit_academic_data(), audit_runtime_policy().
+**Interfaces / Consumes**
+- Task 3 `read_repository_json()`.
+- Task 2 `discover_audited_html()` / `parse_html()` for runtime HTML security rules.
+- Academic checks must never emit `JSON_PARSE` themselves: if academic-registry.json or fallback-data.json cannot be parsed, they skip dependent checks because Task 3 already owns the single parse violation.
 
-**Consumes**
-Task 3 read_repository_json(). Academic checks must never emit JSON_PARSE themselves: if academic-registry.json or fallback-data.json cannot be parsed, they skip dependent checks because Task 3 already owns the single JSON_PARSE violation.
+**Interfaces / Produces**
+- `normalize_title(value: str | None) -> str`
+- `normalize_doi(value: str | None) -> str`
+- `audit_academic_data(root: Path) -> list[Violation]`
+- `strip_c_style_comments(source: str) -> str`
+- `audit_runtime_policy(root: Path) -> list[Violation]`
 
 - [ ] **Step 1: Write failing academic normalization tests**
 
@@ -555,12 +581,19 @@ git commit -m "feat: audit academic and runtime debt"
 - Create tests/test_audit_cli.py
 - Create .audit/known-debt.json
 
-**Consumes**
+**Interfaces / Consumes**
 All Task 1-4 raw rule groups and core loaders.
 
-**Produces**
-RULES, RULE_COVERAGE, AuditReport, run_audit(), write_bootstrap_baseline(), main().
-CLI: --root, --policy, --baseline, --reference-baseline, --json, --emit-current-debt.
+**Interfaces / Produces**
+- `RULES: tuple[Callable[[Path], list[Violation]], ...]`
+- `RULE_COVERAGE: dict[Callable[..., object], frozenset[str]]`
+- `AuditReport` with sorted `known`, `exempted`, `new`, `resolved`, and `growth` collections plus `passed: bool`.
+- `run_audit(root: Path, policy_path: Path, baseline_path: Path, reference_baseline_path: Path | None = None) -> AuditReport`
+- `write_bootstrap_baseline(root: Path, policy_path: Path, output_path: Path) -> Baseline`
+- `main(argv: Sequence[str] | None = None) -> int`
+- CLI options: `--root`, `--policy`, `--baseline`, `--reference-baseline`, `--json`, `--emit-current-debt`.
+
+CLI default root is the repository root derived from `scripts/audit_repository.py`; relative policy/baseline/output paths resolve against that root.
 
 - [ ] **Step 1: Write failing orchestration tests**
 
@@ -751,6 +784,9 @@ git commit -m "feat: bootstrap repository audit baseline"
 ---
 
 ### Task 6: GitHub Actions enforcement and end-to-end verification
+
+**Interfaces / Consumes**
+Task 5 CLI contract and exit codes.
 
 **Files**
 - Create .github/workflows/repository-audit.yml
