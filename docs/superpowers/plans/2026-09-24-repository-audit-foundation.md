@@ -54,6 +54,13 @@ Do not modify:
 4. Baseline genesis versus monotonic enforcement: first bootstrap has no reference; every later candidate addition fails.
 5. Malformed required data JSON: exactly one JSON_PARSE violation and clean dependent-rule skipping, not a cascade.
 
+## Rule Coverage Matrix
+
+- Task 2: HTML_DUPLICATE_ID, HTML_INTERNAL_LINK_TARGET, HTML_TARGET_BLANK_NO_NOOPENER, HTML_DUPLICATE_ATTRIBUTE, HTML_SELF_LINK, HTML_BUTTON_MISSING_TYPE, HTML_ACTION_HASH_LINK.
+- Task 3: JSON_PARSE, REQUIRED_FILE, TRANSLATION_LANGUAGE_SET, TRANSLATION_KEY_PARITY, I18N_FIXED_ARIA_LABEL, I18N_FIXED_TITLE, I18N_REFERENCE_MISSING.
+- Task 4: ACADEMIC_REGISTRY_STRUCTURE, ACADEMIC_REGISTRY_DUPLICATE_ID, ACADEMIC_REGISTRY_DUPLICATE_DOI, ACADEMIC_REGISTRY_DUPLICATE_TITLE, BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE, LEGACY_MAXIMIZED_REFERENCE, A11Y_REDUCED_MOTION_POLICY, SECURITY_EXTERNAL_SCRIPT_INTEGRITY, SECURITY_CSP_POLICY.
+- Task 5 verifies that every RULE_IDS member is exercised by one of the registered rule groups and that no duplicate violation fingerprint is emitted.
+
 ---
 
 ### Task 1: Core identity, policy, and baseline engine
@@ -386,6 +393,9 @@ git commit -m "feat: audit repository data and translations"
 
 **Produces**
 normalize_title(), normalize_doi(), audit_academic_and_runtime().
+
+**Consumes**
+Task 3 read_repository_json(). Task 4 must never emit JSON_PARSE itself: if academic-registry.json or fallback-data.json cannot be parsed, Task 4 skips dependent checks because Task 3 already owns the single JSON_PARSE violation.
 
 - [ ] **Step 1: Write failing academic normalization tests**
 
