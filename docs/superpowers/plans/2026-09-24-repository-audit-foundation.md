@@ -86,10 +86,6 @@ Expected: exit 0. If it fails, the 65-item independent inventory is no longer au
 
 ---
 
-### Task 1:
-
----
-
 ### Task 1: Core identity, policy, and baseline engine
 
 **Files**
@@ -196,7 +192,9 @@ Expected: 3 tests pass.
 Pin:
 - unknown policy rule -> AuditConfigError;
 - duplicate policy identity -> AuditConfigError;
-- policy files containing an audited_html override -> AuditConfigError;
+- any unknown policy top-level key (including a legacy audited_html override) -> AuditConfigError;
+- any unknown policy-exception entry key -> AuditConfigError;
+- any unknown baseline top-level/entry key -> AuditConfigError;
 - unsupported schema -> AuditConfigError;
 - baseline fingerprint mismatch -> AuditConfigError;
 - duplicate baseline identity -> AuditConfigError;
@@ -562,7 +560,7 @@ CLI: --root, --policy, --baseline, --reference-baseline, --json, --emit-current-
 Pin:
 - RULE_COVERAGE union equals RULE_IDS exactly, with no unknown or missing rule ID;
 - clean fixture -> PASS;
-- exact policy exception suppresses its matching raw violation and is reported as active policy;
+- exact policy exception suppresses its matching raw violation, remains present in AuditReport.exempted, and increments EXEMPTED output;
 - policy exception matching no raw violation -> fatal stale-policy configuration;
 - new missing-type button -> NEW/fail;
 - stale baseline entry -> RESOLVED/fail;
@@ -621,7 +619,7 @@ run_audit sequence:
 7. if reference supplied, calculate baseline growth;
 8. return sorted report.
 
-AuditReport.passed is true only if NEW, RESOLVED, and GROWTH are empty.
+AuditReport stores `exempted` active-policy matches separately from current debt. `passed` is true only if NEW, RESOLVED, and GROWTH are empty; EXEMPTED does not fail but is always visible.
 
 - [ ] **Step 4: Write failing CLI/bootstrap tests**
 
@@ -654,6 +652,7 @@ Repository audit
 
 PASS       <N> rules clean
 KNOWN      <N> baseline violations
+EXEMPTED   <N> active policy exceptions
 NEW        <N>
 RESOLVED   <N>
 GROWTH     <N>
@@ -731,7 +730,7 @@ mv .audit/known-debt.generated.json .audit/known-debt.json
 python scripts/audit_repository.py
 ~~~
 
-Expected: KNOWN 65, NEW 0, RESOLVED 0, GROWTH 0, Result PASS.
+Expected: KNOWN 65, EXEMPTED 0, NEW 0, RESOLVED 0, GROWTH 0, Result PASS.
 
 - [ ] **Step 11: Commit**
 
@@ -847,7 +846,7 @@ python -m unittest discover -s tests -p "test_*.py"
 python scripts/audit_repository.py
 ~~~
 
-Expected: tests PASS and audit KNOWN 65 / NEW 0 / RESOLVED 0 / GROWTH 0.
+Expected: tests PASS and audit KNOWN 65 / EXEMPTED 0 / NEW 0 / RESOLVED 0 / GROWTH 0.
 
 - [ ] **Step 5: Verify only foundation files changed**
 
@@ -895,7 +894,7 @@ git diff --check main...HEAD
 git status --short
 ~~~
 
-Expected: green suite; audit PASS with 65 KNOWN and zero NEW/RESOLVED/GROWTH; clean tree.
+Expected: green suite; audit PASS with 65 KNOWN, 0 EXEMPTED, and zero NEW/RESOLVED/GROWTH; clean tree.
 
 - [ ] **Step 8: Verify implementation PR CI**
 
