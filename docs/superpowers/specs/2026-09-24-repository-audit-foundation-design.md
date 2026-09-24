@@ -71,6 +71,7 @@ tests/
 
 .audit/
   known-debt.json
+  policy.json
 
 .github/
   workflows/
@@ -266,7 +267,7 @@ The first version should favor deterministic structural rules over subjective st
 
 ### 7.1 File and serialization integrity
 
-- `JSON_PARSE`: required JSON files must parse.
+- `JSON_PARSE`: required repository data JSON files must parse. A parse failure is a blocking audit violation; rules that depend on that parsed file skip it without causing a secondary internal exception.
 - `REQUIRED_FILE`: canonical required files must exist.
 - `TRANSLATION_LANGUAGE_SET`: expected languages exist.
 - `TRANSLATION_KEY_PARITY`: PT and EN contain the same keys.
@@ -417,14 +418,19 @@ The workflow must be green before later structural blocks are merged.
 
 ## 14. Error handling
 
-Fatal conditions include:
+Fatal audit-configuration/runtime conditions include:
 
-- unreadable required files;
-- malformed JSON where JSON validity is an invariant;
-- malformed known-debt file;
+- unreadable audit configuration where the failure is not representable as a repository rule;
+- malformed `.audit/known-debt.json`;
+- malformed `.audit/policy.json`;
 - duplicate baseline identities;
-- unsupported baseline schema version;
+- duplicate policy-exception identities;
+- stored baseline fingerprint inconsistent with its `rule_id`, `path`, and `subject`;
+- policy references to unknown rule IDs;
+- unsupported baseline or policy schema version;
 - internal rule exception.
+
+Malformed or missing repository content that has a dedicated rule, such as an invalid required data JSON file or a missing required canonical file, is reported by that rule (`JSON_PARSE`, `REQUIRED_FILE`) rather than converted into an opaque internal fatal error. Dependent rules must skip unavailable parsed data cleanly.
 
 Fatal audit errors are distinct from NEW violations and must return non-zero.
 
@@ -436,27 +442,28 @@ Optional files/rules must declare optionality explicitly rather than suppressing
 
 At minimum:
 
-1. duplicate HTML IDs are detected;
-2. duplicate attributes are detected;
-3. internal missing-file links are detected;
-4. action `href="#"` is detected;
-5. button without type is detected;
-6. PT/EN key mismatch is detected;
-7. duplicate academic IDs/DOIs/titles are detected;
-8. stable fingerprint survives source-line movement;
-9. repeated HTML elements without IDs receive distinct DOM-path subjects;
-10. moving/replacing one repeated violation to a different DOM structural path is NEW even when the aggregate count is unchanged;
-11. exact baseline match is KNOWN;
-12. disappeared baseline entry is RESOLVED;
-13. malformed baseline fails;
-14. duplicate baseline identities fail;
-15. stored fingerprint inconsistent with rule/path/subject fails;
-16. malformed policy fails;
-17. unknown rule ID in policy fails;
-18. candidate baseline addition relative to a reference baseline fails as BASELINE_GROWTH;
-19. removing an entry from the candidate baseline is allowed when the violation is also gone;
-20. initial bootstrap without a reference baseline is allowed;
-21. clean fixture exits successfully.
+1. malformed required repository JSON is detected as JSON_PARSE and dependent rules skip cleanly;
+2. duplicate HTML IDs are detected;
+3. duplicate attributes are detected;
+4. internal missing-file links are detected;
+5. action `href="#"` is detected;
+6. button without type is detected;
+7. PT/EN key mismatch is detected;
+8. duplicate academic IDs/DOIs/titles are detected;
+9. stable fingerprint survives source-line movement;
+10. repeated HTML elements without IDs receive distinct DOM-path subjects;
+11. moving/replacing one repeated violation to a different DOM structural path is NEW even when the aggregate count is unchanged;
+12. exact baseline match is KNOWN;
+13. disappeared baseline entry is RESOLVED;
+14. malformed baseline fails;
+15. duplicate baseline identities fail;
+16. stored fingerprint inconsistent with rule/path/subject fails;
+17. malformed policy fails;
+18. unknown rule ID in policy fails;
+19. candidate baseline addition relative to a reference baseline fails as BASELINE_GROWTH;
+20. removing an entry from the candidate baseline is allowed when the violation is also gone;
+21. initial bootstrap without a reference baseline is allowed;
+22. clean fixture exits successfully.
 
 ### Repository integration test
 
