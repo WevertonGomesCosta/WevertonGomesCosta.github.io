@@ -18,7 +18,7 @@
 - Identity is exactly rule_id + normalized repository-relative path + stable subject.
 - Line number, message, severity, and metadata are diagnostic only.
 - Repeated no-ID HTML elements use deterministic DOM paths, not line numbers.
-- AUDITED_HTML is a code-level canonical invariant and cannot be narrowed through policy.json.
+- REQUIRED_HTML is the canonical required-page set, while all root-level `*.html` files are automatically discovered and audited; policy.json cannot narrow either.
 - known-debt.json is removable debt; policy.json is intentional policy; every policy exception must match a raw current violation or configuration fails as stale.
 - After bootstrap, candidate debt identities must be a subset of the reference baseline; additions are BASELINE_GROWTH.
 - RESOLVED debt blocks until its stale baseline entry is deleted.
@@ -98,7 +98,7 @@ Expected: exit 0. If it fails, the 65-item independent inventory is no longer au
 - Create tests/test_audit_core.py
 
 **Produces**
-RULE_IDS, AUDITED_HTML, AuditConfigError, Violation, PolicyException, AuditPolicy, BaselineEntry, Baseline, AuditComparison, normalize_repo_path(), make_fingerprint(), load_policy(), load_baseline(), classify_violations(), find_baseline_growth().
+RULE_IDS, REQUIRED_HTML, AuditConfigError, Violation, PolicyException, AuditPolicy, BaselineEntry, Baseline, AuditComparison, normalize_repo_path(), make_fingerprint(), load_policy(), load_baseline(), classify_violations(), find_baseline_growth().
 
 - [ ] **Step 1: Write failing identity tests**
 
@@ -152,10 +152,10 @@ Expected: import/file failure or missing interfaces.
 
 - [ ] **Step 3: Implement core identity**
 
-Define all 23 rule IDs from the spec, SCHEMA_VERSION = 1, and the immutable canonical page set:
+Define all 23 rule IDs from the spec, SCHEMA_VERSION = 1, and the canonical required-page set:
 
 ~~~python
-AUDITED_HTML = (
+REQUIRED_HTML = (
     "index.html",
     "publicacoes.html",
     "projetos.html",
@@ -163,6 +163,8 @@ AUDITED_HTML = (
     "404.html",
 )
 ~~~
+
+The discovered audit scope is not stored in policy. Task 2 will implement `discover_audited_html(root)` from root-level `*.html` files.
 
 Violation.severity defaults to the only version-1 value, `"error"`; validate/reject any other severity in version 1.
 
@@ -250,14 +252,17 @@ git commit -m "feat: add audit identity and baseline core"
 - Create tests/test_audit_html.py
 
 **Consumes**
-Task 1 core models, rule IDs and AUDITED_HTML.
+Task 1 core models, rule IDs and REQUIRED_HTML.
 
 **Produces**
-HtmlElement, HtmlDocument, parse_html(), element_subject(), audit_html_structure().
+HtmlElement, HtmlDocument, discover_audited_html(), parse_html(), element_subject(), audit_html_structure().
 
 - [ ] **Step 1: Write failing DOM identity tests**
 
 Pin:
+- discover_audited_html(root) returns the five fixture/root HTML files in deterministic sorted order;
+- adding root-level extra.html makes it appear automatically without policy/config changes;
+- nested docs/example.html is not included in version-1 root-page scope;
 - two identical no-ID buttons below different siblings -> distinct subjects;
 - same DOM plus blank lines -> same subjects;
 - moving the button from section to aside -> different subject.
@@ -312,7 +317,7 @@ Stable subjects:
 - missing button type -> element subject
 - bare hash -> element subject
 
-Resolve URLs with urllib.parse.urlsplit/unquote. Constrain local resolution to repository root. A trailing slash resolves to index.html.
+Resolve URLs with urllib.parse.urlsplit/unquote. Constrain local resolution to repository root. A trailing slash resolves to index.html. All HTML rules iterate `discover_audited_html(root)`; policy has no API capable of reducing that set.
 
 - [ ] **Step 8: Run Task 2 plus full suite GREEN**
 
@@ -412,7 +417,7 @@ Do not infer arbitrary JavaScript translation strings.
 }
 ~~~
 
-AUDITED_HTML comes only from Task 1 code and is not configurable here.
+REQUIRED_HTML comes only from Task 1 code and is not configurable here.
 
 No bootstrap debt is hidden as policy.
 
@@ -911,7 +916,7 @@ If repository settings access safely permits requiring the status check on main,
 5. Removing a known violation while retaining its baseline entry fails as RESOLVED.
 6. Repeated no-ID elements remain individually identifiable without line-number identity.
 7. Runtime site files are byte-for-byte unchanged from branch base.
-8. AUDITED_HTML is immutable through policy; stale policy exceptions fail configuration.
+8. REQUIRED_HTML is required, every root-level HTML page is automatically audited, policy cannot narrow that discovered scope, and stale policy exceptions fail configuration.
 9. --json output parses as JSON; normal CI output remains concise.
 10. Workflow push comparison uses github.event.before and genesis is possible only when the verified reference truly lacks the baseline.
 11. Tests use only standard library/temp files and make no network calls.
