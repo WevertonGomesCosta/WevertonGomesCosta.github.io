@@ -306,7 +306,7 @@ The first version should favor deterministic structural rules over subjective st
 ### 7.2 HTML structural integrity
 
 - `HTML_DUPLICATE_ID`: duplicate IDs within a page.
-- `HTML_INTERNAL_LINK_TARGET`: relative internal file links resolve.
+- `HTML_INTERNAL_LINK_TARGET`: local anchor targets resolve to an existing repository path; when the resolved target is HTML and the URL contains a non-empty fragment, that fragment must match an `id` in the target document. Query strings do not affect file resolution.
 - `HTML_TARGET_BLANK_NO_NOOPENER`: external/new-tab links include `noopener`.
 - `HTML_DUPLICATE_ATTRIBUTE`: invalid repeated attributes such as duplicate `rel`.
 - `HTML_SELF_LINK`: redundant explicit links to the current HTML file when the link has no meaningful fragment target. Fragment-only navigation such as `#contact`, and links such as `index.html#contact`, are not self-link violations. A bare `href="#"` is handled separately by `HTML_ACTION_HASH_LINK`. Legitimate same-file exceptions, if ever needed, must be explicit in `.audit/policy.json`.
@@ -497,10 +497,11 @@ At minimum:
 21. initial bootstrap without a reference baseline is allowed;
 22. stale policy exceptions fail;
 23. root-relative internal links such as `/` and `/publicacoes.html` resolve inside the site root;
-24. adding a new root-level `extra.html` automatically subjects it to HTML/runtime policy rules without configuration;
-25. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
-26. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
-27. clean fixture exits successfully.
+24. local HTML fragments resolve to an existing target `id`, while a missing fragment target is detected;
+25. adding a new root-level `extra.html` automatically subjects it to HTML/runtime policy rules without configuration;
+26. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
+27. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
+28. clean fixture exits successfully.
 
 ### Repository integration test
 
