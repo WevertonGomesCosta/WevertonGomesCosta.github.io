@@ -14,6 +14,8 @@
 
 ## Global Constraints
 
+- Evidence-driven Task 1 amendment: `.gitattributes` version-controls the shared-site EOL contract so Windows `core.autocrlf=true` cannot convert canonical LF components or LF inner pages; `index.html` remains intentionally CRLF and uses path-specific `whitespace=...cr-at-eol` so `git diff --check` still detects real trailing whitespace without treating the CR terminator as an error.
+
 - Implementation starts on a new branch named `block2-shared-site-architecture-implementation` created from the final approved `block2-shared-site-architecture-design` HEAD; do not implement on `main` or on the design branch.
 - No new dependency, framework, static-site generator, bundler, or package manager.
 - `scripts/render_shared_site.py` is Python standard-library only; `--write` and `--check` are mutually exclusive and exactly one mode is required.
@@ -53,6 +55,7 @@ style.css                           narrowly scoped anchor→button equivalence
 translations.json                   privacy-services-p2 in PT and EN
 
 .audit/known-debt.json              65 → 11 candidate baseline
+.gitattributes                      versioned EOL/whitespace contract
 .github/workflows/repository-audit.yml
 tests/test_audit_workflow.py        render-check CI contract
 
@@ -77,6 +80,7 @@ These five failure modes are easy to miss even if the happy path passes. Each is
 ### Task 1: Canonical components and deterministic renderer
 
 **Files:**
+- Create: `.gitattributes`
 - Create: `scripts/render_shared_site.py`
 - Create: `tests/test_shared_site.py`
 - Create: `_site_components/back-to-top.html`
@@ -1148,7 +1152,7 @@ SERVER_PID=$!
 sleep 2
 for path in / /publicacoes.html /projetos.html /politica-de-privacidade.html /404.html
 do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000docs/superpowers/plans/2026-09-24-shared-site-architecture.md")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000${path}")
   echo "$code  $path"
 done
 kill $SERVER_PID
@@ -1437,7 +1441,7 @@ SERVER_PID=$!
 sleep 2
 for path in / /publicacoes.html /projetos.html /politica-de-privacidade.html /404.html
 do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000docs/superpowers/plans/2026-09-24-shared-site-architecture.md")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000${path}")
   echo "$code  $path"
 done
 kill $SERVER_PID
@@ -1706,6 +1710,7 @@ Expected implementation files are restricted to:
 
 ```text
 .audit/known-debt.json
+.gitattributes
 .github/workflows/repository-audit.yml
 _site_components/back-to-top.html
 _site_components/footer-privacy-segment.html
@@ -1788,7 +1793,7 @@ sleep 2
 
 for path in / /publicacoes.html /projetos.html /politica-de-privacidade.html /404.html
 do
-  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000docs/superpowers/plans/2026-09-24-shared-site-architecture.md")
+  code=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000${path}")
   echo "$code  $path"
 done
 

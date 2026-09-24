@@ -114,6 +114,23 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
             with self.assertRaises(shared.RenderContractError):
                 shared.read_utf8_strict(target, component=True)
 
+    def test_repository_eol_policy_is_versioned(self):
+        source = (ROOT / ".gitattributes").read_text(encoding="utf-8")
+        required = {
+            "/.gitattributes text eol=lf",
+            "/_site_components/*.html text eol=lf",
+            "/publicacoes.html text eol=lf",
+            "/projetos.html text eol=lf",
+            "/politica-de-privacidade.html text eol=lf",
+            "/index.html -text whitespace=trailing-space,space-before-tab,cr-at-eol",
+        }
+        actual = {
+            line.strip()
+            for line in source.splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        }
+        self.assertTrue(required.issubset(actual), required - actual)
+
     def test_component_rejects_crlf(self):
         with tempfile.TemporaryDirectory() as tmp:
             target = Path(tmp) / "x.html"
@@ -161,7 +178,7 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
             "<!-- shared:nav:end -->\n<!-- shared:nav:start -->\n",
         )
         for source in bad_sources:
-            with self.subTert(source=source):
+            with self.subTest(source=source):
                 with self.assertRaises(shared.RenderContractError):
                     shared.validate_region_markers(source, ("nav",), Path("index.html"))
 
@@ -269,7 +286,7 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
 
     def test_cli_invalid_mode_combinations_return_2(self):
         stderr = io.StringIO()
-        with contextib.redirect_stderr(stderr):
+        with contextlib.redirect_stderr(stderr):
             self.assertEqual(shared.main([]), 2)
         with contextlib.redirect_stderr(stderr):
             self.assertEqual(shared.main(["--write", "--check"]), 2)

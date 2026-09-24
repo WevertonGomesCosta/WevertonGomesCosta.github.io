@@ -1,0 +1,7 @@
+# Block 2 shared-site EOL contract.
+/.gitattributes text eol=lf
+/_site_components/*.html text eol=lf
+/publicacoes.html text eol=lf
+/projetos.html text eol=lf
+/politica-de-privacidade.html text eol=lf
+/index.html -text whitespace=trailing-space,space-before-tab,cr-at-eol
