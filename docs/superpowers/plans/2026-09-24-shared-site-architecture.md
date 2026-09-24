@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-24-shared-site-architecture-design.md`
 
+**Status:** Approved after implementation-plan audit; ready for Native execution
+
 ## Global Constraints
 
 - Implementation starts on a new branch named `block2-shared-site-architecture-implementation` created from the final approved `block2-shared-site-architecture-design` HEAD; do not implement on `main` or on the design branch.
