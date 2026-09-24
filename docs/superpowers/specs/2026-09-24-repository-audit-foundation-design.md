@@ -196,19 +196,21 @@ rule_id + normalized repository-relative path + stable subject
 
 The fingerprint is a deterministic SHA-256 hash of that canonical representation. Diagnostic text, severity, metadata, and line number are never part of identity.
 
-The `subject` must therefore contain the rule-specific stable identity needed to distinguish violations. Examples: `button#clear-btn`, `a#copy-email-link`, `rel@a[href=...]`, `doi:10....`, or `title:<normalized-title>`.
+The `subject` must therefore contain the rule-specific stable identity needed to distinguish violations. Examples: `button#clear-btn`, `a#copy-email-link`, `section#education>div.timeline-item:nth-of-type(3)>button:nth-of-type(1)`, `rel@a[href=...]`, `doi:10....`, or `title:<normalized-title>`.
 
 When loading `known-debt.json`, the auditor recomputes every fingerprint from `rule_id`, `path`, and `subject` and rejects any stored fingerprint that does not match. This prevents hand-edited inconsistent identities.
 
 Examples of stable subjects:
 
 - element ID when available;
-- canonical CSS-like descriptor composed from element type plus stable attributes;
+- deterministic DOM path for HTML elements without IDs, anchored at the nearest ancestor ID when possible and using structural `nth-of-type` indices only where needed to distinguish repeated siblings;
 - translation key;
 - internal path;
 - normalized publication title/DOI;
 - JSON object key path;
 - dependency URL.
+
+For HTML, this is required because the repository contains repeated controls with the same tag, class, and translation key. Identical-looking elements must remain distinct baseline identities. Adding or removing blank lines must not affect identity; moving/replacing the element to a different DOM structural position may intentionally create a NEW/RESOLVED pair because the structural subject changed.
 
 The same violation moving from line 100 to line 120 remains the same debt item.
 
@@ -338,7 +340,7 @@ This separation is important because later structural blocks will remove violati
 The audit uses only the standard library.
 
 - JSON: `json`.
-- HTML: `html.parser.HTMLParser` with a small purpose-built collector.
+- HTML: `html.parser.HTMLParser` with a small purpose-built collector that preserves duplicate attributes and tracks a deterministic DOM path independently of source line numbers.
 - Paths: `pathlib`.
 - hashing: `hashlib`.
 - tests/fixtures: `unittest`, `tempfile`.
@@ -441,19 +443,20 @@ At minimum:
 5. button without type is detected;
 6. PT/EN key mismatch is detected;
 7. duplicate academic IDs/DOIs/titles are detected;
-8. stable fingerprint survives line movement;
-9. a changed violation with the same aggregate count is NEW;
-10. exact baseline match is KNOWN;
-11. disappeared baseline entry is RESOLVED;
-12. malformed baseline fails;
-13. duplicate baseline identities fail;
-14. stored fingerprint inconsistent with rule/path/subject fails;
-15. malformed policy fails;
-16. unknown rule ID in policy fails;
-17. candidate baseline addition relative to a reference baseline fails as BASELINE_GROWTH;
-18. removing an entry from the candidate baseline is allowed when the violation is also gone;
-19. initial bootstrap without a reference baseline is allowed;
-20. clean fixture exits successfully.
+8. stable fingerprint survives source-line movement;
+9. repeated HTML elements without IDs receive distinct DOM-path subjects;
+10. moving/replacing one repeated violation to a different DOM structural path is NEW even when the aggregate count is unchanged;
+11. exact baseline match is KNOWN;
+12. disappeared baseline entry is RESOLVED;
+13. malformed baseline fails;
+14. duplicate baseline identities fail;
+15. stored fingerprint inconsistent with rule/path/subject fails;
+16. malformed policy fails;
+17. unknown rule ID in policy fails;
+18. candidate baseline addition relative to a reference baseline fails as BASELINE_GROWTH;
+19. removing an entry from the candidate baseline is allowed when the violation is also gone;
+20. initial bootstrap without a reference baseline is allowed;
+21. clean fixture exits successfully.
 
 ### Repository integration test
 
