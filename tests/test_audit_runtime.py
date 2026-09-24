@@ -118,6 +118,29 @@ class TestRuntimePolicyRules(unittest.TestCase):
             },
         )
 
+    def test_duplicate_external_src_fails_if_any_occurrence_is_unhardened(self):
+        root = self._root(
+            {
+                "style.css": "@media (prefers-reduced-motion: reduce) {}",
+                "utils.js": "matchMedia('(prefers-reduced-motion: reduce)');",
+                "index.html": """
+                    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.example.test">
+                    <script src="https://cdn.example.test/repeated.js" integrity="sha384-YWJj" crossorigin="anonymous"></script>
+                    <script src="https://cdn.example.test/repeated.js"></script>
+                """,
+            }
+        )
+        violations = runtime_rules.audit_runtime_policy(root)
+        sri = [
+            v
+            for v in violations
+            if v.rule_id == "SECURITY_EXTERNAL_SCRIPT_INTEGRITY"
+        ]
+        self.assertEqual(
+            [(v.path, v.subject) for v in sri],
+            [("index.html", "https://cdn.example.test/repeated.js")],
+        )
+
     def test_csp_requires_nonempty_default_and_script_src_on_each_page(self):
         root = self._root(
             {

@@ -161,7 +161,7 @@ def _runtime_html_violations(root: Path) -> list[Violation]:
                 )
             )
 
-        seen_external: set[str] = set()
+        invalid_external: dict[str, int] = {}
         for element in document.elements:
             if element.tag != "script":
                 continue
@@ -170,22 +170,24 @@ def _runtime_html_violations(root: Path) -> list[Violation]:
                 continue
             parsed = urlsplit(src)
             external = parsed.scheme.lower() in {"http", "https"} or bool(parsed.netloc)
-            if not external or src in seen_external:
+            if not external:
                 continue
-            seen_external.add(src)
             crossorigin = element.attr("crossorigin")
             if not _valid_sri(element.attr("integrity")) or (
                 crossorigin is None or crossorigin.strip().lower() != "anonymous"
             ):
-                violations.append(
-                    Violation(
-                        "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
-                        relative,
-                        src,
-                        "External script requires syntactically valid SRI and crossorigin=\"anonymous\"",
-                        line=element.line,
-                    )
+                invalid_external.setdefault(src, element.line)
+
+        for src, line in invalid_external.items():
+            violations.append(
+                Violation(
+                    "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
+                    relative,
+                    src,
+                    "External script requires syntactically valid SRI and crossorigin=\"anonymous\"",
+                    line=line,
                 )
+            )
     return violations
 
 

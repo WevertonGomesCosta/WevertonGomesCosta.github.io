@@ -144,6 +144,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (AuditConfigError, OSError, UnicodeError) as exc:
         print(f"Audit configuration error: {exc}", file=sys.stderr)
         return 2
+    except Exception as exc:
+        print(
+            f"Audit internal error: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        return 2
 
 
 if __name__ == "__main__":

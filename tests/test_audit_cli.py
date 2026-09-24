@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -297,6 +298,23 @@ class TestCli(FixtureCase):
                 audit_repository.main(["--root", str(root)]),
                 2,
             )
+
+    def test_unexpected_internal_error_is_fatal_exit_2(self):
+        root = self.repo()
+        stderr = io.StringIO()
+        with mock.patch.object(
+            audit_repository,
+            "run_audit",
+            side_effect=RuntimeError("boom"),
+        ):
+            with contextlib.redirect_stderr(stderr):
+                code = audit_repository.main(["--root", str(root)])
+
+        self.assertEqual(code, 2)
+        self.assertIn(
+            "Audit internal error: RuntimeError: boom",
+            stderr.getvalue(),
+        )
 
     def test_json_output_parses(self):
         root = self.repo()
