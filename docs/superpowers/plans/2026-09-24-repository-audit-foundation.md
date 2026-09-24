@@ -840,7 +840,14 @@ If repository settings access safely permits requiring the status check on main,
 
 ## Execution Handoff
 
-- **Subagent-driven:** fresh implementation/review context per task plus final whole-branch review. Preferred because identity, HTML parsing, baseline monotonicity, data normalization, and CI semantics are independent failure surfaces whose mistakes could weaken every later structural block.
-- **Native:** implement all six tasks in one session with TDD and one final whole-branch review. Faster/cheaper, with independent review only at the end.
+This harness does not expose a subagent execution tool. After the plan is reviewed and approved, implementation must use **Native execution** with superpowers:executing-plans:
 
-**Recommendation:** Subagent-driven if available. Native is acceptable when speed/cost is the priority, provided the final whole-branch review is retained.
+- execute all six tasks in order;
+- preserve the RED->GREEN sequence for every task;
+- commit at each task boundary;
+- keep the progress ledger required by executing-plans;
+- run one whole-branch review after all tasks;
+- fix any Critical/Important final-review finding only after adding a failing regression test;
+- do not merge or push to main without the normal explicit integration step.
+
+This is the available execution method for this environment.
