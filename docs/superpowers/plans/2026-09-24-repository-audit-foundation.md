@@ -4,7 +4,7 @@
 
 **Goal:** Build a deterministic, baseline-aware repository auditor that freezes the current structural debt, blocks new regressions, detects resolved debt, and enforces the checks in GitHub Actions without changing visible site behavior.
 
-**Architecture:** One Python standard-library CLI owns rule registration, parsing, stable violation identity, policy exceptions, baseline comparison, reporting, and bootstrap output. A unittest suite develops each layer in RED->GREEN order. Versioned .audit/policy.json defines intentional repository semantics; .audit/known-debt.json freezes genuine current debt; CI compares the candidate baseline with the base/parent baseline so debt is monotonically non-increasing.
+**Architecture:** A thin Python CLI delegates to a focused standard-library `repository_audit` package split into core identity/configuration, HTML rules, data rules, runtime/security rules, and orchestration. A responsibility-split unittest suite develops each layer in RED->GREEN order. Versioned .audit/policy.json defines intentional exceptions; .audit/known-debt.json freezes genuine current debt; CI compares the candidate baseline with the PR base SHA or push-event `before` SHA so debt is monotonically non-increasing.
 
 **Tech Stack:** Python 3.13 standard library only; GitHub Actions with actions/checkout@v4 and actions/setup-python@v5.
 
@@ -18,18 +18,37 @@
 - Identity is exactly rule_id + normalized repository-relative path + stable subject.
 - Line number, message, severity, and metadata are diagnostic only.
 - Repeated no-ID HTML elements use deterministic DOM paths, not line numbers.
-- known-debt.json is removable debt; policy.json is intentional policy.
+- AUDITED_HTML is a code-level canonical invariant and cannot be narrowed through policy.json.
+- known-debt.json is removable debt; policy.json is intentional policy; every policy exception must match a raw current violation or configuration fails as stale.
 - After bootstrap, candidate debt identities must be a subset of the reference baseline; additions are BASELINE_GROWTH.
 - RESOLVED debt blocks until its stale baseline entry is deleted.
 - Invalid repository data JSON is JSON_PARSE; malformed auditor policy/baseline is fatal configuration.
 - HTML uses html.parser.HTMLParser. Regex is allowed only for narrow source-code rules with dedicated tests.
 - Bootstrap debt is reconciled against an independent inventory before versioning.
+- The independent 65-item inventory is anchored to merge base `8ce0d58126b182bc3b1570733843dd1c0ffbddde`; if execution starts from a different merge base, stop before Task 1 and re-audit/revise the inventory rather than forcing the old count.
 
 ## File Map
 
 Create:
 - scripts/audit_repository.py
-- tests/test_repository_audit.py
+- scripts/repository_audit/__init__.py
+- scripts/repository_audit/core.py
+- scripts/repository_audit/html_rules.py
+- scripts/repository_audit/data_rules.py
+- scripts/repository_audit/runtime_rules.py
+- scripts/repository_audit/engine.py
+- scripts/repository_audit/__init__.py
+- scripts/repository_audit/core.py
+- scripts/repository_audit/html_rules.py
+- scripts/repository_audit/data_rules.py
+- scripts/repository_audit/runtime_rules.py
+- scripts/repository_audit/engine.py
+- tests/test_audit_core.py
+- tests/test_audit_html.py
+- tests/test_audit_data.py
+- tests/test_audit_runtime.py
+- tests/test_audit_cli.py
+- tests/test_audit_workflow.py
 - .audit/policy.json
 - .audit/known-debt.json
 - .github/workflows/repository-audit.yml
@@ -46,33 +65,44 @@ Do not modify:
 - academic-registry.json
 - fallback-data.json
 
+### Pre-flight inventory anchor
+
+Before Task 1, verify:
+
+~~~bash
+BASE="$(git merge-base main HEAD)"
+test "$BASE" = "8ce0d58126b182bc3b1570733843dd1c0ffbddde"
+~~~
+
+Expected: exit 0. If it fails, the 65-item independent inventory is no longer authoritative for the execution base. Re-run the structural inventory and update the spec/plan before writing implementation code.
+
 ## Review Focus
 
-1. Internal links: query strings, meaningful fragments, fragment-only links, root-relative links, mailto/tel, protocol-relative URLs, and path traversal.
-2. Repeated DOM controls: identical no-ID elements remain distinct, while blank-line movement preserves identity.
-3. Bibliographic normalization: Unicode hyphens/diacritics/punctuation and DOI URL prefixes normalize deterministically; empty DOIs are not duplicates.
-4. Baseline genesis versus monotonic enforcement: first bootstrap has no reference; every later candidate addition fails.
-5. Malformed required data JSON: exactly one JSON_PARSE violation and clean dependent-rule skipping, not a cascade.
+1. A multi-commit direct push to main must compare baseline growth with `github.event.before`, not merely `HEAD^1`.
+2. Policy cannot narrow the audited-page set; every policy exception must match a raw current violation, so obsolete exceptions cannot hide later regressions.
+3. Repeated DOM controls without IDs remain distinct while blank-line/source-line movement preserves identity.
+4. Bootstrap mode works when candidate known-debt.json does not yet exist, but normal audit mode treats a missing baseline as configuration failure.
+5. Security/accessibility debt cannot be cleared by placeholder syntax: invalid SRI, missing crossorigin, comments mentioning reduced motion, or incomplete CSP remain violations.
 
-## Rule Coverage Matrix
+---
 
-- Task 2: HTML_DUPLICATE_ID, HTML_INTERNAL_LINK_TARGET, HTML_TARGET_BLANK_NO_NOOPENER, HTML_DUPLICATE_ATTRIBUTE, HTML_SELF_LINK, HTML_BUTTON_MISSING_TYPE, HTML_ACTION_HASH_LINK.
-- Task 3: JSON_PARSE, REQUIRED_FILE, TRANSLATION_LANGUAGE_SET, TRANSLATION_KEY_PARITY, I18N_FIXED_ARIA_LABEL, I18N_FIXED_TITLE, I18N_REFERENCE_MISSING.
-- Task 4: ACADEMIC_REGISTRY_STRUCTURE, ACADEMIC_REGISTRY_DUPLICATE_ID, ACADEMIC_REGISTRY_DUPLICATE_DOI, ACADEMIC_REGISTRY_DUPLICATE_TITLE, BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE, LEGACY_MAXIMIZED_REFERENCE, A11Y_REDUCED_MOTION_POLICY, SECURITY_EXTERNAL_SCRIPT_INTEGRITY, SECURITY_CSP_POLICY.
-- Task 5 verifies that every RULE_IDS member is exercised by one of the registered rule groups and that no duplicate violation fingerprint is emitted.
+### Task 1:
 
 ---
 
 ### Task 1: Core identity, policy, and baseline engine
 
 **Files**
-- Create scripts/audit_repository.py
-- Create tests/test_repository_audit.py
+- Create scripts/repository_audit/__init__.py
+- Create scripts/repository_audit/core.py
+- Create tests/test_audit_core.py
 
 **Produces**
-RULE_IDS, AuditConfigError, Violation, PolicyException, AuditPolicy, BaselineEntry, Baseline, AuditComparison, normalize_repo_path(), make_fingerprint(), load_policy(), load_baseline(), classify_violations(), find_baseline_growth().
+RULE_IDS, AUDITED_HTML, AuditConfigError, Violation, PolicyException, AuditPolicy, BaselineEntry, Baseline, AuditComparison, normalize_repo_path(), make_fingerprint(), load_policy(), load_baseline(), classify_violations(), find_baseline_growth().
 
 - [ ] **Step 1: Write failing identity tests**
+
+At the top of each test module, add `<repo>/scripts` to `sys.path` and import from `repository_audit`.
 
 The first test class must pin these behaviors:
 
@@ -115,14 +145,26 @@ Use importlib.util to import scripts/audit_repository.py by path and tempfile.Te
 Run:
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestIdentityAndBaseline -v
+python -m unittest tests.test_audit_core.TestIdentityAndBaseline -v
 ~~~
 
 Expected: import/file failure or missing interfaces.
 
 - [ ] **Step 3: Implement core identity**
 
-Define all 23 rule IDs from the spec and SCHEMA_VERSION = 1.
+Define all 23 rule IDs from the spec, SCHEMA_VERSION = 1, and the immutable canonical page set:
+
+~~~python
+AUDITED_HTML = (
+    "index.html",
+    "publicacoes.html",
+    "projetos.html",
+    "politica-de-privacidade.html",
+    "404.html",
+)
+~~~
+
+Violation.severity defaults to the only version-1 value, `"error"`; validate/reject any other severity in version 1.
 
 Implement path normalization and SHA-256 identity:
 
@@ -152,6 +194,7 @@ Expected: 3 tests pass.
 Pin:
 - unknown policy rule -> AuditConfigError;
 - duplicate policy identity -> AuditConfigError;
+- policy files containing an audited_html override -> AuditConfigError;
 - unsupported schema -> AuditConfigError;
 - baseline fingerprint mismatch -> AuditConfigError;
 - duplicate baseline identity -> AuditConfigError;
@@ -176,7 +219,6 @@ Policy schema:
 ~~~json
 {
   "schema_version": 1,
-  "audited_html": ["index.html"],
   "exceptions": [
     {
       "rule_id": "I18N_FIXED_ARIA_LABEL",
@@ -195,8 +237,8 @@ Validate paths, rule IDs, non-empty reason/subject, duplicate identities, schema
 - [ ] **Step 9: Commit**
 
 ~~~bash
-git add scripts/audit_repository.py tests/test_repository_audit.py
-git commit -m "feat: add audit identity and baseline engine"
+git add scripts/repository_audit/__init__.py scripts/repository_audit/core.py   tests/test_audit_core.py
+git commit -m "feat: add audit identity and baseline core"
 ~~~
 
 ---
@@ -204,8 +246,11 @@ git commit -m "feat: add audit identity and baseline engine"
 ### Task 2: Deterministic HTML parser and structural/control rules
 
 **Files**
-- Modify scripts/audit_repository.py
-- Modify tests/test_repository_audit.py
+- Create scripts/repository_audit/html_rules.py
+- Create tests/test_audit_html.py
+
+**Consumes**
+Task 1 core models, rule IDs and AUDITED_HTML.
 
 **Produces**
 HtmlElement, HtmlDocument, parse_html(), element_subject(), audit_html_structure().
@@ -220,7 +265,7 @@ Pin:
 - [ ] **Step 2: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestHtmlParserIdentity -v
+python -m unittest tests.test_audit_html.TestHtmlParserIdentity -v
 ~~~
 
 - [ ] **Step 3: Implement HTML collector**
@@ -245,6 +290,7 @@ Pin exact examples for:
 - target="_blank" without noopener versus with noopener;
 - explicit index.html self-link versus index.html#contact;
 - valid about.html?x=1#bio;
+- root-relative "/" -> index.html and "/publicacoes.html" -> publicacoes.html;
 - mailto, tel, https, and protocol-relative URLs;
 - missing.html;
 - ../outside.html path escape.
@@ -252,7 +298,7 @@ Pin exact examples for:
 - [ ] **Step 6: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestHtmlRules -v
+python -m unittest tests.test_audit_html.TestHtmlRules -v
 ~~~
 
 - [ ] **Step 7: Implement structural rules**
@@ -271,15 +317,15 @@ Resolve URLs with urllib.parse.urlsplit/unquote. Constrain local resolution to r
 - [ ] **Step 8: Run Task 2 plus full suite GREEN**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestHtmlParserIdentity \
-  tests.test_repository_audit.TestHtmlRules -v
+python -m unittest tests.test_audit_html.TestHtmlParserIdentity \
+  tests.test_audit_html.TestHtmlRules -v
 python -m unittest discover -s tests -p "test_*.py"
 ~~~
 
 - [ ] **Step 9: Commit**
 
 ~~~bash
-git add scripts/audit_repository.py tests/test_repository_audit.py
+git add scripts/repository_audit/html_rules.py tests/test_audit_html.py
 git commit -m "feat: audit HTML structure and controls"
 ~~~
 
@@ -288,12 +334,15 @@ git commit -m "feat: audit HTML structure and controls"
 ### Task 3: Required files, JSON integrity, translations, and policy filtering
 
 **Files**
-- Modify scripts/audit_repository.py
-- Modify tests/test_repository_audit.py
+- Create scripts/repository_audit/data_rules.py
+- Create tests/test_audit_data.py
 - Create .audit/policy.json
 
+**Consumes**
+Task 1 core models/rule IDs and Task 2 parsed HTML documents.
+
 **Produces**
-REQUIRED_FILES, REQUIRED_DATA_JSON, read_repository_json(), audit_repository_data(), apply_policy_exceptions().
+REQUIRED_FILES, REQUIRED_DATA_JSON, read_repository_json(), audit_repository_data(). Policy filtering itself is owned by Task 5 engine so stale exceptions can be validated against the complete raw violation set.
 
 - [ ] **Step 1: Write failing required-file/JSON tests**
 
@@ -321,7 +370,7 @@ Pin:
 - [ ] **Step 2: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestRepositoryDataRules -v
+python -m unittest tests.test_audit_data.TestRepositoryDataRules -v
 ~~~
 
 - [ ] **Step 3: Implement safe data loading**
@@ -336,12 +385,12 @@ Pin:
 3. p#missing data-key="missing-key" absent in both languages -> one I18N_REFERENCE_MISSING with subject p#missing@data-key:missing-key and missing-language metadata.
 4. aria-label without data-key-aria-label -> I18N_FIXED_ARIA_LABEL.
 5. title without data-key-title -> I18N_FIXED_TITLE.
-6. exact PolicyException fingerprint suppresses only its exact violation.
+6. the data rule group emits raw violations without suppressing policy exceptions; policy suppression/stale validation is tested in Task 5 after all raw rule groups are available.
 
 - [ ] **Step 5: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestTranslationRules -v
+python -m unittest tests.test_audit_data.TestTranslationRules -v
 ~~~
 
 - [ ] **Step 6: Implement declarative i18n checks**
@@ -354,23 +403,16 @@ Only inspect:
 
 Do not infer arbitrary JavaScript translation strings.
 
-Policy filtering is exact fingerprint filtering after rule emission.
-
 - [ ] **Step 7: Create the real policy**
 
 ~~~json
 {
   "schema_version": 1,
-  "audited_html": [
-    "index.html",
-    "publicacoes.html",
-    "projetos.html",
-    "politica-de-privacidade.html",
-    "404.html"
-  ],
   "exceptions": []
 }
 ~~~
+
+AUDITED_HTML comes only from Task 1 code and is not configurable here.
 
 No bootstrap debt is hidden as policy.
 
@@ -379,7 +421,7 @@ No bootstrap debt is hidden as policy.
 - [ ] **Step 9: Commit**
 
 ~~~bash
-git add scripts/audit_repository.py tests/test_repository_audit.py .audit/policy.json
+git add scripts/repository_audit/data_rules.py tests/test_audit_data.py .audit/policy.json
 git commit -m "feat: audit repository data and translations"
 ~~~
 
@@ -388,14 +430,16 @@ git commit -m "feat: audit repository data and translations"
 ### Task 4: Academic, legacy, motion, and security rules
 
 **Files**
-- Modify scripts/audit_repository.py
-- Modify tests/test_repository_audit.py
+- Modify scripts/repository_audit/data_rules.py
+- Create scripts/repository_audit/runtime_rules.py
+- Modify tests/test_audit_data.py
+- Create tests/test_audit_runtime.py
 
 **Produces**
-normalize_title(), normalize_doi(), audit_academic_and_runtime().
+normalize_title(), normalize_doi(), audit_academic_data(), audit_runtime_policy().
 
 **Consumes**
-Task 3 read_repository_json(). Task 4 must never emit JSON_PARSE itself: if academic-registry.json or fallback-data.json cannot be parsed, Task 4 skips dependent checks because Task 3 already owns the single JSON_PARSE violation.
+Task 3 read_repository_json(). Academic checks must never emit JSON_PARSE themselves: if academic-registry.json or fallback-data.json cannot be parsed, they skip dependent checks because Task 3 already owns the single JSON_PARSE violation.
 
 - [ ] **Step 1: Write failing academic normalization tests**
 
@@ -410,6 +454,11 @@ self.assertEqual(
     audit.normalize_doi("https://doi.org/10.1234/ABC "),
     "10.1234/abc",
 )
+self.assertEqual(
+    audit.normalize_doi("https://dx.doi.org/10.1234/ABC"),
+    "10.1234/abc",
+)
+self.assertEqual(audit.normalize_doi("doi:10.1234/ABC"), "10.1234/abc")
 ~~~
 
 Also prove empty/None DOIs are not duplicates and that ID/DOI/title duplicates are independently detected.
@@ -417,7 +466,7 @@ Also prove empty/None DOIs are not duplicates and that ID/DOI/title duplicates a
 - [ ] **Step 2: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestAcademicRules -v
+python -m unittest tests.test_audit_data.TestAcademicRules -v
 ~~~
 
 - [ ] **Step 3: Implement academic rules**
@@ -427,7 +476,7 @@ schema_version, updated_at, source_basis, summary, works.
 
 Every work requires non-empty id, type, status, title; non-empty string-list authors; integer year; DOI optional.
 
-Normalize title with NFKD, remove combining marks, lowercase, replace non-alphanumerics with spaces, collapse whitespace. Normalize DOI by lowercase/trim and stripping https://doi.org/ or http://dx.doi.org/.
+Normalize title with NFKD, remove combining marks, lowercase, replace non-alphanumerics with spaces, collapse whitespace. Normalize DOI by lowercase/trim and strip common prefixes case-insensitively: `doi:`, `https://doi.org/`, `http://doi.org/`, `https://dx.doi.org/`, and `http://dx.doi.org/`.
 
 Subjects:
 - id:<id>
@@ -440,14 +489,19 @@ Subjects:
 Pin:
 - the current kind of Unicode-hyphen duplicate in a bibliometric source;
 - processPlatformData(... "maximized") and acad.maximized as two distinct legacy violations;
-- prefers-reduced-motion present -> no motion debt;
-- external script without integrity -> violation; external with integrity and local script -> clean;
-- CSP present on one audited page and absent on another -> violation only on missing page.
+- CSS @media plus JavaScript matchMedia reduced-motion handling -> clean;
+- a comment containing "prefers-reduced-motion" without active CSS/JS handling -> violation;
+- external script without integrity -> violation;
+- external script with malformed integrity -> violation;
+- valid sha384-* integrity but missing crossorigin="anonymous" -> violation;
+- valid SRI plus crossorigin="anonymous" and a local script -> clean;
+- CSP meta lacking default-src or script-src -> violation;
+- CSP containing both required directives on one audited page and absent on another -> violation only on missing page.
 
 - [ ] **Step 5: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestRuntimePolicyRules -v
+python -m unittest tests.test_audit_runtime.TestRuntimePolicyRules -v
 ~~~
 
 - [ ] **Step 6: Implement narrow runtime/security rules**
@@ -463,18 +517,18 @@ MAXIMIZED_PATTERNS = (
 )
 ~~~
 
-Reduced motion: search style.css, utils.js, and audited HTML for literal prefers-reduced-motion. If absent, one violation at style.css with subject site:prefers-reduced-motion.
+Reduced motion: emit one `A11Y_REDUCED_MOTION_POLICY` violation at style.css / subject `site:prefers-reduced-motion` unless both conditions are present outside comments: (1) an active CSS `@media (...prefers-reduced-motion: reduce...)` rule and (2) JavaScript `matchMedia(...prefers-reduced-motion: reduce...)` detection.
 
-External script integrity: each external/protocol-relative script src without non-empty integrity is one violation, subject full src.
+External script integrity: each cross-origin/protocol-relative script src must have an `integrity` value containing at least one syntactically valid `sha256-`, `sha384-`, or `sha512-` base64 token and `crossorigin="anonymous"`. Otherwise emit one violation with subject equal to the full src. Do not make network requests to verify the digest bytes.
 
-CSP: each audited HTML page requires a non-empty meta http-equiv="Content-Security-Policy"; absent subject document:csp-meta.
+CSP: each audited HTML page requires a non-empty meta `http-equiv="Content-Security-Policy"` whose content contains non-empty `default-src` and `script-src` directives; otherwise emit `SECURITY_CSP_POLICY` subject `document:csp-meta`.
 
 - [ ] **Step 7: Run Task 4 plus full suite GREEN**
 
 - [ ] **Step 8: Commit**
 
 ~~~bash
-git add scripts/audit_repository.py tests/test_repository_audit.py
+git add scripts/repository_audit/data_rules.py scripts/repository_audit/runtime_rules.py   tests/test_audit_data.py tests/test_audit_runtime.py
 git commit -m "feat: audit academic and runtime debt"
 ~~~
 
@@ -483,12 +537,17 @@ git commit -m "feat: audit academic and runtime debt"
 ### Task 5: Orchestration, CLI, reporting, and bootstrap baseline
 
 **Files**
-- Modify scripts/audit_repository.py
-- Modify tests/test_repository_audit.py
+- Create scripts/repository_audit/engine.py
+- Create scripts/audit_repository.py
+- Modify scripts/repository_audit/__init__.py
+- Create tests/test_audit_cli.py
 - Create .audit/known-debt.json
 
+**Consumes**
+All Task 1-4 raw rule groups and core loaders.
+
 **Produces**
-RULES, AuditReport, run_audit(), write_bootstrap_baseline(), main().
+RULES, RULE_COVERAGE, AuditReport, run_audit(), write_bootstrap_baseline(), main().
 CLI: --root, --policy, --baseline, --reference-baseline, --json, --emit-current-debt.
 
 - [ ] **Step 1: Write failing orchestration tests**
@@ -496,6 +555,8 @@ CLI: --root, --policy, --baseline, --reference-baseline, --json, --emit-current-
 Pin:
 - RULE_COVERAGE union equals RULE_IDS exactly, with no unknown or missing rule ID;
 - clean fixture -> PASS;
+- exact policy exception suppresses its matching raw violation and is reported as active policy;
+- policy exception matching no raw violation -> fatal stale-policy configuration;
 - new missing-type button -> NEW/fail;
 - stale baseline entry -> RESOLVED/fail;
 - violation inserted into candidate baseline while reference is empty -> BASELINE_GROWTH/fail;
@@ -504,7 +565,7 @@ Pin:
 - [ ] **Step 2: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestAuditOrchestration -v
+python -m unittest tests.test_audit_cli.TestAuditOrchestration -v
 ~~~
 
 - [ ] **Step 3: Implement orchestration**
@@ -515,7 +576,8 @@ Rule groups and explicit coverage:
 RULES = (
     audit_html_structure,
     audit_repository_data,
-    audit_academic_and_runtime,
+    audit_academic_data,
+    audit_runtime_policy,
 )
 RULE_COVERAGE = {
     audit_html_structure: frozenset({
@@ -528,12 +590,14 @@ RULE_COVERAGE = {
         "TRANSLATION_KEY_PARITY", "I18N_FIXED_ARIA_LABEL",
         "I18N_FIXED_TITLE", "I18N_REFERENCE_MISSING",
     }),
-    audit_academic_and_runtime: frozenset({
+    audit_academic_data: frozenset({
         "ACADEMIC_REGISTRY_STRUCTURE", "ACADEMIC_REGISTRY_DUPLICATE_ID",
         "ACADEMIC_REGISTRY_DUPLICATE_DOI", "ACADEMIC_REGISTRY_DUPLICATE_TITLE",
-        "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE", "LEGACY_MAXIMIZED_REFERENCE",
-        "A11Y_REDUCED_MOTION_POLICY", "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
-        "SECURITY_CSP_POLICY",
+        "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
+    }),
+    audit_runtime_policy: frozenset({
+        "LEGACY_MAXIMIZED_REFERENCE", "A11Y_REDUCED_MOTION_POLICY",
+        "SECURITY_EXTERNAL_SCRIPT_INTEGRITY", "SECURITY_CSP_POLICY",
     }),
 }
 ~~~
@@ -544,9 +608,9 @@ run_audit sequence:
 1. resolve root/policy/baseline;
 2. load policy and candidate baseline;
 3. execute rule groups;
-4. apply policy exceptions;
-5. reject duplicate emitted fingerprints;
-6. classify current versus candidate baseline;
+4. reject duplicate emitted fingerprints;
+5. validate every configured policy exception against the complete raw violation set, fail on stale exceptions, and suppress exact active matches;
+6. classify remaining current violations versus candidate baseline;
 7. if reference supplied, calculate baseline growth;
 8. return sorted report.
 
@@ -555,6 +619,8 @@ AuditReport.passed is true only if NEW, RESOLVED, and GROWTH are empty.
 - [ ] **Step 4: Write failing CLI/bootstrap tests**
 
 Pin:
+- --emit-current-debt works when .audit/known-debt.json is absent;
+- normal audit mode with missing .audit/known-debt.json fails configuration;
 - generated bootstrap refuses overwrite;
 - entries are sorted by rule/path/subject;
 - every fingerprint recomputes;
@@ -564,10 +630,12 @@ Pin:
 - [ ] **Step 5: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestCli -v
+python -m unittest tests.test_audit_cli.TestCli -v
 ~~~
 
 - [ ] **Step 6: Implement CLI and reporting**
+
+`--emit-current-debt <path>` is a separate bootstrap path: it loads policy, executes all raw rules, validates/suppresses policy exceptions, and writes the remaining current violations without loading or requiring the candidate known-debt file. Every other audit mode requires a valid candidate baseline.
 
 Bootstrap reason exactly:
 Pre-existing debt frozen before structural block 2
@@ -672,7 +740,7 @@ git commit -m "feat: bootstrap repository audit baseline"
 
 **Files**
 - Create .github/workflows/repository-audit.yml
-- Modify tests/test_repository_audit.py
+- Create tests/test_audit_workflow.py
 
 - [ ] **Step 1: Write failing workflow contract test**
 
@@ -682,14 +750,15 @@ The test reads the workflow and asserts these literal contracts:
 - fetch-depth: 0;
 - unit-test command;
 - github.event.pull_request.base.sha;
-- git rev-parse HEAD^1;
+- github.event.before;
+- git cat-file -e;
 - --reference-baseline;
 - repository-audit CLI command.
 
 - [ ] **Step 2: Run RED**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestWorkflowContract -v
+python -m unittest tests.test_audit_workflow.TestWorkflowContract -v
 ~~~
 
 Expected: FileNotFoundError.
@@ -705,7 +774,6 @@ on:
   pull_request:
   push:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -731,23 +799,21 @@ jobs:
         run: |
           set -euo pipefail
           rm -f /tmp/base-known-debt.json
-          BASE_SHA=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
-          elif [[ "${{ github.event_name }}" == "push" ]]; then
-            if git rev-parse HEAD^1 >/dev/null 2>&1; then
-              BASE_SHA="$(git rev-parse HEAD^1)"
-            fi
+          else
+            BASE_SHA="${{ github.event.before }}"
           fi
 
-          if [[ -n "$BASE_SHA" ]]; then
-            git cat-file -e "${BASE_SHA}^{commit}"
-            if git cat-file -e "${BASE_SHA}:.audit/known-debt.json" 2>/dev/null; then
-              git show "${BASE_SHA}:.audit/known-debt.json" > /tmp/base-known-debt.json
-              echo "has_reference=true" >> "$GITHUB_OUTPUT"
-            else
-              echo "has_reference=false" >> "$GITHUB_OUTPUT"
-            fi
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "has_reference=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git cat-file -e "${BASE_SHA}^{commit}"
+          if git cat-file -e "${BASE_SHA}:.audit/known-debt.json" 2>/dev/null; then
+            git show "${BASE_SHA}:.audit/known-debt.json" > /tmp/base-known-debt.json
+            echo "has_reference=true" >> "$GITHUB_OUTPUT"
           else
             echo "has_reference=false" >> "$GITHUB_OUTPUT"
           fi
@@ -763,12 +829,12 @@ jobs:
         run: python scripts/audit_repository.py
 ~~~
 
-Genesis is valid only when the verified reference commit truly has no baseline file (or there is no parent commit). Failure to resolve/read an existing reference commit is fatal and must never fall through to the genesis path. After Block 1 lands, later PRs/pushes use a reference baseline.
+Genesis is valid only when the verified PR-base/push-before commit truly has no baseline file (or the event before SHA is the all-zero creation sentinel). Failure to resolve/read an existing nonzero reference commit is fatal and must never fall through to genesis. After Block 1 lands, later PRs/pushes use a reference baseline.
 
 - [ ] **Step 4: Run workflow test and complete suite GREEN**
 
 ~~~bash
-python -m unittest tests.test_repository_audit.TestWorkflowContract -v
+python -m unittest tests.test_audit_workflow.TestWorkflowContract -v
 python -m unittest discover -s tests -p "test_*.py"
 python scripts/audit_repository.py
 ~~~
@@ -790,7 +856,12 @@ Expected changed set only:
 - docs/superpowers/plans/2026-09-24-repository-audit-foundation.md
 - docs/superpowers/specs/2026-09-24-repository-audit-foundation-design.md
 - scripts/audit_repository.py
-- tests/test_repository_audit.py
+- tests/test_audit_core.py
+- tests/test_audit_html.py
+- tests/test_audit_data.py
+- tests/test_audit_runtime.py
+- tests/test_audit_cli.py
+- tests/test_audit_workflow.py
 
 No runtime content file may appear.
 
@@ -816,7 +887,7 @@ Expected: green suite; audit PASS with 65 KNOWN and zero NEW/RESOLVED/GROWTH; cl
 
 Expected:
 - unit tests green;
-- only this bootstrap PR may take the no-reference genesis path;
+- only the bootstrap transition from a reference commit without known-debt.json may take the no-reference genesis path;
 - audit green;
 - no secrets/network dependency.
 
@@ -833,10 +904,11 @@ If repository settings access safely permits requiring the status check on main,
 5. Removing a known violation while retaining its baseline entry fails as RESOLVED.
 6. Repeated no-ID elements remain individually identifiable without line-number identity.
 7. Runtime site files are byte-for-byte unchanged from branch base.
-8. --json output parses as JSON; normal CI output remains concise.
-9. Workflow genesis is possible only when the reference commit truly lacks the baseline.
-10. Tests use only standard library/temp files and make no network calls.
-11. Any Critical/Important final-review finding receives a new failing regression test before its fix.
+8. AUDITED_HTML is immutable through policy; stale policy exceptions fail configuration.
+9. --json output parses as JSON; normal CI output remains concise.
+10. Workflow push comparison uses github.event.before and genesis is possible only when the verified reference truly lacks the baseline.
+11. Tests use only standard library/temp files and make no network calls.
+12. Any Critical/Important final-review finding receives a new failing regression test before its fix.
 
 ## Execution Handoff
 
