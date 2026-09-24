@@ -91,6 +91,7 @@ _site_components/
   nav-home.html
   nav-inner.html
   footer.html
+  footer-privacy-segment.html
 ```
 
 A standard-library-only renderer will live at:
@@ -186,10 +187,12 @@ Both forms must contain `type="button"`.
 
 `footer.html` is one canonical footer. A single `@@PRIVACY_SEGMENT@@` token renders either:
 
-- the complete existing translated privacy-link segment **including its trailing separator** (`<privacy link> | `) on non-privacy pages; or
+- the rendered contents of canonical `footer-privacy-segment.html` on non-privacy pages; or
 - an empty value on `politica-de-privacidade.html`.
 
-The separator must be part of the token value so the privacy page cannot render an orphan `|`. No separate privacy-footer component is permitted.
+`footer-privacy-segment.html` contains the complete existing translated privacy-link segment **including its trailing separator** (`<privacy link> | `). The separator is therefore removed together with the self-link and the privacy page cannot render an orphan `|`.
+
+The renderer must not embed this HTML fragment as a Python string or page-configuration value. Shared markup remains in `_site_components/`. No separate privacy-footer component is permitted.
 
 ## 6. Renderer Contract
 
@@ -281,6 +284,12 @@ The contact form's actual submit control, if present, retains submit semantics a
 
 Converted controls must not create any new `HTML_BUTTON_MISSING_TYPE` violation.
 
+### 7.5 Native interaction and accessible-name contract
+
+Converted action controls must retain their existing visible text and translation hooks so their accessible names remain available in both PT and EN. They use native `<button>` semantics; adding `role="button"`, synthetic `tabindex`, or custom keyboard activation handlers is forbidden.
+
+Keyboard activation with Enter/Space must therefore come from the native button element. Existing browser focus visibility must not be suppressed.
+
 ## 8. CSS Equivalence Contract
 
 Changing an action from `<a>` to `<button>` must not produce a visual redesign.
@@ -290,14 +299,14 @@ CSS may be modified only to neutralize browser button defaults and extend existi
 Required cases include:
 
 - `button.cta-btn`;
-- `button.contact-link`;
-- footer email action styling equivalent to existing footer links.
+- `button.contact-link`, including pointer cursor and inherited typography;
+- footer email action styling equivalent to existing footer links, including pointer cursor and focus visibility.
 
 The footer currently styles `.footer-column ul li a`; therefore the new footer email button must receive an explicit class and equivalent selectors rather than relying on browser defaults.
 
 Any reset must be narrowly scoped. A global `button { ... }` reset is forbidden in this block.
 
-Visual invariants include layout, spacing, typography, colors, borders, hover behavior, icon size, and responsive behavior.
+Visual/interaction invariants include layout, spacing, typography, colors, borders, cursor behavior, hover/focus behavior, icon size/alignment, and responsive behavior. Controls that behaved as pointer-activated links must retain an appropriate pointer cursor after becoming buttons.
 
 ## 9. Accessibility Normalization
 
