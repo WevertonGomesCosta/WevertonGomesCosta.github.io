@@ -184,29 +184,33 @@ Both forms must contain `type="button"`.
 
 ### 5.5 Footer variation
 
-`footer.html` is one canonical footer. A single `@@PRIVACY_LINK@@` token renders either:
+`footer.html` is one canonical footer. A single `@@PRIVACY_SEGMENT@@` token renders either:
 
-- the existing translated privacy link on non-privacy pages; or
+- the complete existing translated privacy-link segment **including its trailing separator** (`<privacy link> | `) on non-privacy pages; or
 - an empty value on `politica-de-privacidade.html`.
 
-No separate privacy-footer component is permitted.
+The separator must be part of the token value so the privacy page cannot render an orphan `|`. No separate privacy-footer component is permitted.
 
 ## 6. Renderer Contract
 
 `scripts/render_shared_site.py` is Python standard-library only.
 
-It supports two explicit modes:
+It supports two explicit, mutually exclusive modes:
 
 ```text
 python -B scripts/render_shared_site.py --write
 python -B scripts/render_shared_site.py --check
 ```
 
+Exactly one mode is required. Supplying neither mode or both modes is a fatal CLI/configuration error with exit code 2.
+
 ### 6.1 `--write`
 
 - reads canonical components and configured root pages;
-- renders all expected regions;
-- writes only configured pages whose rendered bytes differ;
+- parses, validates, and renders **all** configured targets in memory before writing any file;
+- if any target has a fatal render-contract error, writes nothing;
+- after all targets validate, writes only configured pages whose rendered bytes differ;
+- uses a safe replace strategy per changed file so a failed write does not intentionally truncate an existing page;
 - never writes `404.html` or unrelated files;
 - produces deterministic output;
 - is idempotent: a second `--write` produces no changes.
@@ -222,16 +226,16 @@ python -B scripts/render_shared_site.py --check
 
 ### 6.3 Encoding and line endings
 
-All files are UTF-8 without BOM.
+All files are UTF-8 without BOM. A BOM in a configured component or render target is a fatal contract error.
 
-Component files use LF internally. For each rendered target the renderer detects the target page's existing newline style and converts inserted component text to that style.
+Component files use LF internally. For each rendered target the renderer detects the target page's existing newline style and converts inserted component text to that style. A configured target containing mixed CRLF and bare-LF line endings is a fatal contract error rather than an invitation to normalize the file implicitly.
 
 The renderer must preserve content and newline style outside generated regions. In particular:
 
 - `index.html` remains CRLF unless a separately approved repository-wide EOL policy is introduced later;
 - the three inner pages remain LF.
 
-Tests must exercise both CRLF and LF fixtures.
+Tests must exercise CRLF, LF, mixed-EOL rejection, and the no-partial-write guarantee when one of multiple targets is invalid.
 
 ## 7. Semantic Control Migration
 
@@ -413,11 +417,27 @@ At minimum it must cover:
 12. fatal failure for duplicate markers;
 13. fatal failure for overlapping/nested markers;
 14. fatal failure for unresolved `@@TOKEN_NAME@@`;
-15. proof that `404.html` is not a render target.
+15. proof that `404.html` is not a render target;
+16. fatal failure when neither or both CLI modes are supplied;
+17. fatal failure for UTF-8 BOM or mixed EOL in a configured target;
+18. no partial writes when one target fails after another target has already rendered successfully.
 
 Existing audit tests continue to own semantic HTML/i18n rules; Block 2 must add regression fixtures only where an existing rule lacks coverage for the exact migrated shape.
 
 The complete unit suite, `compileall`, repository auditor, renderer check, and `git diff --check` are mandatory gates.
+
+### 13.1 Visual and interaction validation matrix
+
+Because semantic migration changes element types, HTTP 200 alone is not evidence of visual equivalence. Before a task that changes rendered controls is frozen, local browser validation must cover:
+
+- `index.html` at a representative desktop width and a mobile width;
+- each inner page (`publicacoes.html`, `projetos.html`, `politica-de-privacidade.html`) at least at desktop width, plus one inner page at mobile width to exercise the shared inner-nav responsive contract;
+- PT and EN switcher behavior on the home page and one inner page;
+- back-to-top visibility and navigation to the real `#page-top` target;
+- CV actions, contact email-copy action, footer email-copy action, clear/show-more controls, timeline toggles, and the contact-form submit action where present;
+- footer privacy-link presence on non-privacy pages and absence on the privacy page.
+
+The validation must explicitly check layout, spacing, typography, colors, borders, hover/focus behavior, icon alignment, and absence of orphan footer separators. Any visible difference introduced solely by changing an anchor to a button is a regression unless separately approved.
 
 ## 14. Runtime and Deployment Invariants
 
@@ -464,6 +484,7 @@ Block 2 is acceptable only when all of the following are simultaneously true:
 - no new audit violation exists;
 - all unit tests pass;
 - `git diff --check` is clean;
+- the visual/interaction validation matrix in §13.1 passes without unapproved differences;
 - the four interactive pages preserve visual and behavioral equivalence;
 - all five key pages return HTTP 200 in local validation;
 - the protected `Repository audit / audit` PR check passes against the 65-entry `main` reference baseline.
