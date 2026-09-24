@@ -378,7 +378,7 @@ def detect_newline(text: str, path: Path) -> str:
 
 Implement marker validation as a single-pass ordered event scan. Exactly one start/end pair is required for each configured region; no stack depth greater than one is allowed; any marker whose region is not in `expected_regions` is fatal.
 
-Expose:
+Use this concrete shape:
 
 ```python
 def validate_region_markers(
@@ -386,7 +386,52 @@ def validate_region_markers(
     expected_regions: tuple[str, ...],
     path: Path,
 ) -> None:
-    ...
+    expected = set(expected_regions)
+    counts = {
+        region: {"start": 0, "end": 0}
+        for region in expected_regions
+    }
+    active: str | None = None
+
+    for match in MARKER_RE.finditer(source):
+        region, edge = match.groups()
+        if region not in expected:
+            raise RenderContractError(
+                f"Unexpected shared region {region!r}: {path}"
+            )
+        counts[region][edge] += 1
+        if counts[region][edge] > 1:
+            raise RenderContractError(
+                f"Duplicate {edge} marker for {region!r}: {path}"
+            )
+
+        if edge == "start":
+            if active is not None:
+                raise RenderContractError(
+                    f"Nested/overlapping shared regions in {path}"
+                )
+            active = region
+        else:
+            if active != region:
+                raise RenderContractError(
+                    f"Out-of-order shared marker for {region!r}: {path}"
+                )
+            active = None
+
+    if active is not None:
+        raise RenderContractError(
+            f"Missing end marker for {active!r}: {path}"
+        )
+
+    missing = [
+        region
+        for region in expected_regions
+        if counts[region] != {"start": 1, "end": 1}
+    ]
+    if missing:
+        raise RenderContractError(
+            f"Missing shared marker pair(s) {missing!r}: {path}"
+        )
 
 
 def replace_region(
@@ -396,12 +441,105 @@ def replace_region(
     newline: str,
     path: Path,
 ) -> str:
-    ...
+    start_marker = f"<!-- shared:{region}:start -->"
+    end_marker = f"<!-- shared:{region}:end -->"
+    start = source.index(start_marker)
+    end = source.index(end_marker, start + len(start_marker))
+
+    end_line_start = source.rfind(newline, start, end) + len(newline)
+    end_indent = source[end_line_start:end]
+    if end_indent.strip():
+        raise RenderContractError(
+            f"End marker is not line-aligned for {region!r}: {path}"
+        )
+
+    fragment = rendered_fragment.rstrip("\n")
+    if "\r" in fragment:
+        raise RenderContractError(
+            f"Rendered component contains CR characters: {region}"
+        )
+    fragment = fragment.replace("\n", newline)
+
+    return (
+        source[: start + len(start_marker)]
+        + newline
+        + fragment
+        + newline
+        + end_indent
+        + source[end:]
+    )
 ```
 
-`replace_region()` keeps both marker comments and replaces only the bytes between them, using exactly one target newline after the start marker and before the end marker. Convert component LF to the target newline before insertion.
+`replace_region()` keeps both marker comments and replaces only the bytes between them, using exactly one target newline after the start marker and before the end marker.
 
-Implement token rendering with line-aware block indentation. Use the exact rule from Step 2: whole-line tokens may expand to multiline fragments with inherited indentation; inline tokens require single-line values.
+Implement token rendering with line-aware block indentation using this algorithm:
+
+```python
+def render_template(
+    template: str,
+    values: Mapping[str, str],
+    source_name: str,
+) -> str:
+    used: set[str] = set()
+    output: list[str] = []
+    block_re = re.compile(
+        r"^(?P<indent>[ \t]*)@@(?P<name>[A-Z0-9_]+)@@(?P<eol>\n?)$"
+    )
+
+    for line in template.splitlines(keepends=True):
+        block = block_re.match(line)
+        if block:
+            name = block.group("name")
+            if name not in values:
+                raise RenderContractError(
+                    f"Missing token {name!r}: {source_name}"
+                )
+            value = values[name].rstrip("\n")
+            if "\r" in value:
+                raise RenderContractError(
+                    f"CR is not allowed in component token {name!r}"
+                )
+            indent = block.group("indent")
+            lines = value.split("\n") if value else [""]
+            output.append(
+                "\n".join(
+                    (indent + item) if item else ""
+                    for item in lines
+                )
+                + block.group("eol")
+            )
+            used.add(name)
+            continue
+
+        def replace_inline(match: re.Match[str]) -> str:
+            name = match.group(1)
+            if name not in values:
+                raise RenderContractError(
+                    f"Missing token {name!r}: {source_name}"
+                )
+            value = values[name]
+            if "\n" in value or "\r" in value:
+                raise RenderContractError(
+                    f"Inline token {name!r} must be single-line"
+                )
+            used.add(name)
+            return value
+
+        output.append(TOKEN_RE.sub(replace_inline, line))
+
+    unused = set(values) - used
+    if unused:
+        raise RenderContractError(
+            f"Unused token value(s) {sorted(unused)!r}: {source_name}"
+        )
+
+    rendered = "".join(output)
+    if TOKEN_RE.search(rendered):
+        raise RenderContractError(
+            f"Unresolved token remains: {source_name}"
+        )
+    return rendered
+```
 
 Build components in this order:
 
@@ -493,13 +631,13 @@ Create `_site_components/language-switcher.html` from the existing switcher mark
 
 At Task 1, deliberately do **not** add `type="button"`; that belongs to Task 2 and keeps the Task 1 debt inventory at 65.
 
-Extract the current home `<nav>...</nav>` into `nav-home.html`, replacing only the switcher block with a whole-line:
+Extract the complete current home `<nav>` element, from its opening tag through its matching closing tag, into `nav-home.html`. Replace only the complete language-switcher button block with a whole-line:
 
 ```text
 @@LANGUAGE_SWITCHER@@
 ```
 
-Extract the common current inner `<nav>...</nav>` into `nav-inner.html`, replacing:
+Extract the complete current inner-page `<nav>` element into `nav-inner.html`. The publications page is the canonical source; verify the projects/privacy variants differ only in the page-title key/text before extraction. Replace the title element with:
 
 ```html
 <h1 class="nav-title" data-key="@@NAV_TITLE_KEY@@">@@NAV_TITLE_TEXT@@</h1>
@@ -510,7 +648,7 @@ and replacing its switcher with the same whole-line `@@LANGUAGE_SWITCHER@@`.
 Extract the current `index.html` footer into `footer.html`. Replace only this exact logical segment:
 
 ```html
-<a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> | 
+<a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> |
 ```
 
 with:
@@ -519,7 +657,7 @@ with:
 @@PRIVACY_SEGMENT@@
 ```
 
-Store that removed segment, including the trailing ` | `, in `footer-privacy-segment.html` as a single LF-terminated line. No footer HTML may be hardcoded in Python.
+Store that removed segment in `footer-privacy-segment.html` as one LF-terminated line. The fragment consists of the privacy anchor, one ASCII space, `|`, and one ASCII space before the following license anchor. No footer HTML may be hardcoded in Python.
 
 - [ ] **Step 6: Add generated-region markers to the four pages**
 
@@ -534,17 +672,7 @@ footer
 
 `index.html` gets all four; each inner page gets `back-to-top`, `nav`, and `footer`.
 
-Wrap the existing matching markup without changing the markup itself:
-
-```html
-<!-- shared:nav:start -->
-<nav>
-...
-</nav>
-<!-- shared:nav:end -->
-```
-
-Do the same for the other configured regions. Preserve the target file's existing line ending.
+Wrap the existing matching markup without changing its contents: insert `<!-- shared:nav:start -->` immediately before the existing opening `<nav>` line and `<!-- shared:nav:end -->` immediately after the matching closing `</nav>` line. Apply the same rule to the exact existing fixed-language button, back-to-top anchor, and footer element using their configured region names. Preserve the target file's existing line ending.
 
 Run:
 
@@ -727,15 +855,13 @@ Update `language-switcher.html`:
 </button>
 ```
 
-In `footer.html`, convert only `#copy-email-footer` from `<a href="#">...</a>` to:
+In `footer.html`, change only the opening and closing tags of `#copy-email-footer`. Replace the existing opening anchor tag with:
 
 ```html
 <button type="button" id="copy-email-footer" class="footer-copy-email" title="Copiar e-mail" data-key-title="copy-email-title">
-    ...preserve the existing SVG and visible email text exactly...
-</button>
 ```
 
-The ellipsis above is descriptive only: during implementation, reuse the exact existing SVG/path and `wevertonufv@gmail.com` text byte-for-byte from the canonical footer; do not replace or simplify the icon.
+Replace its matching `</a>` with `</button>`. Leave every byte of the existing SVG/path and visible `wevertonufv@gmail.com` content between those tags unchanged.
 
 Run:
 
@@ -760,13 +886,13 @@ Convert all four existing `[data-cv-type]` anchors to `<button type="button">` w
 - existing SVG;
 - existing translated child span/text.
 
-Convert `#copy-email-link` to:
+For `#copy-email-link`, replace only the existing opening anchor tag with:
 
 ```html
 <button type="button" id="copy-email-link" class="contact-link">
-    ...preserve the existing SVG and translated span exactly...
-</button>
 ```
+
+and replace its matching `</a>` with `</button>`. Leave the existing SVG/path and `<span data-key="contact-email-text">Email</span>` content unchanged.
 
 For every existing non-submit button missing a type, add `type="button"`. This includes:
 
@@ -1010,13 +1136,7 @@ Expected: failures from 19 fixed ARIA labels and the missing translation key.
 
 - [ ] **Step 3: Normalize decorative accessibility in `index.html`**
 
-For the six expertise emoji spans and three service emoji spans:
-
-```html
-<span class="icon" aria-hidden="true">…</span>
-```
-
-Remove both `role="img"` and fixed `aria-label`.
+For each of the six expertise emoji spans and three service emoji spans, change attributes only: keep `class="icon"` and the existing emoji text node, remove `role="img"` and the fixed `aria-label`, and add `aria-hidden="true"`.
 
 For LICAE and Conecta GEM feature-logo wrappers, preserve all visible/image markup but change the wrapper to:
 
