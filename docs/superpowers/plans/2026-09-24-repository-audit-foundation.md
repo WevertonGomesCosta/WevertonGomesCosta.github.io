@@ -294,7 +294,9 @@ Pin exact examples for:
 - bare href="#" versus href="#contact";
 - target="_blank" without noopener versus with noopener;
 - explicit index.html self-link versus index.html#contact;
-- valid about.html?x=1#bio;
+- valid about.html?x=1#bio when about.html contains id="bio";
+- href="#missing" and about.html#missing -> HTML_INTERNAL_LINK_TARGET;
+- query-only href="?view=full" is not a redundant self-link;
 - root-relative "/" -> index.html and "/publicacoes.html" -> publicacoes.html;
 - mailto, tel, https, and protocol-relative URLs;
 - missing.html;
@@ -317,7 +319,7 @@ Stable subjects:
 - missing button type -> element subject
 - bare hash -> element subject
 
-Resolve URLs with urllib.parse.urlsplit/unquote. Constrain local resolution to repository root. A trailing slash resolves to index.html. All HTML rules iterate `discover_audited_html(root)`; policy has no API capable of reducing that set.
+Resolve URLs with urllib.parse.urlsplit/unquote. Constrain local resolution to repository root. A trailing slash resolves to index.html. For an HTML target with a non-empty decoded fragment, parse the target and require a matching id; missing ids emit HTML_INTERNAL_LINK_TARGET. A same-file URL is HTML_SELF_LINK only when both query and fragment are empty. All HTML rules iterate `discover_audited_html(root)`; policy has no API capable of reducing that set.
 
 - [ ] **Step 8: Run Task 2 plus full suite GREEN**
 
