@@ -24,7 +24,7 @@
 - RESOLVED debt blocks until its stale baseline entry is deleted.
 - Invalid repository data JSON is JSON_PARSE; malformed auditor policy/baseline is fatal configuration.
 - HTML uses html.parser.HTMLParser. Regex is allowed only for narrow source-code rules with dedicated tests.
-- Bootstrap debt is reconciled against an independent inventory before versioning.
+- Bootstrap debt is reconciled against an independent inventory before versioning; the 65 items are exhaustive only for the version-1 rule set, not for every architectural issue in the repository.
 - The independent 65-item inventory is anchored to merge base `8ce0d58126b182bc3b1570733843dd1c0ffbddde`; if execution starts from a different merge base, stop before Task 1 and re-audit/revise the inventory rather than forcing the old count.
 
 ## File Map
@@ -70,11 +70,13 @@ Do not modify:
 Before Task 1, verify:
 
 ~~~bash
-BASE="$(git merge-base main HEAD)"
+git fetch origin main
+test "$(git rev-list --count HEAD..origin/main)" = "0"
+BASE="$(git merge-base origin/main HEAD)"
 test "$BASE" = "8ce0d58126b182bc3b1570733843dd1c0ffbddde"
 ~~~
 
-Expected: exit 0. If it fails, the 65-item independent inventory is no longer authoritative for the execution base. Re-run the structural inventory and update the spec/plan before writing implementation code.
+Expected: all commands exit 0, proving the branch is not behind current `origin/main` and still has the audited merge base. If either check fails, the 65-item independent inventory is no longer authoritative for the execution base. Re-run the structural inventory and update the spec/plan before writing implementation code.
 
 ## Review Focus
 
@@ -496,7 +498,8 @@ Pin:
 - the current kind of Unicode-hyphen duplicate in a bibliometric source;
 - processPlatformData(... "maximized") and acad.maximized as two distinct legacy violations;
 - CSS @media plus JavaScript matchMedia reduced-motion handling -> clean;
-- a comment containing "prefers-reduced-motion" without active CSS/JS handling -> violation;
+- a block/line comment containing "prefers-reduced-motion" without active CSS/JS handling -> violation;
+- a JavaScript string containing "https://example.test//path" survives comment stripping unchanged;
 - external script without integrity -> violation;
 - external script with malformed integrity -> violation;
 - valid sha384-* integrity but missing crossorigin="anonymous" -> violation;
@@ -522,6 +525,8 @@ MAXIMIZED_PATTERNS = (
      re.compile(r"\bacad\.maximized\b")),
 )
 ~~~
+
+Implement `strip_c_style_comments(source: str) -> str` as a small state machine with NORMAL, SINGLE_QUOTE, DOUBLE_QUOTE, TEMPLATE_QUOTE, LINE_COMMENT, and BLOCK_COMMENT states; preserve quoted/backtick string content and escaped characters while replacing comment content with whitespace/newlines. Use the stripped source for legacy and reduced-motion source-code checks.
 
 Reduced motion: emit one `A11Y_REDUCED_MOTION_POLICY` violation at style.css / subject `site:prefers-reduced-motion` unless both conditions are present outside comments: (1) an active CSS `@media (...prefers-reduced-motion: reduce...)` rule and (2) JavaScript `matchMedia(...prefers-reduced-motion: reduce...)` detection.
 
@@ -678,7 +683,7 @@ python scripts/audit_repository.py \
 
 - [ ] **Step 9: Reconcile against the independent inventory**
 
-The current branch base has been independently measured. The generated debt must be exactly:
+The current branch base has been independently measured against the **version-1 23-rule set**. The generated rule violations must be exactly:
 
 ~~~text
 HTML_BUTTON_MISSING_TYPE                 21
@@ -833,7 +838,7 @@ jobs:
           python scripts/audit_repository.py
           --reference-baseline /tmp/base-known-debt.json
 
-      - name: Audit bootstrap/manual case
+      - name: Audit bootstrap genesis
         if: steps.reference.outputs.has_reference != 'true'
         run: python scripts/audit_repository.py
 ~~~
@@ -913,7 +918,7 @@ If repository settings access safely permits requiring the status check on main,
 ## Final Whole-Branch Review Checklist
 
 1. Every RULE_IDS member has implementation coverage; no registered rule is silently dead.
-2. known-debt.json contains exactly the 65 independently verified current violations.
+2. known-debt.json contains exactly the 65 independently verified pre-existing violations of the version-1 rule set; no claim is made that this exhausts the architectural roadmap.
 3. policy.json contains no exception introduced merely to make bootstrap pass.
 4. New violation plus matching candidate-baseline addition fails against an existing reference baseline.
 5. Removing a known violation while retaining its baseline entry fails as RESOLVED.
