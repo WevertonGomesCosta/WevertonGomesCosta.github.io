@@ -979,12 +979,16 @@ Extend the current classes with semantic-button-specific declarations:
 
 ```css
 button.cta-btn {
-    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
 }
 
 button.contact-link {
     width: 100%;
-    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
     text-align: left;
     cursor: pointer;
 }
@@ -1001,7 +1005,9 @@ button.contact-link {
     padding: 0;
     border: 0;
     background: transparent;
-    font: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
     text-align: left;
     cursor: pointer;
 }
@@ -1017,7 +1023,7 @@ button.contact-link {
 }
 ```
 
-Do not add `outline: none` or otherwise suppress native focus visibility. If existing selectors already provide one of these properties, merge rather than duplicate declarations.
+Do not add `outline: none` or otherwise suppress native focus visibility. If existing selectors already provide one of these properties, merge rather than duplicate declarations. Do not use the `font` shorthand on `button.cta-btn`: it would reset the existing `.cta-btn { font-weight: 600; }` declaration and create a visual regression.
 
 - [ ] **Step 6: Render and run Task 2 GREEN**
 
