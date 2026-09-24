@@ -232,6 +232,28 @@ def test_region_replacement_preserves_bytes_outside_region(self):
     self.assertTrue(result.startswith("PREFIX\n<!-- shared:nav:start -->"))
     self.assertTrue(result.endswith("<!-- shared:nav:end -->\nSUFFIX\n"))
 
+def test_region_replacement_inherits_marker_indentation(self):
+    source = (
+        "  <!-- shared:nav:start -->\n"
+        "  old\n"
+        "  <!-- shared:nav:end -->\n"
+    )
+    result = shared.replace_region(
+        source,
+        "nav",
+        "<nav>\n    <span>x</span>\n</nav>",
+        "\n",
+        Path("index.html"),
+    )
+    self.assertEqual(
+        result,
+        "  <!-- shared:nav:start -->\n"
+        "  <nav>\n"
+        "      <span>x</span>\n"
+        "  </nav>\n"
+        "  <!-- shared:nav:end -->\n",
+    )
+
 def test_check_mode_does_not_modify_drifted_page(self):
     root = self.make_complete_fixture()
     page = root / "index.html"
@@ -448,11 +470,18 @@ def replace_region(
     start = source.index(start_marker)
     end = source.index(end_marker, start + len(start_marker))
 
+    start_line_start = source.rfind(newline, 0, start) + len(newline)
+    start_indent = source[start_line_start:start]
+    if start_indent.strip():
+        raise RenderContractError(
+            f"Start marker is not line-aligned for {region!r}: {path}"
+        )
+
     end_line_start = source.rfind(newline, start, end) + len(newline)
     end_indent = source[end_line_start:end]
-    if end_indent.strip():
+    if end_indent != start_indent:
         raise RenderContractError(
-            f"End marker is not line-aligned for {region!r}: {path}"
+            f"Marker indentation mismatch for {region!r}: {path}"
         )
 
     fragment = rendered_fragment.rstrip("\n")
@@ -460,12 +489,16 @@ def replace_region(
         raise RenderContractError(
             f"Rendered component contains CR characters: {region}"
         )
-    fragment = fragment.replace("\n", newline)
+    indented_fragment = "\n".join(
+        (start_indent + line) if line else ""
+        for line in fragment.split("\n")
+    )
+    indented_fragment = indented_fragment.replace("\n", newline)
 
     return (
         source[: start + len(start_marker)]
         + newline
-        + fragment
+        + indented_fragment
         + newline
         + end_indent
         + source[end:]
@@ -676,7 +709,9 @@ Do not catch arbitrary `Exception` inside library functions; tests must receive 
 
 This task is a composition-only migration. Preserve the existing tags/attributes that currently produce Block 2 debt; Task 2 owns semantic changes.
 
-Create:
+Canonical component files use LF and start their top-level markup at column zero. When extracting nav/footer/back-to-top/language markup from the root pages, remove only the common page-level indentation; preserve all relative indentation inside the component. Region markers stay at the root page's original indentation, and `replace_region()` reapplies that marker indentation to every nonblank component line.
+
+Create the LF component at column zero:
 
 `_site_components/back-to-top.html`
 
@@ -694,13 +729,13 @@ Create `_site_components/language-switcher.html` from the existing switcher mark
 
 At Task 1, deliberately do **not** add `type="button"`; that belongs to Task 2 and keeps the Task 1 debt inventory at 65.
 
-Extract the complete current home `<nav>` element, from its opening tag through its matching closing tag, into `nav-home.html`. Replace only the complete language-switcher button block with a whole-line:
+Extract the complete current home `<nav>` element, from its opening tag through its matching closing tag, into `nav-home.html`, removing the four-space page-level indent from every nonblank line so the component's opening `<nav>` starts at column zero. Replace only the complete language-switcher button block with a whole-line:
 
 ```text
 @@LANGUAGE_SWITCHER@@
 ```
 
-Extract the complete current inner-page `<nav>` element into `nav-inner.html`. The publications page is the canonical source; verify the projects/privacy variants differ only in the page-title key/text before extraction. Replace the title element with:
+Extract the complete current inner-page `<nav>` element into `nav-inner.html`, likewise removing only the common four-space page-level indentation. The publications page is the canonical source; verify the projects/privacy variants differ only in the page-title key/text before extraction. Replace the title element with:
 
 ```html
 <h1 class="nav-title" data-key="@@NAV_TITLE_KEY@@">@@NAV_TITLE_TEXT@@</h1>
@@ -708,7 +743,7 @@ Extract the complete current inner-page `<nav>` element into `nav-inner.html`. T
 
 and replacing its switcher with the same whole-line `@@LANGUAGE_SWITCHER@@`.
 
-Extract the current `index.html` footer into `footer.html`. Replace only this exact logical segment:
+Extract the current `index.html` footer into `footer.html`, removing only its common four-space page-level indentation so the opening `<footer>` is at column zero. Replace only this exact logical segment:
 
 ```html
 <a href="politica-de-privacidade.html" data-key="privacy-policy">Política de Privacidade</a> |
