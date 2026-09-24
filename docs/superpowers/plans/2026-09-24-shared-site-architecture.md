@@ -260,7 +260,7 @@ Also add the spec-required tests:
 - synchronized `check_all()` returns empty tuple;
 - drift returns the drifted page from `check_all()`;
 - missing/duplicate/end-before-start/nested/overlapping/unexpected markers are fatal;
-- neither/both CLI modes return 2;
+- direct `main([])` and `main(["--write", "--check"])` calls return 2 without raising `SystemExit`;
 - component BOM and target BOM are fatal;
 - no partial write: make page A require a valid change and page B malformed, call `write_all()`, assert page A bytes are unchanged;
 - `404.html` is absent from `PAGE_CONFIGS` and remains byte-identical if placed in a fixture.
@@ -544,12 +544,43 @@ def render_template(
 
 Build components in this order:
 
-1. render `language-switcher.html` with `EXTRA_CLASSES`;
-2. inject that result into `nav-home.html` or `nav-inner.html`;
-3. render `footer-privacy-segment.html` or use empty string;
-4. inject `PRIVACY_SEGMENT` into `footer.html`;
-5. render `back-to-top.html`;
-6. replace configured page regions.
+1. read canonical `language-switcher.html`;
+2. render the navbar variant with `EXTRA_CLASSES=""`;
+3. for `index.html`, separately render the fixed variant with `EXTRA_CLASSES=" lang-fixed"`;
+4. inject the navbar variant into `nav-home.html` or `nav-inner.html`;
+5. read `footer-privacy-segment.html` with `component=True`; when `include_privacy_segment` is true, remove **exactly one optional final LF** before passing it to the inline `PRIVACY_SEGMENT` token, and reject any remaining embedded newline; otherwise use the empty string;
+6. inject `PRIVACY_SEGMENT` into `footer.html`;
+7. read/render `back-to-top.html`;
+8. replace configured page regions.
+
+Use a focused helper so the two switcher variants cannot drift:
+
+```python
+def render_language_switcher(root: Path, extra_classes: str) -> str:
+    template = read_utf8_strict(
+        root / "_site_components" / "language-switcher.html",
+        component=True,
+    )
+    return render_template(
+        template,
+        {"EXTRA_CLASSES": extra_classes},
+        "language-switcher.html",
+    )
+
+
+def read_privacy_segment(root: Path) -> str:
+    value = read_utf8_strict(
+        root / "_site_components" / "footer-privacy-segment.html",
+        component=True,
+    )
+    if value.endswith("\n"):
+        value = value[:-1]
+    if "\n" in value or "\r" in value:
+        raise RenderContractError(
+            "footer-privacy-segment.html must contain one logical line"
+        )
+    return value
+```
 
 Implement all-target prevalidation:
 
@@ -579,10 +610,16 @@ CLI contract:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root")
-    modes = parser.add_mutually_exclusive_group(required=True)
-    modes.add_argument("--write", action="store_true")
-    modes.add_argument("--check", action="store_true")
+    parser.add_argument("--write", action="store_true")
+    parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
+
+    if args.write == args.check:
+        print(
+            "Shared-site render error: exactly one of --write/--check is required",
+            file=sys.stderr,
+        )
+        return 2
 
     root = (
         Path(args.root).resolve()
@@ -607,6 +644,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 if __name__ == "__main__":
     raise SystemExit(main())
 ```
+
+This manual two-flag validation is intentional: direct calls to `main([])` and `main(["--write", "--check"])` must **return** 2 rather than letting an argparse mutually-exclusive group raise `SystemExit(2)`. Unknown CLI arguments may retain argparse's normal `SystemExit(2)` behavior.
 
 Do not catch arbitrary `Exception` inside library functions; tests must receive `RenderContractError` for contract/configuration failures.
 
