@@ -319,7 +319,7 @@ python -m unittest tests.test_repository_audit.TestRepositoryDataRules -v
 
 - [ ] **Step 3: Implement safe data loading**
 
-A helper returns None on missing/invalid repository data, appends JSON_PARSE on read/parse failure, and prevents downstream cascades.
+Implement a pure read_repository_json(root, relative) helper returning (data, error). audit_repository_data is the sole owner that converts a non-null error into JSON_PARSE. Later academic/data rules call the same helper and, when data is None, skip dependent checks without emitting a second JSON_PARSE. This prevents duplicate parse violations across rule groups.
 
 - [ ] **Step 4: Write failing i18n tests**
 
@@ -699,14 +699,14 @@ jobs:
         run: |
           set -euo pipefail
           rm -f /tmp/base-known-debt.json
-          if [[ "\${{ github.event_name }}" == "pull_request" ]]; then
-            BASE_SHA="\${{ github.event.pull_request.base.sha }}"
-            git show "\${BASE_SHA}:.audit/known-debt.json" \
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            git show "${BASE_SHA}:.audit/known-debt.json" \
               > /tmp/base-known-debt.json 2>/dev/null || true
-          elif [[ "\${{ github.event_name }}" == "push" ]]; then
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
             if git rev-parse HEAD^1 >/dev/null 2>&1; then
               PARENT_SHA="$(git rev-parse HEAD^1)"
-              git show "\${PARENT_SHA}:.audit/known-debt.json" \
+              git show "${PARENT_SHA}:.audit/known-debt.json" \
                 > /tmp/base-known-debt.json 2>/dev/null || true
             fi
           fi
