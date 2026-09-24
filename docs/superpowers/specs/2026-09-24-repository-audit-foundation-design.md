@@ -1,8 +1,8 @@
 # Repository Audit Foundation — Design Specification
 
-**Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
-**Date:** 2026-09-24  
-**Status:** Proposed design approved in chat; implementation not started  
+**Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`
+**Date:** 2026-09-24
+**Status:** Proposed design approved in chat; implementation not started
 **Target block:** Structural strategy — Block 1: audit and regression foundation
 
 ## 1. Purpose

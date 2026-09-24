@@ -404,4 +404,3 @@ def audit_academic_data(root: Path) -> list[Violation]:
         violations,
         key=lambda item: (item.rule_id, item.path, item.subject),
     )
-
