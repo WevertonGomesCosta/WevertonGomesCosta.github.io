@@ -197,5 +197,167 @@ class TestTranslationRules(unittest.TestCase):
         )
 
 
+class TestAcademicRules(unittest.TestCase):
+    def _root(self, registry, fallback=None):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root)
+        (root / "academic-registry.json").write_text(
+            json.dumps(registry), encoding="utf-8"
+        )
+        (root / "fallback-data.json").write_text(
+            json.dumps(fallback or {}), encoding="utf-8"
+        )
+        return root
+
+    @staticmethod
+    def _registry(works):
+        return {
+            "schema_version": "1.0.0",
+            "updated_at": "2026-09-24",
+            "source_basis": {},
+            "summary": {},
+            "works": works,
+        }
+
+    @staticmethod
+    def _work(identifier, title, doi=None):
+        return {
+            "id": identifier,
+            "type": "journal_article",
+            "status": "published",
+            "title": title,
+            "authors": ["COSTA, W. G."],
+            "year": 2026,
+            "doi": doi,
+        }
+
+    def test_title_and_doi_normalization(self):
+        self.assertEqual(
+            data_rules.normalize_title("Genome‐enabled: Predição, Café."),
+            data_rules.normalize_title("Genome-enabled predicao cafe"),
+        )
+        self.assertEqual(
+            data_rules.normalize_doi("https://doi.org/10.1234/ABC "),
+            "10.1234/abc",
+        )
+        self.assertEqual(
+            data_rules.normalize_doi("https://dx.doi.org/10.1234/ABC"),
+            "10.1234/abc",
+        )
+        self.assertEqual(
+            data_rules.normalize_doi("doi:10.1234/ABC"),
+            "10.1234/abc",
+        )
+
+    def test_registry_duplicate_id_doi_and_title_are_independent(self):
+        works = [
+            self._work("dup-id", "Unique Alpha", "10.1/a"),
+            self._work("dup-id", "Unique Beta", "10.1/b"),
+            self._work("doi-a", "Unique Gamma", "https://doi.org/10.2/DUP"),
+            self._work("doi-b", "Unique Delta", "doi:10.2/dup"),
+            self._work("title-a", "Genome‐enabled: Predição, Café.", None),
+            self._work("title-b", "Genome-enabled predicao cafe", ""),
+        ]
+        root = self._root(self._registry(works))
+        violations = data_rules.audit_academic_data(root)
+        keys = {(v.rule_id, v.subject) for v in violations}
+        self.assertIn(
+            ("ACADEMIC_REGISTRY_DUPLICATE_ID", "id:dup-id"),
+            keys,
+        )
+        self.assertIn(
+            ("ACADEMIC_REGISTRY_DUPLICATE_DOI", "doi:10.2/dup"),
+            keys,
+        )
+        self.assertIn(
+            (
+                "ACADEMIC_REGISTRY_DUPLICATE_TITLE",
+                "title:genome enabled predicao cafe",
+            ),
+            keys,
+        )
+
+    def test_empty_or_none_doi_values_are_not_duplicates(self):
+        works = [
+            self._work("a", "Title A", None),
+            self._work("b", "Title B", ""),
+            self._work("c", "Title C", "   "),
+        ]
+        root = self._root(self._registry(works))
+        violations = data_rules.audit_academic_data(root)
+        self.assertFalse(
+            [
+                v
+                for v in violations
+                if v.rule_id == "ACADEMIC_REGISTRY_DUPLICATE_DOI"
+            ],
+            violations,
+        )
+
+    def test_registry_structure_checks_top_level_and_work_identity_fields(self):
+        registry = self._registry(
+            [
+                {
+                    "id": "x",
+                    "type": "",
+                    "status": "published",
+                    "title": "Title",
+                    "authors": [],
+                    "year": "2026",
+                }
+            ]
+        )
+        del registry["summary"]
+        root = self._root(registry)
+        violations = data_rules.audit_academic_data(root)
+        structure = [
+            v
+            for v in violations
+            if v.rule_id == "ACADEMIC_REGISTRY_STRUCTURE"
+        ]
+        self.assertTrue(structure, violations)
+
+    def test_bibliometric_unicode_hyphen_duplicate_is_detected_per_source(self):
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": (
+                                "Genome‐enabled prediction through machine learning "
+                                "methods considering different levels of trait complexity"
+                            )
+                        },
+                        {
+                            "title": (
+                                "Genome-enabled prediction through machine learning "
+                                "methods considering different levels of trait complexity."
+                            )
+                        },
+                    ]
+                },
+                "scopus": {"articles": [{"title": "Another title"}]},
+            }
+        }
+        root = self._root(self._registry([]), fallback)
+        violations = data_rules.audit_academic_data(root)
+        matches = [
+            v
+            for v in violations
+            if v.rule_id == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+        ]
+        self.assertEqual(len(matches), 1)
+        self.assertEqual(
+            matches[0].subject,
+            (
+                "source:google_scholar|title:genome enabled prediction through "
+                "machine learning methods considering different levels of trait "
+                "complexity"
+            ),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
