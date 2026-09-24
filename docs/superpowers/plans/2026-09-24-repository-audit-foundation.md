@@ -729,7 +729,8 @@ Expected: KNOWN 65, NEW 0, RESOLVED 0, GROWTH 0, Result PASS.
 - [ ] **Step 11: Commit**
 
 ~~~bash
-git add scripts/audit_repository.py tests/test_repository_audit.py \
+git add scripts/audit_repository.py scripts/repository_audit/__init__.py \
+  scripts/repository_audit/engine.py tests/test_audit_cli.py \
   .audit/policy.json .audit/known-debt.json
 git commit -m "feat: bootstrap repository audit baseline"
 ~~~
@@ -856,6 +857,12 @@ Expected changed set only:
 - docs/superpowers/plans/2026-09-24-repository-audit-foundation.md
 - docs/superpowers/specs/2026-09-24-repository-audit-foundation-design.md
 - scripts/audit_repository.py
+- scripts/repository_audit/__init__.py
+- scripts/repository_audit/core.py
+- scripts/repository_audit/html_rules.py
+- scripts/repository_audit/data_rules.py
+- scripts/repository_audit/runtime_rules.py
+- scripts/repository_audit/engine.py
 - tests/test_audit_core.py
 - tests/test_audit_html.py
 - tests/test_audit_data.py
@@ -868,7 +875,7 @@ No runtime content file may appear.
 - [ ] **Step 6: Commit workflow**
 
 ~~~bash
-git add .github/workflows/repository-audit.yml tests/test_repository_audit.py
+git add .github/workflows/repository-audit.yml tests/test_audit_workflow.py
 git commit -m "ci: enforce repository audit"
 ~~~
 
