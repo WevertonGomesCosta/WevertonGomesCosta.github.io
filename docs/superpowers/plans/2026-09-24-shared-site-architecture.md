@@ -14,8 +14,9 @@
 
 - Implementation starts on a new branch named `block2-shared-site-architecture-implementation` created from the final approved `block2-shared-site-architecture-design` HEAD; do not implement on `main` or on the design branch.
 - No new dependency, framework, static-site generator, bundler, or package manager.
-- `scripts/render_shared_site.py` is Python standard-library only.
+- `scripts/render_shared_site.py` is Python standard-library only; `--write` and `--check` are mutually exclusive and exactly one mode is required.
 - Root HTML remains complete static HTML; nav/footer/back-to-top/language controls must exist without executing JavaScript.
+- `write_all()` validates/renders every configured target before the first filesystem replacement; if prevalidation fails, it writes nothing.
 - `index.html` preserves CRLF; `publicacoes.html`, `projetos.html`, and `politica-de-privacidade.html` preserve LF.
 - `404.html` is never a renderer target and receives no shared nav/footer redesign.
 - No factual profile/content changes, no PT/EN key removals, no page-title/nav-title behavior changes, and no `utils.js` refactor.
