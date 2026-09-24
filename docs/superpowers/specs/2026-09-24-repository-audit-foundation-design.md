@@ -65,9 +65,21 @@ The block will add:
 ```text
 scripts/
   audit_repository.py
+  repository_audit/
+    __init__.py
+    core.py
+    html_rules.py
+    data_rules.py
+    runtime_rules.py
+    engine.py
 
 tests/
-  test_repository_audit.py
+  test_audit_core.py
+  test_audit_html.py
+  test_audit_data.py
+  test_audit_runtime.py
+  test_audit_cli.py
+  test_audit_workflow.py
 
 .audit/
   known-debt.json
@@ -82,34 +94,35 @@ No runtime site dependency is introduced.
 
 ### 4.1 `scripts/audit_repository.py`
 
-Single command-line entry point for repository auditing.
+Thin command-line entry point only. It parses CLI arguments, calls the package engine, renders the requested output, and maps the result to process exit codes. Audit rules and baseline logic do not live in this file.
 
-Responsibilities:
+### 4.2 `scripts/repository_audit/`
 
-- discover repository files from the working tree;
-- run the registered audit rules;
-- normalize violations into a stable machine-readable representation;
-- compare actual violations with the known-debt baseline;
-- print a human-readable summary;
-- optionally emit JSON for CI/debugging;
-- return a non-zero status when blocking conditions exist.
+Focused standard-library package:
 
-### 4.2 `tests/test_repository_audit.py`
+- `core.py`: rule IDs, violation/configuration models, path normalization, fingerprints, policy/baseline loaders and comparisons;
+- `html_rules.py`: HTML collector, deterministic DOM identity, link/attribute/control rules;
+- `data_rules.py`: required files, JSON loading, translation rules, academic and bibliometric invariants;
+- `runtime_rules.py`: legacy JavaScript, reduced-motion and external dependency/security policy rules;
+- `engine.py`: rule registry, policy application, stale-exception validation, orchestration and reports;
+- `__init__.py`: intentionally small public interface.
 
-Standard-library `unittest` suite.
+This decomposition is part of the design: the audit foundation must not reproduce the monolithic-file problem that later blocks are intended to remove elsewhere in the repository.
 
-Responsibilities:
+### 4.3 `tests/test_audit_*.py`
 
-- test rule behavior using temporary fixture repositories/files;
-- test stable violation identity;
-- test baseline matching;
-- test NEW / KNOWN / RESOLVED classification;
-- test exit-code behavior;
-- test malformed baseline handling.
+Standard-library `unittest` suite split by responsibility:
 
-Tests must not depend on network access.
+- `test_audit_core.py`;
+- `test_audit_html.py`;
+- `test_audit_data.py`;
+- `test_audit_runtime.py`;
+- `test_audit_cli.py`;
+- `test_audit_workflow.py`.
 
-### 4.3 `.audit/known-debt.json`
+The suite tests fixture repositories in temporary directories, stable identity, baseline/policy behavior, every rule family, CLI exit behavior and workflow contract. Tests must not depend on network access.
+
+### 4.4 `.audit/known-debt.json`
 
 Explicit inventory of accepted pre-existing violations.
 
@@ -134,35 +147,51 @@ A baseline entry will have a schema equivalent to:
 
 Line numbers are informational only and must not define identity.
 
-### 4.4 `.audit/policy.json`
+### 4.5 `.audit/policy.json`
 
 Versioned deterministic policy for rules that need explicit repository-specific semantics rather than inference.
 
 Examples include:
 
-- HTML pages included in repository-wide structural checks;
 - legitimate fixed ARIA labels that are proper names/brands and do not require translation;
 - explicitly allowed self-links, if any;
-- dependency URLs or categories excluded from a rule for a documented reason.
+- narrowly scoped rule exceptions justified as intentional repository policy.
+
+The set of audited HTML pages is **not configurable by policy**. It is a canonical code-level invariant:
+
+```python
+AUDITED_HTML = (
+    "index.html",
+    "publicacoes.html",
+    "projetos.html",
+    "politica-de-privacidade.html",
+    "404.html",
+)
+```
+
+Changing that set requires changing code and tests, so a policy edit cannot silently narrow audit coverage.
 
 Policy exceptions must identify a stable subject, not a line number. They are not technical-debt entries: an exception means the behavior is intentionally allowed, while `known-debt.json` means the behavior is undesirable and scheduled to be removed.
 
-Malformed policy, duplicate exception identities, or references to unknown rule IDs are fatal configuration errors.
+Policy application occurs after raw violations are generated. Every configured exception must match an actual raw violation in the same run. An exception that matches nothing is stale and is a fatal configuration error; it must be removed in the same change that removes the underlying behavior. This prevents an obsolete exception from later suppressing a regression at the same subject.
 
-### 4.5 `.github/workflows/repository-audit.yml`
+Malformed policy, duplicate exception identities, stale exceptions, or references to unknown rule IDs are fatal configuration errors.
+
+### 4.6 `.github/workflows/repository-audit.yml`
 
 Runs on:
 
 - `pull_request`;
-- pushes to `main`;
-- optionally manual `workflow_dispatch`.
+- pushes to `main`.
+
+Manual dispatch is deliberately omitted in version 1 because it adds a third reference-baseline semantics without improving the merge gate.
 
 The workflow will:
 
 1. check out the repository with enough Git history to inspect the relevant base/parent commit;
 2. configure a maintained Python version;
 3. run the unit tests;
-4. materialize the reference `known-debt.json` from the pull-request base branch, or from the first parent on a `main` push when available;
+4. materialize the reference `known-debt.json` from the pull-request base SHA, or from `github.event.before` for a push to `main`;
 5. run the repository audit against the candidate baseline and the reference baseline;
 6. fail on NEW, RESOLVED, BASELINE_GROWTH, malformed configuration, or fatal rule errors.
 
@@ -196,6 +225,8 @@ rule_id + normalized repository-relative path + stable subject
 ```
 
 The fingerprint is a deterministic SHA-256 hash of that canonical representation. Diagnostic text, severity, metadata, and line number are never part of identity.
+
+Version 1 defines a single violation severity, `"error"`. The field is retained for machine-readable forward compatibility but does not affect identity or KNOWN/NEW/RESOLVED classification. Adding more severity levels later requires an explicit design change; no rule may silently downgrade a blocking violation by changing severity.
 
 The `subject` must therefore contain the rule-specific stable identity needed to distinguish violations. Examples: `button#clear-btn`, `a#copy-email-link`, `section#education>div.timeline-item:nth-of-type(3)>button:nth-of-type(1)`, `rel@a[href=...]`, `doi:10....`, or `title:<normalized-title>`.
 
@@ -257,7 +288,7 @@ After the initial bootstrap, the candidate baseline must therefore be a **subset
 - editing a reason or other non-identity metadata is allowed if the identity is unchanged;
 - the first bootstrap is allowed only when the reference commit has no baseline file.
 
-For pull requests, CI compares the candidate baseline to the pull request base branch. For pushes to `main`, CI compares it to the first parent of the pushed commit when a prior baseline exists.
+For pull requests, CI compares the candidate baseline to the pull request base SHA. For pushes to `main`, CI compares it to the push event's `before` SHA, not `HEAD^1`. This is required because a direct push may contain multiple commits; comparing only with the last commit's parent could miss baseline growth introduced earlier in the same push.
 
 This makes the baseline monotonically non-increasing under normal development. A future intentionally permanent exception belongs in `policy.json`, where it is reviewed as policy rather than disguised as technical debt.
 
@@ -308,33 +339,28 @@ The auditor does not decide whether a source legitimately contains records absen
 ### 7.6 Legacy/runtime policy
 
 - `LEGACY_MAXIMIZED_REFERENCE`: active compatibility references to `maximized`.
-- `A11Y_REDUCED_MOTION_POLICY`: repository must eventually contain the agreed reduced-motion handling.
-- `SECURITY_EXTERNAL_SCRIPT_INTEGRITY`: externally loaded executable dependencies without the selected integrity policy.
-- `SECURITY_CSP_POLICY`: absence of the selected CSP mechanism.
+- `A11Y_REDUCED_MOTION_POLICY`: because the site has both CSS-visible motion and JavaScript-driven animation, the debt clears only when the selected implementation contains both an active CSS `@media (prefers-reduced-motion: reduce)` policy and JavaScript reduced-motion detection using `matchMedia` for the same preference. Literal text in comments is not sufficient.
+- `SECURITY_EXTERNAL_SCRIPT_INTEGRITY`: every cross-origin executable `<script src>` must use a syntactically valid SRI token (`sha256-`, `sha384-` or `sha512-` with a base64 digest) and `crossorigin="anonymous"`. A merely non-empty `integrity` attribute is insufficient.
+- `SECURITY_CSP_POLICY`: every audited HTML document must contain the selected CSP mechanism. Version 1 checks a non-empty CSP meta policy containing at least `default-src` and `script-src`; future hardening may strengthen directives without changing the rule identity.
 
 These are initially expected to be known debt, not fixed in Block 1.
 
 ## 8. Rule registry and implementation boundaries
 
-The initial implementation may remain in one Python file while the rule set is small, but rule execution must be registry-driven rather than a long monolithic procedural script.
+Rule execution is registry-driven in `engine.py`. Domain modules expose rule groups, and an explicit `RULE_COVERAGE` mapping identifies which rule IDs each group owns.
 
-Conceptually:
+The union of all `RULE_COVERAGE` values must equal `RULE_IDS` exactly. Missing and unknown rule IDs are test failures.
 
-```python
-RULES = [
-    audit_json_files,
-    audit_translation_parity,
-    audit_html_structure,
-    audit_control_semantics,
-    audit_i18n_attributes,
-    audit_academic_registry,
-    audit_legacy_runtime_policy,
-]
-```
+Each domain rule group returns raw violations and does not classify them as KNOWN/NEW. The engine then:
 
-Each rule returns violations and does not decide whether they are KNOWN/NEW. Baseline classification is centralized.
+1. rejects duplicate emitted fingerprints;
+2. validates and applies exact policy exceptions;
+3. rejects stale policy exceptions;
+4. compares remaining current violations with the candidate baseline;
+5. compares candidate baseline identities with the reference baseline when supplied;
+6. builds the report.
 
-This separation is important because later structural blocks will remove violations without rewriting the audit rules.
+This separation is important because later structural blocks remove debt by changing the site and shrinking the baseline, not by weakening audit rules.
 
 ## 9. Parsing strategy
 
@@ -365,7 +391,11 @@ python scripts/audit_repository.py --baseline .audit/known-debt.json
 python scripts/audit_repository.py --reference-baseline /tmp/base-known-debt.json
 ```
 
-A special baseline-generation mode may be implemented for initial bootstrapping, but it must never silently overwrite the baseline. Generated output should require explicit review before being versioned.
+The baseline-generation mode is `--emit-current-debt <path>`. It is the only mode allowed to run before `.audit/known-debt.json` exists. In this mode the engine runs all rules, validates/applies policy, rejects stale policy exceptions, and writes the current unsuppressed violations as a proposed baseline without classifying them against a candidate baseline. It refuses to overwrite the output path.
+
+Normal audit mode requires `.audit/known-debt.json` to exist and be valid.
+
+Generated output always requires explicit review before being versioned.
 
 ### Exit codes
 
@@ -379,10 +409,11 @@ The default output should be concise and grouped by state, for example:
 ```text
 Repository audit
 
-PASS     12 rules clean
-KNOWN    38 baseline violations
-NEW       0
-RESOLVED  0
+PASS       12 rules clean
+KNOWN      38 baseline violations
+NEW         0
+RESOLVED    0
+GROWTH      0
 
 Result: PASS
 ```
@@ -425,6 +456,7 @@ Fatal audit-configuration/runtime conditions include:
 - malformed `.audit/policy.json`;
 - duplicate baseline identities;
 - duplicate policy-exception identities;
+- stale policy exceptions that match no raw violation;
 - stored baseline fingerprint inconsistent with its `rule_id`, `path`, and `subject`;
 - policy references to unknown rule IDs;
 - unsupported baseline or policy schema version;
@@ -463,7 +495,11 @@ At minimum:
 19. candidate baseline addition relative to a reference baseline fails as BASELINE_GROWTH;
 20. removing an entry from the candidate baseline is allowed when the violation is also gone;
 21. initial bootstrap without a reference baseline is allowed;
-22. clean fixture exits successfully.
+22. stale policy exceptions fail;
+23. root-relative internal links such as `/` and `/publicacoes.html` resolve inside the site root;
+24. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
+25. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
+26. clean fixture exits successfully.
 
 ### Repository integration test
 
@@ -504,9 +540,10 @@ Block 1 is complete when all of the following are true:
 8. Moving a known violation to another line does not create a false NEW item.
 9. Replacing one known violation with another while keeping the same count creates a NEW item.
 10. A stored fingerprint inconsistent with its rule/path/subject is rejected.
-11. GitHub Actions runs tests and the audit on pull requests and pushes to `main`, including baseline monotonicity comparison.
-12. No visible site behavior changes as part of this block.
-13. The next structural block can remove debt by deleting corresponding baseline entries rather than changing audit policy.
+11. GitHub Actions runs tests and the audit on pull requests and pushes to `main`, including baseline monotonicity comparison against the PR base SHA or push-event `before` SHA.
+12. Policy cannot narrow the canonical audited-page set, and stale policy exceptions are rejected.
+13. No visible site behavior changes as part of this block.
+14. The next structural block can remove debt by deleting corresponding baseline entries rather than changing audit policy.
 
 ## 18. Follow-on sequence
 
