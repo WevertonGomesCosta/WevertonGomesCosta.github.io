@@ -190,9 +190,9 @@ Both forms must contain `type="button"`.
 - the rendered contents of canonical `footer-privacy-segment.html` on non-privacy pages; or
 - an empty value on `politica-de-privacidade.html`.
 
-`footer-privacy-segment.html` contains the complete existing translated privacy-link segment **including its trailing separator** (`<privacy link> | `). The separator is therefore removed together with the self-link and the privacy page cannot render an orphan `|`.
+`footer-privacy-segment.html` contains the complete existing translated privacy-link plus separator as `<privacy link> |`, with **no trailing whitespace at end of line**. When the segment is enabled, the renderer appends exactly one ASCII space to the rendered fragment before substituting the inline `@@PRIVACY_SEGMENT@@` token. When disabled, the token value is empty. The separator is therefore removed together with the self-link, the privacy page cannot render an orphan `|`, and the component remains compatible with `git diff --check`.
 
-The renderer must not embed this HTML fragment as a Python string or page-configuration value. Shared markup remains in `_site_components/`. No separate privacy-footer component is permitted.
+The renderer must not embed this HTML fragment as a Python string or page-configuration value; appending the single separator-following whitespace is renderer formatting, not a second markup source. Shared markup remains in `_site_components/`. No separate privacy-footer component is permitted.
 
 ## 6. Renderer Contract
 
