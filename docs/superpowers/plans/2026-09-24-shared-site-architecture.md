@@ -867,6 +867,7 @@ class TestProductionSemanticControls(unittest.TestCase):
         blocked = {
             "HTML_ACTION_HASH_LINK",
             "HTML_BUTTON_MISSING_TYPE",
+            "HTML_INTERNAL_LINK_TARGET",
         }
         remaining = [v for v in violations if v.rule_id in blocked]
         self.assertEqual(remaining, [])
@@ -901,12 +902,13 @@ class TestProductionSemanticControls(unittest.TestCase):
             {e.attr("data-cv-type") for e in cv_buttons},
             {"pro", "academic"},
         )
+        self.assertTrue(all(e.attr("type") == "button" for e in cv_buttons))
         ids = {e.attr("id"): e for e in document.elements if e.attr("id")}
         self.assertEqual(ids["copy-email-link"].tag, "button")
         self.assertEqual(ids["copy-email-link"].attr("type"), "button")
 ```
 
-The first test also exercises Review Focus #4 because `HTML_INTERNAL_LINK_TARGET` must remain clean for `#page-top`.
+The first test explicitly includes `HTML_INTERNAL_LINK_TARGET`, so Review Focus #4 fails if any `#page-top` anchor lacks its real target.
 
 Add a footer production assertion:
 
@@ -927,6 +929,32 @@ def test_footer_copy_email_is_native_button_on_all_rendered_pages(self):
         with self.subTest(name=name):
             self.assertEqual(element.tag, "button")
             self.assertEqual(element.attr("type"), "button")
+
+def test_only_contact_form_button_uses_submit_type(self):
+    submit_buttons = []
+    for name in (
+        "index.html",
+        "publicacoes.html",
+        "projetos.html",
+        "politica-de-privacidade.html",
+    ):
+        document = html_rules.parse_html(
+            name, (ROOT / name).read_text(encoding="utf-8")
+        )
+        for element in document.elements:
+            if element.tag != "button":
+                continue
+            button_type = element.attr("type")
+            if button_type == "submit":
+                submit_buttons.append((name, element.dom_path))
+            else:
+                self.assertEqual(button_type, "button")
+
+    self.assertEqual(len(submit_buttons), 1)
+    self.assertEqual(submit_buttons[0][0], "index.html")
+    self.assertTrue(
+        submit_buttons[0][1].startswith("form#contact-form>")
+    )
 ```
 
 - [ ] **Step 2: Run semantic tests RED**
@@ -1234,6 +1262,30 @@ class TestProductionAccessibilityI18n(unittest.TestCase):
                 self.assertEqual(len(icons), 2)
                 self.assertTrue(all(e.attr("aria-hidden") == "true" for e in icons))
                 self.assertTrue(all(e.attr("aria-label") is None for e in icons))
+
+    def test_home_decorative_icons_and_feature_logos_are_hidden(self):
+        document = html_rules.parse_html(
+            "index.html",
+            (ROOT / "index.html").read_text(encoding="utf-8"),
+        )
+
+        emoji_icons = [
+            e for e in document.elements
+            if e.tag == "span" and e.attr("class") == "icon"
+        ]
+        self.assertEqual(len(emoji_icons), 9)
+        self.assertTrue(all(e.attr("aria-hidden") == "true" for e in emoji_icons))
+        self.assertTrue(all(e.attr("aria-label") is None for e in emoji_icons))
+        self.assertTrue(all(e.attr("role") is None for e in emoji_icons))
+
+        feature_logos = [
+            e for e in document.elements
+            if e.tag == "div" and e.attr("class") == "feature-logo"
+        ]
+        self.assertEqual(len(feature_logos), 2)
+        self.assertTrue(all(e.attr("aria-hidden") == "true" for e in feature_logos))
+        self.assertTrue(all(e.attr("aria-label") is None for e in feature_logos))
+        self.assertTrue(all(e.attr("role") is None for e in feature_logos))
 ```
 
 Also assert `translations.json` contains the exact approved PT/EN strings for `privacy-services-p2`.
