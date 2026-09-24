@@ -582,7 +582,7 @@ Build components in this order:
 2. render the navbar variant with `EXTRA_CLASSES=""`;
 3. for `index.html`, separately render the fixed variant with `EXTRA_CLASSES=" lang-fixed"`;
 4. inject the navbar variant into `nav-home.html` or `nav-inner.html`;
-5. read `footer-privacy-segment.html` with `component=True`; when `include_privacy_segment` is true, remove **exactly one optional final LF** before passing it to the inline `PRIVACY_SEGMENT` token, and reject any remaining embedded newline; otherwise use the empty string;
+5. read `footer-privacy-segment.html` with `component=True`; remove exactly one optional final LF and reject any remaining embedded newline; when `include_privacy_segment` is true, append exactly one ASCII space to the validated fragment before passing it to the inline `PRIVACY_SEGMENT` token; otherwise use the empty string;
 6. inject `PRIVACY_SEGMENT` into `footer.html`;
 7. read/render `back-to-top.html`;
 8. replace configured page regions.
@@ -612,6 +612,10 @@ def read_privacy_segment(root: Path) -> str:
     if "\n" in value or "\r" in value:
         raise RenderContractError(
             "footer-privacy-segment.html must contain one logical line"
+        )
+    if value.endswith((" ", "\t")):
+        raise RenderContractError(
+            "footer-privacy-segment.html must not end in whitespace"
         )
     return value
 ```
@@ -755,7 +759,7 @@ with:
 @@PRIVACY_SEGMENT@@
 ```
 
-Store that removed segment in `footer-privacy-segment.html` as one LF-terminated line. The fragment consists of the privacy anchor, one ASCII space, `|`, and one ASCII space before the following license anchor. No footer HTML may be hardcoded in Python.
+Store the privacy anchor plus separator in `footer-privacy-segment.html` as one LF-terminated line ending exactly in `|` with no trailing spaces or tabs. The renderer supplies the single ASCII space that separates this enabled fragment from the following license anchor. No footer HTML may be hardcoded in Python.
 
 - [ ] **Step 6: Add generated-region markers to the four pages**
 
