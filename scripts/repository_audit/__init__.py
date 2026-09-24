@@ -16,16 +16,26 @@ from .core import (
     make_fingerprint,
     normalize_repo_path,
 )
+from .engine import (
+    AuditReport,
+    RULE_COVERAGE,
+    RULES,
+    run_audit,
+    write_bootstrap_baseline,
+)
 
 __all__ = [
     "AuditComparison",
     "AuditConfigError",
     "AuditPolicy",
+    "AuditReport",
     "Baseline",
     "BaselineEntry",
     "PolicyException",
     "REQUIRED_HTML",
+    "RULE_COVERAGE",
     "RULE_IDS",
+    "RULES",
     "SCHEMA_VERSION",
     "Violation",
     "classify_violations",
@@ -34,4 +44,6 @@ __all__ = [
     "load_policy",
     "make_fingerprint",
     "normalize_repo_path",
+    "run_audit",
+    "write_bootstrap_baseline",
 ]

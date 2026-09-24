@@ -1,0 +1,460 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "rule_id": "A11Y_REDUCED_MOTION_POLICY",
+      "path": "style.css",
+      "subject": "site:prefers-reduced-motion",
+      "fingerprint": "401ab21be6747f2182ad6815f7af31daf40407e6177781f201b76a3f17170cf2",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
+      "path": "fallback-data.json",
+      "subject": "source:google_scholar|title:genome enabled prediction through machine learning methods considering different levels of trait complexity",
+      "fingerprint": "29b65b9160637b5e0f2813162e29d0f4abb9d862a5912d8142604eb4e82d5240",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "a#copy-email-footer",
+      "fingerprint": "2f8f7d3141f7133e029b07b392d7e5e1dc55e6e0872950e01d788a8a3db5ebbc",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "a#copy-email-link",
+      "fingerprint": "f9c65badf8a49eabe0fbfc550cda0310759aa99ed71a1abf39323e3867ea63b0",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "body#index-page>a:nth-of-type(1)",
+      "fingerprint": "4931dcf5b7d141b9f7a70fa08f46eb71e6f77906f5a13132154aab9e49c16760",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "body#index-page>header:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+      "fingerprint": "523834861c9585793e06442e3ce468dfffba9e811a420564c99e5f05db793d49",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "body#index-page>header:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(2)",
+      "fingerprint": "df31a2d87097208a00c64814e6df1304bdb8749857972916bbdb652e6017637c",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "section#contato>div:nth-of-type(1)>aside:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(1)",
+      "fingerprint": "f9dec4546ec6e4e5c9d91156a692aa4e1e12b038a42d1d9cbb1500c7c3136877",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "index.html",
+      "subject": "section#contato>div:nth-of-type(1)>aside:nth-of-type(1)>div:nth-of-type(1)>a:nth-of-type(2)",
+      "fingerprint": "c7c45de32bc44b263428c7ed827a48e1d4f777bc84e6d2d14d76fbc54b09c842",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "politica-de-privacidade.html",
+      "subject": "a#copy-email-footer",
+      "fingerprint": "22abd04ec89b580b6bf71a061e9cb8641307a37fb5a29d399df9e5904aa7db30",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "politica-de-privacidade.html",
+      "subject": "body#page-privacy>a:nth-of-type(1)",
+      "fingerprint": "19a2b6c358306a271f72834791b877b9a356bd6ad15ab7a4e2b9012e46a934ab",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "projetos.html",
+      "subject": "a#copy-email-footer",
+      "fingerprint": "817a5e2a862b713eb765b9a01f85aa60aeac7758c987e75ac5aac9e84fd5e8d5",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "projetos.html",
+      "subject": "body#page-projects>a:nth-of-type(1)",
+      "fingerprint": "3d7326c3dad1d5e9aa56f327a9b2c4c1328fef69ed303f7fb6ca1a61f29c19f2",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "publicacoes.html",
+      "subject": "a#copy-email-footer",
+      "fingerprint": "4c5c3663f72bb91624206d095290ae409350815a3d74744c76b69b1fa5f537cd",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_ACTION_HASH_LINK",
+      "path": "publicacoes.html",
+      "subject": "body#page-publications>a:nth-of-type(1)",
+      "fingerprint": "9f1a347a92439eac37527e693c15860310da177f1d92b89917cccfe25af2dc57",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "body#index-page>button:nth-of-type(1)",
+      "fingerprint": "821a3f9b368a7a69134cac2f9ec3d0d78429ac3fda239fb60d6293d387b23421",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "body#index-page>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+      "fingerprint": "7d03bf70096a3640af309eefd65a55dd6195b53a462e170aade200ac8ee430a0",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "button#clear-btn",
+      "fingerprint": "8b9a8a097ba137c3c82071a1c1ed820a0b0e772b69e2e9e65d4826b6d76acd71",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "button#publication-clear-btn",
+      "fingerprint": "0ad4736fd013324b108d9dc4c4f183d547dc0e1f0c6c4549ce1acfb6045b001f",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "button#pubs-toggle-more",
+      "fingerprint": "9b8a21d5da46f40509f1c9182a67f8f964f4a716ff7dc51134aa71650ae700d5",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "button#toggle-more",
+      "fingerprint": "9b7c91c277d5fef778864f087a119e10fafb977f05f3736c755b35d3e23a3432",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "e559b1f4b68bd40454373f2655089a1146da2c0cba1d07a1bf3dd3616217cbc2",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(2)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "e2ee10c30f1b2960adf46869242621f6b34702900908664503a4c50f43f08ca6",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(3)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "cdc04584e4eef01de75fb6130c6e63beda936d2bb2069c28b7fe8d8c9c6b4aef",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(4)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "fc30bd918e4ea25549a823145858d1287069187485afa205a576e203f69ed547",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(5)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "dd4d8b81c6f4a6260aee7b129ad0358150d6f407d7f885d7f9c0f4a3d457e7d1",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(6)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "cbe65ecc810a0bdea80d8df3c2391724bc100a95a22c4726c99ce54496632332",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(7)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "369e156e364eb3023d1f6001938e0a09a087c42bec846de68640dbd03d726ea1",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "index.html",
+      "subject": "section#formacao>div:nth-of-type(1)>div:nth-of-type(8)>div:nth-of-type(2)>button:nth-of-type(1)",
+      "fingerprint": "4a6363aca7144aa4cc180ef4eaa2c7d10310b006d6ed14f640de3220528444f0",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "politica-de-privacidade.html",
+      "subject": "body#page-privacy>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+      "fingerprint": "7cab3b3a7d402660e58b5b15f3e7703f1d7deca5824fe07c02bdeb0202dc4fb7",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "projetos.html",
+      "subject": "body#page-projects>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+      "fingerprint": "cd6aa05cd66f5e6d9f60d279b6872d20d46a0d4fdcc8f9b6d48eaf3ab31a1fb4",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "projetos.html",
+      "subject": "button#clear-btn",
+      "fingerprint": "48c6f1637e9088702086404a19855c5892674532598c1414bf5610edff563a30",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "projetos.html",
+      "subject": "button#toggle-more",
+      "fingerprint": "a4f6bad2ec820f2ae4ef663e08b13c05db2a5b940337e694d50bb62d7dd7021a",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "publicacoes.html",
+      "subject": "body#page-publications>nav:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>button:nth-of-type(1)",
+      "fingerprint": "a6758605e37431edba7ab38098ceb8cd8a2f7c5a81891b320aad34083f8b5b9f",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "publicacoes.html",
+      "subject": "button#publication-clear-btn",
+      "fingerprint": "d81b164735f7a284b279a4d093e05875e87439afb2e7ec08dcac5be1db5a902b",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "HTML_BUTTON_MISSING_TYPE",
+      "path": "publicacoes.html",
+      "subject": "button#pubs-toggle-more",
+      "fingerprint": "6a5b4970ec7af3ca82712d23a23f5fa7d852a88cbf7d17e3d22c52e0df04bfff",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "body#index-page>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(3)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "dd30f328ca40325e698cfe01f106882ecd52d49aa9e41d9e1be6eb337ca27cbb",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "body#index-page>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(4)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "1796d1c2689545f10099b5af39dfd400473a39b048ba1cdb6a24158be3517e5f",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "ec947898e48dc74b94701affa05bddb82b375d0f720159ab20711441c0884b7e",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "f2989394a1f0fbb7bbdeecb42bc049b0f0d3a64bffeb226b50b1e631b1bed22e",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "b25c07ac708329cf68aabf5ad453ea2812729efc219d9962fad560de859d664d",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "b5cbc657d9fc93b37ea3628e8265790d87e1bee32e40dac20f9668dd0157f3fe",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(5)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "95d6e67992a04a3a62bd8c99080792dca5752086cb85d18b888d9064adb46d1e",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#experiencia>div:nth-of-type(1)>div:nth-of-type(6)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "853cc44f7dba0e51bec4e7e675f4b1e88a4f66891faebcd3486170e9a87c5bcd",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#licae-conecta>div:nth-of-type(1)>div:nth-of-type(1)@aria-label",
+      "fingerprint": "617ac5ea6c8dcc05f38370933a3d64b7e0e534ebac198afd7e4cfc0dbabdafdb",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#licae-conecta>div:nth-of-type(2)>div:nth-of-type(1)@aria-label",
+      "fingerprint": "f591836f0dd0ea7ba55ccdc7ac89a23f40e471b2fbcf50add571dfbf70191785",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#servicos>div:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "adb5e8546e7294550bcd4241019457e5f58188cf79bc12d0aa8871ac407b7d7d",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#servicos>div:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "a2f81a24b3e9ebe1ed3b66fa457bd3558c77c1c24572d3f240ec8ea18182601f",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "index.html",
+      "subject": "section#servicos>div:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "eee770c8aa10401a1379b864a1f6e6b240fda994253327d54e561987f25570bb",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "politica-de-privacidade.html",
+      "subject": "body#page-privacy>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(3)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "969abba5dc241f59d8d2955096003f72f773e6c9f6b56890816532e809a60f3f",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "politica-de-privacidade.html",
+      "subject": "body#page-privacy>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(4)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "a33e13090eee3b7786fb6acbcb8e9a06ea675d7c24291c46f3225e4977aaabe3",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "projetos.html",
+      "subject": "body#page-projects>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(3)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "5297bccbd7fde4366c614b63de0626ea26fead698a8948ae5fdc4d74d91d8b5d",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "projetos.html",
+      "subject": "body#page-projects>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(4)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "3e6b8e0e2872c300002dc58b66db34d589e9b2d21e56c5b2ad2e02e789ee25e2",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "publicacoes.html",
+      "subject": "body#page-publications>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(3)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "609ce387b096c37d70adbc2f667cfe68cad03e83cbea2fd1514918a3bca05b3a",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_FIXED_ARIA_LABEL",
+      "path": "publicacoes.html",
+      "subject": "body#page-publications>footer:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(1)>div:nth-of-type(3)>ul:nth-of-type(1)>li:nth-of-type(4)>a:nth-of-type(1)>span:nth-of-type(1)@aria-label",
+      "fingerprint": "2b0deb42b6957417b2ea207e8374b6cc78ca58a68c0892ee5d66548834569784",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "I18N_REFERENCE_MISSING",
+      "path": "politica-de-privacidade.html",
+      "subject": "body#page-privacy>div:nth-of-type(1)>p:nth-of-type(7)@data-key:privacy-services-p2",
+      "fingerprint": "187dc4158c72161a711c8f64920e5143d90c2e97fb03e140cd137f7cfa91e078",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "LEGACY_MAXIMIZED_REFERENCE",
+      "path": "utils.js",
+      "subject": "processPlatformData:maximized",
+      "fingerprint": "23c73145ed5c03dbf784fffe750a3c2e48e6b045edcbcc53cdd8c574105af4fa",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "LEGACY_MAXIMIZED_REFERENCE",
+      "path": "utils.js",
+      "subject": "property:acad.maximized",
+      "fingerprint": "4520dc07601c99630e9adcd6902e087039e3f3e96dfb585c7515a6d5facb95b4",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_CSP_POLICY",
+      "path": "404.html",
+      "subject": "document:csp-meta",
+      "fingerprint": "e6602fb68e52001dcd9a1ac9a3ae2d4a67a277f52dd67c2d4d460cf9a9d82d73",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_CSP_POLICY",
+      "path": "index.html",
+      "subject": "document:csp-meta",
+      "fingerprint": "785cd32caf5ff6cae7c59f23c70564285b4a2815c8acdf305a875a1d0edf405c",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_CSP_POLICY",
+      "path": "politica-de-privacidade.html",
+      "subject": "document:csp-meta",
+      "fingerprint": "0ee511f7b24e3dcc3de785470f4debaed4c77fb847cf48063245589009069afe",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_CSP_POLICY",
+      "path": "projetos.html",
+      "subject": "document:csp-meta",
+      "fingerprint": "4dc2d0aec4a2b3b292edcf6b867a93c6ba8adfe97c5f2d078d72b8778dc09575",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_CSP_POLICY",
+      "path": "publicacoes.html",
+      "subject": "document:csp-meta",
+      "fingerprint": "be91c6d571ccad216de68576e28f28428bfa50c423effeb9b25c4f037670000a",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
+      "path": "index.html",
+      "subject": "https://cdn.plot.ly/plotly-2.27.0.min.js",
+      "fingerprint": "e8d7ca9ddf12bf7557081d0c5f3d542aad92beefd0397f82d9a67833f0a87994",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    },
+    {
+      "rule_id": "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
+      "path": "index.html",
+      "subject": "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+      "fingerprint": "474651a03c4cd26d36b3a5bd4f4596d88f019526c1053058ff70824e6a831f4b",
+      "reason": "Pre-existing debt frozen before structural block 2"
+    }
+  ]
+}
