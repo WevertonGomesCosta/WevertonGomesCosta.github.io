@@ -175,7 +175,7 @@ Policy exceptions must identify a stable subject, not a line number. They are no
 
 Policy application occurs after raw violations are generated. Every configured exception must match an actual raw violation in the same run. An exception that matches nothing is stale and is a fatal configuration error; it must be removed in the same change that removes the underlying behavior. This prevents an obsolete exception from later suppressing a regression at the same subject.
 
-Malformed policy, duplicate exception identities, stale exceptions, or references to unknown rule IDs are fatal configuration errors.
+Policy and baseline schemas are strict: unknown top-level keys or unknown entry keys are configuration errors rather than silently ignored typos. Malformed policy, duplicate exception identities, stale exceptions, or references to unknown rule IDs are fatal configuration errors.
 
 ### 4.6 `.github/workflows/repository-audit.yml`
 
@@ -411,6 +411,7 @@ Repository audit
 
 PASS       12 rules clean
 KNOWN      38 baseline violations
+EXEMPTED    0 active policy exceptions
 NEW         0
 RESOLVED    0
 GROWTH      0
@@ -418,7 +419,7 @@ GROWTH      0
 Result: PASS
 ```
 
-When NEW or RESOLVED items exist, print rule, path, subject, and a short diagnostic.
+Active policy exceptions are always counted as EXEMPTED so intentional suppression remains visible in CI. When NEW, RESOLVED, or GROWTH items exist, print rule, path, subject, and a short diagnostic.
 
 The auditor must not dump full source files or excessively verbose traces during normal CI execution.
 
@@ -454,6 +455,7 @@ Fatal audit-configuration/runtime conditions include:
 - unreadable audit configuration where the failure is not representable as a repository rule;
 - malformed `.audit/known-debt.json`;
 - malformed `.audit/policy.json`;
+- unknown schema keys in policy/baseline or their entries;
 - duplicate baseline identities;
 - duplicate policy-exception identities;
 - stale policy exceptions that match no raw violation;
@@ -496,12 +498,13 @@ At minimum:
 20. removing an entry from the candidate baseline is allowed when the violation is also gone;
 21. initial bootstrap without a reference baseline is allowed;
 22. stale policy exceptions fail;
-23. root-relative internal links such as `/` and `/publicacoes.html` resolve inside the site root;
-24. local HTML fragments resolve to an existing target `id`, while a missing fragment target is detected;
-25. adding a new root-level `extra.html` automatically subjects it to HTML/runtime policy rules without configuration;
-26. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
-27. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
-28. clean fixture exits successfully.
+23. unknown policy/baseline schema keys fail rather than being ignored;
+24. root-relative internal links such as `/` and `/publicacoes.html` resolve inside the site root;
+25. local HTML fragments resolve to an existing target `id`, while a missing fragment target is detected;
+26. adding a new root-level `extra.html` automatically subjects it to HTML/runtime policy rules without configuration;
+27. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
+28. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
+29. clean fixture exits successfully.
 
 ### Repository integration test
 
