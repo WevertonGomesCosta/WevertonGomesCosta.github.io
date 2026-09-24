@@ -1,0 +1,59 @@
+name: Repository audit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -p "test_*.py"
+
+      - name: Resolve reference baseline
+        id: reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f /tmp/base-known-debt.json
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+          fi
+
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]]; then
+            echo "has_reference=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git cat-file -e "${BASE_SHA}^{commit}"
+          if git cat-file -e "${BASE_SHA}:.audit/known-debt.json" 2>/dev/null; then
+            git show "${BASE_SHA}:.audit/known-debt.json" > /tmp/base-known-debt.json
+            echo "has_reference=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_reference=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Audit with reference
+        if: steps.reference.outputs.has_reference == 'true'
+        run: >-
+          python scripts/audit_repository.py
+          --reference-baseline /tmp/base-known-debt.json
+
+      - name: Audit bootstrap genesis
+        if: steps.reference.outputs.has_reference != 'true'
+        run: python scripts/audit_repository.py
