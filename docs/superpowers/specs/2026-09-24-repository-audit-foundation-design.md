@@ -124,7 +124,7 @@ The suite tests fixture repositories in temporary directories, stable identity, 
 
 ### 4.4 `.audit/known-debt.json`
 
-Explicit inventory of accepted pre-existing violations.
+Explicit inventory of accepted pre-existing violations **of the version-1 audit rule set**. It is not an assertion that all architectural debt in the repository is representable by these rules. Broader structural debts documented in Section 2 remain inputs to later blocks until objective guards are designed for them.
 
 The file is versioned so every increase or decrease is visible in review.
 
@@ -537,7 +537,7 @@ Block 1 is complete when all of the following are true:
 
 1. `python -m unittest discover -s tests -p "test_*.py"` passes.
 2. `python scripts/audit_repository.py` passes on the branch.
-3. The current genuine technical debt is explicitly represented in `.audit/known-debt.json`.
+3. Every genuine pre-existing violation emitted by the version-1 rule set is explicitly represented in `.audit/known-debt.json`; broader architectural debt outside those rules remains documented in the follow-on roadmap.
 4. Repository-specific intentional exceptions are explicit in `.audit/policy.json`, not hidden in the debt baseline.
 5. Adding a new violation to a fixture or temporary repository makes the audit fail.
 6. Adding a new debt fingerprint to the candidate baseline relative to an existing reference baseline fails as BASELINE_GROWTH.
@@ -559,4 +559,4 @@ After this block is green:
 3. **Block 4 — JavaScript/runtime architecture:** decompose `utils.js`, improve graceful degradation, safer DOM rendering, reduced motion.
 4. **Block 5 — hardening/maintenance:** CSP/SRI, reproducible data tooling, repository organization, maintenance documentation.
 
-The audit baseline should shrink throughout these blocks until structural debt tracked by it reaches zero or only explicitly justified permanent exceptions remain.
+The audit baseline should shrink throughout these blocks until the debt **tracked by the versioned rule set** reaches zero or only explicitly justified permanent exceptions remain. Later blocks may add new deterministic rules for architectural invariants that are not objectively testable in version 1; such rule additions require their own reviewed bootstrap/transition rather than silently reclassifying existing debt.
