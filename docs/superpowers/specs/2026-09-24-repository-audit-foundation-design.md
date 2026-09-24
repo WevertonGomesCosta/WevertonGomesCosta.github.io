@@ -157,10 +157,10 @@ Examples include:
 - explicitly allowed self-links, if any;
 - narrowly scoped rule exceptions justified as intentional repository policy.
 
-The set of audited HTML pages is **not configurable by policy**. It is a canonical code-level invariant:
+The set of audited HTML pages is **not configurable by policy**. Version 1 discovers every root-level `*.html` file automatically. The five current site pages are additionally required canonical files:
 
 ```python
-AUDITED_HTML = (
+REQUIRED_HTML = (
     "index.html",
     "publicacoes.html",
     "projetos.html",
@@ -169,7 +169,7 @@ AUDITED_HTML = (
 )
 ```
 
-Changing that set requires changing code and tests, so a policy edit cannot silently narrow audit coverage.
+`discover_audited_html(root)` returns all root-level HTML files in deterministic sorted order. Therefore a newly added top-level page is automatically audited without a policy or code-list change, while deleting one of the five canonical pages still triggers `REQUIRED_FILE`. Policy cannot narrow this discovered set.
 
 Policy exceptions must identify a stable subject, not a line number. They are not technical-debt entries: an exception means the behavior is intentionally allowed, while `known-debt.json` means the behavior is undesirable and scheduled to be removed.
 
@@ -347,7 +347,7 @@ These are initially expected to be known debt, not fixed in Block 1.
 
 ## 8. Rule registry and implementation boundaries
 
-Rule execution is registry-driven in `engine.py`. Domain modules expose rule groups, and an explicit `RULE_COVERAGE` mapping identifies which rule IDs each group owns.
+Rule execution is registry-driven in `engine.py`. Domain modules expose rule groups, and an explicit `RULE_COVERAGE` mapping identifies which rule IDs each group owns. HTML rule groups obtain their scope from `discover_audited_html(root)`, never from policy.
 
 The union of all `RULE_COVERAGE` values must equal `RULE_IDS` exactly. Missing and unknown rule IDs are test failures.
 
@@ -497,9 +497,10 @@ At minimum:
 21. initial bootstrap without a reference baseline is allowed;
 22. stale policy exceptions fail;
 23. root-relative internal links such as `/` and `/publicacoes.html` resolve inside the site root;
-24. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
-25. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
-26. clean fixture exits successfully.
+24. adding a new root-level `extra.html` automatically subjects it to HTML/runtime policy rules without configuration;
+25. an SRI attribute with invalid syntax or missing `crossorigin="anonymous"` remains a security violation;
+26. reduced-motion literal text in a comment does not satisfy the reduced-motion policy;
+27. clean fixture exits successfully.
 
 ### Repository integration test
 
@@ -541,7 +542,7 @@ Block 1 is complete when all of the following are true:
 9. Replacing one known violation with another while keeping the same count creates a NEW item.
 10. A stored fingerprint inconsistent with its rule/path/subject is rejected.
 11. GitHub Actions runs tests and the audit on pull requests and pushes to `main`, including baseline monotonicity comparison against the PR base SHA or push-event `before` SHA.
-12. Policy cannot narrow the canonical audited-page set, and stale policy exceptions are rejected.
+12. Policy cannot narrow audit scope; all root-level HTML files are discovered automatically, the five canonical HTML files remain required, and stale policy exceptions are rejected.
 13. No visible site behavior changes as part of this block.
 14. The next structural block can remove debt by deleting corresponding baseline entries rather than changing audit policy.
 
