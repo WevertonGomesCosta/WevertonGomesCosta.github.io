@@ -293,7 +293,7 @@ git commit -m "feat: audit HTML structure and controls"
 - Create .audit/policy.json
 
 **Produces**
-REQUIRED_FILES, REQUIRED_DATA_JSON, audit_repository_data(), apply_policy_exceptions().
+REQUIRED_FILES, REQUIRED_DATA_JSON, read_repository_json(), audit_repository_data(), apply_policy_exceptions().
 
 - [ ] **Step 1: Write failing required-file/JSON tests**
 
@@ -494,6 +494,7 @@ CLI: --root, --policy, --baseline, --reference-baseline, --json, --emit-current-
 - [ ] **Step 1: Write failing orchestration tests**
 
 Pin:
+- RULE_COVERAGE union equals RULE_IDS exactly, with no unknown or missing rule ID;
 - clean fixture -> PASS;
 - new missing-type button -> NEW/fail;
 - stale baseline entry -> RESOLVED/fail;
@@ -508,7 +509,7 @@ python -m unittest tests.test_repository_audit.TestAuditOrchestration -v
 
 - [ ] **Step 3: Implement orchestration**
 
-Rule groups:
+Rule groups and explicit coverage:
 
 ~~~python
 RULES = (
@@ -516,7 +517,28 @@ RULES = (
     audit_repository_data,
     audit_academic_and_runtime,
 )
+RULE_COVERAGE = {
+    audit_html_structure: frozenset({
+        "HTML_DUPLICATE_ID", "HTML_INTERNAL_LINK_TARGET",
+        "HTML_TARGET_BLANK_NO_NOOPENER", "HTML_DUPLICATE_ATTRIBUTE",
+        "HTML_SELF_LINK", "HTML_BUTTON_MISSING_TYPE", "HTML_ACTION_HASH_LINK",
+    }),
+    audit_repository_data: frozenset({
+        "JSON_PARSE", "REQUIRED_FILE", "TRANSLATION_LANGUAGE_SET",
+        "TRANSLATION_KEY_PARITY", "I18N_FIXED_ARIA_LABEL",
+        "I18N_FIXED_TITLE", "I18N_REFERENCE_MISSING",
+    }),
+    audit_academic_and_runtime: frozenset({
+        "ACADEMIC_REGISTRY_STRUCTURE", "ACADEMIC_REGISTRY_DUPLICATE_ID",
+        "ACADEMIC_REGISTRY_DUPLICATE_DOI", "ACADEMIC_REGISTRY_DUPLICATE_TITLE",
+        "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE", "LEGACY_MAXIMIZED_REFERENCE",
+        "A11Y_REDUCED_MOTION_POLICY", "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
+        "SECURITY_CSP_POLICY",
+    }),
+}
 ~~~
+
+At module/test time assert that the union of RULE_COVERAGE values equals RULE_IDS exactly.
 
 run_audit sequence:
 1. resolve root/policy/baseline;
@@ -709,21 +731,24 @@ jobs:
         run: |
           set -euo pipefail
           rm -f /tmp/base-known-debt.json
+          BASE_SHA=""
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            git show "${BASE_SHA}:.audit/known-debt.json" \
-              > /tmp/base-known-debt.json 2>/dev/null || true
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             if git rev-parse HEAD^1 >/dev/null 2>&1; then
-              PARENT_SHA="$(git rev-parse HEAD^1)"
-              git show "${PARENT_SHA}:.audit/known-debt.json" \
-                > /tmp/base-known-debt.json 2>/dev/null || true
+              BASE_SHA="$(git rev-parse HEAD^1)"
             fi
           fi
-          if [[ -s /tmp/base-known-debt.json ]]; then
-            echo "has_reference=true" >> "$GITHUB_OUTPUT"
+
+          if [[ -n "$BASE_SHA" ]]; then
+            git cat-file -e "${BASE_SHA}^{commit}"
+            if git cat-file -e "${BASE_SHA}:.audit/known-debt.json" 2>/dev/null; then
+              git show "${BASE_SHA}:.audit/known-debt.json" > /tmp/base-known-debt.json
+              echo "has_reference=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "has_reference=false" >> "$GITHUB_OUTPUT"
+            fi
           else
-            rm -f /tmp/base-known-debt.json
             echo "has_reference=false" >> "$GITHUB_OUTPUT"
           fi
 
@@ -738,7 +763,7 @@ jobs:
         run: python scripts/audit_repository.py
 ~~~
 
-Genesis is valid only while the base commit has no baseline. After Block 1 lands, later PRs/pushes use a reference baseline.
+Genesis is valid only when the verified reference commit truly has no baseline file (or there is no parent commit). Failure to resolve/read an existing reference commit is fatal and must never fall through to the genesis path. After Block 1 lands, later PRs/pushes use a reference baseline.
 
 - [ ] **Step 4: Run workflow test and complete suite GREEN**
 
