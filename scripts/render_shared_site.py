@@ -147,6 +147,9 @@ def profile_template_values(profile: Mapping[str, object]) -> dict[str, str]:
         "PROFILE_WOS_URL": resolve_profile_value(
             profile, "profiles.web_of_science.url"
         ),
+        "PROFILE_CONECTA_URL": resolve_profile_value(
+            profile, "organizations.conecta-gem.url"
+        ),
     }
 
 
@@ -188,11 +191,13 @@ def serialize_jsonld_for_html(profile: Mapping[str, object]) -> str:
         "affiliation": [
             {
                 "@type": "Organization",
-                "name": "Universidade Federal de Viçosa (UFV)",
+                "name": resolve_profile_value(profile, "organizations.ufv.name"),
             },
             {
                 "@type": "Organization",
-                "name": "Conecta GEM",
+                "name": resolve_profile_value(
+                    profile, "organizations.conecta-gem.name"
+                ),
             },
         ],
         "alumniOf": "Universidade Federal de Viçosa",
@@ -550,6 +555,7 @@ def _render_fragments(
                     "PROFILE_ORCID_URL",
                     "PROFILE_SCOPUS_URL",
                     "PROFILE_WOS_URL",
+                    "PROFILE_CONECTA_URL",
                 )
             },
         },
