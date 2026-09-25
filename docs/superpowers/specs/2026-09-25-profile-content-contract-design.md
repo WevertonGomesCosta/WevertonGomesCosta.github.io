@@ -160,7 +160,7 @@ Example:
 
 ```json
 {
-  "projects-page-title": "Projetos | {person_name}"
+  "projects-page-title": "Projetos | {profile_person_name}"
 }
 ```
 
@@ -272,16 +272,18 @@ Requirements:
 - interpolation must not evaluate code or arbitrary property paths;
 - interpolation must preserve current PT/EN rendered text during migration.
 
-Initial approved profile placeholders should be intentionally small, for example:
+The implemented placeholder namespace is closed and uses the `profile_` prefix. Representative examples are:
 
-- `{person_name}`;
-- `{display_name}`;
-- `{email}`;
-- `{city}`;
-- `{region}`;
-- `{country_name}`.
+- `{profile_person_name}`;
+- `{profile_display_name}`;
+- `{profile_email}`;
+- `{profile_city}`;
+- `{profile_region}`;
+- `{profile_org_ufv_name}`;
+- `{profile_edu_phd_stat_start_year}`;
+- `{profile_mentor_phd_gen_advisor}`.
 
-Additional placeholders require an explicit contract change.
+The complete approved set is enforced by `profile-interpolation.js` and `PROFILE_FACT_CONTRACT`. Additional `{profile_*}` placeholders require an explicit contract change and matching tests.
 
 ## 8. Relationship to bibliography and metrics
 
