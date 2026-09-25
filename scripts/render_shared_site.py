@@ -24,6 +24,10 @@ PROFILE_TEXT_RE = re.compile(
     r'(?P<value>[^<>]*)'
     r'(?P<close></(?P=tag)>)'
 )
+PROFILE_TEXT_TEMPLATE_RE = re.compile(
+    r'\bdata-profile-text-template="([^"]+)"'
+)
+PROFILE_ONLY_PAGES = ("404.html",)
 
 
 class RenderContractError(RuntimeError):
@@ -259,10 +263,17 @@ def project_profile_bindings(
     text_markers = len(re.findall(r'\bdata-profile-text="', rendered))
 
     def project_text(match: re.Match[str]) -> str:
-        value = html.escape(
-            resolve_profile_value(profile, match.group("key")),
-            quote=False,
-        )
+        raw_value = resolve_profile_value(profile, match.group("key"))
+        template_match = PROFILE_TEXT_TEMPLATE_RE.search(match.group("open"))
+        if template_match is not None:
+            template = html.unescape(template_match.group(1))
+            if template.count("{value}") != 1:
+                raise RenderContractError(
+                    f"Profile text template must contain exactly one "
+                    f"'{{value}}' placeholder in {path}"
+                )
+            raw_value = template.replace("{value}", raw_value)
+        value = html.escape(raw_value, quote=False)
         return match.group("open") + value + match.group("close")
 
     rendered, text_count = PROFILE_TEXT_RE.subn(project_text, rendered)
@@ -609,6 +620,13 @@ def render_all(root: Path) -> dict[Path, str]:
     rendered: dict[Path, str] = {}
     for config in PAGE_CONFIGS:
         rendered[root / config.path] = render_page(root, config, profile)
+
+    for relative in PROFILE_ONLY_PAGES:
+        path = root / relative
+        source = read_utf8_strict(path)
+        detect_newline(source, path)
+        rendered[path] = project_profile_bindings(source, profile, path)
+
     return rendered
 
 
