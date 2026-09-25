@@ -5,10 +5,42 @@ import tempfile
 import unittest
 from unittest import mock
 
-import requests
-
 import update_fallback
 from scripts import source_update_pipeline as pipeline
+
+
+class FakeRequestException(Exception):
+    pass
+
+
+class FakeTimeout(FakeRequestException):
+    pass
+
+
+class FakeHTTPError(FakeRequestException):
+    pass
+
+
+class FakeExceptions:
+    Timeout = FakeTimeout
+    RequestException = FakeRequestException
+    HTTPError = FakeHTTPError
+
+
+class FakeRequests:
+    exceptions = FakeExceptions
+
+    def __init__(self, side_effect=None, return_value=None):
+        self.side_effect = list(side_effect or [])
+        self.return_value = return_value
+
+    def get(self, *args, **kwargs):
+        if self.side_effect:
+            value = self.side_effect.pop(0)
+            if isinstance(value, Exception):
+                raise value
+            return value
+        return self.return_value
 
 
 class FakeResponse:
@@ -19,9 +51,7 @@ class FakeResponse:
 
     def raise_for_status(self):
         if self.status_code >= 400:
-            raise requests.exceptions.HTTPError(
-                f"status={self.status_code}"
-            )
+            raise FakeHTTPError(f"status={self.status_code}")
 
     def json(self):
         return self.payload
@@ -40,18 +70,18 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
 
     def test_github_failure_is_none_but_successful_empty_is_empty_list(self):
         with mock.patch.object(
-            update_fallback.requests,
-            "get",
-            side_effect=requests.exceptions.Timeout(),
+            update_fallback,
+            "requests",
+            FakeRequests(side_effect=[FakeTimeout()]),
         ):
             self.assertIsNone(
                 update_fallback.fetch_github_repos("example")
             )
 
         with mock.patch.object(
-            update_fallback.requests,
-            "get",
-            return_value=FakeResponse([]),
+            update_fallback,
+            "requests",
+            FakeRequests(return_value=FakeResponse([])),
         ):
             self.assertEqual(
                 update_fallback.fetch_github_repos("example"),
@@ -86,13 +116,15 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         )
 
         with mock.patch.object(
-            update_fallback.requests,
-            "get",
-            side_effect=[
-                profile,
-                first_page,
-                requests.exceptions.Timeout(),
-            ],
+            update_fallback,
+            "requests",
+            FakeRequests(
+                side_effect=[
+                    profile,
+                    first_page,
+                    FakeTimeout(),
+                ]
+            ),
         ):
             result = update_fallback.fetch_scholar_data(
                 "Author",
@@ -176,10 +208,17 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
                 ),
             }
 
-            with mock.patch.object(
-                update_fallback,
-                "collect_source_results",
-                return_value=results,
+            with (
+                mock.patch.object(
+                    update_fallback,
+                    "requests",
+                    FakeRequests(),
+                ),
+                mock.patch.object(
+                    update_fallback,
+                    "collect_source_results",
+                    return_value=results,
+                ),
             ):
                 rc = update_fallback.run_update(
                     root=root,
