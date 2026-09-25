@@ -579,52 +579,77 @@ const scholarScript = (function() {
         }
     }
 
+
+    async function ensureBibliometricMetricsLoaded() {
+        if (window.bibliometricMetrics?.publications) return;
+        try {
+            const response = await fetch('bibliometric-metrics.json');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const payload = await response.json();
+            if (!payload || typeof payload !== 'object' || !payload.publications) {
+                throw new Error('estrutura de métricas bibliométricas inválida');
+            }
+            window.bibliometricMetrics = payload;
+        } catch (e) {
+            console.warn(
+                'Bibliometric metrics unavailable; canonical publication citations will remain unavailable.',
+                e
+            );
+            window.bibliometricMetrics = null;
+        }
+    }
+
     // --- HELPERS ---
     const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
 
-    const normalizeIdentityTitle = (str) => str
-        ? str.normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[‐‑‒–—−]/g, '-')
-            .toLowerCase()
-            .replace(/[^a-z0-9]+/g, ' ')
-            .replace(/\s+/g, ' ')
-            .trim()
-        : '';
-
-    const scholarCitationCount = (work, scholarArticles = []) => {
-        const target = normalizeIdentityTitle(work?.title || '');
-        if (!target) return 0;
-
-        let match = scholarArticles.find(article =>
-            normalizeIdentityTitle(article?.title || '') === target
-        );
-
-        if (!match) {
-            match = scholarArticles.find(article => {
-                const rawTitle = article?.title || '';
-                if (!/[.…]$/.test(rawTitle.trim())) return false;
-                const candidate = normalizeIdentityTitle(rawTitle.replace(/[.…]+$/, ''));
-                return candidate.length >= 60 && target.startsWith(candidate);
-            });
+    const publicationCitationMetric = (publicationId, source = 'google_scholar') => {
+        if (!publicationId) {
+            return { value: 0, status: 'record_absent' };
         }
 
-        const value = match?.cited_by?.value ?? match?.cited_by ?? 0;
-        return parseInt(value, 10) || 0;
+        const metric = window.bibliometricMetrics
+            ?.publications?.[publicationId]?.[source];
+
+        if (!metric || typeof metric !== 'object') {
+            return { value: 0, status: 'record_absent' };
+        }
+
+        if (
+            metric.status === 'observed'
+            && Number.isInteger(metric.citations)
+            && metric.citations >= 0
+        ) {
+            return { value: metric.citations, status: 'observed' };
+        }
+
+        return {
+            value: 0,
+            status: metric.status || 'value_unavailable'
+        };
     };
     
-    const normalizeArticle = (rawArt, scholarArticles = []) => {
+    const normalizeArticle = (rawArt) => {
         const isCanonical = !!(rawArt?.id && rawArt?.type && rawArt?.status);
         let cites = 0;
+        let citationStatus = null;
 
         const isCitableCanonicalWork = isCanonical && (
             (rawArt.type === 'journal_article' && rawArt.status === 'published') ||
             rawArt.type === 'preprint'
         );
 
-        if (isCitableCanonicalWork) cites = scholarCitationCount(rawArt, scholarArticles);
-        else if (!isCanonical && rawArt.cited_by && typeof rawArt.cited_by === 'object') cites = rawArt.cited_by.value || 0;
-        else if (!isCanonical) cites = parseInt(rawArt.cited_by) || 0;
+        if (isCitableCanonicalWork) {
+            const metric = publicationCitationMetric(rawArt.id);
+            cites = metric.value;
+            citationStatus = metric.status;
+        } else if (!isCanonical && rawArt.cited_by && typeof rawArt.cited_by === 'object') {
+            cites = rawArt.cited_by.value || 0;
+            citationStatus = rawArt.cited_by.value == null ? 'value_unavailable' : 'observed';
+        } else if (!isCanonical) {
+            const parsed = parseInt(rawArt.cited_by, 10);
+            cites = Number.isNaN(parsed) ? 0 : parsed;
+            citationStatus = Number.isNaN(parsed) ? 'value_unavailable' : 'observed';
+        }
 
         const year = (rawArt.year || rawArt.ano || '0000').toString().replace(/\D/g, '').substring(0, 4);
         const doi = rawArt.doi || '';
@@ -645,7 +670,7 @@ const scholarScript = (function() {
             doi,
             doiLink,
             lattesPosition: rawArt.lattes?.position ?? null,
-            cited_by: { value: cites }
+            cited_by: { value: cites, status: citationStatus }
         };
     };
 
@@ -1212,7 +1237,8 @@ const scholarScript = (function() {
     async function init() {
         await Promise.all([
             ensureTranslationsLoaded(),
-            ensureAcademicRegistryLoaded()
+            ensureAcademicRegistryLoaded(),
+            ensureBibliometricMetricsLoaded()
         ]);
         UI.track = document.querySelector('.carousel-track');
         UI.slides = Array.from(document.querySelectorAll('.carousel-slide'));
@@ -1241,7 +1267,7 @@ const scholarScript = (function() {
 
         if (Array.isArray(registryWorks)) {
             allWorks = registryWorks
-                .map(work => normalizeArticle(work, scholarArticles))
+                .map(work => normalizeArticle(work))
                 .sort((a, b) => {
                     const yearDiff = (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
                     if (yearDiff !== 0) return yearDiff;
