@@ -121,7 +121,7 @@ class TestFrozenBibliographicSourceLinks(unittest.TestCase):
         }
         self.assertNotIn("doi:10.47328/ufvbbt.2022.326", orcid_ids)
 
-    def test_frozen_links_pass_structure_while_duplicate_debt_remains(self):
+    def test_frozen_links_resolve_the_known_scholar_duplicate(self):
         violations = data_rules.audit_academic_data(ROOT)
         self.assertFalse(
             [
@@ -132,13 +132,15 @@ class TestFrozenBibliographicSourceLinks(unittest.TestCase):
             ],
             violations,
         )
-        duplicate = [
-            violation
-            for violation in violations
-            if violation.rule_id
-            == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
-        ]
-        self.assertEqual(len(duplicate), 1)
+        self.assertFalse(
+            [
+                violation
+                for violation in violations
+                if violation.rule_id
+                == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+            ],
+            violations,
+        )
 
 
 if __name__ == "__main__":
