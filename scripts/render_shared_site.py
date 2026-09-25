@@ -150,6 +150,9 @@ def profile_template_values(profile: Mapping[str, object]) -> dict[str, str]:
         "PROFILE_CONECTA_URL": resolve_profile_value(
             profile, "organizations.conecta-gem.url"
         ),
+        "PROFILE_CONECTA_NAME": resolve_profile_value(
+            profile, "organizations.conecta-gem.name"
+        ),
     }
 
 
@@ -547,6 +550,7 @@ def _render_fragments(
                 key: profile_values[key]
                 for key in (
                     "PROFILE_PERSON_NAME",
+                    "PROFILE_DISPLAY_NAME",
                     "PROFILE_EMAIL",
                     "PROFILE_GITHUB_URL",
                     "PROFILE_LINKEDIN_URL",
@@ -556,6 +560,7 @@ def _render_fragments(
                     "PROFILE_SCOPUS_URL",
                     "PROFILE_WOS_URL",
                     "PROFILE_CONECTA_URL",
+                    "PROFILE_CONECTA_NAME",
                 )
             },
         },
