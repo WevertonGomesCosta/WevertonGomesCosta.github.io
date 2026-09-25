@@ -177,6 +177,32 @@ class TestSourceUpdatePipeline(unittest.TestCase):
         self.assertEqual(state["last_valid_at"], "2026-09-25T15:30:00")
         self.assertIsNone(state["error_code"])
 
+    def test_existing_unavailable_placeholder_stays_unavailable_on_failure(self):
+        old = old_snapshot()
+        old["githubRepos"] = []
+        old["sourceStates"]["github"] = {
+            "status": "unavailable",
+            "last_valid_at": None,
+            "error_code": "fetch_failed",
+        }
+        results = all_success(old)
+        results["github"] = pipeline.SourceResult.failure("fetch_failed")
+        candidate = pipeline.build_transaction_candidate(
+            old_snapshot=old,
+            results=results,
+            registry=registry(),
+            source_links=source_links(),
+            transaction_time=NOW,
+        )
+        self.assertEqual(
+            candidate.fallback["sourceStates"]["github"],
+            {
+                "status": "unavailable",
+                "last_valid_at": None,
+                "error_code": "fetch_failed",
+            },
+        )
+
     def test_missing_previous_snapshot_becomes_unavailable(self):
         results = {
             "github": pipeline.SourceResult.success([]),
