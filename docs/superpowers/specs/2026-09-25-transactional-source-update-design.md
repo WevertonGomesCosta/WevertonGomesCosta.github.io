@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** implementation started after Block 3C/3D merge  
+**Status:** Block 3E implemented and CI-validated; frozen for merge review  
 **Base:** `main@51ed26271c4782de9963bbc91b05a90016633cf6`
 
 ## 1. Objective
@@ -276,3 +276,137 @@ Bootstrap current source states, integrate the runtime entrypoint, add complete 
 - new violations: 0;
 - resolved baseline entries: 0;
 - baseline growth: 0.
+
+
+## 14. Implementation status after Block 3E
+
+Block 3E is implemented end-to-end.
+
+### Transaction core
+
+`scripts/source_update_pipeline.py` now owns:
+
+- explicit `SourceResult(success|failure|skipped)` outcomes;
+- source payload validation;
+- frozen bibliographic-link completeness checks;
+- previous-snapshot reconciliation;
+- `current`, `stale`, and `unavailable` source-state transitions;
+- material change detection independent of `lastUpdated`;
+- one in-memory fallback candidate used to derive metrics;
+- staged two-file publication with process-level rollback.
+
+### Updater entrypoint
+
+`update_fallback.py` is import-safe:
+
+- importing it does not read `keys.json`;
+- importing it does not call `sys.exit`;
+- importing it does not require the optional `requests` package to be installed;
+- credential validation occurs only at runtime.
+
+Fetcher semantics are no longer ambiguous:
+
+- GitHub returns `None` on failure and `[]` only for a successful empty result;
+- Scholar rejects partial pagination;
+- Scholar preserves absent citation values as `null`, never implicit zero;
+- ORCID returns `None` on collection failure;
+- Scopus no longer accepts or returns `previous_data`; incomplete collection returns `None`;
+- WoS local-source absence is represented as a skipped collection result.
+
+Previous-data preservation is no longer implemented inside any fetcher.
+
+### Published source state
+
+The existing fallback snapshot was bootstrapped with five explicit `current` states using its existing accepted snapshot timestamp:
+
+`2026-09-22T09:40:00`
+
+The source-state contract is enforced by `SOURCE_UPDATE_STATE_STRUCTURE`.
+
+A failed refresh with previous valid data:
+
+```text
+new fetch fails
+  -> previous payload preserved
+  -> status = stale
+  -> last_valid_at preserved
+  -> controlled error_code stored
+```
+
+A failed refresh with no previous valid payload becomes `unavailable`.
+
+A repeated failure of an already unavailable placeholder remains unavailable; an empty placeholder is not promoted to stale merely because its container type is structurally valid.
+
+### Stale bibliometric semantics
+
+`bibliometric-metrics.json` supports `status: stale`.
+
+For a frozen linked publication from a stale source:
+
+- primary/alias identity is preserved;
+- the last valid integer citation remains available;
+- a null citation remains null;
+- the frontend uses the preserved integer value for display/sorting while retaining `cited_by.status = stale`.
+
+An unlinked publication in a stale source remains `record_absent`; a source with no valid snapshot remains `source_unavailable`.
+
+The current checked-in metrics artifact remains byte-synchronized because all bootstrapped source states are `current`.
+
+### Identity/audit interaction
+
+Frozen source links continue to require exact snapshot evidence for `current` and `stale` sources.
+
+When a source is explicitly `unavailable`, the identity link remains valid but the audit does not require the unavailable raw observation to exist in `fallback-data.json`.
+
+No source-link mappings changed in Block 3E.
+
+### Offline failure-path coverage
+
+The test suite now covers:
+
+- import without configuration side effects;
+- missing `keys.json` as a normal exception;
+- GitHub failure versus successful empty result;
+- Scholar partial pagination rejection;
+- Scholar null citation preservation;
+- Scopus fetcher independence from previous data;
+- initial generation with no previous fallback snapshot;
+- per-source failure preservation for GitHub, Scholar, Scopus, WoS, and ORCID;
+- stale recovery to current;
+- unavailable source with no previous snapshot;
+- repeated unavailable-source failure;
+- frozen record missing from a nominally successful refresh;
+- independent reconciliation of stale and successfully changed sources;
+- no-op refresh without `lastUpdated` churn;
+- fallback/metrics transaction timestamp parity;
+- stale metric value preservation;
+- rollback when the second staged replacement fails;
+- source-link audit behavior for unavailable sources.
+
+No test performs live API access.
+
+### Final gate
+
+Verified at the final implementation HEAD:
+
+- profile translation interpolation: PASS;
+- Python updater syntax: PASS;
+- deterministic bibliometric metrics check: PASS;
+- JavaScript syntax: PASS;
+- 170 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 10;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+Protected artifacts remain unchanged:
+
+- `academic-registry.json`;
+- `bibliographic-source-links.json`;
+- `bibliometric-metrics.json`;
+- `.audit/known-debt.json`;
+- all HTML pages;
+- `style.css`.
+
+Block 3E therefore changes update semantics and source-state metadata without changing canonical bibliographic identity or the known-debt count.
