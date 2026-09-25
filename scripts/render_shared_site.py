@@ -225,7 +225,7 @@ def project_profile_bindings(
         for attribute, key in markers:
             value = html.escape(resolve_profile_value(profile, key), quote=True)
             attribute_re = re.compile(
-                rf'\b{re.escape(attribute)}="[^"]*"'
+                rf'(?<![\\w-]){re.escape(attribute)}="[^"]*"'
             )
             if len(attribute_re.findall(tag)) != 1:
                 raise RenderContractError(
