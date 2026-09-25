@@ -1233,6 +1233,19 @@ def _bibliographic_source_link_violation(
     )
 
 
+def _valid_bibliographic_record_id(source: str, record_id: str) -> bool:
+    if source == "google_scholar":
+        return bool(re.fullmatch(r"[^\s:]+:[^\s:]+", record_id))
+    if source == "scopus":
+        return bool(re.fullmatch(r"\d+", record_id))
+    if source in {"web_of_science", "orcid"}:
+        if not record_id.startswith("doi:"):
+            return False
+        doi = record_id[4:]
+        return bool(doi) and doi == normalize_doi(doi)
+    return False
+
+
 def _academic_publication_ids(registry: object) -> frozenset[str]:
     if not isinstance(registry, dict):
         return frozenset()
@@ -1412,7 +1425,18 @@ def _audit_bibliographic_source_links(
                     )
                 )
             else:
-                record_ids[record_id.strip()] += 1
+                normalized_record_id = record_id.strip()
+                record_ids[normalized_record_id] += 1
+                if not _valid_bibliographic_record_id(
+                    source, normalized_record_id
+                ):
+                    violations.append(
+                        _bibliographic_source_link_violation(
+                            f"{subject}:record-id",
+                            f"record_id does not match {source} "
+                            f"{expected_scheme!r} scheme",
+                        )
+                    )
 
             publication_id = raw_link.get("publication_id")
             if not isinstance(publication_id, str) or not publication_id.strip():
