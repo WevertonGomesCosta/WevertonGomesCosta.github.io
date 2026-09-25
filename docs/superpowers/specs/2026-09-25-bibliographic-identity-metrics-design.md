@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3C.1, 3C.2, and 3D.1 implemented and CI-validated; 3D.2–3D.3 pending  
+**Status:** 3C.1, 3C.2, 3D.1, and 3D.2 implemented and CI-validated; 3D.3 pending  
 **Base:** `main@4b55ec32ed20c33d98084340c844462fa341adfe`
 
 ## 1. Objective
@@ -577,6 +577,68 @@ Verified 3D.1 gate:
 - baseline growth: 0.
 
 The frontend remains unchanged and still performs its legacy Scholar title-based lookup. Therefore `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` remains intentionally active. The next step is 3D.2: migrate publication-level metric consumption to `publication_id`.
+
+## 14.4 Implementation status after 3D.2
+
+Publication-level frontend citation consumption now uses canonical `publication_id` lookups.
+
+Removed production path:
+
+```text
+canonical work title
+  -> normalizeIdentityTitle()
+  -> Scholar articles .find(...)
+  -> citation value
+```
+
+Implemented path:
+
+```text
+canonical work.id
+  -> bibliometric-metrics.json
+  -> publications[publication_id].google_scholar
+  -> citation value/status
+```
+
+The academic UI loads `bibliometric-metrics.json` alongside translations and the canonical academic registry before normalizing canonical publications.
+
+Runtime behavior:
+
+- `observed` metrics expose the integer citation value, including zero;
+- non-observed metric states retain their status while the existing card/sort representation continues to use zero as the display/sort fallback;
+- if the entire derived metrics artifact is unavailable, canonical citation state is `source_unavailable`;
+- there is no fallback from a canonical publication to title-based Scholar matching;
+- the raw Scholar article fallback remains only for the pre-existing degraded path where the canonical academic registry itself is unavailable.
+
+The normalized frontend work object now carries both citation value and metric status:
+
+```text
+cited_by.value
+cited_by.status
+```
+
+Regression tests enforce:
+
+- `normalizeIdentityTitle` is absent from `utils.js`;
+- `scholarCitationCount` is absent from `utils.js`;
+- `scholarArticles.find(...)` is absent from the production citation path;
+- the metrics artifact is fetched;
+- canonical works call the metric lookup with `rawArt.id`;
+- all current citable canonical works produce exactly the same visible Scholar count as the legacy join for the frozen snapshot.
+
+Verified 3D.2 gate:
+
+- profile translation Node integration: PASS;
+- bibliometric metrics deterministic build check: PASS;
+- JavaScript syntax checks: PASS;
+- 142 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+The duplicate-title baseline entry remains deliberately active. The next step, 3D.3, will make the duplicate-source-title audit reconciliation-aware and remove exactly the explicitly reconciled Scholar duplicate debt.
 
 ## 15. Protected scope
 
