@@ -132,6 +132,33 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
             )
         self.assertIsNone(result)
 
+    def test_scholar_missing_citation_value_remains_null(self):
+        profile = FakeResponse({"cited_by": {"table": [], "graph": []}})
+        page = FakeResponse(
+            {
+                "articles": [
+                    {
+                        "title": "Publication",
+                        "year": "2026",
+                        "link": (
+                            "https://scholar.google.com/citations?"
+                            "citation_for_view=Author:One"
+                        ),
+                        "publication": "Journal",
+                    }
+                ]
+            }
+        )
+        with mock.patch.object(
+            update_fallback,
+            "requests",
+            FakeRequests(side_effect=[profile, page]),
+        ):
+            result = update_fallback.fetch_scholar_data("Author", "api-key")
+
+        self.assertIsNotNone(result)
+        self.assertIsNone(result["articles"][0]["cited_by"]["value"])
+
     def test_scopus_fetcher_no_longer_accepts_previous_data(self):
         signature = inspect.signature(update_fallback.fetch_scopus_data)
         self.assertEqual(
