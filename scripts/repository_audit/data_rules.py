@@ -172,6 +172,36 @@ PROFILE_SOURCE_FIELDS = {
     "web_of_science": frozenset({"researcher_id", "url"}),
 }
 PROFILE_ORGANIZATION_FIELDS = frozenset({"name", "short_name", "url"})
+PROFILE_AFFILIATION_FIELDS = frozenset(
+    {
+        "id",
+        "organization_id",
+        "role_codes",
+        "start_year",
+        "end_year",
+        "current",
+        "funder_ids",
+        "advisor",
+        "coadvisors",
+    }
+)
+PROFILE_EDUCATION_FIELDS = frozenset(
+    {
+        "id",
+        "degree_code",
+        "organization_id",
+        "start_year",
+        "end_year",
+        "current",
+        "advisor",
+        "coadvisors",
+    }
+)
+PROFILE_MENTOR_FIELDS = frozenset({"name", "title_code"})
+PROFILE_ROLE_CODES = frozenset({"postdoctoral_researcher", "cofounder", "ceo"})
+PROFILE_DEGREE_CODES = frozenset({"doctorate", "masters", "bachelors"})
+PROFILE_MENTOR_TITLE_CODES = frozenset({"professor", "researcher"})
+PROFILE_ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 
 
 def _profile_violation(subject: str, message: str) -> Violation:
@@ -228,6 +258,286 @@ def _iter_profile_strings(value: object, path: str = ""):
             yield from _iter_profile_strings(item, f"{path}[{index}]")
     elif isinstance(value, str):
         yield path, value
+
+
+def _profile_year(
+    value: object,
+    subject: str,
+    label: str,
+    *,
+    allow_none: bool = False,
+) -> list[Violation]:
+    if allow_none and value is None:
+        return []
+    if isinstance(value, bool) or not isinstance(value, int):
+        return [_profile_violation(subject, f"{label} must be an integer year")]
+    if not 1900 <= value <= 2100:
+        return [_profile_violation(subject, f"{label} must be between 1900 and 2100")]
+    return []
+
+
+def _audit_profile_mentor(
+    value: object,
+    subject: str,
+    *,
+    allow_none: bool = False,
+) -> list[Violation]:
+    if allow_none and value is None:
+        return []
+    violations = _profile_exact_keys(
+        value, PROFILE_MENTOR_FIELDS, subject, "mentor"
+    )
+    if not isinstance(value, dict):
+        return violations
+    violations.extend(
+        _profile_nonempty_string(value.get("name"), f"{subject}.name", "mentor.name")
+    )
+    title_code = value.get("title_code")
+    if title_code not in PROFILE_MENTOR_TITLE_CODES:
+        violations.append(
+            _profile_violation(
+                f"{subject}.title_code",
+                "mentor.title_code must be one of "
+                f"{sorted(PROFILE_MENTOR_TITLE_CODES)!r}",
+            )
+        )
+    return violations
+
+
+def _audit_profile_period(
+    item: dict,
+    subject: str,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    violations.extend(
+        _profile_year(item.get("start_year"), f"{subject}.start_year", "start_year")
+    )
+    violations.extend(
+        _profile_year(
+            item.get("end_year"),
+            f"{subject}.end_year",
+            "end_year",
+            allow_none=True,
+        )
+    )
+    current = item.get("current")
+    if not isinstance(current, bool):
+        violations.append(
+            _profile_violation(f"{subject}.current", "current must be boolean")
+        )
+        return violations
+
+    start_year = item.get("start_year")
+    end_year = item.get("end_year")
+    if current and end_year is not None:
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "current records must have end_year=null",
+            )
+        )
+    if not current and end_year is None:
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "non-current records must have an end_year",
+            )
+        )
+    if (
+        isinstance(start_year, int)
+        and not isinstance(start_year, bool)
+        and isinstance(end_year, int)
+        and not isinstance(end_year, bool)
+        and end_year < start_year
+    ):
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "end_year cannot be earlier than start_year",
+            )
+        )
+    return violations
+
+
+def _audit_profile_relation_records(
+    data: dict,
+    organizations: dict,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    seen_ids: set[str] = set()
+
+    affiliations = data.get("affiliations")
+    if not isinstance(affiliations, list):
+        violations.append(
+            _profile_violation("profile:affiliations", "affiliations must be a list")
+        )
+        affiliations = []
+
+    education = data.get("education")
+    if not isinstance(education, list):
+        violations.append(
+            _profile_violation("profile:education", "education must be a list")
+        )
+        education = []
+
+    def audit_common(
+        item: object,
+        *,
+        collection: str,
+        index: int,
+        fields: frozenset[str],
+    ) -> tuple[dict | None, str]:
+        subject = f"profile:{collection}[{index}]"
+        violations.extend(
+            _profile_exact_keys(item, fields, subject, f"{collection} record")
+        )
+        if not isinstance(item, dict):
+            return None, subject
+
+        identifier = item.get("id")
+        if not isinstance(identifier, str) or not PROFILE_ID_RE.fullmatch(identifier):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.id",
+                    "record id must use lowercase kebab-case",
+                )
+            )
+        elif identifier in seen_ids:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.id",
+                    f"duplicate profile record id: {identifier}",
+                )
+            )
+        else:
+            seen_ids.add(identifier)
+
+        organization_id = item.get("organization_id")
+        if not isinstance(organization_id, str) or organization_id not in organizations:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.organization_id",
+                    "organization_id must reference organizations",
+                )
+            )
+
+        violations.extend(_audit_profile_period(item, subject))
+        violations.extend(
+            _audit_profile_mentor(
+                item.get("advisor"),
+                f"{subject}.advisor",
+                allow_none=True,
+            )
+        )
+
+        coadvisors = item.get("coadvisors")
+        if not isinstance(coadvisors, list):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.coadvisors",
+                    "coadvisors must be a list",
+                )
+            )
+        else:
+            mentor_names: list[str] = []
+            advisor = item.get("advisor")
+            advisor_name = (
+                advisor.get("name")
+                if isinstance(advisor, dict)
+                else None
+            )
+            for mentor_index, mentor in enumerate(coadvisors):
+                mentor_subject = f"{subject}.coadvisors[{mentor_index}]"
+                violations.extend(
+                    _audit_profile_mentor(mentor, mentor_subject)
+                )
+                if isinstance(mentor, dict) and isinstance(mentor.get("name"), str):
+                    mentor_names.append(mentor["name"])
+            if len(mentor_names) != len(set(mentor_names)):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.coadvisors",
+                        "coadvisor names must be unique",
+                    )
+                )
+            if advisor_name and advisor_name in mentor_names:
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.coadvisors",
+                        "advisor cannot also be listed as coadvisor",
+                    )
+                )
+        return item, subject
+
+    for index, raw_item in enumerate(affiliations):
+        item, subject = audit_common(
+            raw_item,
+            collection="affiliations",
+            index=index,
+            fields=PROFILE_AFFILIATION_FIELDS,
+        )
+        if item is None:
+            continue
+
+        role_codes = item.get("role_codes")
+        if (
+            not isinstance(role_codes, list)
+            or not role_codes
+            or any(code not in PROFILE_ROLE_CODES for code in role_codes)
+            or len(role_codes) != len(set(role_codes))
+        ):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.role_codes",
+                    "role_codes must be a unique non-empty list of approved codes",
+                )
+            )
+
+        funder_ids = item.get("funder_ids")
+        if not isinstance(funder_ids, list):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.funder_ids",
+                    "funder_ids must be a list",
+                )
+            )
+        else:
+            if len(funder_ids) != len(set(funder_ids)):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.funder_ids",
+                        "funder_ids must not contain duplicates",
+                    )
+                )
+            for funder_id in funder_ids:
+                if not isinstance(funder_id, str) or funder_id not in organizations:
+                    violations.append(
+                        _profile_violation(
+                            f"{subject}.funder_ids",
+                            f"unknown funder organization: {funder_id!r}",
+                        )
+                    )
+
+    for index, raw_item in enumerate(education):
+        item, subject = audit_common(
+            raw_item,
+            collection="education",
+            index=index,
+            fields=PROFILE_EDUCATION_FIELDS,
+        )
+        if item is None:
+            continue
+        degree_code = item.get("degree_code")
+        if degree_code not in PROFILE_DEGREE_CODES:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.degree_code",
+                    "degree_code must be one of "
+                    f"{sorted(PROFILE_DEGREE_CODES)!r}",
+                )
+            )
+
+    return violations
 
 
 def _audit_profile(data: object) -> list[Violation]:
@@ -418,19 +728,8 @@ def _audit_profile(data: object) -> list[Violation]:
                     )
                 )
 
-    for field in ("affiliations", "education"):
-        value = data.get(field)
-        if not isinstance(value, list):
-            violations.append(
-                _profile_violation(f"profile:{field}", f"{field} must be a list")
-            )
-        elif any(not isinstance(item, dict) for item in value):
-            violations.append(
-                _profile_violation(
-                    f"profile:{field}",
-                    f"{field} entries must be objects",
-                )
-            )
+    if isinstance(organizations, dict):
+        violations.extend(_audit_profile_relation_records(data, organizations))
 
     for path, value in _iter_profile_strings(data):
         if re.search(r"<[^>]+>", value):
