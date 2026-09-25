@@ -452,12 +452,14 @@ def fetch_scholar_data(author_id: str, api_key: str):
             y_int = int(year_str)
             yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
 
-        # Normaliza Citações
-        cites_val = 0
-        raw_cites = art.get("cited_by", {})
+        # Normaliza citações sem confundir ausência com zero.
+        cites_val = None
+        raw_cites = art.get("cited_by")
         if isinstance(raw_cites, dict):
-            cites_val = raw_cites.get("value", 0)
-        elif isinstance(raw_cites, int):
+            raw_value = raw_cites.get("value")
+            if isinstance(raw_value, int) and not isinstance(raw_value, bool):
+                cites_val = raw_value
+        elif isinstance(raw_cites, int) and not isinstance(raw_cites, bool):
             cites_val = raw_cites
 
         cleaned_articles.append({
