@@ -323,6 +323,23 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
                 root / "index.html",
             )
 
+    def test_organization_identity_flows_into_jsonld_and_footer(self):
+        root = self.make_complete_fixture()
+        profile_path = root / "profile.json"
+        profile = json.loads(profile_path.read_text(encoding="utf-8"))
+        profile["organizations"]["ufv"]["name"] = "Canonical University"
+        profile["organizations"]["conecta-gem"]["name"] = "Canonical Company"
+        profile["organizations"]["conecta-gem"]["url"] = "https://example.org/company"
+        write_bytes(
+            profile_path,
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        )
+
+        index = shared.render_all(root)[root / "index.html"]
+        self.assertIn('"name": "Canonical University"', index)
+        self.assertIn('"name": "Canonical Company"', index)
+        self.assertIn('href="https://example.org/company"', index)
+
     def test_profile_json_serialization_escapes_script_breakers(self):
         value = shared.serialize_json_for_html(
             {"value": "</script>&\u2028"},
@@ -648,6 +665,26 @@ class TestProductionSemanticControls(unittest.TestCase):
         self.assertFalse(
             {value for value in protected if value in source},
             "runtime JavaScript contains canonical profile literals",
+        )
+
+    def test_cv_academic_facts_are_not_hardcoded_in_utils(self):
+        profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        source = (ROOT / "utils.js").read_text(encoding="utf-8")
+        protected = {
+            organization["name"]
+            for organization in profile["organizations"].values()
+            if organization["name"] not in {"Conecta GEM"}
+        }
+        for collection in ("education", "affiliations"):
+            for item in profile[collection]:
+                if item["advisor"]:
+                    protected.add(item["advisor"]["name"])
+                protected.update(
+                    mentor["name"] for mentor in item["coadvisors"]
+                )
+        self.assertFalse(
+            {value for value in protected if value in source},
+            "CV runtime contains canonical academic literals",
         )
 
     def test_production_pages_embed_one_runtime_profile_projection(self):
