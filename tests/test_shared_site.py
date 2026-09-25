@@ -76,7 +76,18 @@ class FixtureMixin:
                     "url": "https://www.webofscience.com/wos/author/record/ABC-1234-2026",
                 },
             },
-            "organizations": {},
+            "organizations": {
+                "ufv": {
+                    "name": "Universidade Federal de Viçosa (UFV)",
+                    "short_name": "UFV",
+                    "url": None,
+                },
+                "conecta-gem": {
+                    "name": "Conecta GEM",
+                    "short_name": "Conecta GEM",
+                    "url": "https://example.org/conecta",
+                },
+            },
             "affiliations": [],
             "education": [],
         }
@@ -127,6 +138,7 @@ class FixtureMixin:
             '    <a href="@@PROFILE_ORCID_URL@@">ORCID</a>\n'
             '    <a href="@@PROFILE_SCOPUS_URL@@">Scopus</a>\n'
             '    <a href="@@PROFILE_WOS_URL@@">WoS</a>\n'
+            '    <a href="@@PROFILE_CONECTA_URL@@">Conecta</a>\n'
             '</footer>\n',
         )
         write_bytes(
