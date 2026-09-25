@@ -9,13 +9,6 @@
       "reason": "Pre-existing debt frozen before structural block 2"
     },
     {
-      "rule_id": "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
-      "path": "fallback-data.json",
-      "subject": "source:google_scholar|title:genome enabled prediction through machine learning methods considering different levels of trait complexity",
-      "fingerprint": "29b65b9160637b5e0f2813162e29d0f4abb9d862a5912d8142604eb4e82d5240",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
       "rule_id": "LEGACY_MAXIMIZED_REFERENCE",
       "path": "utils.js",
       "subject": "processPlatformData:maximized",
