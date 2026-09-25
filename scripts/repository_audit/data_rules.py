@@ -1669,7 +1669,11 @@ def _audit_bibliographic_source_links(
                     )
                 )
 
+        source_state = _source_update_state_status(fallback, source)
         for link in valid_links:
+            if source_state == "unavailable":
+                continue
+
             record_id = link["record_id"].strip()
             publication_id = link["publication_id"].strip()
             evidence_subject = (
