@@ -132,6 +132,13 @@ PROFILE_REQUIRED_PLACEHOLDERS_BY_KEY = {
     ),
     "edu-advisor7": frozenset({"profile_mentor_bsc_advisor"}),
     "pdf-location": frozenset({"profile_city"}),
+    "lattes_summary": frozenset(
+        {
+            "profile_edu_bsc_end_year",
+            "profile_edu_msc_end_year",
+            "profile_edu_phd_gen_end_year",
+        }
+    ),
 }
 
 
