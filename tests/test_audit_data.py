@@ -944,6 +944,173 @@ class TestAcademicRules(unittest.TestCase):
         self.assertEqual(len(matches), 1)
         self.assertIn("unknown keys: citations", matches[0].message)
 
+    def test_frozen_source_link_must_exist_in_fallback_snapshot(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        root = self._root(
+            self._registry([work]),
+            fallback={"academicData": {"scopus": {"articles": []}}},
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertIn(
+            "source-links:scopus:record-id:123456:snapshot",
+            {
+                v.subject
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            },
+        )
+
+    def test_frozen_doi_evidence_must_match_canonical_publication(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        fallback = {
+            "academicData": {
+                "scopus": {
+                    "articles": [
+                        {
+                            "scopus_id": "123456",
+                            "title": "Publication A",
+                            "doi": "10.1/wrong",
+                        }
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        matches = [
+            v
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            and v.subject == "source-links:scopus:record-id:123456:snapshot"
+        ]
+        self.assertEqual(len(matches), 1)
+        self.assertIn("DOI evidence", matches[0].message)
+
+    def test_frozen_scholar_title_evidence_must_match_canonical_publication(self):
+        work = self._work("pub-a", "Publication A", None)
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:Record",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            }
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:Record"
+                            ),
+                            "title": "Different Publication",
+                        }
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        matches = [
+            v
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            and v.subject
+            == "source-links:google_scholar:record-id:Author:Record:snapshot"
+        ]
+        self.assertEqual(len(matches), 1)
+        self.assertIn("Title evidence", matches[0].message)
+
+    def test_alias_and_primary_match_basis_are_role_specific(self):
+        work = self._work("pub-a", "Publication A", None)
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-a",
+                "role": "alias",
+                "primary_record_id": "Author:A",
+                "match_basis": "normalized_title",
+            },
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:A"
+                            ),
+                            "title": "Publication A",
+                        },
+                        {
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:B"
+                            ),
+                            "title": "Publication A",
+                        },
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+        }
+        self.assertIn(
+            "source-links:google_scholar:link:0:match-basis",
+            subjects,
+        )
+        self.assertIn(
+            "source-links:google_scholar:link:1:match-basis",
+            subjects,
+        )
+
     def test_bibliometric_unicode_hyphen_duplicate_is_detected_per_source(self):
         fallback = {
             "academicData": {
