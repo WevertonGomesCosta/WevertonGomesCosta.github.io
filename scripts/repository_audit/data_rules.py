@@ -293,7 +293,10 @@ def _audit_profile_mentor(
         _profile_nonempty_string(value.get("name"), f"{subject}.name", "mentor.name")
     )
     title_code = value.get("title_code")
-    if title_code not in PROFILE_MENTOR_TITLE_CODES:
+    if (
+        not isinstance(title_code, str)
+        or title_code not in PROFILE_MENTOR_TITLE_CODES
+    ):
         violations.append(
             _profile_violation(
                 f"{subject}.title_code",
@@ -480,12 +483,17 @@ def _audit_profile_relation_records(
             continue
 
         role_codes = item.get("role_codes")
-        if (
-            not isinstance(role_codes, list)
-            or not role_codes
-            or any(code not in PROFILE_ROLE_CODES for code in role_codes)
-            or len(role_codes) != len(set(role_codes))
-        ):
+        role_codes_valid = (
+            isinstance(role_codes, list)
+            and bool(role_codes)
+            and all(
+                isinstance(code, str) and code in PROFILE_ROLE_CODES
+                for code in role_codes
+            )
+        )
+        if role_codes_valid:
+            role_codes_valid = len(role_codes) == len(set(role_codes))
+        if not role_codes_valid:
             violations.append(
                 _profile_violation(
                     f"{subject}.role_codes",
@@ -502,15 +510,27 @@ def _audit_profile_relation_records(
                 )
             )
         else:
-            if len(funder_ids) != len(set(funder_ids)):
+            string_funders = [
+                funder_id
+                for funder_id in funder_ids
+                if isinstance(funder_id, str)
+            ]
+            if len(string_funders) != len(funder_ids):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.funder_ids",
+                        "funder_ids entries must be strings",
+                    )
+                )
+            elif len(string_funders) != len(set(string_funders)):
                 violations.append(
                     _profile_violation(
                         f"{subject}.funder_ids",
                         "funder_ids must not contain duplicates",
                     )
                 )
-            for funder_id in funder_ids:
-                if not isinstance(funder_id, str) or funder_id not in organizations:
+            for funder_id in string_funders:
+                if funder_id not in organizations:
                     violations.append(
                         _profile_violation(
                             f"{subject}.funder_ids",
@@ -528,7 +548,10 @@ def _audit_profile_relation_records(
         if item is None:
             continue
         degree_code = item.get("degree_code")
-        if degree_code not in PROFILE_DEGREE_CODES:
+        if (
+            not isinstance(degree_code, str)
+            or degree_code not in PROFILE_DEGREE_CODES
+        ):
             violations.append(
                 _profile_violation(
                     f"{subject}.degree_code",
@@ -697,9 +720,12 @@ def _audit_profile(data: object) -> list[Violation]:
     else:
         for identifier, organization in sorted(organizations.items()):
             subject = f"profile:organizations.{identifier}"
-            if not isinstance(identifier, str) or not identifier.strip():
+            if not isinstance(identifier, str) or not PROFILE_ID_RE.fullmatch(identifier):
                 violations.append(
-                    _profile_violation(subject, "organization id must be non-empty")
+                    _profile_violation(
+                        subject,
+                        "organization id must use lowercase kebab-case",
+                    )
                 )
                 continue
             violations.extend(
