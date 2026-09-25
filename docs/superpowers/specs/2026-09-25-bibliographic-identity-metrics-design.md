@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3C.1 and 3C.2 implemented and CI-validated; 3D.1–3D.3 pending  
+**Status:** 3C.1, 3C.2, and 3D.1 implemented and CI-validated; 3D.2–3D.3 pending  
 **Base:** `main@4b55ec32ed20c33d98084340c844462fa341adfe`
 
 ## 1. Objective
@@ -508,6 +508,76 @@ Verified 3C.2 gate:
 The `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` entry remains deliberately active. 3C.2 encodes the identity reconciliation but does not yet change the frontend consumer or duplicate-title audit semantics.
 
 The next step is 3D.1: build the deterministic `bibliometric-metrics.json` artifact from the frozen source links and current source observations.
+
+## 14.3 Implementation status after 3D.1
+
+The deterministic publication-level metrics artifact is now implemented.
+
+Inputs:
+
+- `academic-registry.json`;
+- `bibliographic-source-links.json`;
+- `fallback-data.json`.
+
+Output:
+
+- `bibliometric-metrics.json`.
+
+The builder is `scripts/build_bibliometric_metrics.py` and supports:
+
+- `--write` to regenerate the artifact;
+- `--check` to fail on drift.
+
+It is fully offline and performs no external API calls.
+
+The artifact contains every canonical `publication_id` from the academic registry and exactly four source entries per publication. Each source entry contains only:
+
+- `record_id`;
+- `alias_record_ids`;
+- `citations`;
+- `status`.
+
+Status semantics are explicit:
+
+- `observed` — a primary source record exists and citation value is a non-negative integer; zero remains zero;
+- `value_unavailable` — the primary source record exists but citation value is null/unavailable;
+- `record_absent` — no frozen source-link relationship exists for that canonical publication while the source payload is available;
+- `source_unavailable` — the source payload itself is unavailable.
+
+A frozen link whose primary record disappears from an otherwise available source causes a build error; it is not silently converted into `record_absent`.
+
+Current snapshot status counts:
+
+- Google Scholar: 22 `observed`, 5 `value_unavailable`, 5 `record_absent`;
+- Scopus: 22 `observed`, 10 `record_absent`;
+- Web of Science: 21 `observed`, 11 `record_absent`;
+- ORCID: 27 `value_unavailable`, 5 `record_absent`.
+
+The explicitly reconciled Scholar duplicate produces:
+
+- primary record `eJNKcHsAAAAJ:qjMakFHDy7sC`;
+- alias record `eJNKcHsAAAAJ:Se3iqnhoufwC`;
+- publication citation value 18.
+
+Tests mutate the alias to 999 citations and reverse Scholar source order; the derived publication metric remains 18 from the primary record, proving that aliases are never summed and source order is irrelevant.
+
+The repository audit now requires and validates the derived artifact through `BIBLIOMETRIC_METRICS_STRUCTURE`, including exact publication/source sets, status/value semantics, source snapshot metadata, and identity consistency with the frozen source-link map.
+
+CI now runs `python scripts/build_bibliometric_metrics.py --check` before the Python unit suite.
+
+Verified 3D.1 gate:
+
+- profile translation Node integration: PASS;
+- bibliometric metrics deterministic build check: PASS;
+- JavaScript syntax checks: PASS;
+- 138 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+The frontend remains unchanged and still performs its legacy Scholar title-based lookup. Therefore `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` remains intentionally active. The next step is 3D.2: migrate publication-level metric consumption to `publication_id`.
 
 ## 15. Protected scope
 
