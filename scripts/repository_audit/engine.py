@@ -39,7 +39,7 @@ RULE_COVERAGE: dict[Rule, frozenset[str]] = {
     audit_repository_data: frozenset({
         "JSON_PARSE", "REQUIRED_FILE", "TRANSLATION_LANGUAGE_SET",
         "TRANSLATION_KEY_PARITY", "I18N_FIXED_ARIA_LABEL",
-        "I18N_FIXED_TITLE", "I18N_REFERENCE_MISSING",
+        "I18N_FIXED_TITLE", "I18N_REFERENCE_MISSING", "PROFILE_STRUCTURE",
     }),
     audit_academic_data: frozenset({
         "ACADEMIC_REGISTRY_STRUCTURE", "ACADEMIC_REGISTRY_DUPLICATE_ID",
