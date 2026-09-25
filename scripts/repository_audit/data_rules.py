@@ -5,6 +5,7 @@ import re
 from collections import Counter
 from pathlib import Path
 import unicodedata
+from urllib.parse import unquote
 
 from .core import Violation
 from .html_rules import discover_audited_html, element_subject, parse_html
@@ -1246,6 +1247,65 @@ def _valid_bibliographic_record_id(source: str, record_id: str) -> bool:
     return False
 
 
+def _bibliographic_snapshot_record_id(source: str, article: dict) -> str:
+    if source == "google_scholar":
+        link = article.get("link")
+        if not isinstance(link, str):
+            return ""
+        match = re.search(r"[?&]citation_for_view=([^&]+)", link)
+        return unquote(match.group(1)) if match else ""
+    if source == "scopus":
+        value = article.get("scopus_id")
+        if isinstance(value, (str, int)) and not isinstance(value, bool):
+            return str(value).strip()
+        return ""
+    if source in {"web_of_science", "orcid"}:
+        doi = normalize_doi(article.get("doi"))
+        return f"doi:{doi}" if doi else ""
+    return ""
+
+
+def _bibliographic_snapshot_records(
+    fallback: object,
+    source: str,
+) -> dict[str, list[dict]]:
+    if not isinstance(fallback, dict):
+        return {}
+    academic_data = fallback.get("academicData")
+    if not isinstance(academic_data, dict):
+        return {}
+    payload = academic_data.get(source)
+    if not isinstance(payload, dict):
+        return {}
+    articles = payload.get("articles")
+    if not isinstance(articles, list):
+        return {}
+
+    records: dict[str, list[dict]] = {}
+    for article in articles:
+        if not isinstance(article, dict):
+            continue
+        record_id = _bibliographic_snapshot_record_id(source, article)
+        if record_id:
+            records.setdefault(record_id, []).append(article)
+    return records
+
+
+def _academic_publications_by_id(registry: object) -> dict[str, dict]:
+    if not isinstance(registry, dict):
+        return {}
+    works = registry.get("works")
+    if not isinstance(works, list):
+        return {}
+    return {
+        work["id"].strip(): work
+        for work in works
+        if isinstance(work, dict)
+        and isinstance(work.get("id"), str)
+        and work["id"].strip()
+    }
+
+
 def _academic_publication_ids(registry: object) -> frozenset[str]:
     if not isinstance(registry, dict):
         return frozenset()
@@ -1264,6 +1324,7 @@ def _academic_publication_ids(registry: object) -> frozenset[str]:
 def _audit_bibliographic_source_links(
     data: object,
     registry: object,
+    fallback: object,
 ) -> list[Violation]:
     violations: list[Violation] = []
     path_prefix = "source-links"
@@ -1330,6 +1391,7 @@ def _audit_bibliographic_source_links(
         )
 
     publication_ids = _academic_publication_ids(registry)
+    publications_by_id = _academic_publications_by_id(registry)
 
     for source in sorted(BIBLIOGRAPHIC_SOURCE_SCHEMES):
         expected_scheme = BIBLIOGRAPHIC_SOURCE_SCHEMES[source]
@@ -1382,6 +1444,7 @@ def _audit_bibliographic_source_links(
 
         valid_links: list[dict] = []
         record_ids: Counter[str] = Counter()
+        snapshot_records = _bibliographic_snapshot_records(fallback, source)
 
         for index, raw_link in enumerate(links):
             subject = f"{source_subject}:link:{index}"
@@ -1471,6 +1534,27 @@ def _audit_bibliographic_source_links(
                         f"{sorted(BIBLIOGRAPHIC_MATCH_BASES)!r}",
                     )
                 )
+            elif role == "alias" and match_basis != "manual_duplicate_reconciliation":
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:match-basis",
+                        "alias links must use manual_duplicate_reconciliation",
+                    )
+                )
+            elif role == "primary":
+                expected_basis = (
+                    "normalized_title"
+                    if source == "google_scholar"
+                    else "doi"
+                )
+                if match_basis != expected_basis:
+                    violations.append(
+                        _bibliographic_source_link_violation(
+                            f"{subject}:match-basis",
+                            f"{source} primary links must use "
+                            f"{expected_basis!r}",
+                        )
+                    )
 
             if (
                 isinstance(record_id, str)
@@ -1548,6 +1632,65 @@ def _audit_bibliographic_source_links(
                     )
                 )
 
+        for link in valid_links:
+            record_id = link["record_id"].strip()
+            publication_id = link["publication_id"].strip()
+            evidence_subject = (
+                f"{source_subject}:record-id:{record_id}:snapshot"
+            )
+            matches = snapshot_records.get(record_id, [])
+            if len(matches) != 1:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        evidence_subject,
+                        "Frozen source record must resolve to exactly one "
+                        f"fallback snapshot record; found {len(matches)}",
+                    )
+                )
+                continue
+
+            publication = publications_by_id.get(publication_id)
+            if publication is None:
+                continue
+
+            article = matches[0]
+            basis = link.get("match_basis")
+            if basis == "doi":
+                source_doi = normalize_doi(article.get("doi"))
+                canonical_doi = normalize_doi(publication.get("doi"))
+                if (
+                    not source_doi
+                    or not canonical_doi
+                    or source_doi != canonical_doi
+                ):
+                    violations.append(
+                        _bibliographic_source_link_violation(
+                            evidence_subject,
+                            "DOI evidence does not match canonical publication",
+                        )
+                    )
+            elif basis in {
+                "normalized_title",
+                "manual_duplicate_reconciliation",
+            }:
+                source_title = (
+                    normalize_title(article.get("title"))
+                    if isinstance(article.get("title"), str)
+                    else ""
+                )
+                canonical_title = normalize_title(publication.get("title"))
+                if (
+                    not source_title
+                    or not canonical_title
+                    or source_title != canonical_title
+                ):
+                    violations.append(
+                        _bibliographic_source_link_violation(
+                            evidence_subject,
+                            "Title evidence does not match canonical publication",
+                        )
+                    )
+
     return violations
 
 
@@ -1599,15 +1742,20 @@ def audit_academic_data(root: Path) -> list[Violation]:
         violations.extend(structure)
         violations.extend(_duplicate_violations(works))
 
+    fallback, fallback_error = read_repository_json(root, "fallback-data.json")
+
     source_links, source_links_error = read_repository_json(
         root, "bibliographic-source-links.json"
     )
     if source_links is not None and source_links_error is None:
         violations.extend(
-            _audit_bibliographic_source_links(source_links, registry)
+            _audit_bibliographic_source_links(
+                source_links,
+                registry,
+                fallback if fallback_error is None else None,
+            )
         )
 
-    fallback, fallback_error = read_repository_json(root, "fallback-data.json")
     if fallback is not None and fallback_error is None:
         violations.extend(_bibliometric_duplicate_violations(fallback))
 
