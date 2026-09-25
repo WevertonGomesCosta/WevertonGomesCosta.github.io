@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import render_shared_site as shared
+from repository_audit import html_rules
 
 
 PAGES = (
@@ -320,6 +321,92 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
         self.assertNotIn("404.html", {config.path for config in shared.PAGE_CONFIGS})
         shared.write_all(root)
         self.assertEqual(target.read_bytes(), before)
+
+
+class TestProductionSemanticControls(unittest.TestCase):
+    def test_block2_html_control_rules_are_clean(self):
+        violations = html_rules.audit_html_structure(ROOT)
+        blocked = {
+            "HTML_ACTION_HASH_LINK",
+            "HTML_BUTTON_MISSING_TYPE",
+            "HTML_INTERNAL_LINK_TARGET",
+        }
+        remaining = [v for v in violations if v.rule_id in blocked]
+        self.assertEqual(remaining, [])
+
+    def test_each_interactive_page_has_exactly_one_page_top(self):
+        for name in PAGES:
+            source = (ROOT / name).read_text(encoding="utf-8")
+            document = html_rules.parse_html(name, source)
+            page_top = [
+                element
+                for element in document.elements
+                if element.attr("id") == "page-top"
+            ]
+            with self.subTest(name=name):
+                self.assertEqual(len(page_top), 1)
+                self.assertEqual(page_top[0].tag, "html")
+
+    def test_migrated_action_hooks_are_preserved(self):
+        source = (ROOT / "index.html").read_text(encoding="utf-8")
+        document = html_rules.parse_html("index.html", source)
+        cv_buttons = [
+            element
+            for element in document.elements
+            if element.tag == "button" and element.attr("data-cv-type")
+        ]
+        self.assertEqual(len(cv_buttons), 4)
+        self.assertEqual(
+            {element.attr("data-cv-type") for element in cv_buttons},
+            {"pro", "academic"},
+        )
+        self.assertTrue(
+            all(element.attr("type") == "button" for element in cv_buttons)
+        )
+        ids = {
+            element.attr("id"): element
+            for element in document.elements
+            if element.attr("id")
+        }
+        self.assertEqual(ids["copy-email-link"].tag, "button")
+        self.assertEqual(ids["copy-email-link"].attr("type"), "button")
+
+    def test_footer_copy_email_is_native_button_on_all_rendered_pages(self):
+        for name in PAGES:
+            document = html_rules.parse_html(
+                name,
+                (ROOT / name).read_text(encoding="utf-8"),
+            )
+            element = next(
+                item
+                for item in document.elements
+                if item.attr("id") == "copy-email-footer"
+            )
+            with self.subTest(name=name):
+                self.assertEqual(element.tag, "button")
+                self.assertEqual(element.attr("type"), "button")
+
+    def test_only_contact_form_button_uses_submit_type(self):
+        submit_buttons = []
+        for name in PAGES:
+            document = html_rules.parse_html(
+                name,
+                (ROOT / name).read_text(encoding="utf-8"),
+            )
+            for element in document.elements:
+                if element.tag != "button":
+                    continue
+                button_type = element.attr("type")
+                if button_type == "submit":
+                    submit_buttons.append((name, element.dom_path))
+                else:
+                    self.assertEqual(button_type, "button")
+
+        self.assertEqual(len(submit_buttons), 1)
+        self.assertEqual(submit_buttons[0][0], "index.html")
+        self.assertTrue(
+            submit_buttons[0][1].startswith("form#contact-form>")
+        )
 
 
 if __name__ == "__main__":
