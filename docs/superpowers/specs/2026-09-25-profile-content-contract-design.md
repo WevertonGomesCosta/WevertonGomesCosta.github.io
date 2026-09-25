@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3B.1 and 3B.2 implemented and CI-validated; 3B.3 and 3B.4 pending  
+**Status:** 3B.1, 3B.2, and 3B.3 implemented and CI-validated; 3B.4 pending  
 **Base:** `main@581dd700fa772e2b012fd5fcd006ba6aa2318cce`
 
 ## 1. Purpose
@@ -436,6 +436,32 @@ The verified gate after 3B.2 is:
 - baseline growth: 0.
 
 No bibliographic, citation-metric, translation/editorial, reduced-motion, CSP, SRI, or legacy `maximized` work is included in 3B.2.
+
+## 12.2 Implementation status after 3B.3
+
+The structured academic relationship layer is now populated and enforced:
+
+- `organizations` owns the organization/funder identities required by the migrated academic facts;
+- `education` owns the four degree records currently represented by the site;
+- `affiliations` owns four postdoctoral appointments plus the Conecta GEM professional affiliation;
+- each academic record has a stable ID, organization reference, period state, and canonical advisor/co-advisor facts where applicable;
+- postdoctoral funders are organization references rather than text embedded in runtime code;
+- the CV generator derives institution, period, funder, advisor, and co-advisor facts from the generated canonical profile payload while keeping degree titles and descriptive prose in `translations.json`;
+- the home academic timeline derives institution/funder labels from `profile.json`; localized date/advisor strings remain temporarily in `translations.json` for the explicit 3B.4 interpolation migration;
+- home JSON-LD organization names and the Conecta footer URL now derive from the organization registry;
+- CI now includes `node --check utils.js` after a duplicate `const lang` declaration introduced during 3B.2 was discovered and corrected.
+
+The verified gate after 3B.3 is:
+
+- JavaScript syntax check passing;
+- 107 unit tests passing;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+The remaining profile/content work is 3B.4: controlled interpolation and duplicate-fact auditing. It must remove the remaining translated factual duplication without turning titles or descriptions into structured data.
 
 ## 13. Exit criteria
 
