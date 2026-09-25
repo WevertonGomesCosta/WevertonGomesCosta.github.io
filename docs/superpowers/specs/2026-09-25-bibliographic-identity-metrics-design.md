@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3C.1, 3C.2, 3D.1, and 3D.2 implemented and CI-validated; 3D.3 pending  
+**Status:** Block 3C/3D complete and CI-validated through 3D.3; frozen for merge review  
 **Base:** `main@4b55ec32ed20c33d98084340c844462fa341adfe`
 
 ## 1. Objective
@@ -639,6 +639,63 @@ Verified 3D.2 gate:
 - baseline growth: 0.
 
 The duplicate-title baseline entry remains deliberately active. The next step, 3D.3, will make the duplicate-source-title audit reconciliation-aware and remove exactly the explicitly reconciled Scholar duplicate debt.
+
+## 14.5 Implementation status after 3D.3
+
+The source duplicate-title audit is now reconciliation-aware.
+
+A duplicate normalized title is suppressed only when every raw duplicate record:
+
+1. has a stable source record ID;
+2. has exactly one source-link entry;
+3. maps to the same canonical `publication_id`;
+4. forms a group with exactly one `primary`;
+5. has every remaining record as an `alias` of that primary;
+6. uses `manual_duplicate_reconciliation` for each alias.
+
+If any of those conditions fails, `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` is still emitted.
+
+Tests explicitly cover:
+
+- unresolved duplicate titles;
+- reconciled primary/alias duplicate groups;
+- duplicate records split across different canonical publications;
+- two-primary groups;
+- aliases pointing to the wrong primary.
+
+For the frozen Google Scholar duplicate:
+
+- primary: `eJNKcHsAAAAJ:qjMakFHDy7sC`;
+- alias: `eJNKcHsAAAAJ:Se3iqnhoufwC`;
+- publication: `journal-2021-genome-enabled-prediction-trait-complexity`;
+
+the duplicate rule now recognizes the explicit reconciliation and emits no violation.
+
+The corresponding baseline entry was removed by exact fingerprint:
+
+`29b65b9160637b5e0f2813162e29d0f4abb9d862a5912d8142604eb4e82d5240`
+
+No other baseline entry changed.
+
+Verified final 3C/3D gate:
+
+- profile translation Node integration: PASS;
+- bibliometric metrics deterministic build check: PASS;
+- JavaScript syntax checks: PASS;
+- 146 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 10;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+The known-debt transition is therefore exactly:
+
+`11 -> 10`
+
+and is attributable solely to the explicitly reconciled Scholar duplicate.
+
+Block 3C/3D is now frozen for final PR audit and merge review.
 
 ## 15. Protected scope
 
