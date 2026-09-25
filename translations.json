@@ -256,10 +256,6 @@
     "cv-download-started": "Download iniciado!",
     "cv-error": "Ocorreu um erro ao gerar o PDF.",
     "cv-edu-postdocs-title": "Pós-Doutorados",
-    "cv-edu-postdocs-line1": "{profile_org_ufv_name} — {profile_org_cnpq_short} / {profile_org_fapemig_short}",
-    "cv-edu-postdocs-year1": "{profile_postdoc_history_start_year} – {profile_postdoc_history_end_year}",
-    "cv-edu-postdocs-line2": "{profile_org_embrapa_name} ({profile_org_embrapa_short})",
-    "cv-edu-postdocs-year2": "{profile_aff_postdoc_embrapa_start_year}",
     "cv-file-name-pro": "CV-Weverton_Costa_Profissional_PT.pdf",
     "cv-file-name-academic": "CV-Weverton_Gomes_da_Costa_Academico_PT.pdf",
     "pdf-location": "{profile_city} - Minas Gerais - Brasil",
@@ -268,78 +264,9 @@
     "pdf-more-projects": "Para mais projetos, acesse a página de projetos do site.",
     "pdf-more-publications": "Para mais publicações, acesse a página de publicações do site.",
     "pdf-cited-by": "Citado {count} vezes",
-    "education": {
-      "professional": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "{profile_edu_phd_gen_end_year}"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "{profile_edu_bsc_end_year}"
-        }
-      ],
-      "academic": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "{profile_edu_phd_gen_end_year}"
-        },
-        {
-          "degree": "cv-edu-msc-title",
-          "institution": "cv-edu-msc-institution",
-          "year": "{profile_edu_msc_end_year}"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "{profile_edu_bsc_end_year}"
-        }
-      ]
-    },
     "lattes_summary": "Engenheiro Agrônomo ({profile_edu_bsc_end_year}), Mestre em Genética e Melhoramento ({profile_edu_msc_end_year}) e Doutor em Genética e Melhoramento ({profile_edu_phd_gen_end_year}) pela {profile_org_ufv_name}. Atualmente, é doutorando no Departamento de Estatística da {profile_org_ufv_short}. Sua trajetória inclui pós-doutorados na {profile_org_ufv_short}, com bolsas do {profile_org_cnpq_short} e da {profile_org_fapemig_short}, e na Embrapa Mandioca e Fruticultura, com bolsa do {profile_org_cnpq_short}. Possui experiência em análise de dados aplicada à genética, melhoramento de plantas, genética quantitativa, biometria, modelos mistos, seleção genômica, GWAS e machine learning, com domínio de R, Python, GENES e Selegen.",
     "cv_pro_summary": "Cientista de Dados e Ph.D. em Genética, atualmente cursando Doutorado em Estatística. Possuo experiência prática na aplicação de modelos estatísticos e de machine learning para resolver problemas complexos em ciências agrárias e biológicas. Como Cofundador e CEO da {profile_org_conecta_name}, atuo diretamente na análise de dados para clientes, transformando dados brutos em relatórios e insights que auxiliam na tomada de decisão. Minha pesquisa foca em otimizar a acurácia de modelos preditivos, desde a seleção genômica até a caracterização fenotípica com deep learning (Mask R-CNN).",
     "cv_acad_summary": "Pesquisador com Ph.D. em Genética e Melhoramento e Doutorando em Estatística Aplicada e Biometria. Sua trajetória inclui pós-doutorados na {profile_org_ufv_short}, com bolsas do {profile_org_cnpq_short} e da {profile_org_fapemig_short}, e na Embrapa Mandioca e Fruticultura, com bolsa do {profile_org_cnpq_short}. Atua na intersecção entre genética quantitativa, bioinformática, biometria e machine learning, com aplicações em seleção genômica e fenotipagem de precisão.",
-    "professional_experience": [
-      {
-        "role": "Cofundador & CEO",
-        "company": "{profile_org_conecta_name}",
-        "period": "{profile_aff_conecta_start_year} – {profile_aff_conecta_end_label}",
-        "bullets": [
-          "Gestão de projetos e consultorias em análise de dados (Estatística, Genética e ML) para clientes e grupos de pesquisa.",
-          "Coordenação e desenvolvimento de cursos técnicos (R, Python, Estatística), capacitando mais de 1.000 pessoas em 15+ países.",
-          "Responsável pela análise de dados de clientes, desde o processamento até a entrega de relatórios e insights."
-        ]
-      },
-      {
-        "role": "Pesquisador de Pós-Doutorado",
-        "company": "{profile_org_ufv_name} / Embrapa",
-        "period": "{profile_postdoc_history_start_year} – {profile_postdoc_history_end_year}",
-        "bullets": [
-          "Aplicação de ML/DL (incluindo Mask R-CNN) para otimizar a seleção genômica e para fenotipagem de precisão (predição de peso) em suínos e bovinos ({profile_org_ufv_short}).",
-          "Desenvolvimento e automatização de pipelines de análise genômica (GWAS, GWS) para o programa de melhoramento de mandioca (Embrapa).",
-          "Otimização de rotinas (R, Python) para processamento de dados genotípicos em larga escala e análise de dados NextGen (Embrapa)."
-        ]
-      }
-    ],
     "portfolio_project_website": {
       "title": "Portfólio Web Pessoal (Automação de CV)",
       "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados). Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações. Implementei suporte multilíngue (JavaScript i18n) e um design 100% responsivo (HTML/CSS/JS) com formulário de contato funcional."
@@ -614,10 +541,6 @@
     "cv-download-started": "Download started!",
     "cv-error": "An error occurred while generating the PDF.",
     "cv-edu-postdocs-title": "Postdoctoral Research",
-    "cv-edu-postdocs-line1": "Federal University of Viçosa ({profile_org_ufv_short}) — {profile_org_cnpq_short} / {profile_org_fapemig_short}",
-    "cv-edu-postdocs-year1": "{profile_postdoc_history_start_year} – {profile_postdoc_history_end_year}",
-    "cv-edu-postdocs-line2": "{profile_org_embrapa_short} Cassava and Fruits ({profile_org_embrapa_short})",
-    "cv-edu-postdocs-year2": "{profile_aff_postdoc_embrapa_start_year}",
     "cv-file-name-pro": "CV-Weverton_Costa_Professional_EN.pdf",
     "cv-file-name-academic": "CV-Weverton_Gomes_da_Costa_Academic_EN.pdf",
     "pdf-location": "{profile_city} - Minas Gerais - Brazil",
@@ -626,78 +549,9 @@
     "pdf-more-projects": "For more projects, visit the projects page on the website.",
     "pdf-more-publications": "For more publications, visit the publications page on the website.",
     "pdf-cited-by": "Cited {count} times",
-    "education": {
-      "professional": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "{profile_edu_phd_gen_end_year}"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "{profile_edu_bsc_end_year}"
-        }
-      ],
-      "academic": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "{profile_edu_phd_gen_end_year}"
-        },
-        {
-          "degree": "cv-edu-msc-title",
-          "institution": "cv-edu-msc-institution",
-          "year": "{profile_edu_msc_end_year}"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "{profile_edu_bsc_end_year}"
-        }
-      ]
-    },
     "lattes_summary": "Agronomist Engineer ({profile_edu_bsc_end_year}), Master in Genetics and Breeding ({profile_edu_msc_end_year}), and Ph.D. in Genetics and Breeding ({profile_edu_phd_gen_end_year}) from the Federal University of Viçosa ({profile_org_ufv_short}). Currently a doctoral candidate in the Department of Statistics at {profile_org_ufv_short}. His trajectory includes postdoctoral research at {profile_org_ufv_short}, funded by {profile_org_cnpq_short} and {profile_org_fapemig_short}, and at Embrapa Cassava and Fruits, funded by {profile_org_cnpq_short}. He has experience in data analysis applied to genetics, plant breeding, quantitative genetics, biometrics, mixed models, genomic selection, GWAS, and machine learning, with proficiency in R, Python, GENES, and Selegen.",
     "cv_pro_summary": "Data Scientist and Ph.D. in Genetics, currently pursuing a Doctorate in Statistics. I have practical experience in applying statistical and machine learning models to solve complex problems in agricultural and biological sciences. As Co-founder and CEO of {profile_org_conecta_name}, I work directly on data analysis for clients, transforming raw data into reports and insights that aid decision-making. My research focuses on optimizing the accuracy of predictive models, from genomic selection to phenotypic characterization with deep learning (Mask R-CNN).",
     "cv_acad_summary": "Researcher with a Ph.D. in Genetics and Breeding and a PhD candidate in Applied Statistics and Biometrics. His trajectory includes postdoctoral research at {profile_org_ufv_short}, funded by {profile_org_cnpq_short} and {profile_org_fapemig_short}, and at Embrapa Cassava and Fruits, funded by {profile_org_cnpq_short}. He works at the intersection of quantitative genetics, bioinformatics, biometrics, and machine learning, with applications in genomic selection and precision phenotyping.",
-    "professional_experience": [
-      {
-        "role": "Co-founder & CEO",
-        "company": "{profile_org_conecta_name}",
-        "period": "{profile_aff_conecta_start_year} – {profile_aff_conecta_end_label}",
-        "bullets": [
-          "Project management and consulting in data analysis (Statistics, Genetics, and ML) for clients and research groups.",
-          "Coordination and development of technical courses (R, Python, Statistics), training over 1,000 people in 15+ countries.",
-          "Responsible for client data analysis, from processing to delivery of reports and insights."
-        ]
-      },
-      {
-        "role": "Postdoctoral Researcher",
-        "company": "Federal University of Viçosa ({profile_org_ufv_short}) / Embrapa",
-        "period": "{profile_postdoc_history_start_year} – {profile_postdoc_history_end_year}",
-        "bullets": [
-          "Application of ML/DL (including Mask R-CNN) to optimize genomic selection and for precision phenotyping (weight prediction) in swine and cattle ({profile_org_ufv_short}).",
-          "Development and automation of genomic analysis pipelines (GWAS, GWS) for the cassava breeding program (Embrapa).",
-          "Optimization of routines (R, Python) for large-scale genotypic data processing and NextGen data analysis (Embrapa)."
-        ]
-      }
-    ],
     "portfolio_project_website": {
       "title": "Personal Web Portfolio (CV Automation)",
       "description": "I developed this site from scratch as a central hub for my work (CEO, Researcher, Data Scientist). I configured routines in R and Python that consume GitHub and Google Scholar APIs, automatically updating my project and publication lists. Implemented multilingual support (JavaScript i18n) and a 100% responsive design (HTML/CSS/JS) with a functional contact form."
