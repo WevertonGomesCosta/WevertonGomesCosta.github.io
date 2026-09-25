@@ -57,6 +57,10 @@ def make_clean_repo(root: Path) -> None:
         "window.matchMedia('(prefers-reduced-motion: reduce)');",
         encoding="utf-8",
     )
+    (root / "profile-interpolation.js").write_text(
+        "window.ProfileTranslationInterpolator = {};",
+        encoding="utf-8",
+    )
     write_json(root / "translations.json", {"pt": {}, "en": {}})
     write_json(
         root / "profile.json",
