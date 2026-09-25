@@ -140,6 +140,47 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
             with self.assertRaises(shared.RenderContractError):
                 shared.read_utf8_strict(target, component=True)
 
+    def test_render_rejects_liquid_in_every_component(self):
+        components = (
+            "back-to-top.html", "language-switcher.html", "nav-home.html",
+            "nav-inner.html", "footer.html", "footer-privacy-segment.html",
+        )
+        for name in components:
+            for liquid in ("{{ site.title }}", "{% include header.html %}"):
+                with self.subTest(component=name, liquid=liquid):
+                    root = self.make_complete_fixture()
+                    component = root / "_site_components" / name
+                    source = component.read_text(encoding="utf-8")
+                    write_bytes(component, liquid + source)
+                    with self.assertRaises(shared.RenderContractError) as caught:
+                        shared.render_all(root)
+                    self.assertIn(name, str(caught.exception))
+
+    def test_cli_liquid_is_fatal_without_partial_writes(self):
+        for liquid in (
+            "{{ site.title }}", "{% include header.html %}",
+            "{{- site.title -}}", "{%- include header.html -%}",
+        ):
+            for mode in ("--check", "--write"):
+                with self.subTest(liquid=liquid, mode=mode):
+                    root = self.make_complete_fixture()
+                    # Home needs rendering; the invalid inner nav is read later.
+                    component = root / "_site_components" / "nav-inner.html"
+                    source = component.read_text(encoding="utf-8")
+                    write_bytes(component, liquid + source)
+                    before = {
+                        path: path.read_bytes() for path in root.rglob("*.html")
+                    }
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        code = shared.main(["--root", str(root), mode])
+                    self.assertEqual(code, 2)
+                    self.assertIn("nav-inner.html", stderr.getvalue())
+                    self.assertEqual(
+                        {path: path.read_bytes() for path in root.rglob("*.html")},
+                        before,
+                    )
+
     def test_render_template_indents_multiline_block_token(self):
         template = "<nav>\n    @@LANGUAGE_SWITCHER@@\n</nav>\n"
         rendered = shared.render_template(

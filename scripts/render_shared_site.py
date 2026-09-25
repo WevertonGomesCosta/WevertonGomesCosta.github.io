@@ -79,6 +79,10 @@ def read_utf8_strict(path: Path, *, component: bool = False) -> str:
         raise RenderContractError(f"Invalid UTF-8: {path}") from exc
     if component and ("\r\n" in text or "\r" in text):
         raise RenderContractError(f"Component must use LF only: {path}")
+    if component and ("{{" in text or "{%" in text):
+        raise RenderContractError(
+            f"Liquid/Jekyll syntax is not allowed in component: {path}"
+        )
     return text
 
 
