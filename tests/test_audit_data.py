@@ -1090,6 +1090,40 @@ class TestAcademicRules(unittest.TestCase):
             },
         )
 
+    def test_frozen_source_link_snapshot_is_not_required_when_source_unavailable(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        fallback = with_source_states(
+            {"academicData": {"scopus": None}}
+        )
+        fallback["sourceStates"]["scopus"] = {
+            "status": "unavailable",
+            "last_valid_at": None,
+            "error_code": "fetch_failed",
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertNotIn(
+            "source-links:scopus:record-id:123456:snapshot",
+            {
+                v.subject
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            },
+        )
+
     def test_frozen_doi_evidence_must_match_canonical_publication(self):
         work = self._work("pub-a", "Publication A", "10.1/a")
         links = self._source_links()
