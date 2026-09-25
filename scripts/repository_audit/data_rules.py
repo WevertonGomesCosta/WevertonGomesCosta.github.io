@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
 import unicodedata
 from urllib.parse import unquote
@@ -1090,7 +1091,18 @@ BIBLIOMETRIC_METRIC_STATUSES = frozenset(
         "value_unavailable",
         "record_absent",
         "source_unavailable",
+        "stale",
     }
+)
+
+SOURCE_UPDATE_STATE_SOURCES = frozenset(
+    {"github", "google_scholar", "scopus", "web_of_science", "orcid"}
+)
+SOURCE_UPDATE_STATE_STATUSES = frozenset(
+    {"current", "stale", "unavailable"}
+)
+SOURCE_UPDATE_STATE_FIELDS = frozenset(
+    {"status", "last_valid_at", "error_code"}
 )
 
 
@@ -1781,6 +1793,184 @@ def _source_link_relationships(
     return relationships
 
 
+def _source_update_state_status(
+    fallback: object,
+    source: str,
+) -> str:
+    if isinstance(fallback, dict):
+        states = fallback.get("sourceStates")
+        if isinstance(states, dict):
+            state = states.get(source)
+            if isinstance(state, dict):
+                status = state.get("status")
+                if status in SOURCE_UPDATE_STATE_STATUSES:
+                    return status
+
+    return "current" if _source_payload_available(fallback, source) else "unavailable"
+
+
+def _audit_source_update_states(fallback: object) -> list[Violation]:
+    violations: list[Violation] = []
+    if not isinstance(fallback, dict):
+        return violations
+
+    states = fallback.get("sourceStates")
+    if not isinstance(states, dict):
+        return [
+            Violation(
+                "SOURCE_UPDATE_STATE_STRUCTURE",
+                "fallback-data.json",
+                "sourceStates",
+                "sourceStates must be an object",
+            )
+        ]
+
+    actual_sources = frozenset(states)
+    if actual_sources != SOURCE_UPDATE_STATE_SOURCES:
+        missing = sorted(SOURCE_UPDATE_STATE_SOURCES - actual_sources)
+        unknown = sorted(actual_sources - SOURCE_UPDATE_STATE_SOURCES)
+        details: list[str] = []
+        if missing:
+            details.append(f"missing sources: {', '.join(missing)}")
+        if unknown:
+            details.append(f"unknown sources: {', '.join(unknown)}")
+        violations.append(
+            Violation(
+                "SOURCE_UPDATE_STATE_STRUCTURE",
+                "fallback-data.json",
+                "sourceStates",
+                "Invalid sourceStates source set; " + "; ".join(details),
+            )
+        )
+
+    for source in sorted(SOURCE_UPDATE_STATE_SOURCES & actual_sources):
+        state = states.get(source)
+        subject = f"sourceStates:{source}"
+        if not isinstance(state, dict):
+            violations.append(
+                Violation(
+                    "SOURCE_UPDATE_STATE_STRUCTURE",
+                    "fallback-data.json",
+                    subject,
+                    "Source state must be an object",
+                )
+            )
+            continue
+
+        actual_fields = frozenset(state)
+        if actual_fields != SOURCE_UPDATE_STATE_FIELDS:
+            missing = sorted(SOURCE_UPDATE_STATE_FIELDS - actual_fields)
+            unknown = sorted(actual_fields - SOURCE_UPDATE_STATE_FIELDS)
+            details = []
+            if missing:
+                details.append(f"missing keys: {', '.join(missing)}")
+            if unknown:
+                details.append(f"unknown keys: {', '.join(unknown)}")
+            violations.append(
+                Violation(
+                    "SOURCE_UPDATE_STATE_STRUCTURE",
+                    "fallback-data.json",
+                    subject,
+                    "Invalid source state fields; " + "; ".join(details),
+                )
+            )
+
+        status = state.get("status")
+        if status not in SOURCE_UPDATE_STATE_STATUSES:
+            violations.append(
+                Violation(
+                    "SOURCE_UPDATE_STATE_STRUCTURE",
+                    "fallback-data.json",
+                    f"{subject}:status",
+                    "Invalid source state status",
+                )
+            )
+
+        last_valid_at = state.get("last_valid_at")
+        valid_time = False
+        if isinstance(last_valid_at, str) and last_valid_at:
+            try:
+                datetime.fromisoformat(last_valid_at)
+                valid_time = True
+            except ValueError:
+                pass
+        elif last_valid_at is None:
+            valid_time = True
+        if not valid_time:
+            violations.append(
+                Violation(
+                    "SOURCE_UPDATE_STATE_STRUCTURE",
+                    "fallback-data.json",
+                    f"{subject}:last-valid-at",
+                    "last_valid_at must be ISO-8601 string or null",
+                )
+            )
+
+        error_code = state.get("error_code")
+        if error_code is not None and (
+            not isinstance(error_code, str) or not error_code
+        ):
+            violations.append(
+                Violation(
+                    "SOURCE_UPDATE_STATE_STRUCTURE",
+                    "fallback-data.json",
+                    f"{subject}:error-code",
+                    "error_code must be a non-empty string or null",
+                )
+            )
+
+        payload = (
+            fallback.get("githubRepos")
+            if source == "github"
+            else (
+                fallback.get("academicData", {}).get(source)
+                if isinstance(fallback.get("academicData"), dict)
+                else None
+            )
+        )
+        payload_valid = (
+            isinstance(payload, list)
+            if source == "github"
+            else (
+                isinstance(payload, dict)
+                and isinstance(payload.get("articles"), list)
+            )
+        )
+
+        if status == "current":
+            if last_valid_at is None or error_code is not None or not payload_valid:
+                violations.append(
+                    Violation(
+                        "SOURCE_UPDATE_STATE_STRUCTURE",
+                        "fallback-data.json",
+                        subject,
+                        "current requires valid payload, last_valid_at, and error_code=null",
+                    )
+                )
+        elif status == "stale":
+            if last_valid_at is None or error_code is None or not payload_valid:
+                violations.append(
+                    Violation(
+                        "SOURCE_UPDATE_STATE_STRUCTURE",
+                        "fallback-data.json",
+                        subject,
+                        "stale requires preserved valid payload, last_valid_at, and error_code",
+                    )
+                )
+        elif status == "unavailable":
+            if last_valid_at is not None or error_code is None:
+                violations.append(
+                    Violation(
+                        "SOURCE_UPDATE_STATE_STRUCTURE",
+                        "fallback-data.json",
+                        subject,
+                        "unavailable requires last_valid_at=null and error_code",
+                    )
+                )
+
+    return violations
+
+
 def _source_payload_available(fallback: object, source: str) -> bool:
     if not isinstance(fallback, dict):
         return False
@@ -2052,6 +2242,7 @@ def _audit_bibliometric_metrics(
 
             relationship = relationships[source].get(publication_id)
             source_available = _source_payload_available(fallback, source)
+            source_state = _source_update_state_status(fallback, source)
 
             if relationship is None:
                 if record_id is not None or aliases_list:
@@ -2063,9 +2254,9 @@ def _audit_bibliometric_metrics(
                         )
                     )
                 expected_status = (
-                    "record_absent"
-                    if source_available
-                    else "source_unavailable"
+                    "source_unavailable"
+                    if source_state == "unavailable" or not source_available
+                    else "record_absent"
                 )
             else:
                 if record_id != relationship["record_id"]:
@@ -2083,16 +2274,21 @@ def _audit_bibliometric_metrics(
                         )
                     )
                 expected_status = (
-                    None if source_available else "source_unavailable"
+                    "source_unavailable"
+                    if source_state == "unavailable" or not source_available
+                    else "stale"
+                    if source_state == "stale"
+                    else None
                 )
                 if (
                     source_available
+                    and source_state == "current"
                     and status not in {"observed", "value_unavailable"}
                 ):
                     violations.append(
                         _bibliometric_metrics_violation(
                             f"{subject}:status",
-                            "linked record in an available source must be "
+                            "linked record in a current source must be "
                             "observed or value_unavailable",
                         )
                     )
@@ -2150,6 +2346,25 @@ def _audit_bibliometric_metrics(
                         "source_unavailable requires citations=null",
                     )
                 )
+            elif status == "stale":
+                if not isinstance(record_id, str) or not record_id:
+                    violations.append(
+                        _bibliometric_metrics_violation(
+                            f"{subject}:status",
+                            "stale requires a preserved primary record_id",
+                        )
+                    )
+                if citations is not None and (
+                    not isinstance(citations, int)
+                    or isinstance(citations, bool)
+                    or citations < 0
+                ):
+                    violations.append(
+                        _bibliometric_metrics_violation(
+                            f"{subject}:status",
+                            "stale citations must be a non-negative integer or null",
+                        )
+                    )
 
     return violations
 
@@ -2294,6 +2509,8 @@ def audit_academic_data(root: Path) -> list[Violation]:
         violations.extend(_duplicate_violations(works))
 
     fallback, fallback_error = read_repository_json(root, "fallback-data.json")
+    if fallback is not None and fallback_error is None:
+        violations.extend(_audit_source_update_states(fallback))
 
     source_links, source_links_error = read_repository_json(
         root, "bibliographic-source-links.json"
