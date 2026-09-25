@@ -129,6 +129,7 @@ class FixtureMixin:
         write_bytes(
             components / "footer.html",
             '<footer>\n'
+            '    <h4>@@PROFILE_DISPLAY_NAME@@</h4>\n'
             '    <p>@@PRIVACY_SEGMENT@@<a href="license">License</a></p>\n'
             '    <p>@@PROFILE_PERSON_NAME@@ | @@PROFILE_EMAIL@@</p>\n'
             '    <a href="@@PROFILE_GITHUB_URL@@">GitHub</a>\n'
@@ -138,7 +139,7 @@ class FixtureMixin:
             '    <a href="@@PROFILE_ORCID_URL@@">ORCID</a>\n'
             '    <a href="@@PROFILE_SCOPUS_URL@@">Scopus</a>\n'
             '    <a href="@@PROFILE_WOS_URL@@">WoS</a>\n'
-            '    <a href="@@PROFILE_CONECTA_URL@@">Conecta</a>\n'
+            '    <a href="@@PROFILE_CONECTA_URL@@">@@PROFILE_CONECTA_NAME@@</a>\n'
             '</footer>\n',
         )
         write_bytes(
