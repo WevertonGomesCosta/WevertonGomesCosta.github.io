@@ -19,7 +19,7 @@ PROFILE_ATTR_MARKER_RE = re.compile(
     r'\bdata-profile-(content|href|src|alt)="([^"]+)"'
 )
 PROFILE_TEXT_RE = re.compile(
-    r'(?P<open><(?P<tag>[A-Za-z][A-Za-z0-9:-]*)\\b[^<>]*'
+    r'(?P<open><(?P<tag>[A-Za-z][A-Za-z0-9:-]*)\b[^<>]*'
     r'\bdata-profile-text="(?P<key>[^"]+)"[^<>]*>)'
     r'(?P<value>[^<>]*)'
     r'(?P<close></(?P=tag)>)'
