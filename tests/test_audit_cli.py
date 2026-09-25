@@ -144,6 +144,18 @@ def make_clean_repo(root: Path) -> None:
             },
         },
     )
+    write_json(
+        root / "bibliometric-metrics.json",
+        {
+            "schema_version": "1.0.0",
+            "source_snapshot": {
+                "fallback_last_updated": None,
+                "registry_updated_at": "2026-09-24",
+                "source_links_schema_version": "1.0.0",
+            },
+            "publications": {},
+        },
+    )
     write_json(root / "fallback-data.json", {"academicData": {}})
     (root / "robots.txt").write_text("", encoding="utf-8")
     (root / "sitemap.xml").write_text("", encoding="utf-8")
