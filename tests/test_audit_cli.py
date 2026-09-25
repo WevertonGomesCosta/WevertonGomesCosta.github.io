@@ -59,6 +59,54 @@ def make_clean_repo(root: Path) -> None:
     )
     write_json(root / "translations.json", {"pt": {}, "en": {}})
     write_json(
+        root / "profile.json",
+        {
+            "schema_version": "1.0.0",
+            "person": {
+                "name": "Example Person",
+                "display_name": "Example P.",
+                "email": "person@example.org",
+                "website_url": "https://example.org/",
+                "avatar_url": "https://example.org/avatar.png",
+                "location": {
+                    "city": "Viçosa",
+                    "region": "MG",
+                    "country_code": "BR",
+                },
+            },
+            "profiles": {
+                "github": {
+                    "username": "example",
+                    "url": "https://github.com/example",
+                },
+                "linkedin": {"url": "https://www.linkedin.com/in/example/"},
+                "lattes": {
+                    "id": "1234567890123456",
+                    "url": "https://lattes.cnpq.br/1234567890123456",
+                },
+                "google_scholar": {
+                    "author_id": "ScholarId",
+                    "url": "https://scholar.google.com/citations?user=ScholarId",
+                },
+                "orcid": {
+                    "id": "0000-0002-1825-0097",
+                    "url": "https://orcid.org/0000-0002-1825-0097",
+                },
+                "scopus": {
+                    "author_id": "1234567890",
+                    "url": "https://www.scopus.com/authid/detail.uri?authorId=1234567890",
+                },
+                "web_of_science": {
+                    "researcher_id": "ABC-1234-2026",
+                    "url": "https://www.webofscience.com/wos/author/record/ABC-1234-2026",
+                },
+            },
+            "organizations": {},
+            "affiliations": [],
+            "education": [],
+        },
+    )
+    write_json(
         root / "academic-registry.json",
         {
             "schema_version": "1.0.0",
