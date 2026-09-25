@@ -267,6 +267,60 @@ class TestProfileRules(unittest.TestCase):
         self.assertIn("profile:affiliations[0].funder_ids", subjects)
         self.assertIn("profile:education[0].end_year", subjects)
 
+    def test_academic_relation_validator_handles_malformed_list_items(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "Bad Org": {
+                "name": "Bad",
+                "short_name": "Bad",
+                "url": None,
+            },
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            },
+        }
+        profile["affiliations"] = [
+            {
+                "id": "bad-affiliation",
+                "organization_id": "ufv",
+                "role_codes": [{"bad": True}],
+                "start_year": 2025,
+                "end_year": 2025,
+                "current": False,
+                "funder_ids": [{"bad": True}],
+                "advisor": {
+                    "name": "Advisor",
+                    "title_code": {"bad": True},
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "bad-education",
+                "degree_code": {"bad": True},
+                "organization_id": "ufv",
+                "start_year": 2023,
+                "end_year": None,
+                "current": True,
+                "advisor": None,
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:organizations.Bad Org", subjects)
+        self.assertIn("profile:affiliations[0].role_codes", subjects)
+        self.assertIn("profile:affiliations[0].funder_ids", subjects)
+        self.assertIn("profile:affiliations[0].advisor.title_code", subjects)
+        self.assertIn("profile:education[0].degree_code", subjects)
+
     def test_academic_record_ids_roles_and_mentors_are_validated(self):
         profile = valid_profile()
         profile["organizations"] = {
