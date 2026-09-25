@@ -126,6 +126,28 @@ class TestSourceUpdatePipeline(unittest.TestCase):
             OLD_TIME,
         )
 
+    def test_each_source_failure_preserves_its_previous_valid_payload(self):
+        for source in pipeline.SOURCE_NAMES:
+            with self.subTest(source=source):
+                old = old_snapshot()
+                results = all_success(old)
+                results[source] = pipeline.SourceResult.failure("fetch_failed")
+                candidate = pipeline.build_transaction_candidate(
+                    old_snapshot=old,
+                    results=results,
+                    registry=registry(),
+                    source_links=source_links(),
+                    transaction_time=NOW,
+                )
+                self.assertEqual(
+                    pipeline.get_source_payload(candidate.fallback, source),
+                    pipeline.get_source_payload(old, source),
+                )
+                state = candidate.fallback["sourceStates"][source]
+                self.assertEqual(state["status"], "stale")
+                self.assertEqual(state["last_valid_at"], OLD_TIME)
+                self.assertEqual(state["error_code"], "fetch_failed")
+
     def test_failed_source_preserves_payload_marks_stale_and_metrics(self):
         old = old_snapshot()
         results = all_success(old)
@@ -267,6 +289,28 @@ class TestSourceUpdatePipeline(unittest.TestCase):
         self.assertEqual(
             candidate.fallback["academicData"]["google_scholar"],
             old["academicData"]["google_scholar"],
+        )
+
+    def test_metrics_snapshot_uses_same_transaction_last_updated(self):
+        old = old_snapshot()
+        results = all_success(old)
+        results["github"] = pipeline.SourceResult.success(
+            [{"name": "repo-a"}, {"name": "repo-b"}]
+        )
+        candidate = pipeline.build_transaction_candidate(
+            old_snapshot=old,
+            results=results,
+            registry=registry(),
+            source_links=source_links(),
+            transaction_time=NOW,
+        )
+        self.assertEqual(
+            candidate.metrics["source_snapshot"]["fallback_last_updated"],
+            candidate.fallback["lastUpdated"],
+        )
+        self.assertEqual(
+            candidate.fallback["lastUpdated"],
+            "25/09/2026 15:30",
         )
 
     def test_one_stale_source_does_not_discard_another_valid_change(self):
