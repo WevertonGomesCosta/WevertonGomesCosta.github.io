@@ -3,19 +3,612 @@
   "sources": {
     "google_scholar": {
       "record_id_scheme": "citation_for_view",
-      "links": []
+      "links": [
+        {
+          "record_id": "eJNKcHsAAAAJ:9yKSN-GCB0IC",
+          "publication_id": "journal-2019-coffee-factor-analysis",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:u-x6o8ySG0sC",
+          "publication_id": "journal-2019-rice-breeding-program-southeast-brazil",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:d1gkVwhDpl0C",
+          "publication_id": "journal-2020-adaptability-stability-flooded-rice",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:2osOgNQ5qMEC",
+          "publication_id": "journal-2020-rice-testing-time-meta-analysis",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:W7OEmFMy1HYC",
+          "publication_id": "journal-2021-alfalfa-dry-matter-base-populations",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:YsMSGLbcyi4C",
+          "publication_id": "journal-2021-fuzzy-adaptability-flooded-rice",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:Se3iqnhoufwC",
+          "publication_id": "journal-2021-genome-enabled-prediction-trait-complexity",
+          "role": "alias",
+          "primary_record_id": "eJNKcHsAAAAJ:qjMakFHDy7sC",
+          "match_basis": "manual_duplicate_reconciliation"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:qjMakFHDy7sC",
+          "publication_id": "journal-2021-genome-enabled-prediction-trait-complexity",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:zYLM7Y9cAGgC",
+          "publication_id": "journal-2021-ml-statistics-coffee-environments",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:3fE2CSJIrl8C",
+          "publication_id": "journal-2021-multiinformation-flooded-rice-stability",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:eQOLeE2rZwMC",
+          "publication_id": "journal-2021-quarter-century-genetic-progress-rice",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:UebtZRa9Y70C",
+          "publication_id": "journal-2022-genomic-prediction-ml-nn-epistasis",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:_FxGoFyzp5QC",
+          "publication_id": "journal-2022-multitrait-bayesian-flooded-rice",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:roLk4NBRz8UC",
+          "publication_id": "journal-2022-soybean-maintainers-self-organizing-maps",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:8k81kl-MbHgC",
+          "publication_id": "journal-2023-early-biomarkers-eucalyptus-water-deficit",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:MXK_kJrjxJIC",
+          "publication_id": "journal-2023-eucalyptus-water-deficit-metabolic",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:5nxA0vEk-isC",
+          "publication_id": "journal-2023-prediction-importance-predictors-ci-ml",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:YOwf2qJgpHMC",
+          "publication_id": "journal-2024-bayesian-soybean-shading-multitrait",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+          "publication_id": "journal-2024-cassava-drought-genomic-selection",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:aqlVkmm33-oC",
+          "publication_id": "journal-2024-eucalyptus-biomarkers-physiological-disorder",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:4TOpqqG69KYC",
+          "publication_id": "journal-2024-mars-genomic-prediction-nonadditive",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:M3ejUd6NZC8C",
+          "publication_id": "journal-2024-pig-body-weight-computer-vision",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:qxL8FJ1GzNcC",
+          "publication_id": "journal-2024-pig-body-weight-supervised-ml",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:QIV2ME_5wuYC",
+          "publication_id": "journal-2025-linking-bark-anatomy-eucalyptus-epd",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:7PzlFSSx8tAC",
+          "publication_id": "journal-2025-multitrait-selection-coffee-postharvest",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:ZeXyd9-uunAC",
+          "publication_id": "journal-2026-comparison-ml-marker-identification-gwas",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:qUcmZB5y_30C",
+          "publication_id": "journal-2026-trait-prediction-soybean-shaded",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:Zph67rFs4hoC",
+          "publication_id": "preprint-2024-trait-prediction-soybean-shaded",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        }
+      ]
     },
     "scopus": {
       "record_id_scheme": "scopus_id",
-      "links": []
+      "links": [
+        {
+          "record_id": "85073253514",
+          "publication_id": "journal-2019-coffee-factor-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85071667621",
+          "publication_id": "journal-2019-rice-breeding-program-southeast-brazil",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85090047441",
+          "publication_id": "journal-2020-adaptability-stability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85095700543",
+          "publication_id": "journal-2020-rice-testing-time-meta-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85122793528",
+          "publication_id": "journal-2021-alfalfa-dry-matter-base-populations",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85117190747",
+          "publication_id": "journal-2021-fuzzy-adaptability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85104263465",
+          "publication_id": "journal-2021-genome-enabled-prediction-trait-complexity",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85099892397",
+          "publication_id": "journal-2021-ml-statistics-coffee-environments",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85117372664",
+          "publication_id": "journal-2021-quarter-century-genetic-progress-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85139307465",
+          "publication_id": "journal-2022-genomic-prediction-ml-nn-epistasis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85135566113",
+          "publication_id": "journal-2022-multitrait-bayesian-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85138658502",
+          "publication_id": "journal-2022-soybean-maintainers-self-organizing-maps",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85152360293",
+          "publication_id": "journal-2023-early-biomarkers-eucalyptus-water-deficit",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85160444099",
+          "publication_id": "journal-2023-eucalyptus-water-deficit-metabolic",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85188537023",
+          "publication_id": "journal-2024-bayesian-soybean-shading-multitrait",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85213532603",
+          "publication_id": "journal-2024-cassava-drought-genomic-selection",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85208483551",
+          "publication_id": "journal-2024-eucalyptus-biomarkers-physiological-disorder",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85207560508",
+          "publication_id": "journal-2024-mars-genomic-prediction-nonadditive",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "85187690139",
+          "publication_id": "journal-2024-pig-body-weight-computer-vision",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "105025783242",
+          "publication_id": "journal-2025-beyond-wood-log-eucalyptus-epd",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "105024199202",
+          "publication_id": "journal-2025-multitrait-selection-coffee-postharvest",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "105029115097",
+          "publication_id": "journal-2026-comparison-ml-marker-identification-gwas",
+          "role": "primary",
+          "match_basis": "doi"
+        }
+      ]
     },
     "web_of_science": {
       "record_id_scheme": "doi",
-      "links": []
+      "links": [
+        {
+          "record_id": "doi:10.1007/s10681-019-2499-x",
+          "publication_id": "journal-2019-coffee-factor-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.4238/gmr18332",
+          "publication_id": "journal-2019-rice-breeding-program-southeast-brazil",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.4238/gmr18434",
+          "publication_id": "journal-2020-adaptability-stability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1984-70332020v20n4a55",
+          "publication_id": "journal-2020-rice-testing-time-meta-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1984-70332021v21n3a41",
+          "publication_id": "journal-2021-alfalfa-dry-matter-base-populations",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1111/pbr.12973",
+          "publication_id": "journal-2021-fuzzy-adaptability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1002/csc2.20488",
+          "publication_id": "journal-2021-genome-enabled-prediction-trait-complexity",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1371/journal.pone.0245298",
+          "publication_id": "journal-2021-ml-statistics-coffee-environments",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1111/pbr.12972",
+          "publication_id": "journal-2021-quarter-century-genetic-progress-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.csbj.2022.09.029",
+          "publication_id": "journal-2022-genomic-prediction-ml-nn-epistasis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1007/s10681-022-03077-x",
+          "publication_id": "journal-2022-multitrait-bayesian-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1002/csc2.20816",
+          "publication_id": "journal-2022-soybean-maintainers-self-organizing-maps",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy13030937",
+          "publication_id": "journal-2023-early-biomarkers-eucalyptus-water-deficit",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy13051261",
+          "publication_id": "journal-2023-eucalyptus-water-deficit-metabolic",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1678-992x-2022-0233",
+          "publication_id": "journal-2024-bayesian-soybean-shading-multitrait",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3389/fpls.2024.1483340",
+          "publication_id": "journal-2024-cassava-drought-genomic-selection",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.sajb.2024.10.052",
+          "publication_id": "journal-2024-eucalyptus-biomarkers-physiological-disorder",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy14102234",
+          "publication_id": "journal-2024-mars-genomic-prediction-nonadditive",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.livsci.2024.105433",
+          "publication_id": "journal-2024-pig-body-weight-computer-vision",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.37496/rbz5320240001",
+          "publication_id": "journal-2024-pig-body-weight-supervised-ml",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1678-992x-2025-0020",
+          "publication_id": "journal-2025-multitrait-selection-coffee-postharvest",
+          "role": "primary",
+          "match_basis": "doi"
+        }
+      ]
     },
     "orcid": {
       "record_id_scheme": "doi",
-      "links": []
+      "links": [
+        {
+          "record_id": "doi:10.1007/s10681-019-2499-x",
+          "publication_id": "journal-2019-coffee-factor-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.4238/gmr18332",
+          "publication_id": "journal-2019-rice-breeding-program-southeast-brazil",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.4238/gmr18434",
+          "publication_id": "journal-2020-adaptability-stability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1984-70332020v20n4a55",
+          "publication_id": "journal-2020-rice-testing-time-meta-analysis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1984-70332021v21n3a41",
+          "publication_id": "journal-2021-alfalfa-dry-matter-base-populations",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1111/pbr.12973",
+          "publication_id": "journal-2021-fuzzy-adaptability-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1002/csc2.20488",
+          "publication_id": "journal-2021-genome-enabled-prediction-trait-complexity",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1371/journal.pone.0245298",
+          "publication_id": "journal-2021-ml-statistics-coffee-environments",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.33158/asb.r145.v8.2022",
+          "publication_id": "journal-2021-multiinformation-flooded-rice-stability",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1111/pbr.12972",
+          "publication_id": "journal-2021-quarter-century-genetic-progress-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.csbj.2022.09.029",
+          "publication_id": "journal-2022-genomic-prediction-ml-nn-epistasis",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1007/s10681-022-03077-x",
+          "publication_id": "journal-2022-multitrait-bayesian-flooded-rice",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1002/csc2.20816",
+          "publication_id": "journal-2022-soybean-maintainers-self-organizing-maps",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy13030937",
+          "publication_id": "journal-2023-early-biomarkers-eucalyptus-water-deficit",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy13051261",
+          "publication_id": "journal-2023-eucalyptus-water-deficit-metabolic",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.33158/asb.r179.v9.2023",
+          "publication_id": "journal-2023-prediction-importance-predictors-ci-ml",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1678-992x-2022-0233",
+          "publication_id": "journal-2024-bayesian-soybean-shading-multitrait",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3389/fpls.2024.1483340",
+          "publication_id": "journal-2024-cassava-drought-genomic-selection",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.sajb.2024.10.052",
+          "publication_id": "journal-2024-eucalyptus-biomarkers-physiological-disorder",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agronomy14102234",
+          "publication_id": "journal-2024-mars-genomic-prediction-nonadditive",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1016/j.livsci.2024.105433",
+          "publication_id": "journal-2024-pig-body-weight-computer-vision",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.37496/rbz5320240001",
+          "publication_id": "journal-2024-pig-body-weight-supervised-ml",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/ijpb16040124",
+          "publication_id": "journal-2025-beyond-wood-log-eucalyptus-epd",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.31421/ijhs/31/2025/15419",
+          "publication_id": "journal-2025-linking-bark-anatomy-eucalyptus-epd",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1590/1678-992x-2025-0020",
+          "publication_id": "journal-2025-multitrait-selection-coffee-postharvest",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/ijpb17010006",
+          "publication_id": "journal-2026-comparison-ml-marker-identification-gwas",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1101/2024.01.31.578252",
+          "publication_id": "preprint-2024-trait-prediction-soybean-shaded",
+          "role": "primary",
+          "match_basis": "doi"
+        }
+      ]
     }
   }
 }
