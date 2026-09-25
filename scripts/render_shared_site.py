@@ -150,13 +150,20 @@ def profile_template_values(profile: Mapping[str, object]) -> dict[str, str]:
     }
 
 
-def serialize_profile_for_html(profile: Mapping[str, object]) -> str:
-    value = json.dumps(
-        profile,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        sort_keys=True,
-    )
+def serialize_json_for_html(
+    payload: object,
+    *,
+    indent: int | None = None,
+) -> str:
+    kwargs: dict[str, object] = {
+        "ensure_ascii": False,
+        "sort_keys": True,
+    }
+    if indent is None:
+        kwargs["separators"] = (",", ":")
+    else:
+        kwargs["indent"] = indent
+    value = json.dumps(payload, **kwargs)
     return (
         value.replace("&", "\\u0026")
         .replace("<", "\\u003c")
@@ -164,6 +171,41 @@ def serialize_profile_for_html(profile: Mapping[str, object]) -> str:
         .replace("\u2028", "\\u2028")
         .replace("\u2029", "\\u2029")
     )
+
+
+def serialize_profile_for_html(profile: Mapping[str, object]) -> str:
+    return serialize_json_for_html(profile)
+
+
+def serialize_jsonld_for_html(profile: Mapping[str, object]) -> str:
+    payload = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": resolve_profile_value(profile, "person.name"),
+        "jobTitle": "Researcher & Data Scientist",
+        "image": resolve_profile_value(profile, "person.avatar_url"),
+        "url": resolve_profile_value(profile, "person.website_url"),
+        "affiliation": [
+            {
+                "@type": "Organization",
+                "name": "Universidade Federal de Viçosa (UFV)",
+            },
+            {
+                "@type": "Organization",
+                "name": "Conecta GEM",
+            },
+        ],
+        "alumniOf": "Universidade Federal de Viçosa",
+        "sameAs": [
+            resolve_profile_value(profile, "profiles.github.url"),
+            resolve_profile_value(profile, "profiles.lattes.url"),
+            resolve_profile_value(profile, "profiles.google_scholar.url"),
+            resolve_profile_value(profile, "profiles.orcid.url"),
+            resolve_profile_value(profile, "profiles.scopus.url"),
+            resolve_profile_value(profile, "profiles.web_of_science.url"),
+        ],
+    }
+    return serialize_json_for_html(payload, indent=2)
 
 
 def project_profile_bindings(
@@ -450,20 +492,7 @@ def _render_fragments(
     if config.path == "index.html":
         fragments["profile-jsonld"] = render_template(
             _component(root, "profile-jsonld.html"),
-            {
-                key: profile_values[key]
-                for key in (
-                    "PROFILE_PERSON_NAME",
-                    "PROFILE_WEBSITE_URL",
-                    "PROFILE_AVATAR_URL",
-                    "PROFILE_GITHUB_URL",
-                    "PROFILE_LATTES_URL",
-                    "PROFILE_SCHOLAR_URL",
-                    "PROFILE_ORCID_URL",
-                    "PROFILE_SCOPUS_URL",
-                    "PROFILE_WOS_URL",
-                )
-            },
+            {"PROFILE_JSONLD": serialize_jsonld_for_html(profile)},
             "profile-jsonld.html",
         )
 
