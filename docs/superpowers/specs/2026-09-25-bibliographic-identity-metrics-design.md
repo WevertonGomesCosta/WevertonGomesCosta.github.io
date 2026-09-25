@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3C.1 implemented and CI-validated; 3C.2–3D.3 pending  
+**Status:** 3C.1 and 3C.2 implemented and CI-validated; 3D.1–3D.3 pending  
 **Base:** `main@4b55ec32ed20c33d98084340c844462fa341adfe`
 
 ## 1. Objective
@@ -462,6 +462,52 @@ Protected production/data files remain unchanged:
 - `utils.js`.
 
 Therefore 3C.1 is frozen with no debt reduction. 3C.2 is the first step allowed to populate real source links.
+
+## 14.2 Implementation status after 3C.2
+
+The current source identities are now frozen in `bibliographic-source-links.json`.
+
+Frozen mapping counts:
+
+- Google Scholar: 28 linked source records representing 27 canonical publications;
+- Scopus: 22 linked source records;
+- Web of Science: 21 linked source records;
+- ORCID: 27 linked source records.
+
+The Scholar duplicate is encoded explicitly:
+
+- primary: `eJNKcHsAAAAJ:qjMakFHDy7sC`;
+- alias: `eJNKcHsAAAAJ:Se3iqnhoufwC`;
+- publication: `journal-2021-genome-enabled-prediction-trait-complexity`;
+- alias basis: `manual_duplicate_reconciliation`.
+
+The seven currently unmatched Scholar records and the two unmatched ORCID records remain outside the canonical link map.
+
+The validator now also verifies frozen identity evidence against the current fallback snapshot:
+
+- every linked record ID must resolve to exactly one raw source record;
+- DOI-based links must match the canonical publication DOI;
+- Scholar title-based links must match the canonical normalized title;
+- aliases must use `manual_duplicate_reconciliation`;
+- Scholar primaries must use `normalized_title`;
+- Scopus/WoS/ORCID primaries must use `doi`.
+
+A snapshot test freezes both the link count and a deterministic signature of each complete `record_id -> publication_id` mapping, preventing silent identity-map drift.
+
+Verified 3C.2 gate:
+
+- profile translation Node integration: PASS;
+- JavaScript syntax checks: PASS;
+- 130 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+The `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` entry remains deliberately active. 3C.2 encodes the identity reconciliation but does not yet change the frontend consumer or duplicate-title audit semantics.
+
+The next step is 3D.1: build the deterministic `bibliometric-metrics.json` artifact from the frozen source links and current source observations.
 
 ## 15. Protected scope
 
