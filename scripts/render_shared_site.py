@@ -16,11 +16,11 @@ TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
 MARKER_RE = re.compile(r"<!-- shared:([a-z0-9-]+):(start|end) -->")
 TAG_RE = re.compile(r"<[^<>]+>")
 PROFILE_ATTR_MARKER_RE = re.compile(
-    r'\\bdata-profile-(content|href|src|alt)="([^"]+)"'
+    r'\bdata-profile-(content|href|src|alt)="([^"]+)"'
 )
 PROFILE_TEXT_RE = re.compile(
     r'(?P<open><(?P<tag>[A-Za-z][A-Za-z0-9:-]*)\\b[^<>]*'
-    r'\\bdata-profile-text="(?P<key>[^"]+)"[^<>]*>)'
+    r'\bdata-profile-text="(?P<key>[^"]+)"[^<>]*>)'
     r'(?P<value>[^<>]*)'
     r'(?P<close></(?P=tag)>)'
 )
@@ -172,7 +172,7 @@ def project_profile_bindings(
     path: Path,
 ) -> str:
     attribute_markers = len(
-        re.findall(r'\\bdata-profile-(?:content|href|src|alt)="', source)
+        re.findall(r'\bdata-profile-(?:content|href|src|alt)="', source)
     )
     processed_attributes = 0
 
@@ -183,7 +183,7 @@ def project_profile_bindings(
         for attribute, key in markers:
             value = html.escape(resolve_profile_value(profile, key), quote=True)
             attribute_re = re.compile(
-                rf'\\b{re.escape(attribute)}="[^"]*"'
+                rf'\b{re.escape(attribute)}="[^"]*"'
             )
             if len(attribute_re.findall(tag)) != 1:
                 raise RenderContractError(
@@ -191,8 +191,9 @@ def project_profile_bindings(
                     f"{attribute!r} attribute in {path}"
                 )
             tag = attribute_re.sub(
-                lambda _match, attr=attribute, replacement=value:
-                    f'{attr}="{replacement}"',
+                lambda _match, attr=attribute, replacement=value: (
+                    f'{attr}="{replacement}"'
+                ),
                 tag,
                 count=1,
             )
@@ -205,7 +206,7 @@ def project_profile_bindings(
             f"Unresolved profile attribute binding in {path}"
         )
 
-    text_markers = len(re.findall(r'\\bdata-profile-text="', rendered))
+    text_markers = len(re.findall(r'\bdata-profile-text="', rendered))
 
     def project_text(match: re.Match[str]) -> str:
         value = html.escape(
