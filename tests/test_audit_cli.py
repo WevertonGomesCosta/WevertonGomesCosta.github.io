@@ -120,6 +120,30 @@ def make_clean_repo(root: Path) -> None:
             "works": [],
         },
     )
+    write_json(
+        root / "bibliographic-source-links.json",
+        {
+            "schema_version": "1.0.0",
+            "sources": {
+                "google_scholar": {
+                    "record_id_scheme": "citation_for_view",
+                    "links": [],
+                },
+                "scopus": {
+                    "record_id_scheme": "scopus_id",
+                    "links": [],
+                },
+                "web_of_science": {
+                    "record_id_scheme": "doi",
+                    "links": [],
+                },
+                "orcid": {
+                    "record_id_scheme": "doi",
+                    "links": [],
+                },
+            },
+        },
+    )
     write_json(root / "fallback-data.json", {"academicData": {}})
     (root / "robots.txt").write_text("", encoding="utf-8")
     (root / "sitemap.xml").write_text("", encoding="utf-8")
