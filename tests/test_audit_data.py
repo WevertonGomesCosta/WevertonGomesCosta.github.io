@@ -67,6 +67,7 @@ class RepoFixture:
         "404.html",
         "style.css",
         "utils.js",
+        "profile-interpolation.js",
         "translations.json",
         "profile.json",
         "academic-registry.json",
@@ -142,6 +143,47 @@ class TestRepositoryDataRules(unittest.TestCase):
         )
 
 
+
+
+class TestProfileFactTranslationContract(unittest.TestCase):
+    def _audit(self, translations):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root, translations=translations)
+        return data_rules.audit_repository_data(root)
+
+    def test_unknown_profile_placeholder_is_rejected(self):
+        violations = self._audit({
+            "pt": {"custom": "{profile_unknown}"},
+            "en": {"custom": "{profile_unknown}"},
+        })
+        matches = [v for v in violations if v.rule_id == "PROFILE_FACT_CONTRACT"]
+        self.assertEqual(len(matches), 2)
+
+    def test_literal_profile_fact_is_rejected(self):
+        violations = self._audit({
+            "pt": {"custom": "Example Person"},
+            "en": {"custom": "Example Person"},
+        })
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_FACT_CONTRACT"
+            and ":literal:" in v.subject
+        ]
+        self.assertEqual(len(matches), 2)
+
+    def test_required_profile_placeholder_is_enforced(self):
+        violations = self._audit({
+            "pt": {"privacy-contact-p": "Contato"},
+            "en": {"privacy-contact-p": "Contact"},
+        })
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_FACT_CONTRACT"
+            and v.subject.endswith(":required")
+        ]
+        self.assertEqual(len(matches), 2)
 
 
 class TestProfileRules(unittest.TestCase):
