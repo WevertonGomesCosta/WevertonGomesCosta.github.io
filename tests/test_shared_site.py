@@ -408,6 +408,16 @@ class TestProductionSemanticControls(unittest.TestCase):
             submit_buttons[0][1].startswith("form#contact-form>")
         )
 
+    def test_migrated_contact_button_openings_have_no_trailing_whitespace(self):
+        source = (ROOT / "index.html").read_text(encoding="utf-8")
+        offenders = [
+            line
+            for line in source.splitlines()
+            if '<button type="button" class="contact-link"' in line
+            and line.rstrip() != line
+        ]
+        self.assertEqual(offenders, [])
+
     def test_production_pages_are_renderer_synchronized(self):
         self.assertEqual(shared.check_all(ROOT), ())
 
