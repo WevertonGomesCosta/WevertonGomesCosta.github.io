@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** Proposed design derived from the approved Block 3A diagnosis; implementation not started  
+**Status:** 3B.1 and 3B.2 implemented and CI-validated; 3B.3 and 3B.4 pending  
 **Base:** `main@581dd700fa772e2b012fd5fcd006ba6aa2318cce`
 
 ## 1. Purpose
@@ -418,6 +418,24 @@ Block 3B must not:
 - rewrite biography/career claims;
 - introduce OpenAlex/Crossref;
 - make normal tests depend on any external API.
+
+## 12.1 Implementation status after 3B.2
+
+The first two migration stages are complete:
+
+- **3B.1 — Contract and validator:** `profile.json` exists, is required by the repository audit, and is validated offline through `PROFILE_STRUCTURE`.
+- **3B.2 — Identity/contact/profile links:** canonical identity is projected by the renderer into shared navigation/footer, selected static metadata, the home JSON-LD block, and an identical non-executable runtime profile payload on every rendered page. Runtime CV/clipboard identity consumers derive from that payload instead of independent hard-coded profile constants.
+
+The verified gate after 3B.2 is:
+
+- 102 unit tests passing;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+No bibliographic, citation-metric, translation/editorial, reduced-motion, CSP, SRI, or legacy `maximized` work is included in 3B.2.
 
 ## 13. Exit criteria
 
