@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** 3B.1, 3B.2, and 3B.3 implemented and CI-validated; 3B.4 pending  
+**Status:** Block 3B complete and CI-validated through 3B.4; frozen for merge review  
 **Base:** `main@581dd700fa772e2b012fd5fcd006ba6aa2318cce`
 
 ## 1. Purpose
@@ -462,6 +462,32 @@ The verified gate after 3B.3 is:
 - baseline growth: 0.
 
 The remaining profile/content work is 3B.4: controlled interpolation and duplicate-fact auditing. It must remove the remaining translated factual duplication without turning titles or descriptions into structured data.
+
+## 12.3 Implementation status after 3B.4
+
+Controlled interpolation and duplicate-fact protection are complete:
+
+- `translations.json` now uses approved `{profile_*}` placeholders for canonical personal identity, contact data, organization identities/acronyms, active academic periods, and advisor/co-advisor facts;
+- `profile-interpolation.js` is a DOM-independent resolver used before translation consumers and tested directly in Node;
+- unknown `{profile_*}` placeholders fail loudly;
+- non-profile runtime placeholders such as `{shown}`, `{total}`, and `{count}` remain untouched;
+- `PROFILE_FACT_CONTRACT` rejects protected canonical literals reintroduced into translated content and enforces required placeholders for active identity/contact/academic translation keys;
+- all four rendered pages load the interpolation module before `utils.js`;
+- the stale unused aggregate postdoctoral period `2022 – Present` in the translation data was reconciled to the canonical affiliation history `2022 – 2025`; this did not change rendered output because the field was not consumed;
+- CRLF/LF policy remains enforced after the new script insertion.
+
+Final Block 3B gate:
+
+- profile translation interpolation Node integration: PASS;
+- JavaScript syntax checks: PASS;
+- 111 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+Block 3B is now frozen. The next structural work is Block 3C/3D: canonical bibliographic-source links and metric reconciliation by `publication_id`. Only that work may legitimately remove the single `BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE` baseline entry and move known debt from 11 to 10.
 
 ## 13. Exit criteria
 
