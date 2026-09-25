@@ -13,18 +13,15 @@
 # Implementa fallback automático e trata falhas de conexão.
 #
 # Autor: Weverton Gomes Costa
-# Versão: 13.0.0 (Final - Sem Merge)
+# Versão: 14.0.0 (Pipeline transacional por fonte)
 
 import requests
 import json
 import re
 import csv
-import math
 from datetime import datetime
-import sys
 import os
 import logging
-import shutil
 import unicodedata
 from pathlib import Path
 
@@ -1088,61 +1085,6 @@ def analyze_changes(old_data, new_data):
             report_lines.append(f"  [*] {label}: {citation_changes} artigos receberam novas citações (Total: +{citation_diff_total}).")
 
     return report_lines, modification_notes
-
-# ==============================================================================
-# FUNÇÕES DE GERAÇÃO E ATUALIZAÇÃO DE ARQUIVOS (MANTIDAS COMO PEDIDO)
-# ==============================================================================
-def generate_fallback_file(data, filename):
-    """
-    Gera o arquivo JSON de forma atômica.
-    Escreve primeiro em '<filename>.writing' e depois substitui o arquivo final.
-    """
-    logging.info(f"Gerando o arquivo '{filename}'...")
-    temp_writing_filename = f"{filename}.writing"
-
-    try:
-        with open(temp_writing_filename, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-            f.flush()
-            os.fsync(f.fileno())
-
-        os.replace(temp_writing_filename, filename)
-        logging.info(f"✓ Arquivo '{filename}' gerado com sucesso.")
-        return True
-
-    except Exception as e:
-        logging.error(f"Erro ao gerar JSON em '{filename}': {e}")
-        return False
-
-    finally:
-        if os.path.exists(temp_writing_filename):
-            try:
-                os.remove(temp_writing_filename)
-            except OSError:
-                pass
-
-def update_main_file(main_file, temp_file):
-    """
-    Atualiza o arquivo principal a partir de um temporário.
-    """
-    if not os.path.exists(temp_file):
-        logging.error(f"Arquivo temporário '{temp_file}' não encontrado.")
-        return False
-
-    try:
-        shutil.move(temp_file, main_file)
-        logging.info(f"✓ Arquivo principal '{main_file}' atualizado com sucesso.")
-        return True
-
-    except Exception as e:
-        logging.error(f"Erro crítico ao atualizar '{main_file}': {e}")
-        if os.path.exists(temp_file):
-            try:
-                os.remove(temp_file)
-            except OSError:
-                pass
-        return False
-
 
 # ==============================================================================
 # PIPELINE TRANSACIONAL
