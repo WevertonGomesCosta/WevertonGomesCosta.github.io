@@ -41,7 +41,180 @@
       "url": "https://www.webofscience.com/wos/author/record/82680456"
     }
   },
-  "organizations": {},
-  "affiliations": [],
-  "education": []
+  "organizations": {
+    "ufv": {
+      "name": "Universidade Federal de Viçosa (UFV)",
+      "short_name": "UFV",
+      "url": null
+    },
+    "embrapa-cassava-fruits": {
+      "name": "EMBRAPA Mandioca e Fruticultura",
+      "short_name": "EMBRAPA",
+      "url": null
+    },
+    "cnpq": {
+      "name": "Conselho Nacional de Desenvolvimento Científico e Tecnológico",
+      "short_name": "CNPq",
+      "url": null
+    },
+    "fapemig": {
+      "name": "Fundação de Amparo à Pesquisa do Estado de Minas Gerais",
+      "short_name": "FAPEMIG",
+      "url": null
+    },
+    "conecta-gem": {
+      "name": "Conecta GEM",
+      "short_name": "Conecta GEM",
+      "url": "https://www.conectagem.com/sobre"
+    }
+  },
+  "affiliations": [
+    {
+      "id": "postdoc-ufv-cnpq-2025",
+      "organization_id": "ufv",
+      "role_codes": [
+        "postdoctoral_researcher"
+      ],
+      "start_year": 2025,
+      "end_year": 2025,
+      "current": false,
+      "funder_ids": [
+        "cnpq"
+      ],
+      "advisor": null,
+      "coadvisors": []
+    },
+    {
+      "id": "postdoc-ufv-fapemig-2023-2025",
+      "organization_id": "ufv",
+      "role_codes": [
+        "postdoctoral_researcher"
+      ],
+      "start_year": 2023,
+      "end_year": 2025,
+      "current": false,
+      "funder_ids": [
+        "fapemig"
+      ],
+      "advisor": {
+        "name": "Moyses Nascimento",
+        "title_code": "professor"
+      },
+      "coadvisors": []
+    },
+    {
+      "id": "postdoc-ufv-cnpq-2022-2023",
+      "organization_id": "ufv",
+      "role_codes": [
+        "postdoctoral_researcher"
+      ],
+      "start_year": 2022,
+      "end_year": 2023,
+      "current": false,
+      "funder_ids": [
+        "cnpq"
+      ],
+      "advisor": {
+        "name": "Moyses Nascimento",
+        "title_code": "professor"
+      },
+      "coadvisors": []
+    },
+    {
+      "id": "postdoc-embrapa-cnpq-2022",
+      "organization_id": "embrapa-cassava-fruits",
+      "role_codes": [
+        "postdoctoral_researcher"
+      ],
+      "start_year": 2022,
+      "end_year": 2022,
+      "current": false,
+      "funder_ids": [
+        "cnpq"
+      ],
+      "advisor": {
+        "name": "Eder Jorge de Oliveira",
+        "title_code": "researcher"
+      },
+      "coadvisors": []
+    },
+    {
+      "id": "conecta-gem-2021-present",
+      "organization_id": "conecta-gem",
+      "role_codes": [
+        "cofounder",
+        "ceo"
+      ],
+      "start_year": 2021,
+      "end_year": null,
+      "current": true,
+      "funder_ids": [],
+      "advisor": null,
+      "coadvisors": []
+    }
+  ],
+  "education": [
+    {
+      "id": "phd-applied-statistics-biometrics",
+      "degree_code": "doctorate",
+      "organization_id": "ufv",
+      "start_year": 2023,
+      "end_year": null,
+      "current": true,
+      "advisor": {
+        "name": "Moyses Nascimento",
+        "title_code": "professor"
+      },
+      "coadvisors": []
+    },
+    {
+      "id": "phd-genetics-breeding",
+      "degree_code": "doctorate",
+      "organization_id": "ufv",
+      "start_year": 2018,
+      "end_year": 2022,
+      "current": false,
+      "advisor": {
+        "name": "Cosme Damião Cruz",
+        "title_code": "professor"
+      },
+      "coadvisors": [
+        {
+          "name": "Moyses Nascimento",
+          "title_code": "professor"
+        }
+      ]
+    },
+    {
+      "id": "msc-genetics-breeding",
+      "degree_code": "masters",
+      "organization_id": "ufv",
+      "start_year": 2016,
+      "end_year": 2018,
+      "current": false,
+      "advisor": {
+        "name": "Aluízio Borém de Oliveira",
+        "title_code": "professor"
+      },
+      "coadvisors": [
+        {
+          "name": "Cosme Damião Cruz",
+          "title_code": "professor"
+        }
+      ]
+    },
+    {
+      "id": "bsc-agronomy",
+      "degree_code": "bachelors",
+      "organization_id": "ufv",
+      "start_year": 2010,
+      "end_year": 2015,
+      "current": false,
+      "advisor": {
+        "name": "Plínio César Soares",
+        "title_code": "professor"
+      },
+      "coadvisors": []
+    }
+  ]
 }
