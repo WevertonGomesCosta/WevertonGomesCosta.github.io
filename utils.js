@@ -29,6 +29,53 @@ const DateFormatter = {
     }
 };
 
+
+// =================================================================================
+// MÓDULO: Perfil Canônico Gerado
+// =================================================================================
+const SiteProfile = {
+    cached: undefined,
+
+    get() {
+        if (this.cached !== undefined) return this.cached;
+
+        const node = document.getElementById('site-profile-data');
+        if (!node) {
+            console.error('SiteProfile: projeção canônica #site-profile-data não encontrada.');
+            this.cached = null;
+            return null;
+        }
+
+        try {
+            const parsed = JSON.parse(node.textContent || '');
+            if (!parsed || typeof parsed !== 'object' || !parsed.person || !parsed.profiles) {
+                throw new Error('estrutura de perfil inválida');
+            }
+            this.cached = parsed;
+            return parsed;
+        } catch (error) {
+            console.error('SiteProfile: falha ao ler a projeção canônica.', error);
+            this.cached = null;
+            return null;
+        }
+    }
+};
+
+
+const SiteTranslations = {
+    resolve(rawCatalog) {
+        const profile = SiteProfile.get();
+        if (!profile) {
+            throw new Error('Perfil canônico indisponível para interpolar traduções.');
+        }
+        const interpolator = window.ProfileTranslationInterpolator;
+        if (!interpolator || typeof interpolator.interpolateCatalog !== 'function') {
+            throw new Error('Módulo de interpolação de perfil indisponível.');
+        }
+        return interpolator.interpolateCatalog(rawCatalog, profile);
+    }
+};
+
 // =================================================================================
 // Módulo: Configurações Gerais da Página
 // --- ALTERAÇÃO (Bug Fix 2: Data Privacidade) ---
@@ -330,7 +377,8 @@ const GithubReposModule = {
                       ? translations[currentLang] 
                       : {};
         
-        const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
+        const portfolioBaseUrl = SiteProfile.get()?.person?.website_url?.replace(/\/+$/, '') || '';
+        const siteUrl = repo.homepage || (repo.has_pages && portfolioBaseUrl ? `${portfolioBaseUrl}/${repo.name}/` : null);
     
         let actionsHtml = '';
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
@@ -511,8 +559,12 @@ const scholarScript = (function() {
         try {
             const response = await fetch('translations.json');
             if (!response.ok) throw new Error('HTTP');
-            window.translations = await response.json();
-        } catch (e) { window.translations = { pt: {}, en: {} }; }
+            const rawTranslations = await response.json();
+            window.translations = SiteTranslations.resolve(rawTranslations);
+        } catch (e) {
+            console.warn('Falha ao carregar/interpolar traduções acadêmicas.', e);
+            window.translations = { pt: {}, en: {} };
+        }
     }
 
     async function ensureAcademicRegistryLoaded() {
@@ -1402,6 +1454,16 @@ const CvPdfGenerator = {
         const lang = typeof currentLang !== 'undefined' ? currentLang : 'pt';
         const langContent = translations[lang] || translations['pt'];
         const pdfStrings = langContent.pdf || {};
+        const profile = SiteProfile.get();
+        const person = profile?.person || {};
+        const linkedinUrl = profile?.profiles?.linkedin?.url || '';
+        const linkedinLabel = linkedinUrl
+            .replace(/^https?:\/\/(?:www\.)?/, '')
+            .replace(/\/$/, '');
+        const location = person.location || {};
+        const profileLocation = [location.city, location.region, location.country_code]
+            .filter(Boolean)
+            .join(' - ');
         const toast = document.getElementById('toast-notification');
         const originalButtonHTML = clickedButton.innerHTML; 
 
@@ -1491,10 +1553,9 @@ const CvPdfGenerator = {
             const headerW = avatarDataUrl ? max_width - (avatarSize + xPadding) : max_width; 
             // --- FIM DA ALTERAÇÃO ---
 
-            // Pega o idioma atual (necessário para a correção do Location)
-            const lang = window.currentLang || 'pt';
+            // O idioma atual já foi resolvido no início de generateCvPdf().
 
-            doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
+            doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(person.name || document.getElementById('hero-name')?.textContent || '', headerX, y + 15, { maxWidth: headerW });
             
             // --- ALTERAÇÃO: Adicionando todos os subtítulos ---
             
@@ -1511,18 +1572,22 @@ const CvPdfGenerator = {
 
             // Posições 'y' ajustadas para os itens seguintes:
             doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-            doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 70); 
-            
-            doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 82); 
-            doc.setTextColor(40, 40, 255); 
-            try {
-                doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: 'https://linkedin.com/in/wevertoncosta' }); 
-            } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
-            doc.setTextColor(80); 
+            if (person.email) {
+                doc.text(`Email: ${person.email}`, headerX, y + 70);
+            }
+
+            if (linkedinLabel) {
+                doc.text(`LinkedIn: ${linkedinLabel}`, headerX, y + 82);
+                doc.setTextColor(40, 40, 255);
+                try {
+                    doc.textWithLink(linkedinLabel, headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: linkedinUrl });
+                } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
+                doc.setTextColor(80);
+            }
 
             // Correção do "Location" (como feito anteriormente)
             const locationLabel = (lang === 'pt') ? 'Localização:' : 'Location:';
-            doc.text(`${locationLabel} ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 94); 
+            doc.text(`${locationLabel} ${langContent['pdf-location'] || profileLocation}`, headerX, y + 94); 
 
             // --- ALTERAÇÃO: Ajusta o 'y' final para acomodar a imagem maior (avatarSize) e os subtítulos (25 pts) ---
             const finalYIncrement = avatarDataUrl ? avatarSize + 25 : 80 + 25; // Usa o avatarSize (100)
@@ -1649,144 +1714,204 @@ const CvPdfGenerator = {
             // --- FIM ALTERAÇÃO ---
 
             // --- FORMAÇÃO ACADÊMICA ---
-                addSectionTitle(pdfStrings['education-title'] || (langContent['education-title'] || 'FORMAÇÃO ACADÊMICA'));
+            addSectionTitle(pdfStrings['education-title'] || (langContent['education-title'] || 'FORMAÇÃO ACADÊMICA'));
 
-                // --- ALTERAÇÃO: Reestruturado para agrupar Pós-docs ---
-                const educationData = [
-                    // Doutorado em Estatística
-                    { type: 'entry', date: 'edu-date1', title: 'edu-title1', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor1', details: 'edu-desc1' },
-                    
-                    // GRUPO DE PÓS-DOUTORADOS
-                    {
-                        type: 'group',
-                        group_title: 'cv-edu-postdocs-title', // Chave "Pós-Doutorados"
-                        items: [
-                            // Pós-doc UFV — CNPq (2025)
-                            { date: 'edu-date-postdoc-cnpq-2025', title: 'edu-title-postdoc-cnpq-2025', institution: 'Universidade Federal de Viçosa (UFV) — CNPq', advisor: null, details: 'edu-desc-postdoc-cnpq-2025' },
-                            // Pós-doc UFV — FAPEMIG (2023–2025)
-                            { date: 'edu-date2', title: 'edu-title2', institution: 'Universidade Federal de Viçosa (UFV) — FAPEMIG', advisor: 'edu-advisor2', details: 'edu-desc2' },
-                            // Pós-doc UFV — CNPq (2022–2023)
-                            { date: 'edu-date3', title: 'edu-title3', institution: 'Universidade Federal de Viçosa (UFV) — CNPq', advisor: 'edu-advisor3', details: 'edu-desc3' },
-                            // Pós-doc Embrapa — CNPq (2022)
-                            { date: null, title: 'edu-title4', institution: 'EMBRAPA Mandioca e Fruticultura — CNPq', advisor: 'edu-advisor4', details: 'edu-desc4', year: '2022' }
-                        ]
-                    },
+            const organizations = profile?.organizations || {};
+            const educationById = new Map(
+                (profile?.education || []).map(item => [item.id, item])
+            );
+            const affiliationsById = new Map(
+                (profile?.affiliations || []).map(item => [item.id, item])
+            );
 
-                    // Doutorado em Genética
-                    { type: 'entry', date: null, title: 'edu-title5', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor5', details: 'edu-desc5', year: '2018 - 2022' },
-                    
-                    // Mestrado
-                    { type: 'entry', date: null, title: 'edu-title6', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor6', details: 'edu-desc6', year: '2016 - 2018' },
-                    
-                    // Graduação
-                    { type: 'entry', date: null, title: 'edu-title7', institution: 'Universidade Federal de Viçosa (UFV)', advisor: 'edu-advisor7', details: 'edu-desc7', year: '2010 - 2015' }
-                ];
-                
-                // Lista de chaves de TÍTULO a pular no CV Profissional
-                const pro_skip_keys = ['edu-title6', 'edu-title7'];
+            const requireAcademicFact = (collection, id) => {
+                const source = collection === 'education' ? educationById : affiliationsById;
+                const item = source.get(id);
+                if (!item) {
+                    throw new Error(`Fato acadêmico canônico ausente: ${collection}:${id}`);
+                }
+                return item;
+            };
 
-                educationData.forEach((item, index) => {
-                    
-                    // --- LÓGICA DE FILTRO CORRIGIDA ---
-                    // Se for 'pro' E o item for uma 'entry' E seu título estiver na lista de pular
-                    if (cvType === 'pro' && item.type === 'entry' && pro_skip_keys.includes(item.title)) {
-                        return; // Pula Mestrado e Graduação no CV Pro
+            const formatAcademicPeriod = (item) => {
+                const startYear = item.start_year;
+                const endYear = item.end_year;
+                if (item.current) {
+                    const present = langContent['edu-period-present'] || (lang === 'pt' ? 'Presente' : 'Present');
+                    return `${startYear} - ${present}`;
+                }
+                if (startYear === endYear) return String(startYear);
+                return `${startYear} - ${endYear}`;
+            };
+
+            const formatInstitution = (item) => {
+                const organization = organizations[item.organization_id];
+                if (!organization?.name) {
+                    throw new Error(`Organização canônica ausente: ${item.organization_id}`);
+                }
+                const funders = (item.funder_ids || []).map(funderId => {
+                    const funder = organizations[funderId];
+                    if (!funder?.short_name) {
+                        throw new Error(`Financiador canônico ausente: ${funderId}`);
                     }
+                    return funder.short_name;
+                });
+                return funders.length
+                    ? `${organization.name} — ${funders.join(' / ')}`
+                    : organization.name;
+            };
 
-                    checkPageBreak(60);
+            const formatMentorName = (mentor) => {
+                if (!mentor) return '';
+                const prefixKey = mentor.title_code === 'researcher'
+                    ? 'edu-mentor-title-researcher'
+                    : 'edu-mentor-title-professor';
+                const prefix = langContent[prefixKey] || '';
+                return `${prefix} ${mentor.name}`.trim();
+            };
 
-                    // --- LÓGICA DE RENDERIZAÇÃO CORRIGIDA ---
-                    
-                    if (item.type === 'group') {
-                        // --- INÍCIO DO BLOCO DE GRUPO (Pós-Doutorados) ---
-                        
-                        // 1. Renderiza o Título Principal do Grupo (ex: "Pós-Doutorados")
-                        const groupTitle = langContent[item.group_title] || 'Pós-Doutorados';
-                        doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(groupTitle, margin, y);
-                        y += 12; // Espaçamento após o título do grupo
+            const formatAcademicMentors = (item) => {
+                const parts = [];
+                if (item.advisor) {
+                    const label = langContent['edu-advisor-label'] || (lang === 'pt' ? 'Orientador:' : 'Advisor:');
+                    parts.push(`${label} ${formatMentorName(item.advisor)}.`);
+                }
+                if (item.coadvisors?.length) {
+                    const label = langContent['edu-coadvisor-label'] || (lang === 'pt' ? 'Coorientador:' : 'Co-advisor:');
+                    const names = item.coadvisors.map(formatMentorName).join(', ');
+                    parts.push(`${label} ${names}.`);
+                }
+                return parts.join(' ');
+            };
 
-                        // 2. Itera sobre os sub-itens (UFV e Embrapa)
-                        item.items.forEach(subItem => {
-                            checkPageBreak(60);
-                            
-                            // Puxa os dados do sub-item
-                            const date = subItem.year ? subItem.year : (langContent[subItem.date] || 'Date');
-                            const institution = subItem.institution;
-                            const advisorHTML = langContent[subItem.advisor] || '';
-                            const details = langContent[subItem.details] || '';
+            const educationData = [
+                {
+                    type: 'entry',
+                    fact: requireAcademicFact('education', 'phd-applied-statistics-biometrics'),
+                    title: 'edu-title1',
+                    details: 'edu-desc1'
+                },
+                {
+                    type: 'group',
+                    group_title: 'cv-edu-postdocs-title',
+                    items: [
+                        {
+                            fact: requireAcademicFact('affiliations', 'postdoc-ufv-cnpq-2025'),
+                            details: 'edu-desc-postdoc-cnpq-2025'
+                        },
+                        {
+                            fact: requireAcademicFact('affiliations', 'postdoc-ufv-fapemig-2023-2025'),
+                            details: 'edu-desc2'
+                        },
+                        {
+                            fact: requireAcademicFact('affiliations', 'postdoc-ufv-cnpq-2022-2023'),
+                            details: 'edu-desc3'
+                        },
+                        {
+                            fact: requireAcademicFact('affiliations', 'postdoc-embrapa-cnpq-2022'),
+                            details: 'edu-desc4'
+                        }
+                    ]
+                },
+                {
+                    type: 'entry',
+                    fact: requireAcademicFact('education', 'phd-genetics-breeding'),
+                    title: 'edu-title5',
+                    details: 'edu-desc5'
+                },
+                {
+                    type: 'entry',
+                    fact: requireAcademicFact('education', 'msc-genetics-breeding'),
+                    title: 'edu-title6',
+                    details: 'edu-desc6'
+                },
+                {
+                    type: 'entry',
+                    fact: requireAcademicFact('education', 'bsc-agronomy'),
+                    title: 'edu-title7',
+                    details: 'edu-desc7'
+                }
+            ];
 
-                            // Renderiza Instituição e Data (sem título principal, como pedido)
-                            doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
-                            doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
-                            y += 12;
+            const professionalCvSkipIds = new Set([
+                'msc-genetics-breeding',
+                'bsc-agronomy'
+            ]);
 
-                            // Renderiza Advisor (com tradução correta)
-                            if (advisorHTML) {
-                                const cleanedAdvisor = this.stripHtml(advisorHTML);
-                                let translatedAdvisor = cleanedAdvisor;
-                                if (lang === 'pt') {
-                                    translatedAdvisor = cleanedAdvisor.replace('Advisor:', 'Orientador:').replace('Co-advisor:', 'Coorientador:');
-                                } else {
-                                    translatedAdvisor = cleanedAdvisor.replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
-                                }
-                                const advisorLines = doc.splitTextToSize(translatedAdvisor, max_width);
-                                doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100);
-                                doc.text(advisorLines, margin, y);
-                                y += advisorLines.length * 10 + 3;
-                            }
-                            
-                            // Renderiza Detalhes (Sempre, para Pós-docs)
-                            if (details) {
-                                addJustifiedText(details, { fontSize: 8, width: max_width });
-                            }
-                            y += item_gap; // Gap entre os Pós-docs
-                        });
-                        // --- FIM DO BLOCO DE GRUPO ---
+            educationData.forEach(item => {
+                if (
+                    cvType === 'pro'
+                    && item.type === 'entry'
+                    && professionalCvSkipIds.has(item.fact.id)
+                ) {
+                    return;
+                }
 
-                    } else if (item.type === 'entry') {
-                        // --- INÍCIO DO BLOCO NORMAL (PhD, MSc, BSc) ---
-                        const title = langContent[item.title] || 'Title';
-                        const date = item.year ? item.year : (langContent[item.date] || 'Date');
-                        const institution = item.institution;
-                        const advisorHTML = langContent[item.advisor] || '';
-                        const details = langContent[item.details] || '';
+                checkPageBreak(60);
 
-                        // Renderiza Título e Data
-                        doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
+                if (item.type === 'group') {
+                    const groupTitle = langContent[item.group_title] || 'Pós-Doutorados';
+                    doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(groupTitle, margin, y);
+                    y += 12;
+
+                    item.items.forEach(subItem => {
+                        checkPageBreak(60);
+
+                        const date = formatAcademicPeriod(subItem.fact);
+                        const institution = formatInstitution(subItem.fact);
+                        const advisorText = formatAcademicMentors(subItem.fact);
+                        const details = langContent[subItem.details] || '';
+
+                        doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
                         doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
                         y += 12;
 
-                        // Renderiza Instituição
-                        doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
-                        y += 12;
-
-                        // Renderiza Advisor (com tradução correta)
-                        if (advisorHTML) {
-                            const cleanedAdvisor = this.stripHtml(advisorHTML);
-                            let translatedAdvisor = cleanedAdvisor;
-                            if (lang === 'pt') {
-                                translatedAdvisor = cleanedAdvisor.replace('Advisor:', 'Orientador:').replace('Co-advisor:', 'Coorientador:');
-                            } else {
-                                translatedAdvisor = cleanedAdvisor.replace('Orientador:', 'Advisor:').replace('Coorientador:', 'Co-advisor:');
-                            }
-                            const advisorLines = doc.splitTextToSize(translatedAdvisor, max_width);
+                        if (advisorText) {
+                            const advisorLines = doc.splitTextToSize(advisorText, max_width);
                             doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100);
                             doc.text(advisorLines, margin, y);
                             y += advisorLines.length * 10 + 3;
                         }
-                        
-                        // LÓGICA DE DETALHES CORRIGIDA
-                        // Mostra detalhes se:
-                        // 1. For CV Acadêmico
-                        // 2. Ou for CV Profissional E NÃO estiver na lista de pular (ou seja, mostra para PhDs)
-                        if (details && (cvType !== 'pro' || !pro_skip_keys.includes(item.title))) {
+
+                        if (details) {
                             addJustifiedText(details, { fontSize: 8, width: max_width });
                         }
+                        y += item_gap;
+                    });
+                } else {
+                    const title = langContent[item.title] || 'Title';
+                    const date = formatAcademicPeriod(item.fact);
+                    const institution = formatInstitution(item.fact);
+                    const advisorText = formatAcademicMentors(item.fact);
+                    const details = langContent[item.details] || '';
 
-                        y += item_gap; // Gap entre as entradas principais
-                        // --- FIM DO BLOCO NORMAL ---
+                    doc.setFontSize(10).setFont('helvetica', 'bold').setTextColor(40).text(title, margin, y);
+                    doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(100).text(date, page_width - margin, y, { align: 'right' });
+                    y += 12;
+
+                    doc.setFontSize(9).setFont('helvetica', 'italic').setTextColor(80).text(institution, margin, y);
+                    y += 12;
+
+                    if (advisorText) {
+                        const advisorLines = doc.splitTextToSize(advisorText, max_width);
+                        doc.setFontSize(8).setFont('helvetica', 'normal').setTextColor(100);
+                        doc.text(advisorLines, margin, y);
+                        y += advisorLines.length * 10 + 3;
                     }
-                });
+
+                    if (
+                        details
+                        && (
+                            cvType !== 'pro'
+                            || !professionalCvSkipIds.has(item.fact.id)
+                        )
+                    ) {
+                        addJustifiedText(details, { fontSize: 8, width: max_width });
+                    }
+
+                    y += item_gap;
+                }
+            });
              // --- FIM ALTERAÇÃO ---
 
             // --- PROJETOS ---
@@ -1892,7 +2017,12 @@ const CvPdfGenerator = {
             } else { 
                 fileNameKey = 'cv-file-name-academic';
             }
-            const fileName = langContent[fileNameKey] || `CV-Weverton_Gomes_da_Costa_${cvType}_${lang}.pdf`; 
+            const profileFileStem = (person.name || 'CV')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^A-Za-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            const fileName = langContent[fileNameKey] || `CV-${profileFileStem}_${cvType}_${lang}.pdf`; 
 
             doc.save(fileName);
 
@@ -1921,7 +2051,11 @@ const CvPdfGenerator = {
 // =================================================================================
 const ClipboardCopier = {
     init() {
-        const emailToCopy = 'wevertonufv@gmail.com';
+        const emailToCopy = SiteProfile.get()?.person?.email;
+        if (!emailToCopy) {
+            console.error('ClipboardCopier: e-mail canônico indisponível.');
+            return;
+        }
 
         const copyTriggers = [
             document.getElementById('copy-email-link'),
@@ -2003,9 +2137,10 @@ const LanguageManager = {
             document.querySelector('[id$="-chart"]')
         );
 
-        const translationsRequest = fetch('translations.json').then(response => {
+        const translationsRequest = fetch('translations.json').then(async response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
-            return response.json();
+            const rawTranslations = await response.json();
+            return SiteTranslations.resolve(rawTranslations);
         });
 
         const fallbackRequest = needsFallbackData

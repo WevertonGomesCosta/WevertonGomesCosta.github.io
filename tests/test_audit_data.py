@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 import sys
 import tempfile
@@ -10,6 +11,54 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from repository_audit import data_rules
 
 
+def valid_profile():
+    return {
+        "schema_version": "1.0.0",
+        "person": {
+            "name": "Example Person",
+            "display_name": "Example P.",
+            "email": "person@example.org",
+            "website_url": "https://example.org/",
+            "avatar_url": "https://example.org/avatar.png",
+            "location": {
+                "city": "Viçosa",
+                "region": "MG",
+                "country_code": "BR",
+            },
+        },
+        "profiles": {
+            "github": {
+                "username": "example",
+                "url": "https://github.com/example",
+            },
+            "linkedin": {"url": "https://www.linkedin.com/in/example/"},
+            "lattes": {
+                "id": "1234567890123456",
+                "url": "https://lattes.cnpq.br/1234567890123456",
+            },
+            "google_scholar": {
+                "author_id": "ScholarId",
+                "url": "https://scholar.google.com/citations?user=ScholarId",
+            },
+            "orcid": {
+                "id": "0000-0002-1825-0097",
+                "url": "https://orcid.org/0000-0002-1825-0097",
+            },
+            "scopus": {
+                "author_id": "1234567890",
+                "url": "https://www.scopus.com/authid/detail.uri?authorId=1234567890",
+            },
+            "web_of_science": {
+                "researcher_id": "ABC-1234-2026",
+                "url": "https://www.webofscience.com/wos/author/record/ABC-1234-2026",
+            },
+        },
+        "organizations": {},
+        "affiliations": [],
+        "education": [],
+    }
+
+
 class RepoFixture:
     REQUIRED = (
         "index.html",
@@ -19,7 +68,9 @@ class RepoFixture:
         "404.html",
         "style.css",
         "utils.js",
+        "profile-interpolation.js",
         "translations.json",
+        "profile.json",
         "academic-registry.json",
         "fallback-data.json",
         "robots.txt",
@@ -43,6 +94,8 @@ class RepoFixture:
                         json.dumps(translations or {"pt": {}, "en": {}}),
                         encoding="utf-8",
                     )
+            elif name == "profile.json":
+                path.write_text(json.dumps(valid_profile()), encoding="utf-8")
             elif name.endswith(".json"):
                 path.write_text("{}", encoding="utf-8")
             else:
@@ -89,6 +142,292 @@ class TestRepositoryDataRules(unittest.TestCase):
             [v for v in violations if v.rule_id in dependent],
             violations,
         )
+
+
+
+
+class TestProfileFactTranslationContract(unittest.TestCase):
+    def _audit(self, translations):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root, translations=translations)
+        return data_rules.audit_repository_data(root)
+
+    def test_unknown_profile_placeholder_is_rejected(self):
+        violations = self._audit({
+            "pt": {"custom": "{profile_unknown}"},
+            "en": {"custom": "{profile_unknown}"},
+        })
+        matches = [v for v in violations if v.rule_id == "PROFILE_FACT_CONTRACT"]
+        self.assertEqual(len(matches), 2)
+
+    def test_literal_profile_fact_is_rejected(self):
+        violations = self._audit({
+            "pt": {"custom": "Example Person"},
+            "en": {"custom": "Example Person"},
+        })
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_FACT_CONTRACT"
+            and ":literal:" in v.subject
+        ]
+        self.assertEqual(len(matches), 2)
+
+    def test_required_profile_placeholder_is_enforced(self):
+        violations = self._audit({
+            "pt": {"privacy-contact-p": "Contato"},
+            "en": {"privacy-contact-p": "Contact"},
+        })
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_FACT_CONTRACT"
+            and v.subject.endswith(":required")
+        ]
+        self.assertEqual(len(matches), 2)
+
+
+class TestProfilePlaceholderRegistryParity(unittest.TestCase):
+    def test_python_and_javascript_placeholder_registries_match(self):
+        source = (ROOT / "profile-interpolation.js").read_text(encoding="utf-8")
+        match = re.search(
+            r"const PLACEHOLDER_NAMES = Object\.freeze\(\[(.*?)\]\);",
+            source,
+            flags=re.S,
+        )
+        self.assertIsNotNone(match)
+        javascript = frozenset(
+            re.findall(r"'(profile_[a-z0-9_]+)'", match.group(1))
+        )
+        self.assertEqual(javascript, data_rules.PROFILE_FACT_PLACEHOLDERS)
+
+
+class TestProfileRules(unittest.TestCase):
+    def _audit(self, profile):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root)
+        (root / "profile.json").write_text(
+            json.dumps(profile), encoding="utf-8"
+        )
+        return data_rules.audit_repository_data(root)
+
+    def test_valid_profile_contract_is_clean(self):
+        violations = self._audit(valid_profile())
+        self.assertFalse(
+            [v for v in violations if v.rule_id == "PROFILE_STRUCTURE"],
+            violations,
+        )
+
+    def test_profile_required_shape_is_enforced(self):
+        profile = valid_profile()
+        del profile["person"]["location"]
+        profile["unexpected"] = True
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:top-level", subjects)
+        self.assertIn("profile:person", subjects)
+
+    def test_profile_identity_formats_and_html_are_rejected(self):
+        profile = valid_profile()
+        profile["person"]["email"] = "invalid"
+        profile["person"]["display_name"] = "<strong>Person</strong>"
+        profile["profiles"]["orcid"]["id"] = "bad-orcid"
+        profile["profiles"]["linkedin"]["url"] = "http://example.org/profile"
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:person.email", subjects)
+        self.assertIn("profile:profiles.orcid.id", subjects)
+        self.assertIn("profile:profiles.linkedin.url", subjects)
+        self.assertIn("profile:string:person.display_name", subjects)
+
+    def test_profile_duplicate_external_urls_are_rejected(self):
+        profile = valid_profile()
+        profile["profiles"]["linkedin"]["url"] = profile["profiles"]["github"]["url"]
+        violations = self._audit(profile)
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+            and v.subject.startswith("profile:profiles.url:")
+        ]
+        self.assertEqual(len(matches), 1)
+
+    def test_academic_relation_references_and_periods_are_validated(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            },
+            "cnpq": {
+                "name": "Conselho Nacional de Desenvolvimento Científico e Tecnológico",
+                "short_name": "CNPq",
+                "url": None,
+            },
+        }
+        profile["affiliations"] = [
+            {
+                "id": "postdoc-ufv",
+                "organization_id": "ufv",
+                "role_codes": ["postdoctoral_researcher"],
+                "start_year": 2025,
+                "end_year": 2025,
+                "current": False,
+                "funder_ids": ["cnpq"],
+                "advisor": {
+                    "name": "Example Advisor",
+                    "title_code": "professor",
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "phd-example",
+                "degree_code": "doctorate",
+                "organization_id": "ufv",
+                "start_year": 2023,
+                "end_year": None,
+                "current": True,
+                "advisor": {
+                    "name": "Example Advisor",
+                    "title_code": "professor",
+                },
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        self.assertFalse(
+            [v for v in violations if v.rule_id == "PROFILE_STRUCTURE"],
+            violations,
+        )
+
+        profile["affiliations"][0]["organization_id"] = "missing"
+        profile["affiliations"][0]["funder_ids"] = ["missing-funder"]
+        profile["education"][0]["end_year"] = 2022
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:affiliations[0].organization_id", subjects)
+        self.assertIn("profile:affiliations[0].funder_ids", subjects)
+        self.assertIn("profile:education[0].end_year", subjects)
+
+    def test_academic_relation_validator_handles_malformed_list_items(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "Bad Org": {
+                "name": "Bad",
+                "short_name": "Bad",
+                "url": None,
+            },
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            },
+        }
+        profile["affiliations"] = [
+            {
+                "id": "bad-affiliation",
+                "organization_id": "ufv",
+                "role_codes": [{"bad": True}],
+                "start_year": 2025,
+                "end_year": 2025,
+                "current": False,
+                "funder_ids": [{"bad": True}],
+                "advisor": {
+                    "name": "Advisor",
+                    "title_code": {"bad": True},
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "bad-education",
+                "degree_code": {"bad": True},
+                "organization_id": "ufv",
+                "start_year": 2023,
+                "end_year": None,
+                "current": True,
+                "advisor": None,
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:organizations.Bad Org", subjects)
+        self.assertIn("profile:affiliations[0].role_codes", subjects)
+        self.assertIn("profile:affiliations[0].funder_ids", subjects)
+        self.assertIn("profile:affiliations[0].advisor.title_code", subjects)
+        self.assertIn("profile:education[0].degree_code", subjects)
+
+    def test_academic_record_ids_roles_and_mentors_are_validated(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            }
+        }
+        profile["affiliations"] = [
+            {
+                "id": "same-id",
+                "organization_id": "ufv",
+                "role_codes": ["unknown-role"],
+                "start_year": 2025,
+                "end_year": None,
+                "current": False,
+                "funder_ids": [],
+                "advisor": {
+                    "name": "Advisor",
+                    "title_code": "unknown-title",
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "same-id",
+                "degree_code": "unknown-degree",
+                "organization_id": "ufv",
+                "start_year": 2026,
+                "end_year": 2025,
+                "current": False,
+                "advisor": None,
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:affiliations[0].role_codes", subjects)
+        self.assertIn("profile:affiliations[0].advisor.title_code", subjects)
+        self.assertIn("profile:affiliations[0].end_year", subjects)
+        self.assertIn("profile:education[0].id", subjects)
+        self.assertIn("profile:education[0].degree_code", subjects)
+        self.assertIn("profile:education[0].end_year", subjects)
 
 
 class TestTranslationRules(unittest.TestCase):

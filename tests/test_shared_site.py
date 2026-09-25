@@ -2,6 +2,7 @@ from pathlib import Path
 import contextlib
 import io
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -34,6 +35,67 @@ class FixtureMixin:
         components = root / "_site_components"
         components.mkdir()
 
+        profile = {
+            "schema_version": "1.0.0",
+            "person": {
+                "name": "Example Person",
+                "display_name": "Example P.",
+                "email": "person@example.org",
+                "website_url": "https://example.org/",
+                "avatar_url": "https://example.org/avatar.png",
+                "location": {
+                    "city": "Viçosa",
+                    "region": "MG",
+                    "country_code": "BR",
+                },
+            },
+            "profiles": {
+                "github": {
+                    "username": "example",
+                    "url": "https://github.com/example",
+                },
+                "linkedin": {"url": "https://www.linkedin.com/in/example/"},
+                "lattes": {
+                    "id": "1234567890123456",
+                    "url": "https://lattes.cnpq.br/1234567890123456",
+                },
+                "google_scholar": {
+                    "author_id": "ScholarId",
+                    "url": "https://scholar.google.com/citations?user=ScholarId",
+                },
+                "orcid": {
+                    "id": "0000-0002-1825-0097",
+                    "url": "https://orcid.org/0000-0002-1825-0097",
+                },
+                "scopus": {
+                    "author_id": "1234567890",
+                    "url": "https://www.scopus.com/authid/detail.uri?authorId=1234567890",
+                },
+                "web_of_science": {
+                    "researcher_id": "ABC-1234-2026",
+                    "url": "https://www.webofscience.com/wos/author/record/ABC-1234-2026",
+                },
+            },
+            "organizations": {
+                "ufv": {
+                    "name": "Universidade Federal de Viçosa (UFV)",
+                    "short_name": "UFV",
+                    "url": None,
+                },
+                "conecta-gem": {
+                    "name": "Conecta GEM",
+                    "short_name": "Conecta GEM",
+                    "url": "https://example.org/conecta",
+                },
+            },
+            "affiliations": [],
+            "education": [],
+        }
+        write_bytes(
+            root / "profile.json",
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        )
+
         write_bytes(
             components / "language-switcher.html",
             '<button class="lang-switcher@@EXTRA_CLASSES@@">\n'
@@ -44,6 +106,7 @@ class FixtureMixin:
         write_bytes(
             components / "nav-home.html",
             '<nav>\n'
+            '    <img src="@@PROFILE_AVATAR_URL@@" alt="">\n'
             '    <div class="home">Home</div>\n'
             '    @@LANGUAGE_SWITCHER@@\n'
             '</nav>\n',
@@ -51,6 +114,8 @@ class FixtureMixin:
         write_bytes(
             components / "nav-inner.html",
             '<nav>\n'
+            '    <img src="@@PROFILE_AVATAR_URL@@" alt="">\n'
+            '    <span>@@PROFILE_DISPLAY_NAME@@</span>\n'
             '    <h1 class="nav-title" data-key="@@NAV_TITLE_KEY@@">'
             '@@NAV_TITLE_TEXT@@</h1>\n'
             '    @@LANGUAGE_SWITCHER@@\n'
@@ -64,12 +129,33 @@ class FixtureMixin:
         write_bytes(
             components / "footer.html",
             '<footer>\n'
+            '    <h4>@@PROFILE_DISPLAY_NAME@@</h4>\n'
             '    <p>@@PRIVACY_SEGMENT@@<a href="license">License</a></p>\n'
+            '    <p>@@PROFILE_PERSON_NAME@@ | @@PROFILE_EMAIL@@</p>\n'
+            '    <a href="@@PROFILE_GITHUB_URL@@">GitHub</a>\n'
+            '    <a href="@@PROFILE_LINKEDIN_URL@@">LinkedIn</a>\n'
+            '    <a href="@@PROFILE_LATTES_URL@@">Lattes</a>\n'
+            '    <a href="@@PROFILE_SCHOLAR_URL@@">Scholar</a>\n'
+            '    <a href="@@PROFILE_ORCID_URL@@">ORCID</a>\n'
+            '    <a href="@@PROFILE_SCOPUS_URL@@">Scopus</a>\n'
+            '    <a href="@@PROFILE_WOS_URL@@">WoS</a>\n'
+            '    <a href="@@PROFILE_CONECTA_URL@@">@@PROFILE_CONECTA_NAME@@</a>\n'
             '</footer>\n',
         )
         write_bytes(
             components / "back-to-top.html",
             '<a href="#" class="back-to-top">↑</a>\n',
+        )
+        write_bytes(
+            components / "profile-data.html",
+            '<script id="site-profile-data" type="application/json">'
+            '@@PROFILE_JSON@@</script>\n',
+        )
+        write_bytes(
+            components / "profile-jsonld.html",
+            '<script type="application/ld+json">\n'
+            '@@PROFILE_JSONLD@@\n'
+            '</script>\n',
         )
 
         def page(regions: tuple[str, ...]) -> str:
@@ -86,17 +172,27 @@ class FixtureMixin:
             return "\n".join(body)
 
         configs = {
-            "index.html": ("fixed-language", "back-to-top", "nav", "footer"),
-            "publicacoes.html": ("back-to-top", "nav", "footer"),
-            "projetos.html": ("back-to-top", "nav", "footer"),
-            "politica-de-privacidade.html": ("back-to-top", "nav", "footer"),
+            "index.html": (
+                "profile-jsonld", "fixed-language", "back-to-top",
+                "nav", "footer", "profile-data",
+            ),
+            "publicacoes.html": ("back-to-top", "nav", "footer", "profile-data"),
+            "projetos.html": ("back-to-top", "nav", "footer", "profile-data"),
+            "politica-de-privacidade.html": (
+                "back-to-top", "nav", "footer", "profile-data",
+            ),
         }
         for name, regions in configs.items():
             source = page(regions)
             if name == "index.html":
                 source = source.replace("\n", "\r\n")
             write_bytes(root / name, source)
-        write_bytes(root / "404.html", "<html><body>404</body></html>\n")
+        write_bytes(
+            root / "404.html",
+            '<html><head><title data-profile-text="person.name" '
+            'data-profile-text-template="Not Found | {value}">'
+            'Not Found | Example Person</title></head><body>404</body></html>\n',
+        )
         return root
 
 
@@ -144,6 +240,7 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
         components = (
             "back-to-top.html", "language-switcher.html", "nav-home.html",
             "nav-inner.html", "footer.html", "footer-privacy-segment.html",
+            "profile-data.html", "profile-jsonld.html",
         )
         for name in components:
             for liquid in ("{{ site.title }}", "{% include header.html %}"):
@@ -200,6 +297,106 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
                     {path: path.read_bytes() for path in root.rglob("*.html")},
                     before,
                 )
+
+    def test_profile_binding_projects_attributes_and_plain_text(self):
+        root = self.make_complete_fixture()
+        profile = shared.load_profile(root)
+        source = (
+            '<meta content="stale" data-profile-content="person.name">\n'
+            '<a href="stale" data-profile-href="profiles.github.url">GitHub</a>\n'
+            '<h1 data-profile-text="person.name">Stale</h1>\n'
+        )
+        rendered = shared.project_profile_bindings(
+            source, profile, root / "index.html"
+        )
+        self.assertIn('content="Example Person"', rendered)
+        self.assertIn('href="https://github.com/example"', rendered)
+        self.assertIn('>Example Person</h1>', rendered)
+
+    def test_profile_text_template_preserves_editorial_prefix(self):
+        root = self.make_complete_fixture()
+        profile = shared.load_profile(root)
+        source = (
+            '<title data-profile-text="person.name" '
+            'data-profile-text-template="Not Found | {value}">'
+            'stale</title>\n'
+        )
+        rendered = shared.project_profile_bindings(
+            source, profile, root / "404.html"
+        )
+        self.assertIn(">Not Found | Example Person</title>", rendered)
+
+        with self.assertRaises(shared.RenderContractError):
+            shared.project_profile_bindings(
+                '<title data-profile-text="person.name" '
+                'data-profile-text-template="No placeholder">stale</title>\n',
+                profile,
+                root / "404.html",
+            )
+
+    def test_profile_binding_rejects_unknown_key_and_nested_text(self):
+        root = self.make_complete_fixture()
+        profile = shared.load_profile(root)
+        with self.assertRaises(shared.RenderContractError):
+            shared.project_profile_bindings(
+                '<meta content="x" data-profile-content="person.missing">\n',
+                profile,
+                root / "index.html",
+            )
+        with self.assertRaises(shared.RenderContractError):
+            shared.project_profile_bindings(
+                '<h1 data-profile-text="person.name"><span>x</span></h1>\n',
+                profile,
+                root / "index.html",
+            )
+
+    def test_organization_identity_flows_into_jsonld_and_footer(self):
+        root = self.make_complete_fixture()
+        profile_path = root / "profile.json"
+        profile = json.loads(profile_path.read_text(encoding="utf-8"))
+        profile["organizations"]["ufv"]["name"] = "Canonical University"
+        profile["organizations"]["conecta-gem"]["name"] = "Canonical Company"
+        profile["organizations"]["conecta-gem"]["url"] = "https://example.org/company"
+        write_bytes(
+            profile_path,
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        )
+
+        index = shared.render_all(root)[root / "index.html"]
+        self.assertIn('"name": "Canonical University"', index)
+        self.assertIn('"name": "Canonical Company"', index)
+        self.assertIn('href="https://example.org/company"', index)
+
+    def test_profile_json_serialization_escapes_script_breakers(self):
+        value = shared.serialize_json_for_html(
+            {"value": "</script>&\u2028"},
+        )
+        self.assertNotIn("</script>", value)
+        self.assertIn("\\u003c/script\\u003e", value)
+        self.assertIn("\\u0026", value)
+        self.assertIn("\\u2028", value)
+
+    def test_missing_profile_is_fatal(self):
+        root = self.make_complete_fixture()
+        (root / "profile.json").unlink()
+        with self.assertRaises(shared.RenderContractError):
+            shared.render_all(root)
+
+    def test_runtime_profile_projection_is_identical_on_all_pages(self):
+        root = self.make_complete_fixture()
+        rendered = shared.render_all(root)
+        payloads = []
+        for name in PAGES:
+            source = rendered[root / name]
+            match = re.search(
+                r'<script id="site-profile-data" type="application/json">'
+                r'(.*?)</script>',
+                source,
+            )
+            self.assertIsNotNone(match, name)
+            payloads.append(match.group(1))
+        self.assertEqual(len(set(payloads)), 1)
+        self.assertEqual(json.loads(payloads[0])["person"]["email"], "person@example.org")
 
     def test_render_template_indents_multiline_block_token(self):
         template = "<nav>\n    @@LANGUAGE_SWITCHER@@\n</nav>\n"
@@ -376,13 +573,24 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
             shared.write_all(root)
         self.assertEqual(page_a.read_bytes(), before)
 
-    def test_404_is_not_a_target_and_is_unchanged(self):
+    def test_404_is_profile_only_target(self):
         root = self.make_complete_fixture()
-        target = root / "404.html"
-        before = target.read_bytes()
         self.assertNotIn("404.html", {config.path for config in shared.PAGE_CONFIGS})
+        self.assertIn("404.html", shared.PROFILE_ONLY_PAGES)
+
+        profile_path = root / "profile.json"
+        profile = json.loads(profile_path.read_text(encoding="utf-8"))
+        profile["person"]["name"] = "Updated Person"
+        write_bytes(
+            profile_path,
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        )
+
+        target = root / "404.html"
+        rendered = shared.render_all(root)[target]
+        self.assertIn(">Not Found | Updated Person</title>", rendered)
         shared.write_all(root)
-        self.assertEqual(target.read_bytes(), before)
+        self.assertEqual(target.read_text(encoding="utf-8"), rendered)
 
 
 class TestProductionSemanticControls(unittest.TestCase):
@@ -482,6 +690,87 @@ class TestProductionSemanticControls(unittest.TestCase):
 
     def test_production_pages_are_renderer_synchronized(self):
         self.assertEqual(shared.check_all(ROOT), ())
+
+    def test_shared_components_do_not_hardcode_canonical_identity(self):
+        profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        components = (
+            ROOT / "_site_components" / "footer.html",
+            ROOT / "_site_components" / "nav-home.html",
+            ROOT / "_site_components" / "nav-inner.html",
+        )
+        protected = {
+            profile["person"]["name"],
+            profile["person"]["display_name"],
+            profile["person"]["email"],
+            profile["person"]["website_url"],
+            profile["organizations"]["conecta-gem"]["name"],
+        }
+        for component in components:
+            source = component.read_text(encoding="utf-8")
+            with self.subTest(component=component.name):
+                self.assertFalse(
+                    {value for value in protected if value in source},
+                    "shared component contains canonical profile literal",
+                )
+
+    def test_runtime_identity_constants_are_not_hardcoded_in_utils(self):
+        profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        source = (ROOT / "utils.js").read_text(encoding="utf-8")
+        protected = {
+            profile["person"]["name"],
+            profile["person"]["email"],
+            profile["person"]["website_url"],
+            profile["profiles"]["linkedin"]["url"],
+            profile["profiles"]["github"]["url"],
+        }
+        self.assertFalse(
+            {value for value in protected if value in source},
+            "runtime JavaScript contains canonical profile literals",
+        )
+
+    def test_cv_academic_facts_are_not_hardcoded_in_utils(self):
+        profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        source = (ROOT / "utils.js").read_text(encoding="utf-8")
+        protected = {
+            organization["name"]
+            for organization in profile["organizations"].values()
+            if organization["name"] not in {"Conecta GEM"}
+        }
+        for collection in ("education", "affiliations"):
+            for item in profile[collection]:
+                if item["advisor"]:
+                    protected.add(item["advisor"]["name"])
+                protected.update(
+                    mentor["name"] for mentor in item["coadvisors"]
+                )
+        self.assertFalse(
+            {value for value in protected if value in source},
+            "CV runtime contains canonical academic literals",
+        )
+
+    def test_profile_interpolation_loads_before_utils_on_all_pages(self):
+        for name in PAGES:
+            source = (ROOT / name).read_text(encoding="utf-8")
+            with self.subTest(name=name):
+                self.assertEqual(source.count('src="profile-interpolation.js"'), 1)
+                self.assertEqual(source.count('src="utils.js"'), 1)
+                self.assertLess(
+                    source.index('src="profile-interpolation.js"'),
+                    source.index('src="utils.js"'),
+                )
+
+    def test_production_pages_embed_one_runtime_profile_projection(self):
+        expected = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        for name in PAGES:
+            source = (ROOT / name).read_text(encoding="utf-8")
+            matches = re.findall(
+                r'<script id="site-profile-data" type="application/json">'
+                r'(.*?)</script>',
+                source,
+            )
+            with self.subTest(name=name):
+                self.assertEqual(len(matches), 1)
+                self.assertEqual(json.loads(matches[0]), expected)
 
 
 

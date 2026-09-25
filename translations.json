@@ -1,16 +1,16 @@
 {
   "pt": {
-    "page-title": "Weverton G. Costa | Pesquisador | Cientista de Dados | Doutorando em Estatística",
-    "projects-page-title": "Projetos | Weverton Gomes da Costa",
-    "publications-page-title": "Publicações | Weverton Gomes da Costa",
-    "privacy-page-title": "Política de Privacidade | Weverton Gomes da Costa",
-    "meta-description": "Doutor em Genética e Melhoramento, cientista de dados e doutorando em Estatística Aplicada e Biometria na UFV, com atuação em biometria, genética quantitativa, seleção genômica e machine learning.",
-    "projects-meta-description": "Explore os projetos de Data Science, IA e Genética de Weverton Gomes da Costa, focados em Machine Learning e Genética Quantitativa.",
-    "publications-meta-description": "Explore as publicações científicas e métricas bibliométricas de Weverton Gomes da Costa, com foco em genética, biometria e machine learning.",
-    "privacy-meta-description": "Política de Privacidade do portfólio de Weverton Gomes da Costa, com informações sobre formulário de contato, tratamento de dados e serviços de terceiros.",
-    "meta-keywords": "CEO, PhD, Cientista de Dados, Data Science, IA, Inteligência Artificial, Machine Learning, Genética Quantitativa, Seleção Genômica, Biometria, Python, R, Conecta GEM, Deep Learning, Estatística, UFV",
+    "page-title": "{profile_display_name} | Pesquisador | Cientista de Dados | Doutorando em Estatística",
+    "projects-page-title": "Projetos | {profile_person_name}",
+    "publications-page-title": "Publicações | {profile_person_name}",
+    "privacy-page-title": "Política de Privacidade | {profile_person_name}",
+    "meta-description": "Doutor em Genética e Melhoramento, cientista de dados e doutorando em Estatística Aplicada e Biometria na {profile_org_ufv_short}, com atuação em biometria, genética quantitativa, seleção genômica e machine learning.",
+    "projects-meta-description": "Explore os projetos de Data Science, IA e Genética de {profile_person_name}, focados em Machine Learning e Genética Quantitativa.",
+    "publications-meta-description": "Explore as publicações científicas e métricas bibliométricas de {profile_person_name}, com foco em genética, biometria e machine learning.",
+    "privacy-meta-description": "Política de Privacidade do portfólio de {profile_person_name}, com informações sobre formulário de contato, tratamento de dados e serviços de terceiros.",
+    "meta-keywords": "CEO, PhD, Cientista de Dados, Data Science, IA, Inteligência Artificial, Machine Learning, Genética Quantitativa, Seleção Genômica, Biometria, Python, R, {profile_org_conecta_name}, Deep Learning, Estatística, {profile_org_ufv_short}",
     "projects-meta-keywords": "projetos, github, portfólio, R, Python, machine learning, genética",
-    "publications-meta-keywords": "publicações, artigos, pesquisa, genética, biometria, machine learning, UFV",
+    "publications-meta-keywords": "publicações, artigos, pesquisa, genética, biometria, machine learning, {profile_org_ufv_short}",
     "privacy-meta-keywords": "política de privacidade, dados, segurança, contato, formspree",
     "nav-title-projects": "Todos os Projetos",
     "nav-title-publications": "Publicações Científicas",
@@ -18,14 +18,14 @@
     "back-to-home": "← Voltar para o Início",
     "home-link-title": "Voltar à página inicial",
     "back-to-top-label": "Voltar ao topo",
-    "footer-title": "Weverton G. Costa",
+    "footer-title": "{profile_display_name}",
     "footer-bio": "Doutor em Genética e Melhoramento, Cientista de Dados e Doutorando em Estatística Aplicada e Biometria, com atuação em biometria, genética quantitativa e machine learning.",
     "footer-sitemap": "Mapa do Site",
     "footer-academic-profiles": "Perfis Acadêmicos",
     "footer-professional-profiles": "Redes e Perfis",
     "footer-license-text-short": "Licença CC BY-SA 4.0",
     "privacy-policy": "Política de Privacidade",
-    "footer-location": "Viçosa - MG, Brasil",
+    "footer-location": "{profile_city} - {profile_region}, Brasil",
     "change-lang-title": "Mudar para Inglês",
     "copy-email-title": "Copiar e-mail",
     "carousel-prev": "Anterior",
@@ -50,11 +50,11 @@
     "emailCopyFailed": "Falha ao copiar o e-mail.",
     "subtitle-1": "Pesquisador | Cientista de Dados | Doutorando em Estatística",
     "subtitle-2": "PhD em Genética e Melhoramento",
-    "subtitle-3": "CEO & Cofundador da Conecta GEM",
+    "subtitle-3": "CEO & Cofundador da {profile_org_conecta_name}",
     "subtitle-4": "",
     "badge-phd": "🎓 Doutorando em Estatística",
-    "badge-ceo": "🚀 CEO & Cofundador - Conecta GEM",
-    "badge-postdoc1": "🔬 Pós-doutorados — UFV / Embrapa",
+    "badge-ceo": "🚀 CEO & Cofundador - {profile_org_conecta_name}",
+    "badge-postdoc1": "🔬 Pós-doutorados — {profile_org_ufv_short} / Embrapa",
     "badge-ml": "🤖 Machine Learning Expert",
     "cta-projects": "Ver Projetos",
     "cta-contact": "Entre em Contato",
@@ -70,8 +70,8 @@
     "nav-contact": "Contato",
     "about-title": "Sobre Mim",
     "about-p1": "A minha jornada é definida pela intersecção da Genética com a Estatística. Com um <strong>PhD em Genética e Melhoramento</strong> e aprofundando meus estudos como doutorando em <strong>Estatística Aplicada e Biometria</strong>, minha paixão sempre foi encontrar padrões em dados biológicos complexos e transformá-los em conhecimento aplicável.",
-    "about-p2": "Essa paixão por disseminar o conhecimento culminou na cofundação da <strong>Conecta GEM</strong>, onde atuo como <strong>CEO</strong>. A Conecta GEM é uma iniciativa focada em <strong>oferecer capacitação de ponta, consultorias e mentorias</strong> à comunidade científica. Liderando esta missão, já <strong>qualificamos mais de mil pessoas</strong> em cursos técnicos de estatística e genética, além de realizar diversas análises especializadas.",
-    "about-p3": "Minha expertise técnica abrange desde a genética quantitativa e seleção genômica até o desenvolvimento de pipelines de análise (R e Python) e a aplicação de modelos avançados (Machine Learning e Redes Neurais). Colaboro ativamente em pesquisas de ponta no Laboratório de Bioinformática da UFV e no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE), onde também contribuo na <strong>coordenação e mentoria de equipes de pesquisa</strong>, unindo esforços para avançar as fronteiras da biometria e da IA aplicada à agricultura.",
+    "about-p2": "Essa paixão por disseminar o conhecimento culminou na cofundação da <strong>{profile_org_conecta_name}</strong>, onde atuo como <strong>CEO</strong>. A {profile_org_conecta_name} é uma iniciativa focada em <strong>oferecer capacitação de ponta, consultorias e mentorias</strong> à comunidade científica. Liderando esta missão, já <strong>qualificamos mais de mil pessoas</strong> em cursos técnicos de estatística e genética, além de realizar diversas análises especializadas.",
+    "about-p3": "Minha expertise técnica abrange desde a genética quantitativa e seleção genômica até o desenvolvimento de pipelines de análise (R e Python) e a aplicação de modelos avançados (Machine Learning e Redes Neurais). Colaboro ativamente em pesquisas de ponta no Laboratório de Bioinformática da {profile_org_ufv_short} e no Laboratório de Inteligência Computacional e Aprendizado Estatístico (LICAE), onde também contribuo na <strong>coordenação e mentoria de equipes de pesquisa</strong>, unindo esforços para avançar as fronteiras da biometria e da IA aplicada à agricultura.",
     "services-title": "Minhas Frentes de Atuação",
     "service-title1": "Consultoria em Dados e IA",
     "service-desc1": "Ofereço consultoria especializada para instituições de pesquisa e empresas de melhoramento, transformando dados brutos em insights estratégicos e modelos preditivos acionáveis.",
@@ -80,30 +80,35 @@
     "service-title3": "Capacitação e Treinamentos",
     "service-desc3": "Ministro cursos e treinamentos personalizados sobre o uso do software GENES, R, Python, seleção genômica e machine learning para equipes e pesquisadores.",
     "education-title": "Formação Acadêmica",
-    "edu-date1": "2023 - Presente",
+    "edu-period-present": "Presente",
+    "edu-advisor-label": "Orientador:",
+    "edu-coadvisor-label": "Coorientador:",
+    "edu-mentor-title-professor": "Prof.",
+    "edu-mentor-title-researcher": "Pesquisador",
+    "edu-date1": "{profile_edu_phd_stat_start_year} - {profile_edu_phd_stat_end_label}",
     "edu-title1": "Doutorado em Estatística Aplicada e Biometria",
     "edu-desc1": "Conduzindo pesquisa para desenvolver e aplicar novos modelos estatísticos e de machine learning para problemas complexos em biometria.",
-    "edu-advisor1": "<strong>Orientador:</strong> Prof. Moyses Nascimento.",
-    "edu-date2": "2023 - 2025",
+    "edu-advisor1": "<strong>Orientador:</strong> {profile_mentor_phd_stat_advisor}.",
+    "edu-date2": "{profile_aff_postdoc_fapemig_start_year} - {profile_aff_postdoc_fapemig_end_year}",
     "edu-title2": "Pós-Doutorado",
     "edu-desc2": "Desenvolvimento e aplicação de modelos de machine learning (ML) para otimizar a acurácia da seleção genômica e aplicação de deep learning (Mask R-CNN) para caracterização fenotípica (predição de peso) em bovinos e suínos.",
-    "edu-advisor2": "<strong>Orientador:</strong> Prof. Moyses Nascimento.",
-    "edu-date3": "2022 - 2023",
+    "edu-advisor2": "<strong>Orientador:</strong> {profile_mentor_postdoc_fapemig_advisor}.",
+    "edu-date3": "{profile_aff_postdoc_cnpq_2022_start_year} - {profile_aff_postdoc_cnpq_2022_end_year}",
     "edu-title3": "Pós-Doutorado",
     "edu-desc3": "Pesquisa focada em seleção genômica e machine learning, colaborando com diversos projetos de melhoramento genético.",
-    "edu-advisor3": "<strong>Orientador:</strong> Prof. Moyses Nascimento.",
+    "edu-advisor3": "<strong>Orientador:</strong> {profile_mentor_postdoc_cnpq_2022_advisor}.",
     "edu-title4": "Pós-Doutorado (Embrapa)",
     "edu-desc4": "Condução de análises (NextGen), otimização de pipelines de seleção genômica (modelos aditivos/dominantes) e desenvolvimento de rotinas para otimizar a inserção de dados em bancos de germoplasma.",
-    "edu-advisor4": "<strong>Orientador:</strong> Pesquisador Eder Jorge de Oliveira.",
+    "edu-advisor4": "<strong>Orientador:</strong> {profile_mentor_postdoc_embrapa_advisor}.",
     "edu-title5": "Doutorado em Genética e Melhoramento",
     "edu-desc5": "Aplicação e comparação de múltiplos modelos de machine learning e redes neurais (vs. GBLUP) com o objetivo de aumentar a acurácia da seleção genômica e identificar marcadores genéticos de importância.",
-    "edu-advisor5": "<strong>Orientador:</strong> Prof. Cosme Damião Cruz. <br><strong>Coorientador:</strong> Prof. Moyses Nascimento.",
+    "edu-advisor5": "<strong>Orientador:</strong> {profile_mentor_phd_gen_advisor}. <br><strong>Coorientador:</strong> {profile_mentor_phd_gen_coadvisor}.",
     "edu-title6": "Mestrado em Genética e Melhoramento",
     "edu-desc6": "Dissertação focada na aplicação de Meta-Análise e estatística multivariada para avaliar parâmetros genéticos em genótipos de arroz irrigado.",
-    "edu-advisor6": "<strong>Orientador:</strong> Prof. Aluízio Borém de Oliveira. <br><strong>Coorientador:</strong> Prof. Cosme Damião Cruz.",
+    "edu-advisor6": "<strong>Orientador:</strong> {profile_mentor_msc_advisor}. <br><strong>Coorientador:</strong> {profile_mentor_msc_coadvisor}.",
     "edu-title7": "Graduação em Agronomia",
     "edu-desc7": "Trabalho de conclusão focado no planejamento experimental e iniciação científica em análise de dados genéticos e melhoramento de plantas.",
-    "edu-advisor7": "<strong>Orientador:</strong> Prof. Plínio César Soares.",
+    "edu-advisor7": "<strong>Orientador:</strong> {profile_mentor_bsc_advisor}.",
     "expertise-title": "Áreas de Atuação",
     "exp-title1": "Genética Quantitativa",
     "exp-desc1": "Análise e modelagem de características complexas, estimação de parâmetros genéticos e predição de valores genéticos para otimizar programas de melhoramento.",
@@ -121,7 +126,7 @@
     "licae-item1": "Pesquisa em redes neurais e seleção genômica",
     "licae-item2": "Desenvolvimento de modelos preditivos",
     "licae-item3": "Colaboração em projetos multidisciplinares",
-    "conecta-desc": "A Conecta GEM nasceu da paixão por compartilhar conhecimento. Somos uma iniciativa que oferece capacitação, consultorias e mentorias de excelência em estatística, genética e melhoramento. Com coordenadores especialistas e uma metodologia focada no aprendizado individual, já qualificamos mais de mil pessoas, conectando a teoria da universidade com a prática do mercado.",
+    "conecta-desc": "A {profile_org_conecta_name} nasceu da paixão por compartilhar conhecimento. Somos uma iniciativa que oferece capacitação, consultorias e mentorias de excelência em estatística, genética e melhoramento. Com coordenadores especialistas e uma metodologia focada no aprendizado individual, já qualificamos mais de mil pessoas, conectando a teoria da universidade com a prática do mercado.",
     "conecta-item1": "Consultoria em biometria e IA",
     "conecta-item2": "Implementação de pipelines de seleção genômica",
     "conecta-item3": "Capacitação e treinamentos em R e Python",
@@ -241,100 +246,27 @@
     "privacy-security-title": "5. Segurança",
     "privacy-security-p": "Embora nenhum método de transmissão pela Internet ou armazenamento eletrônico seja 100% seguro, tomamos precauções razoáveis para proteger suas informações. O tráfego deste site é protegido por HTTPS.",
     "privacy-rights-title": "6. Seus Direitos",
-    "privacy-rights-p": "Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+    "privacy-rights-p": "Você tem o direito de solicitar informações sobre os dados que forneceu e de pedir sua exclusão a qualquer momento, entrando em contato diretamente pelo email <a href='mailto:{profile_email}'>{profile_email}</a>.",
     "privacy-changes-title": "7. Alterações na Política",
     "privacy-changes-p": "Esta Política de Privacidade pode ser actualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para estar ciente de quaisquer alterações.",
     "privacy-contact-title": "8. Contato",
-    "privacy-contact-p": "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+    "privacy-contact-p": "Se você tiver alguma dúvida sobre esta Política de Privacidade, entre em contato pelo email <a href='mailto:{profile_email}'>{profile_email}</a>.",
     "privacy-back-link": "← Voltar ao site principal",
     "cv-generating": "Preparando seu currículo...",
     "cv-download-started": "Download iniciado!",
     "cv-error": "Ocorreu um erro ao gerar o PDF.",
     "cv-edu-postdocs-title": "Pós-Doutorados",
-    "cv-edu-postdocs-line1": "Universidade Federal de Viçosa (UFV) — CNPq / FAPEMIG",
-    "cv-edu-postdocs-year1": "2022 – 2025",
-    "cv-edu-postdocs-line2": "EMBRAPA Mandioca e Fruticultura (EMBRAPA)",
-    "cv-edu-postdocs-year2": "2022",
     "cv-file-name-pro": "CV-Weverton_Costa_Profissional_PT.pdf",
     "cv-file-name-academic": "CV-Weverton_Gomes_da_Costa_Academico_PT.pdf",
-    "pdf-location": "Viçosa - Minas Gerais - Brasil",
+    "pdf-location": "{profile_city} - Minas Gerais - Brasil",
     "pdf-view-site": "[Ver Site]",
     "pdf-view-repo": "[Repositório]",
     "pdf-more-projects": "Para mais projetos, acesse a página de projetos do site.",
     "pdf-more-publications": "Para mais publicações, acesse a página de publicações do site.",
     "pdf-cited-by": "Citado {count} vezes",
-    "education": {
-      "professional": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "2022"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "2015"
-        }
-      ],
-      "academic": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "2022"
-        },
-        {
-          "degree": "cv-edu-msc-title",
-          "institution": "cv-edu-msc-institution",
-          "year": "2018"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "2015"
-        }
-      ]
-    },
-    "lattes_summary": "Engenheiro Agrônomo (2015), Mestre em Genética e Melhoramento (2018) e Doutor em Genética e Melhoramento (2022) pela Universidade Federal de Viçosa (UFV). Atualmente, é doutorando no Departamento de Estatística da UFV. Sua trajetória inclui pós-doutorados na UFV, com bolsas do CNPq e da FAPEMIG, e na Embrapa Mandioca e Fruticultura, com bolsa do CNPq. Possui experiência em análise de dados aplicada à genética, melhoramento de plantas, genética quantitativa, biometria, modelos mistos, seleção genômica, GWAS e machine learning, com domínio de R, Python, GENES e Selegen.",
-    "cv_pro_summary": "Cientista de Dados e Ph.D. em Genética, atualmente cursando Doutorado em Estatística. Possuo experiência prática na aplicação de modelos estatísticos e de machine learning para resolver problemas complexos em ciências agrárias e biológicas. Como Cofundador e CEO da Conecta GEM, atuo diretamente na análise de dados para clientes, transformando dados brutos em relatórios e insights que auxiliam na tomada de decisão. Minha pesquisa foca em otimizar a acurácia de modelos preditivos, desde a seleção genômica até a caracterização fenotípica com deep learning (Mask R-CNN).",
-    "cv_acad_summary": "Pesquisador com Ph.D. em Genética e Melhoramento e Doutorando em Estatística Aplicada e Biometria. Sua trajetória inclui pós-doutorados na UFV, com bolsas do CNPq e da FAPEMIG, e na Embrapa Mandioca e Fruticultura, com bolsa do CNPq. Atua na intersecção entre genética quantitativa, bioinformática, biometria e machine learning, com aplicações em seleção genômica e fenotipagem de precisão.",
-    "professional_experience": [
-      {
-        "role": "Cofundador & CEO",
-        "company": "Conecta GEM",
-        "period": "2021 – Presente",
-        "bullets": [
-          "Gestão de projetos e consultorias em análise de dados (Estatística, Genética e ML) para clientes e grupos de pesquisa.",
-          "Coordenação e desenvolvimento de cursos técnicos (R, Python, Estatística), capacitando mais de 1.000 pessoas em 15+ países.",
-          "Responsável pela análise de dados de clientes, desde o processamento até a entrega de relatórios e insights."
-        ]
-      },
-      {
-        "role": "Pesquisador de Pós-Doutorado",
-        "company": "Universidade Federal de Viçosa (UFV) / Embrapa",
-        "period": "2022 – Presente",
-        "bullets": [
-          "Aplicação de ML/DL (incluindo Mask R-CNN) para otimizar a seleção genômica e para fenotipagem de precisão (predição de peso) em suínos e bovinos (UFV).",
-          "Desenvolvimento e automatização de pipelines de análise genômica (GWAS, GWS) para o programa de melhoramento de mandioca (Embrapa).",
-          "Otimização de rotinas (R, Python) para processamento de dados genotípicos em larga escala e análise de dados NextGen (Embrapa)."
-        ]
-      }
-    ],
+    "lattes_summary": "Engenheiro Agrônomo ({profile_edu_bsc_end_year}), Mestre em Genética e Melhoramento ({profile_edu_msc_end_year}) e Doutor em Genética e Melhoramento ({profile_edu_phd_gen_end_year}) pela {profile_org_ufv_name}. Atualmente, é doutorando no Departamento de Estatística da {profile_org_ufv_short}. Sua trajetória inclui pós-doutorados na {profile_org_ufv_short}, com bolsas do {profile_org_cnpq_short} e da {profile_org_fapemig_short}, e na Embrapa Mandioca e Fruticultura, com bolsa do {profile_org_cnpq_short}. Possui experiência em análise de dados aplicada à genética, melhoramento de plantas, genética quantitativa, biometria, modelos mistos, seleção genômica, GWAS e machine learning, com domínio de R, Python, GENES e Selegen.",
+    "cv_pro_summary": "Cientista de Dados e Ph.D. em Genética, atualmente cursando Doutorado em Estatística. Possuo experiência prática na aplicação de modelos estatísticos e de machine learning para resolver problemas complexos em ciências agrárias e biológicas. Como Cofundador e CEO da {profile_org_conecta_name}, atuo diretamente na análise de dados para clientes, transformando dados brutos em relatórios e insights que auxiliam na tomada de decisão. Minha pesquisa foca em otimizar a acurácia de modelos preditivos, desde a seleção genômica até a caracterização fenotípica com deep learning (Mask R-CNN).",
+    "cv_acad_summary": "Pesquisador com Ph.D. em Genética e Melhoramento e Doutorando em Estatística Aplicada e Biometria. Sua trajetória inclui pós-doutorados na {profile_org_ufv_short}, com bolsas do {profile_org_cnpq_short} e da {profile_org_fapemig_short}, e na Embrapa Mandioca e Fruticultura, com bolsa do {profile_org_cnpq_short}. Atua na intersecção entre genética quantitativa, bioinformática, biometria e machine learning, com aplicações em seleção genômica e fenotipagem de precisão.",
     "portfolio_project_website": {
       "title": "Portfólio Web Pessoal (Automação de CV)",
       "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados). Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações. Implementei suporte multilíngue (JavaScript i18n) e um design 100% responsivo (HTML/CSS/JS) com formulário de contato funcional."
@@ -348,22 +280,22 @@
       "projects-title": "PRINCIPAIS PROJETOS",
       "publications-title": "PRINCIPAIS PUBLICAÇÕES"
     },
-    "edu-date-postdoc-cnpq-2025": "2025",
+    "edu-date-postdoc-cnpq-2025": "{profile_aff_postdoc_cnpq_2025_start_year}",
     "edu-title-postdoc-cnpq-2025": "Pós-Doutorado",
-    "edu-desc-postdoc-cnpq-2025": "Pós-doutorado na Universidade Federal de Viçosa, com bolsa do Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPq)."
+    "edu-desc-postdoc-cnpq-2025": "Pós-doutorado na Universidade Federal de Viçosa, com bolsa do {profile_org_cnpq_name} ({profile_org_cnpq_short})."
   },
   "en": {
-    "page-title": "Weverton G. Costa | Researcher | Data Scientist | Statistics PhD Candidate",
-    "projects-page-title": "Projects | Weverton Gomes da Costa",
-    "publications-page-title": "Publications | Weverton Gomes da Costa",
-    "privacy-page-title": "Privacy Policy | Weverton Gomes da Costa",
-    "meta-description": "Ph.D. in Genetics and Breeding, Data Scientist, and PhD candidate in Applied Statistics and Biometrics at UFV, working in biometrics, quantitative genetics, genomic selection, and machine learning.",
-    "projects-meta-description": "Explore Weverton Gomes da Costa's Data Science, AI, and Genetics projects, focusing on Machine Learning and Quantitative Genetics.",
-    "publications-meta-description": "Explore Weverton Gomes da Costa's scientific publications and bibliometric metrics, with a focus on genetics, biometrics, and machine learning.",
-    "privacy-meta-description": "Privacy Policy for Weverton Gomes da Costa's portfolio, covering the contact form, data handling, and third-party services.",
-    "meta-keywords": "CEO, PhD, Data Scientist, AI, Artificial Intelligence, Machine Learning, Quantitative Genetics, Genomic Selection, Biometrics, Python, R, Conecta GEM, Deep Learning, Statistics, UFV",
+    "page-title": "{profile_display_name} | Researcher | Data Scientist | Statistics PhD Candidate",
+    "projects-page-title": "Projects | {profile_person_name}",
+    "publications-page-title": "Publications | {profile_person_name}",
+    "privacy-page-title": "Privacy Policy | {profile_person_name}",
+    "meta-description": "Ph.D. in Genetics and Breeding, Data Scientist, and PhD candidate in Applied Statistics and Biometrics at {profile_org_ufv_short}, working in biometrics, quantitative genetics, genomic selection, and machine learning.",
+    "projects-meta-description": "Explore {profile_person_name}'s Data Science, AI, and Genetics projects, focusing on Machine Learning and Quantitative Genetics.",
+    "publications-meta-description": "Explore {profile_person_name}'s scientific publications and bibliometric metrics, with a focus on genetics, biometrics, and machine learning.",
+    "privacy-meta-description": "Privacy Policy for {profile_person_name}'s portfolio, covering the contact form, data handling, and third-party services.",
+    "meta-keywords": "CEO, PhD, Data Scientist, AI, Artificial Intelligence, Machine Learning, Quantitative Genetics, Genomic Selection, Biometrics, Python, R, {profile_org_conecta_name}, Deep Learning, Statistics, {profile_org_ufv_short}",
     "projects-meta-keywords": "projects, github, portfolio, R, Python, machine learning, genetics",
-    "publications-meta-keywords": "publications, papers, research, genetics, biometrics, machine learning, UFV",
+    "publications-meta-keywords": "publications, papers, research, genetics, biometrics, machine learning, {profile_org_ufv_short}",
     "privacy-meta-keywords": "privacy policy, data, security, contact, formspree",
     "nav-title-projects": "All Projects",
     "nav-title-publications": "Scientific Publications",
@@ -371,14 +303,14 @@
     "back-to-home": "← Back to Home",
     "home-link-title": "Back to home page",
     "back-to-top-label": "Back to top",
-    "footer-title": "Weverton G. Costa",
+    "footer-title": "{profile_display_name}",
     "footer-bio": "Ph.D. in Genetics and Breeding, Data Scientist, and PhD candidate in Applied Statistics and Biometrics, working in biometrics, quantitative genetics, and machine learning.",
     "footer-sitemap": "Sitemap",
     "footer-academic-profiles": "Academic Profiles",
     "footer-professional-profiles": "Networks & Profiles",
     "footer-license-text-short": "CC BY-SA 4.0 License",
     "privacy-policy": "Privacy Policy",
-    "footer-location": "Viçosa - MG, Brazil",
+    "footer-location": "{profile_city} - {profile_region}, Brazil",
     "change-lang-title": "Switch to Portuguese",
     "copy-email-title": "Copy email",
     "carousel-prev": "Previous",
@@ -403,11 +335,11 @@
     "emailCopyFailed": "Failed to copy email.",
     "subtitle-1": "Researcher | Data Scientist | Statistics PhD Candidate",
     "subtitle-2": "PhD in Genetics and Breeding",
-    "subtitle-3": "CEO & Co-founder of Conecta GEM",
+    "subtitle-3": "CEO & Co-founder of {profile_org_conecta_name}",
     "subtitle-4": "",
     "badge-phd": "🎓 PhD Candidate in Statistics",
-    "badge-ceo": "🚀 CEO & Co-founder - Conecta GEM",
-    "badge-postdoc1": "🔬 Postdoctoral experience — UFV / Embrapa",
+    "badge-ceo": "🚀 CEO & Co-founder - {profile_org_conecta_name}",
+    "badge-postdoc1": "🔬 Postdoctoral experience — {profile_org_ufv_short} / Embrapa",
     "badge-ml": "🤖 Machine Learning Expert",
     "cta-projects": "View Projects",
     "cta-contact": "Get in Touch",
@@ -423,8 +355,8 @@
     "nav-contact": "Contact",
     "about-title": "About Me",
     "about-p1": "My journey is defined by the intersection of Genetics and Statistics. With a <strong>PhD in Genetics and Breeding</strong> and currently deepening my studies as a <strong>doctoral candidate in Applied Statistics and Biometrics</strong>, my passion has always been to find patterns in complex biological data and transform them into applicable knowledge.",
-    "about-p2": "This passion for disseminating knowledge culminated in the co-founding of <strong>Conecta GEM</strong>, where I serve as <strong>CEO</strong>. Conecta GEM is an initiative focused on <strong>offering cutting-edge training, consulting, and mentorship</strong> to the scientific community. Leading this mission, we have already <strong>qualified over a thousand people</strong> in technical courses on statistics and genetics, in addition to performing various specialized analyses.",
-    "about-p3": "My technical expertise ranges from quantitative genetics and genomic selection to developing analysis pipelines (R and Python) and applying advanced models (Machine Learning and Neural Networks). I actively collaborate on cutting-edge research at the Bioinformatics Laboratory at UFV and the Computational Intelligence and Statistical Learning Laboratory (LICAE), where I also contribute to <strong>coordinating and mentoring research teams</strong>, joining efforts to advance the frontiers of biometrics and AI applied to agriculture.",
+    "about-p2": "This passion for disseminating knowledge culminated in the co-founding of <strong>{profile_org_conecta_name}</strong>, where I serve as <strong>CEO</strong>. {profile_org_conecta_name} is an initiative focused on <strong>offering cutting-edge training, consulting, and mentorship</strong> to the scientific community. Leading this mission, we have already <strong>qualified over a thousand people</strong> in technical courses on statistics and genetics, in addition to performing various specialized analyses.",
+    "about-p3": "My technical expertise ranges from quantitative genetics and genomic selection to developing analysis pipelines (R and Python) and applying advanced models (Machine Learning and Neural Networks). I actively collaborate on cutting-edge research at the Bioinformatics Laboratory at {profile_org_ufv_short} and the Computational Intelligence and Statistical Learning Laboratory (LICAE), where I also contribute to <strong>coordinating and mentoring research teams</strong>, joining efforts to advance the frontiers of biometrics and AI applied to agriculture.",
     "services-title": "My Core Services",
     "service-title1": "Data & AI Consulting",
     "service-desc1": "I offer specialized consulting for research institutions and breeding companies, transforming raw data into strategic insights and actionable predictive models.",
@@ -433,30 +365,35 @@
     "service-title3": "Training & Workshops",
     "service-desc3": "I conduct custom courses and training on GENES software, R, Python, genomic selection, and machine learning for teams and researchers.",
     "education-title": "Academic Education",
-    "edu-date1": "2023 - Present",
+    "edu-period-present": "Present",
+    "edu-advisor-label": "Advisor:",
+    "edu-coadvisor-label": "Co-advisor:",
+    "edu-mentor-title-professor": "Prof.",
+    "edu-mentor-title-researcher": "Researcher",
+    "edu-date1": "{profile_edu_phd_stat_start_year} - {profile_edu_phd_stat_end_label}",
     "edu-title1": "PhD in Applied Statistics and Biometrics",
     "edu-desc1": "Conducting research to develop and apply novel statistical and machine learning models for complex problems in biometrics.",
-    "edu-advisor1": "<strong>Advisor:</strong> Prof. Moyses Nascimento.",
-    "edu-date2": "2023 - 2025",
+    "edu-advisor1": "<strong>Advisor:</strong> {profile_mentor_phd_stat_advisor}.",
+    "edu-date2": "{profile_aff_postdoc_fapemig_start_year} - {profile_aff_postdoc_fapemig_end_year}",
     "edu-title2": "Postdoctoral Researcher",
     "edu-desc2": "Development and application of machine learning (ML) models to optimize genomic selection accuracy. Application of deep learning (Mask R-CNN) for phenotypic characterization (weight prediction) in cattle and swine.",
-    "edu-advisor2": "<strong>Advisor:</strong> Prof. Moyses Nascimento.",
-    "edu-date3": "2022 - 2023",
+    "edu-advisor2": "<strong>Advisor:</strong> {profile_mentor_postdoc_fapemig_advisor}.",
+    "edu-date3": "{profile_aff_postdoc_cnpq_2022_start_year} - {profile_aff_postdoc_cnpq_2022_end_year}",
     "edu-title3": "Postdoctoral Researcher",
     "edu-desc3": "Research focused on genomic selection and machine learning, collaborating with various genetic improvement projects.",
-    "edu-advisor3": "<strong>Advisor:</strong> Prof. Moyses Nascimento.",
+    "edu-advisor3": "<strong>Advisor:</strong> {profile_mentor_postdoc_cnpq_2022_advisor}.",
     "edu-title4": "Postdoctoral Researcher (Embrapa)",
     "edu-desc4": "Data analysis (GWS/GWAS) in the NextGen Cassava project, aiming to develop resilient cassava cultivars.",
-    "edu-advisor4": "<strong>Advisor:</strong> Researcher Eder Jorge de Oliveira.",
+    "edu-advisor4": "<strong>Advisor:</strong> {profile_mentor_postdoc_embrapa_advisor}.",
     "edu-title5": "PhD in Genetics and Breeding",
     "edu-desc5": "Application and comparison of multiple machine learning models and neural networks (vs. GBLUP) aimed at increasing the accuracy of genomic selection and identifying important genetic markers.",
-    "edu-advisor5": "<strong>Advisor:</strong> Prof. Cosme Damião Cruz. <br><strong>Co-advisor:</strong> Prof. Moyses Nascimento.",
+    "edu-advisor5": "<strong>Advisor:</strong> {profile_mentor_phd_gen_advisor}. <br><strong>Co-advisor:</strong> {profile_mentor_phd_gen_coadvisor}.",
     "edu-title6": "MSc in Genetics and Breeding",
     "edu-desc6": "Dissertation focused on applying Meta-Analysis and multivariate statistics to evaluate genetic parameters in irrigated rice genotypes.",
-    "edu-advisor6": "<strong>Advisor:</strong> Prof. Aluízio Borém de Oliveira. <br><strong>Co-advisor:</strong> Prof. Cosme Damião Cruz.",
+    "edu-advisor6": "<strong>Advisor:</strong> {profile_mentor_msc_advisor}. <br><strong>Co-advisor:</strong> {profile_mentor_msc_coadvisor}.",
     "edu-title7": "BSc in Agronomy",
     "edu-desc7": "Final paper focused on experimental design and scientific initiation in genetic data analysis and plant breeding.",
-    "edu-advisor7": "<strong>Advisor:</strong> Prof. Plínio César Soares.",
+    "edu-advisor7": "<strong>Advisor:</strong> {profile_mentor_bsc_advisor}.",
     "expertise-title": "Areas of Expertise",
     "exp-title1": "Quantitative Genetics",
     "exp-desc1": "Analysis and modeling of complex traits, estimation of genetic parameters, and prediction of breeding values to optimize improvement programs.",
@@ -474,7 +411,7 @@
     "licae-item1": "Research on neural networks and genomic selection",
     "licae-item2": "Development of predictive models",
     "licae-item3": "Collaboration on multidisciplinary projects",
-    "conecta-desc": "Conecta GEM was born from a passion for sharing knowledge. We are an initiative offering excellence in training, consulting, and mentorship in statistics, genetics, and breeding. With expert coordinators and a methodology focused on individual learning, we have already qualified over a thousand people, bridging university theory with market practice.",
+    "conecta-desc": "{profile_org_conecta_name} was born from a passion for sharing knowledge. We are an initiative offering excellence in training, consulting, and mentorship in statistics, genetics, and breeding. With expert coordinators and a methodology focused on individual learning, we have already qualified over a thousand people, bridging university theory with market practice.",
     "conecta-item1": "Consulting in biometrics and AI",
     "conecta-item2": "Implementation of genomic selection pipelines",
     "conecta-item3": "Training and courses in R and Python",
@@ -594,100 +531,27 @@
     "privacy-security-title": "5. Security",
     "privacy-security-p": "While no method of transmission over the Internet or electronic storage is 100% secure, we take reasonable precautions to protect your information. This site's traffic is protected by HTTPS.",
     "privacy-rights-title": "6. Your Rights",
-    "privacy-rights-p": "You have the right to request information about the data you have provided and to request its deletion at any time by contacting me directly via email at <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+    "privacy-rights-p": "You have the right to request information about the data you have provided and to request its deletion at any time by contacting me directly via email at <a href='mailto:{profile_email}'>{profile_email}</a>.",
     "privacy-changes-title": "7. Policy Changes",
     "privacy-changes-p": "This Privacy Policy may be updated periodically. We recommend that you review this page occasionally to be aware of any changes.",
     "privacy-contact-title": "8. Contact",
-    "privacy-contact-p": "If you have any questions about this Privacy Policy, please contact me via email at <a href='mailto:wevertonufv@gmail.com'>wevertonufv@gmail.com</a>.",
+    "privacy-contact-p": "If you have any questions about this Privacy Policy, please contact me via email at <a href='mailto:{profile_email}'>{profile_email}</a>.",
     "privacy-back-link": "← Back to main site",
     "cv-generating": "Preparing your CV...",
     "cv-download-started": "Download started!",
     "cv-error": "An error occurred while generating the PDF.",
     "cv-edu-postdocs-title": "Postdoctoral Research",
-    "cv-edu-postdocs-line1": "Federal University of Viçosa (UFV) — CNPq / FAPEMIG",
-    "cv-edu-postdocs-year1": "2022 – 2025",
-    "cv-edu-postdocs-line2": "EMBRAPA Cassava and Fruits (EMBRAPA)",
-    "cv-edu-postdocs-year2": "2022",
     "cv-file-name-pro": "CV-Weverton_Costa_Professional_EN.pdf",
     "cv-file-name-academic": "CV-Weverton_Gomes_da_Costa_Academic_EN.pdf",
-    "pdf-location": "Viçosa - Minas Gerais - Brazil",
+    "pdf-location": "{profile_city} - Minas Gerais - Brazil",
     "pdf-view-site": "[View Site]",
     "pdf-view-repo": "[Repository]",
     "pdf-more-projects": "For more projects, visit the projects page on the website.",
     "pdf-more-publications": "For more publications, visit the publications page on the website.",
     "pdf-cited-by": "Cited {count} times",
-    "education": {
-      "professional": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "2022"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "2015"
-        }
-      ],
-      "academic": [
-        {
-          "special_key": "postdocs"
-        },
-        {
-          "degree": "cv-edu-phd-stat-title",
-          "institution": "cv-edu-phd-stat-institution",
-          "year": "cv-edu-phd-stat-year"
-        },
-        {
-          "degree": "cv-edu-phd-gen-title",
-          "institution": "cv-edu-phd-gen-institution",
-          "year": "2022"
-        },
-        {
-          "degree": "cv-edu-msc-title",
-          "institution": "cv-edu-msc-institution",
-          "year": "2018"
-        },
-        {
-          "degree": "cv-edu-bs-title",
-          "institution": "cv-edu-bs-institution",
-          "year": "2015"
-        }
-      ]
-    },
-    "lattes_summary": "Agronomist Engineer (2015), Master in Genetics and Breeding (2018), and Ph.D. in Genetics and Breeding (2022) from the Federal University of Viçosa (UFV). Currently a doctoral candidate in the Department of Statistics at UFV. His trajectory includes postdoctoral research at UFV, funded by CNPq and FAPEMIG, and at Embrapa Cassava and Fruits, funded by CNPq. He has experience in data analysis applied to genetics, plant breeding, quantitative genetics, biometrics, mixed models, genomic selection, GWAS, and machine learning, with proficiency in R, Python, GENES, and Selegen.",
-    "cv_pro_summary": "Data Scientist and Ph.D. in Genetics, currently pursuing a Doctorate in Statistics. I have practical experience in applying statistical and machine learning models to solve complex problems in agricultural and biological sciences. As Co-founder and CEO of Conecta GEM, I work directly on data analysis for clients, transforming raw data into reports and insights that aid decision-making. My research focuses on optimizing the accuracy of predictive models, from genomic selection to phenotypic characterization with deep learning (Mask R-CNN).",
-    "cv_acad_summary": "Researcher with a Ph.D. in Genetics and Breeding and a PhD candidate in Applied Statistics and Biometrics. His trajectory includes postdoctoral research at UFV, funded by CNPq and FAPEMIG, and at Embrapa Cassava and Fruits, funded by CNPq. He works at the intersection of quantitative genetics, bioinformatics, biometrics, and machine learning, with applications in genomic selection and precision phenotyping.",
-    "professional_experience": [
-      {
-        "role": "Co-founder & CEO",
-        "company": "Conecta GEM",
-        "period": "2021 – Present",
-        "bullets": [
-          "Project management and consulting in data analysis (Statistics, Genetics, and ML) for clients and research groups.",
-          "Coordination and development of technical courses (R, Python, Statistics), training over 1,000 people in 15+ countries.",
-          "Responsible for client data analysis, from processing to delivery of reports and insights."
-        ]
-      },
-      {
-        "role": "Postdoctoral Researcher",
-        "company": "Federal University of Viçosa (UFV) / Embrapa",
-        "period": "2022 – Present",
-        "bullets": [
-          "Application of ML/DL (including Mask R-CNN) to optimize genomic selection and for precision phenotyping (weight prediction) in swine and cattle (UFV).",
-          "Development and automation of genomic analysis pipelines (GWAS, GWS) for the cassava breeding program (Embrapa).",
-          "Optimization of routines (R, Python) for large-scale genotypic data processing and NextGen data analysis (Embrapa)."
-        ]
-      }
-    ],
+    "lattes_summary": "Agronomist Engineer ({profile_edu_bsc_end_year}), Master in Genetics and Breeding ({profile_edu_msc_end_year}), and Ph.D. in Genetics and Breeding ({profile_edu_phd_gen_end_year}) from the Federal University of Viçosa ({profile_org_ufv_short}). Currently a doctoral candidate in the Department of Statistics at {profile_org_ufv_short}. His trajectory includes postdoctoral research at {profile_org_ufv_short}, funded by {profile_org_cnpq_short} and {profile_org_fapemig_short}, and at Embrapa Cassava and Fruits, funded by {profile_org_cnpq_short}. He has experience in data analysis applied to genetics, plant breeding, quantitative genetics, biometrics, mixed models, genomic selection, GWAS, and machine learning, with proficiency in R, Python, GENES, and Selegen.",
+    "cv_pro_summary": "Data Scientist and Ph.D. in Genetics, currently pursuing a Doctorate in Statistics. I have practical experience in applying statistical and machine learning models to solve complex problems in agricultural and biological sciences. As Co-founder and CEO of {profile_org_conecta_name}, I work directly on data analysis for clients, transforming raw data into reports and insights that aid decision-making. My research focuses on optimizing the accuracy of predictive models, from genomic selection to phenotypic characterization with deep learning (Mask R-CNN).",
+    "cv_acad_summary": "Researcher with a Ph.D. in Genetics and Breeding and a PhD candidate in Applied Statistics and Biometrics. His trajectory includes postdoctoral research at {profile_org_ufv_short}, funded by {profile_org_cnpq_short} and {profile_org_fapemig_short}, and at Embrapa Cassava and Fruits, funded by {profile_org_cnpq_short}. He works at the intersection of quantitative genetics, bioinformatics, biometrics, and machine learning, with applications in genomic selection and precision phenotyping.",
     "portfolio_project_website": {
       "title": "Personal Web Portfolio (CV Automation)",
       "description": "I developed this site from scratch as a central hub for my work (CEO, Researcher, Data Scientist). I configured routines in R and Python that consume GitHub and Google Scholar APIs, automatically updating my project and publication lists. Implemented multilingual support (JavaScript i18n) and a 100% responsive design (HTML/CSS/JS) with a functional contact form."
@@ -701,8 +565,8 @@
       "projects-title": "MAIN PROJECTS",
       "publications-title": "MAIN PUBLICATIONS"
     },
-    "edu-date-postdoc-cnpq-2025": "2025",
+    "edu-date-postdoc-cnpq-2025": "{profile_aff_postdoc_cnpq_2025_start_year}",
     "edu-title-postdoc-cnpq-2025": "Postdoctoral Research",
-    "edu-desc-postdoc-cnpq-2025": "Postdoctoral research at the Federal University of Viçosa, funded by the Brazilian National Council for Scientific and Technological Development (CNPq)."
+    "edu-desc-postdoc-cnpq-2025": "Postdoctoral research at the Federal University of Viçosa, funded by the Brazilian National Council for Scientific and Technological Development ({profile_org_cnpq_short})."
   }
 }

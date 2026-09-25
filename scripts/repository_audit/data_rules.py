@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from pathlib import Path
 import unicodedata
@@ -16,7 +17,9 @@ REQUIRED_FILES = (
     "404.html",
     "style.css",
     "utils.js",
+    "profile-interpolation.js",
     "translations.json",
+    "profile.json",
     "academic-registry.json",
     "fallback-data.json",
     "robots.txt",
@@ -25,6 +28,7 @@ REQUIRED_FILES = (
 
 REQUIRED_DATA_JSON = (
     "translations.json",
+    "profile.json",
     "academic-registry.json",
     "fallback-data.json",
 )
@@ -36,6 +40,106 @@ TRANSLATION_ATTRIBUTES = (
     "data-key-title",
     "data-key-aria-label",
 )
+
+PROFILE_TRANSLATION_PLACEHOLDER_RE = re.compile(r"\{(profile_[a-z0-9_]+)\}")
+PROFILE_FACT_PLACEHOLDERS = frozenset(
+    {
+        "profile_person_name",
+        "profile_display_name",
+        "profile_email",
+        "profile_city",
+        "profile_region",
+        "profile_org_ufv_name",
+        "profile_org_ufv_short",
+        "profile_org_embrapa_name",
+        "profile_org_embrapa_short",
+        "profile_org_cnpq_name",
+        "profile_org_cnpq_short",
+        "profile_org_fapemig_name",
+        "profile_org_fapemig_short",
+        "profile_org_conecta_name",
+        "profile_edu_phd_stat_start_year",
+        "profile_edu_phd_stat_end_label",
+        "profile_edu_phd_gen_start_year",
+        "profile_edu_phd_gen_end_year",
+        "profile_edu_msc_start_year",
+        "profile_edu_msc_end_year",
+        "profile_edu_bsc_start_year",
+        "profile_edu_bsc_end_year",
+        "profile_aff_postdoc_cnpq_2025_start_year",
+        "profile_aff_postdoc_cnpq_2025_end_year",
+        "profile_aff_postdoc_fapemig_start_year",
+        "profile_aff_postdoc_fapemig_end_year",
+        "profile_aff_postdoc_cnpq_2022_start_year",
+        "profile_aff_postdoc_cnpq_2022_end_year",
+        "profile_aff_postdoc_embrapa_start_year",
+        "profile_aff_postdoc_embrapa_end_year",
+        "profile_aff_conecta_start_year",
+        "profile_aff_conecta_end_label",
+        "profile_postdoc_history_start_year",
+        "profile_postdoc_history_end_year",
+        "profile_mentor_phd_stat_advisor",
+        "profile_mentor_postdoc_fapemig_advisor",
+        "profile_mentor_postdoc_cnpq_2022_advisor",
+        "profile_mentor_postdoc_embrapa_advisor",
+        "profile_mentor_phd_gen_advisor",
+        "profile_mentor_phd_gen_coadvisor",
+        "profile_mentor_msc_advisor",
+        "profile_mentor_msc_coadvisor",
+        "profile_mentor_bsc_advisor",
+    }
+)
+
+PROFILE_REQUIRED_PLACEHOLDERS_BY_KEY = {
+    "page-title": frozenset({"profile_display_name"}),
+    "projects-page-title": frozenset({"profile_person_name"}),
+    "publications-page-title": frozenset({"profile_person_name"}),
+    "privacy-page-title": frozenset({"profile_person_name"}),
+    "projects-meta-description": frozenset({"profile_person_name"}),
+    "publications-meta-description": frozenset({"profile_person_name"}),
+    "privacy-meta-description": frozenset({"profile_person_name"}),
+    "footer-title": frozenset({"profile_display_name"}),
+    "footer-location": frozenset({"profile_city", "profile_region"}),
+    "privacy-rights-p": frozenset({"profile_email"}),
+    "privacy-contact-p": frozenset({"profile_email"}),
+    "edu-date1": frozenset(
+        {"profile_edu_phd_stat_start_year", "profile_edu_phd_stat_end_label"}
+    ),
+    "edu-date2": frozenset(
+        {
+            "profile_aff_postdoc_fapemig_start_year",
+            "profile_aff_postdoc_fapemig_end_year",
+        }
+    ),
+    "edu-date3": frozenset(
+        {
+            "profile_aff_postdoc_cnpq_2022_start_year",
+            "profile_aff_postdoc_cnpq_2022_end_year",
+        }
+    ),
+    "edu-date-postdoc-cnpq-2025": frozenset(
+        {"profile_aff_postdoc_cnpq_2025_start_year"}
+    ),
+    "edu-advisor1": frozenset({"profile_mentor_phd_stat_advisor"}),
+    "edu-advisor2": frozenset({"profile_mentor_postdoc_fapemig_advisor"}),
+    "edu-advisor3": frozenset({"profile_mentor_postdoc_cnpq_2022_advisor"}),
+    "edu-advisor4": frozenset({"profile_mentor_postdoc_embrapa_advisor"}),
+    "edu-advisor5": frozenset(
+        {"profile_mentor_phd_gen_advisor", "profile_mentor_phd_gen_coadvisor"}
+    ),
+    "edu-advisor6": frozenset(
+        {"profile_mentor_msc_advisor", "profile_mentor_msc_coadvisor"}
+    ),
+    "edu-advisor7": frozenset({"profile_mentor_bsc_advisor"}),
+    "pdf-location": frozenset({"profile_city"}),
+    "lattes_summary": frozenset(
+        {
+            "profile_edu_bsc_end_year",
+            "profile_edu_msc_end_year",
+            "profile_edu_phd_gen_end_year",
+        }
+    ),
+}
 
 
 def read_repository_json(root: Path, relative: str) -> tuple[object | None, str | None]:
@@ -62,7 +166,123 @@ def _translation_maps(data: object) -> dict[str, dict[str, object]] | None:
     return {language: data[language] for language in SUPPORTED_LANGUAGES}
 
 
-def _audit_translations(root: Path, data: object) -> list[Violation]:
+def _iter_translation_strings(value: object, path: str = ""):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child = f"{path}.{key}" if path else str(key)
+            yield from _iter_translation_strings(item, child)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _iter_translation_strings(item, f"{path}[{index}]")
+    elif isinstance(value, str):
+        yield path, value
+
+
+def _profile_protected_translation_literals(profile: object) -> frozenset[str]:
+    if not isinstance(profile, dict):
+        return frozenset()
+
+    values: set[str] = set()
+    person = profile.get("person")
+    if isinstance(person, dict):
+        for key in ("name", "display_name", "email"):
+            value = person.get(key)
+            if isinstance(value, str) and len(value) >= 3:
+                values.add(value)
+
+    organizations = profile.get("organizations")
+    if isinstance(organizations, dict):
+        for organization in organizations.values():
+            if not isinstance(organization, dict):
+                continue
+            for key in ("name", "short_name"):
+                value = organization.get(key)
+                if isinstance(value, str) and len(value) >= 3:
+                    values.add(value)
+
+    for collection in ("education", "affiliations"):
+        records = profile.get(collection)
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            mentors: list[object] = [record.get("advisor")]
+            coadvisors = record.get("coadvisors")
+            if isinstance(coadvisors, list):
+                mentors.extend(coadvisors)
+            for mentor in mentors:
+                if not isinstance(mentor, dict):
+                    continue
+                name = mentor.get("name")
+                if isinstance(name, str) and len(name) >= 3:
+                    values.add(name)
+
+    return frozenset(values)
+
+
+def _audit_profile_translation_contract(
+    maps: dict[str, dict[str, object]],
+    profile: object,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    protected_literals = _profile_protected_translation_literals(profile)
+
+    for language, mapping in maps.items():
+        for path, value in _iter_translation_strings(mapping):
+            placeholders = frozenset(
+                PROFILE_TRANSLATION_PLACEHOLDER_RE.findall(value)
+            )
+            unknown = sorted(placeholders - PROFILE_FACT_PLACEHOLDERS)
+            if unknown:
+                violations.append(
+                    Violation(
+                        "PROFILE_FACT_CONTRACT",
+                        "translations.json",
+                        f"{language}:{path}:placeholder",
+                        "Unknown profile interpolation placeholder(s): "
+                        + ", ".join(unknown),
+                        metadata={"unknown_placeholders": unknown},
+                    )
+                )
+
+            top_level_key = path.split(".", 1)[0].split("[", 1)[0]
+            required = PROFILE_REQUIRED_PLACEHOLDERS_BY_KEY.get(top_level_key)
+            if required is not None:
+                missing = sorted(required - placeholders)
+                if missing:
+                    violations.append(
+                        Violation(
+                            "PROFILE_FACT_CONTRACT",
+                            "translations.json",
+                            f"{language}:{top_level_key}:required",
+                            "Required canonical profile placeholder(s) missing: "
+                            + ", ".join(missing),
+                            metadata={"missing_placeholders": missing},
+                        )
+                    )
+
+            for literal in sorted(protected_literals, key=lambda item: (-len(item), item)):
+                if literal in value:
+                    violations.append(
+                        Violation(
+                            "PROFILE_FACT_CONTRACT",
+                            "translations.json",
+                            f"{language}:{path}:literal:{literal}",
+                            "Canonical profile fact is duplicated literally in translations; "
+                            "use an approved profile placeholder",
+                            metadata={"literal": literal},
+                        )
+                    )
+
+    return violations
+
+
+def _audit_translations(
+    root: Path,
+    data: object,
+    profile: object | None = None,
+) -> list[Violation]:
     violations: list[Violation] = []
     maps = _translation_maps(data)
     if maps is None:
@@ -149,6 +369,623 @@ def _audit_translations(root: Path, data: object) -> list[Violation]:
                         )
                     )
 
+    if profile is not None:
+        violations.extend(_audit_profile_translation_contract(maps, profile))
+
+    return violations
+
+
+PROFILE_REQUIRED_TOP_LEVEL = frozenset(
+    {"schema_version", "person", "profiles", "organizations", "affiliations", "education"}
+)
+PROFILE_REQUIRED_PERSON = frozenset(
+    {"name", "display_name", "email", "website_url", "avatar_url", "location"}
+)
+PROFILE_REQUIRED_LOCATION = frozenset({"city", "region", "country_code"})
+PROFILE_SOURCE_FIELDS = {
+    "github": frozenset({"username", "url"}),
+    "linkedin": frozenset({"url"}),
+    "lattes": frozenset({"id", "url"}),
+    "google_scholar": frozenset({"author_id", "url"}),
+    "orcid": frozenset({"id", "url"}),
+    "scopus": frozenset({"author_id", "url"}),
+    "web_of_science": frozenset({"researcher_id", "url"}),
+}
+PROFILE_ORGANIZATION_FIELDS = frozenset({"name", "short_name", "url"})
+PROFILE_AFFILIATION_FIELDS = frozenset(
+    {
+        "id",
+        "organization_id",
+        "role_codes",
+        "start_year",
+        "end_year",
+        "current",
+        "funder_ids",
+        "advisor",
+        "coadvisors",
+    }
+)
+PROFILE_EDUCATION_FIELDS = frozenset(
+    {
+        "id",
+        "degree_code",
+        "organization_id",
+        "start_year",
+        "end_year",
+        "current",
+        "advisor",
+        "coadvisors",
+    }
+)
+PROFILE_MENTOR_FIELDS = frozenset({"name", "title_code"})
+PROFILE_ROLE_CODES = frozenset({"postdoctoral_researcher", "cofounder", "ceo"})
+PROFILE_DEGREE_CODES = frozenset({"doctorate", "masters", "bachelors"})
+PROFILE_MENTOR_TITLE_CODES = frozenset({"professor", "researcher"})
+PROFILE_ID_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+
+
+def _profile_violation(subject: str, message: str) -> Violation:
+    return Violation("PROFILE_STRUCTURE", "profile.json", subject, message)
+
+
+def _profile_exact_keys(
+    value: object,
+    expected: frozenset[str],
+    subject: str,
+    label: str,
+) -> list[Violation]:
+    if not isinstance(value, dict):
+        return [_profile_violation(subject, f"{label} must be an object")]
+    actual = frozenset(value)
+    if actual == expected:
+        return []
+    missing = sorted(expected - actual)
+    unknown = sorted(actual - expected)
+    details = []
+    if missing:
+        details.append(f"missing keys: {', '.join(missing)}")
+    if unknown:
+        details.append(f"unknown keys: {', '.join(unknown)}")
+    return [_profile_violation(subject, f"{label} has invalid keys; {'; '.join(details)}")]
+
+
+def _profile_nonempty_string(
+    value: object, subject: str, label: str
+) -> list[Violation]:
+    if isinstance(value, str) and value.strip():
+        return []
+    return [_profile_violation(subject, f"{label} must be a non-empty string")]
+
+
+def _profile_https(
+    value: object, subject: str, label: str
+) -> list[Violation]:
+    violations = _profile_nonempty_string(value, subject, label)
+    if violations:
+        return violations
+    if not str(value).startswith("https://"):
+        return [_profile_violation(subject, f"{label} must use https://")]
+    return []
+
+
+def _iter_profile_strings(value: object, path: str = ""):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child = f"{path}.{key}" if path else str(key)
+            yield from _iter_profile_strings(item, child)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _iter_profile_strings(item, f"{path}[{index}]")
+    elif isinstance(value, str):
+        yield path, value
+
+
+def _profile_year(
+    value: object,
+    subject: str,
+    label: str,
+    *,
+    allow_none: bool = False,
+) -> list[Violation]:
+    if allow_none and value is None:
+        return []
+    if isinstance(value, bool) or not isinstance(value, int):
+        return [_profile_violation(subject, f"{label} must be an integer year")]
+    if not 1900 <= value <= 2100:
+        return [_profile_violation(subject, f"{label} must be between 1900 and 2100")]
+    return []
+
+
+def _audit_profile_mentor(
+    value: object,
+    subject: str,
+    *,
+    allow_none: bool = False,
+) -> list[Violation]:
+    if allow_none and value is None:
+        return []
+    violations = _profile_exact_keys(
+        value, PROFILE_MENTOR_FIELDS, subject, "mentor"
+    )
+    if not isinstance(value, dict):
+        return violations
+    violations.extend(
+        _profile_nonempty_string(value.get("name"), f"{subject}.name", "mentor.name")
+    )
+    title_code = value.get("title_code")
+    if (
+        not isinstance(title_code, str)
+        or title_code not in PROFILE_MENTOR_TITLE_CODES
+    ):
+        violations.append(
+            _profile_violation(
+                f"{subject}.title_code",
+                "mentor.title_code must be one of "
+                f"{sorted(PROFILE_MENTOR_TITLE_CODES)!r}",
+            )
+        )
+    return violations
+
+
+def _audit_profile_period(
+    item: dict,
+    subject: str,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    violations.extend(
+        _profile_year(item.get("start_year"), f"{subject}.start_year", "start_year")
+    )
+    violations.extend(
+        _profile_year(
+            item.get("end_year"),
+            f"{subject}.end_year",
+            "end_year",
+            allow_none=True,
+        )
+    )
+    current = item.get("current")
+    if not isinstance(current, bool):
+        violations.append(
+            _profile_violation(f"{subject}.current", "current must be boolean")
+        )
+        return violations
+
+    start_year = item.get("start_year")
+    end_year = item.get("end_year")
+    if current and end_year is not None:
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "current records must have end_year=null",
+            )
+        )
+    if not current and end_year is None:
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "non-current records must have an end_year",
+            )
+        )
+    if (
+        isinstance(start_year, int)
+        and not isinstance(start_year, bool)
+        and isinstance(end_year, int)
+        and not isinstance(end_year, bool)
+        and end_year < start_year
+    ):
+        violations.append(
+            _profile_violation(
+                f"{subject}.end_year",
+                "end_year cannot be earlier than start_year",
+            )
+        )
+    return violations
+
+
+def _audit_profile_relation_records(
+    data: dict,
+    organizations: dict,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    seen_ids: set[str] = set()
+
+    affiliations = data.get("affiliations")
+    if not isinstance(affiliations, list):
+        violations.append(
+            _profile_violation("profile:affiliations", "affiliations must be a list")
+        )
+        affiliations = []
+
+    education = data.get("education")
+    if not isinstance(education, list):
+        violations.append(
+            _profile_violation("profile:education", "education must be a list")
+        )
+        education = []
+
+    def audit_common(
+        item: object,
+        *,
+        collection: str,
+        index: int,
+        fields: frozenset[str],
+    ) -> tuple[dict | None, str]:
+        subject = f"profile:{collection}[{index}]"
+        violations.extend(
+            _profile_exact_keys(item, fields, subject, f"{collection} record")
+        )
+        if not isinstance(item, dict):
+            return None, subject
+
+        identifier = item.get("id")
+        if not isinstance(identifier, str) or not PROFILE_ID_RE.fullmatch(identifier):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.id",
+                    "record id must use lowercase kebab-case",
+                )
+            )
+        elif identifier in seen_ids:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.id",
+                    f"duplicate profile record id: {identifier}",
+                )
+            )
+        else:
+            seen_ids.add(identifier)
+
+        organization_id = item.get("organization_id")
+        if not isinstance(organization_id, str) or organization_id not in organizations:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.organization_id",
+                    "organization_id must reference organizations",
+                )
+            )
+
+        violations.extend(_audit_profile_period(item, subject))
+        violations.extend(
+            _audit_profile_mentor(
+                item.get("advisor"),
+                f"{subject}.advisor",
+                allow_none=True,
+            )
+        )
+
+        coadvisors = item.get("coadvisors")
+        if not isinstance(coadvisors, list):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.coadvisors",
+                    "coadvisors must be a list",
+                )
+            )
+        else:
+            mentor_names: list[str] = []
+            advisor = item.get("advisor")
+            advisor_name = (
+                advisor.get("name")
+                if isinstance(advisor, dict)
+                else None
+            )
+            for mentor_index, mentor in enumerate(coadvisors):
+                mentor_subject = f"{subject}.coadvisors[{mentor_index}]"
+                violations.extend(
+                    _audit_profile_mentor(mentor, mentor_subject)
+                )
+                if isinstance(mentor, dict) and isinstance(mentor.get("name"), str):
+                    mentor_names.append(mentor["name"])
+            if len(mentor_names) != len(set(mentor_names)):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.coadvisors",
+                        "coadvisor names must be unique",
+                    )
+                )
+            if advisor_name and advisor_name in mentor_names:
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.coadvisors",
+                        "advisor cannot also be listed as coadvisor",
+                    )
+                )
+        return item, subject
+
+    for index, raw_item in enumerate(affiliations):
+        item, subject = audit_common(
+            raw_item,
+            collection="affiliations",
+            index=index,
+            fields=PROFILE_AFFILIATION_FIELDS,
+        )
+        if item is None:
+            continue
+
+        role_codes = item.get("role_codes")
+        role_codes_valid = (
+            isinstance(role_codes, list)
+            and bool(role_codes)
+            and all(
+                isinstance(code, str) and code in PROFILE_ROLE_CODES
+                for code in role_codes
+            )
+        )
+        if role_codes_valid:
+            role_codes_valid = len(role_codes) == len(set(role_codes))
+        if not role_codes_valid:
+            violations.append(
+                _profile_violation(
+                    f"{subject}.role_codes",
+                    "role_codes must be a unique non-empty list of approved codes",
+                )
+            )
+
+        funder_ids = item.get("funder_ids")
+        if not isinstance(funder_ids, list):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.funder_ids",
+                    "funder_ids must be a list",
+                )
+            )
+        else:
+            string_funders = [
+                funder_id
+                for funder_id in funder_ids
+                if isinstance(funder_id, str)
+            ]
+            if len(string_funders) != len(funder_ids):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.funder_ids",
+                        "funder_ids entries must be strings",
+                    )
+                )
+            elif len(string_funders) != len(set(string_funders)):
+                violations.append(
+                    _profile_violation(
+                        f"{subject}.funder_ids",
+                        "funder_ids must not contain duplicates",
+                    )
+                )
+            for funder_id in string_funders:
+                if funder_id not in organizations:
+                    violations.append(
+                        _profile_violation(
+                            f"{subject}.funder_ids",
+                            f"unknown funder organization: {funder_id!r}",
+                        )
+                    )
+
+    for index, raw_item in enumerate(education):
+        item, subject = audit_common(
+            raw_item,
+            collection="education",
+            index=index,
+            fields=PROFILE_EDUCATION_FIELDS,
+        )
+        if item is None:
+            continue
+        degree_code = item.get("degree_code")
+        if (
+            not isinstance(degree_code, str)
+            or degree_code not in PROFILE_DEGREE_CODES
+        ):
+            violations.append(
+                _profile_violation(
+                    f"{subject}.degree_code",
+                    "degree_code must be one of "
+                    f"{sorted(PROFILE_DEGREE_CODES)!r}",
+                )
+            )
+
+    return violations
+
+
+def _audit_profile(data: object) -> list[Violation]:
+    violations: list[Violation] = []
+    if not isinstance(data, dict):
+        return [_profile_violation("profile:top-level", "Profile must be a JSON object")]
+
+    violations.extend(
+        _profile_exact_keys(
+            data, PROFILE_REQUIRED_TOP_LEVEL, "profile:top-level", "Profile"
+        )
+    )
+
+    if data.get("schema_version") != "1.0.0":
+        violations.append(
+            _profile_violation(
+                "profile:schema_version",
+                "profile schema_version must equal '1.0.0'",
+            )
+        )
+
+    person = data.get("person")
+    violations.extend(
+        _profile_exact_keys(person, PROFILE_REQUIRED_PERSON, "profile:person", "person")
+    )
+    if isinstance(person, dict):
+        for field in ("name", "display_name"):
+            violations.extend(
+                _profile_nonempty_string(
+                    person.get(field), f"profile:person.{field}", f"person.{field}"
+                )
+            )
+        violations.extend(
+            _profile_nonempty_string(
+                person.get("email"), "profile:person.email", "person.email"
+            )
+        )
+        email = person.get("email")
+        if isinstance(email, str) and email.strip() and not re.fullmatch(
+            r"[^@\s]+@[^@\s]+\.[^@\s]+", email
+        ):
+            violations.append(
+                _profile_violation("profile:person.email", "person.email is invalid")
+            )
+        for field in ("website_url", "avatar_url"):
+            violations.extend(
+                _profile_https(
+                    person.get(field),
+                    f"profile:person.{field}",
+                    f"person.{field}",
+                )
+            )
+
+        location = person.get("location")
+        violations.extend(
+            _profile_exact_keys(
+                location,
+                PROFILE_REQUIRED_LOCATION,
+                "profile:person.location",
+                "person.location",
+            )
+        )
+        if isinstance(location, dict):
+            for field in ("city", "region", "country_code"):
+                violations.extend(
+                    _profile_nonempty_string(
+                        location.get(field),
+                        f"profile:person.location.{field}",
+                        f"person.location.{field}",
+                    )
+                )
+            country = location.get("country_code")
+            if isinstance(country, str) and country.strip() and not re.fullmatch(
+                r"[A-Z]{2}", country
+            ):
+                violations.append(
+                    _profile_violation(
+                        "profile:person.location.country_code",
+                        "person.location.country_code must be ISO-like two-letter uppercase code",
+                    )
+                )
+
+    profiles = data.get("profiles")
+    if not isinstance(profiles, dict):
+        violations.append(
+            _profile_violation("profile:profiles", "profiles must be an object")
+        )
+    else:
+        expected_sources = frozenset(PROFILE_SOURCE_FIELDS)
+        if frozenset(profiles) != expected_sources:
+            missing = sorted(expected_sources - frozenset(profiles))
+            unknown = sorted(frozenset(profiles) - expected_sources)
+            details = []
+            if missing:
+                details.append(f"missing sources: {', '.join(missing)}")
+            if unknown:
+                details.append(f"unknown sources: {', '.join(unknown)}")
+            violations.append(
+                _profile_violation(
+                    "profile:profiles",
+                    f"profiles has invalid sources; {'; '.join(details)}",
+                )
+            )
+
+        urls: list[str] = []
+        for source, expected_fields in PROFILE_SOURCE_FIELDS.items():
+            entry = profiles.get(source)
+            subject = f"profile:profiles.{source}"
+            violations.extend(
+                _profile_exact_keys(entry, expected_fields, subject, f"profiles.{source}")
+            )
+            if not isinstance(entry, dict):
+                continue
+            for field in expected_fields - {"url"}:
+                violations.extend(
+                    _profile_nonempty_string(
+                        entry.get(field),
+                        f"{subject}.{field}",
+                        f"profiles.{source}.{field}",
+                    )
+                )
+            violations.extend(
+                _profile_https(
+                    entry.get("url"), f"{subject}.url", f"profiles.{source}.url"
+                )
+            )
+            if isinstance(entry.get("url"), str) and entry["url"].strip():
+                urls.append(entry["url"])
+
+        for url, count in Counter(urls).items():
+            if count > 1:
+                violations.append(
+                    _profile_violation(
+                        f"profile:profiles.url:{url}",
+                        f"external profile URL is duplicated {count} times",
+                    )
+                )
+
+        orcid = profiles.get("orcid")
+        if isinstance(orcid, dict):
+            identifier = orcid.get("id")
+            if isinstance(identifier, str) and identifier.strip() and not re.fullmatch(
+                r"\d{4}-\d{4}-\d{4}-[\dX]{4}", identifier
+            ):
+                violations.append(
+                    _profile_violation(
+                        "profile:profiles.orcid.id",
+                        "ORCID id has invalid structural format",
+                    )
+                )
+
+    organizations = data.get("organizations")
+    if not isinstance(organizations, dict):
+        violations.append(
+            _profile_violation("profile:organizations", "organizations must be an object")
+        )
+    else:
+        for identifier, organization in sorted(organizations.items()):
+            subject = f"profile:organizations.{identifier}"
+            if not isinstance(identifier, str) or not PROFILE_ID_RE.fullmatch(identifier):
+                violations.append(
+                    _profile_violation(
+                        subject,
+                        "organization id must use lowercase kebab-case",
+                    )
+                )
+                continue
+            violations.extend(
+                _profile_exact_keys(
+                    organization,
+                    PROFILE_ORGANIZATION_FIELDS,
+                    subject,
+                    f"organization {identifier}",
+                )
+            )
+            if not isinstance(organization, dict):
+                continue
+            for field in ("name", "short_name"):
+                violations.extend(
+                    _profile_nonempty_string(
+                        organization.get(field),
+                        f"{subject}.{field}",
+                        f"organization {identifier}.{field}",
+                    )
+                )
+            url = organization.get("url")
+            if url is not None:
+                violations.extend(
+                    _profile_https(
+                        url, f"{subject}.url", f"organization {identifier}.url"
+                    )
+                )
+
+    if isinstance(organizations, dict):
+        violations.extend(_audit_profile_relation_records(data, organizations))
+
+    for path, value in _iter_profile_strings(data):
+        if re.search(r"<[^>]+>", value):
+            violations.append(
+                _profile_violation(
+                    f"profile:string:{path}",
+                    "structured profile strings must not contain HTML markup",
+                )
+            )
+
     return violations
 
 
@@ -184,9 +1021,14 @@ def audit_repository_data(root: Path) -> list[Violation]:
                 )
             )
 
+    profile = parsed.get("profile.json")
+
     translations = parsed.get("translations.json")
     if translations is not None:
-        violations.extend(_audit_translations(root, translations))
+        violations.extend(_audit_translations(root, translations, profile))
+
+    if profile is not None:
+        violations.extend(_audit_profile(profile))
 
     return sorted(
         violations,
