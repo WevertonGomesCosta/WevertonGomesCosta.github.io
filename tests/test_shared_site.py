@@ -187,7 +187,12 @@ class FixtureMixin:
             if name == "index.html":
                 source = source.replace("\n", "\r\n")
             write_bytes(root / name, source)
-        write_bytes(root / "404.html", "<html><body>404</body></html>\n")
+        write_bytes(
+            root / "404.html",
+            '<html><head><title data-profile-text="person.name" '
+            'data-profile-text-template="Not Found | {value}">'
+            'Not Found | Example Person</title></head><body>404</body></html>\n',
+        )
         return root
 
 
@@ -307,6 +312,27 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
         self.assertIn('content="Example Person"', rendered)
         self.assertIn('href="https://github.com/example"', rendered)
         self.assertIn('>Example Person</h1>', rendered)
+
+    def test_profile_text_template_preserves_editorial_prefix(self):
+        root = self.make_complete_fixture()
+        profile = shared.load_profile(root)
+        source = (
+            '<title data-profile-text="person.name" '
+            'data-profile-text-template="Not Found | {value}">'
+            'stale</title>\n'
+        )
+        rendered = shared.project_profile_bindings(
+            source, profile, root / "404.html"
+        )
+        self.assertIn(">Not Found | Example Person</title>", rendered)
+
+        with self.assertRaises(shared.RenderContractError):
+            shared.project_profile_bindings(
+                '<title data-profile-text="person.name" '
+                'data-profile-text-template="No placeholder">stale</title>\n',
+                profile,
+                root / "404.html",
+            )
 
     def test_profile_binding_rejects_unknown_key_and_nested_text(self):
         root = self.make_complete_fixture()
@@ -547,13 +573,24 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
             shared.write_all(root)
         self.assertEqual(page_a.read_bytes(), before)
 
-    def test_404_is_not_a_target_and_is_unchanged(self):
+    def test_404_is_profile_only_target(self):
         root = self.make_complete_fixture()
-        target = root / "404.html"
-        before = target.read_bytes()
         self.assertNotIn("404.html", {config.path for config in shared.PAGE_CONFIGS})
+        self.assertIn("404.html", shared.PROFILE_ONLY_PAGES)
+
+        profile_path = root / "profile.json"
+        profile = json.loads(profile_path.read_text(encoding="utf-8"))
+        profile["person"]["name"] = "Updated Person"
+        write_bytes(
+            profile_path,
+            json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        )
+
+        target = root / "404.html"
+        rendered = shared.render_all(root)[target]
+        self.assertIn(">Not Found | Updated Person</title>", rendered)
         shared.write_all(root)
-        self.assertEqual(target.read_bytes(), before)
+        self.assertEqual(target.read_text(encoding="utf-8"), rendered)
 
 
 class TestProductionSemanticControls(unittest.TestCase):
