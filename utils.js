@@ -377,7 +377,8 @@ const GithubReposModule = {
                       ? translations[currentLang] 
                       : {};
         
-        const siteUrl = repo.homepage || (repo.has_pages ? `https://wevertongomescosta.github.io/${repo.name}/` : null);
+        const portfolioBaseUrl = SiteProfile.get()?.person?.website_url?.replace(/\/+$/, '') || '';
+        const siteUrl = repo.homepage || (repo.has_pages && portfolioBaseUrl ? `${portfolioBaseUrl}/${repo.name}/` : null);
     
         let actionsHtml = '';
         if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
