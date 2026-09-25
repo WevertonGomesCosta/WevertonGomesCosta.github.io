@@ -72,6 +72,7 @@ class RepoFixture:
         "translations.json",
         "profile.json",
         "academic-registry.json",
+        "bibliographic-source-links.json",
         "fallback-data.json",
         "robots.txt",
         "sitemap.xml",
@@ -96,6 +97,31 @@ class RepoFixture:
                     )
             elif name == "profile.json":
                 path.write_text(json.dumps(valid_profile()), encoding="utf-8")
+            elif name == "bibliographic-source-links.json":
+                path.write_text(
+                    json.dumps({
+                        "schema_version": "1.0.0",
+                        "sources": {
+                            "google_scholar": {
+                                "record_id_scheme": "citation_for_view",
+                                "links": [],
+                            },
+                            "scopus": {
+                                "record_id_scheme": "scopus_id",
+                                "links": [],
+                            },
+                            "web_of_science": {
+                                "record_id_scheme": "doi",
+                                "links": [],
+                            },
+                            "orcid": {
+                                "record_id_scheme": "doi",
+                                "links": [],
+                            },
+                        },
+                    }),
+                    encoding="utf-8",
+                )
             elif name.endswith(".json"):
                 path.write_text("{}", encoding="utf-8")
             else:
@@ -537,7 +563,7 @@ class TestTranslationRules(unittest.TestCase):
 
 
 class TestAcademicRules(unittest.TestCase):
-    def _root(self, registry, fallback=None):
+    def _root(self, registry, fallback=None, source_links=None):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         root = Path(temp.name)
@@ -548,7 +574,34 @@ class TestAcademicRules(unittest.TestCase):
         (root / "fallback-data.json").write_text(
             json.dumps(fallback or {}), encoding="utf-8"
         )
+        if source_links is not None:
+            (root / "bibliographic-source-links.json").write_text(
+                json.dumps(source_links), encoding="utf-8"
+            )
         return root
+
+    @staticmethod
+    def _source_links(**overrides):
+        sources = {
+            "google_scholar": {
+                "record_id_scheme": "citation_for_view",
+                "links": [],
+            },
+            "scopus": {
+                "record_id_scheme": "scopus_id",
+                "links": [],
+            },
+            "web_of_science": {
+                "record_id_scheme": "doi",
+                "links": [],
+            },
+            "orcid": {
+                "record_id_scheme": "doi",
+                "links": [],
+            },
+        }
+        sources.update(overrides)
+        return {"schema_version": "1.0.0", "sources": sources}
 
     @staticmethod
     def _registry(works):
@@ -657,6 +710,239 @@ class TestAcademicRules(unittest.TestCase):
             if v.rule_id == "ACADEMIC_REGISTRY_STRUCTURE"
         ]
         self.assertTrue(structure, violations)
+
+    def test_empty_bibliographic_source_link_contract_is_valid(self):
+        root = self._root(
+            self._registry([]),
+            source_links=self._source_links(),
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertFalse(
+            [
+                v
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            ],
+            violations,
+        )
+
+    def test_source_link_requires_existing_publication(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "missing-publication",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        root = self._root(self._registry([work]), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+        }
+        self.assertIn(
+            "source-links:scopus:link:0:publication-id",
+            subjects,
+        )
+
+    def test_duplicate_source_record_id_is_rejected(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            },
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "alias",
+                "primary_record_id": "123456",
+                "match_basis": "manual_duplicate_reconciliation",
+            },
+        ]
+        root = self._root(self._registry([work]), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        self.assertIn(
+            "source-links:scopus:record-id:123456",
+            {
+                v.subject
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            },
+        )
+
+    def test_source_publication_pair_requires_exactly_one_primary(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+        ]
+        root = self._root(self._registry([work]), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        self.assertIn(
+            "source-links:google_scholar:publication:pub-a:primary",
+            {
+                v.subject
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            },
+        )
+
+    def test_alias_must_reference_primary_of_same_publication(self):
+        works = [
+            self._work("pub-a", "Publication A", "10.1/a"),
+            self._work("pub-b", "Publication B", "10.1/b"),
+        ]
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-b",
+                "role": "alias",
+                "primary_record_id": "Author:A",
+                "match_basis": "manual_duplicate_reconciliation",
+            },
+        ]
+        root = self._root(self._registry(works), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+        }
+        self.assertIn(
+            "source-links:google_scholar:publication:pub-b:primary",
+            subjects,
+        )
+        self.assertIn(
+            "source-links:google_scholar:record-id:Author:B:alias",
+            subjects,
+        )
+
+    def test_alias_without_primary_is_rejected(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-a",
+                "role": "alias",
+                "primary_record_id": "Author:Missing",
+                "match_basis": "manual_duplicate_reconciliation",
+            }
+        ]
+        root = self._root(self._registry([work]), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+        }
+        self.assertIn(
+            "source-links:google_scholar:publication:pub-a:primary",
+            subjects,
+        )
+        self.assertIn(
+            "source-links:google_scholar:record-id:Author:B:alias",
+            subjects,
+        )
+
+    def test_source_record_id_schemes_are_enforced(self):
+        works = [
+            self._work("pub-a", "Publication A", "10.1/a"),
+            self._work("pub-b", "Publication B", "10.1/b"),
+            self._work("pub-c", "Publication C", "10.1/c"),
+            self._work("pub-d", "Publication D", "10.1/d"),
+        ]
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [{
+            "record_id": "missing-colon",
+            "publication_id": "pub-a",
+            "role": "primary",
+            "match_basis": "normalized_title",
+        }]
+        links["sources"]["scopus"]["links"] = [{
+            "record_id": "not-numeric",
+            "publication_id": "pub-b",
+            "role": "primary",
+            "match_basis": "doi",
+        }]
+        links["sources"]["web_of_science"]["links"] = [{
+            "record_id": "10.1/c",
+            "publication_id": "pub-c",
+            "role": "primary",
+            "match_basis": "doi",
+        }]
+        links["sources"]["orcid"]["links"] = [{
+            "record_id": "doi:https://doi.org/10.1/d",
+            "publication_id": "pub-d",
+            "role": "primary",
+            "match_basis": "doi",
+        }]
+        root = self._root(self._registry(works), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        record_id_subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            and v.subject.endswith(":record-id")
+        }
+        self.assertEqual(
+            record_id_subjects,
+            {
+                "source-links:google_scholar:link:0:record-id",
+                "source-links:scopus:link:0:record-id",
+                "source-links:web_of_science:link:0:record-id",
+                "source-links:orcid:link:0:record-id",
+            },
+        )
+
+    def test_source_links_reject_metric_fields(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+                "citations": 99,
+            }
+        ]
+        root = self._root(self._registry([work]), source_links=links)
+        violations = data_rules.audit_academic_data(root)
+        matches = [
+            v
+            for v in violations
+            if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            and v.subject == "source-links:scopus:link:0"
+        ]
+        self.assertEqual(len(matches), 1)
+        self.assertIn("unknown keys: citations", matches[0].message)
 
     def test_bibliometric_unicode_hyphen_duplicate_is_detected_per_source(self):
         fallback = {
