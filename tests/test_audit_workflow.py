@@ -16,6 +16,8 @@ class TestWorkflowContract(unittest.TestCase):
             "fetch-depth: 0",
             'python-version: "3.13"',
             'python -m unittest discover -s tests -p "test_*.py"',
+            "Run shared site render check",
+            "python -B scripts/render_shared_site.py --check",
             "github.event.pull_request.base.sha",
             "github.event.before",
             "git cat-file -e",
@@ -25,6 +27,15 @@ class TestWorkflowContract(unittest.TestCase):
         for literal in required_literals:
             with self.subTest(literal=literal):
                 self.assertIn(literal, source)
+
+        self.assertLess(
+            source.index("Run unit tests"),
+            source.index("Run shared site render check"),
+        )
+        self.assertLess(
+            source.index("Run shared site render check"),
+            source.index("Resolve reference baseline"),
+        )
 
         self.assertNotIn("workflow_dispatch", source)
         self.assertIn('BASE_SHA="${{ github.event.pull_request.base.sha }}"', source)
