@@ -2085,6 +2085,17 @@ def _audit_bibliometric_metrics(
                 expected_status = (
                     None if source_available else "source_unavailable"
                 )
+                if (
+                    source_available
+                    and status not in {"observed", "value_unavailable"}
+                ):
+                    violations.append(
+                        _bibliometric_metrics_violation(
+                            f"{subject}:status",
+                            "linked record in an available source must be "
+                            "observed or value_unavailable",
+                        )
+                    )
 
             if expected_status is not None and status != expected_status:
                 violations.append(
