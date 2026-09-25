@@ -1,0 +1,844 @@
+{
+  "publications": {
+    "accepted-2026-bt-cotton-biosafety-meta-analysis": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "chapter-2026-aprendizado-maquina-agricultura": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "chapter-2026-big-data": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "chapter-2026-redes-neurais-agricultura": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2019-coffee-factor-analysis": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 34,
+        "record_id": "eJNKcHsAAAAJ:9yKSN-GCB0IC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1007/s10681-019-2499-x",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 22,
+        "record_id": "85073253514",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 16,
+        "record_id": "doi:10.1007/s10681-019-2499-x",
+        "status": "observed"
+      }
+    },
+    "journal-2019-rice-breeding-program-southeast-brazil": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 4,
+        "record_id": "eJNKcHsAAAAJ:u-x6o8ySG0sC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.4238/gmr18332",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 4,
+        "record_id": "85071667621",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 3,
+        "record_id": "doi:10.4238/gmr18332",
+        "status": "observed"
+      }
+    },
+    "journal-2020-adaptability-stability-flooded-rice": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 12,
+        "record_id": "eJNKcHsAAAAJ:d1gkVwhDpl0C",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.4238/gmr18434",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "85090047441",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "doi:10.4238/gmr18434",
+        "status": "observed"
+      }
+    },
+    "journal-2020-rice-testing-time-meta-analysis": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "eJNKcHsAAAAJ:2osOgNQ5qMEC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1590/1984-70332020v20n4a55",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "85095700543",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "doi:10.1590/1984-70332020v20n4a55",
+        "status": "observed"
+      }
+    },
+    "journal-2021-alfalfa-dry-matter-base-populations": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 3,
+        "record_id": "eJNKcHsAAAAJ:W7OEmFMy1HYC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1590/1984-70332021v21n3a41",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "85122793528",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "doi:10.1590/1984-70332021v21n3a41",
+        "status": "observed"
+      }
+    },
+    "journal-2021-fuzzy-adaptability-flooded-rice": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "eJNKcHsAAAAJ:YsMSGLbcyi4C",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1111/pbr.12973",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 3,
+        "record_id": "85117190747",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "doi:10.1111/pbr.12973",
+        "status": "observed"
+      }
+    },
+    "journal-2021-genome-enabled-prediction-trait-complexity": {
+      "google_scholar": {
+        "alias_record_ids": [
+          "eJNKcHsAAAAJ:Se3iqnhoufwC"
+        ],
+        "citations": 18,
+        "record_id": "eJNKcHsAAAAJ:qjMakFHDy7sC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1002/csc2.20488",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 14,
+        "record_id": "85104263465",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 11,
+        "record_id": "doi:10.1002/csc2.20488",
+        "status": "observed"
+      }
+    },
+    "journal-2021-ml-statistics-coffee-environments": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 12,
+        "record_id": "eJNKcHsAAAAJ:zYLM7Y9cAGgC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1371/journal.pone.0245298",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 10,
+        "record_id": "85099892397",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 6,
+        "record_id": "doi:10.1371/journal.pone.0245298",
+        "status": "observed"
+      }
+    },
+    "journal-2021-multiinformation-flooded-rice-stability": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "eJNKcHsAAAAJ:3fE2CSJIrl8C",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.33158/asb.r145.v8.2022",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2021-quarter-century-genetic-progress-rice": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 4,
+        "record_id": "eJNKcHsAAAAJ:eQOLeE2rZwMC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1111/pbr.12972",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "85117372664",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "doi:10.1111/pbr.12972",
+        "status": "observed"
+      }
+    },
+    "journal-2022-genomic-prediction-ml-nn-epistasis": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 22,
+        "record_id": "eJNKcHsAAAAJ:UebtZRa9Y70C",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1016/j.csbj.2022.09.029",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 19,
+        "record_id": "85139307465",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 15,
+        "record_id": "doi:10.1016/j.csbj.2022.09.029",
+        "status": "observed"
+      }
+    },
+    "journal-2022-multitrait-bayesian-flooded-rice": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 8,
+        "record_id": "eJNKcHsAAAAJ:_FxGoFyzp5QC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1007/s10681-022-03077-x",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "85135566113",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 5,
+        "record_id": "doi:10.1007/s10681-022-03077-x",
+        "status": "observed"
+      }
+    },
+    "journal-2022-soybean-maintainers-self-organizing-maps": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 7,
+        "record_id": "eJNKcHsAAAAJ:roLk4NBRz8UC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1002/csc2.20816",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "85138658502",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "doi:10.1002/csc2.20816",
+        "status": "observed"
+      }
+    },
+    "journal-2023-early-biomarkers-eucalyptus-water-deficit": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 11,
+        "record_id": "eJNKcHsAAAAJ:8k81kl-MbHgC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/agronomy13030937",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 9,
+        "record_id": "85152360293",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 8,
+        "record_id": "doi:10.3390/agronomy13030937",
+        "status": "observed"
+      }
+    },
+    "journal-2023-eucalyptus-water-deficit-metabolic": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 8,
+        "record_id": "eJNKcHsAAAAJ:MXK_kJrjxJIC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/agronomy13051261",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 6,
+        "record_id": "85160444099",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 4,
+        "record_id": "doi:10.3390/agronomy13051261",
+        "status": "observed"
+      }
+    },
+    "journal-2023-prediction-importance-predictors-ci-ml": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 6,
+        "record_id": "eJNKcHsAAAAJ:5nxA0vEk-isC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.33158/asb.r179.v9.2023",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2024-bayesian-soybean-shading-multitrait": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "eJNKcHsAAAAJ:YOwf2qJgpHMC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1590/1678-992x-2022-0233",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "85188537023",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "doi:10.1590/1678-992x-2022-0233",
+        "status": "observed"
+      }
+    },
+    "journal-2024-cassava-drought-genomic-selection": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 9,
+        "record_id": "eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3389/fpls.2024.1483340",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 7,
+        "record_id": "85213532603",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 7,
+        "record_id": "doi:10.3389/fpls.2024.1483340",
+        "status": "observed"
+      }
+    },
+    "journal-2024-eucalyptus-biomarkers-physiological-disorder": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "eJNKcHsAAAAJ:aqlVkmm33-oC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1016/j.sajb.2024.10.052",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 1,
+        "record_id": "85208483551",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "doi:10.1016/j.sajb.2024.10.052",
+        "status": "observed"
+      }
+    },
+    "journal-2024-mars-genomic-prediction-nonadditive": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 3,
+        "record_id": "eJNKcHsAAAAJ:4TOpqqG69KYC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/agronomy14102234",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 4,
+        "record_id": "85207560508",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "doi:10.3390/agronomy14102234",
+        "status": "observed"
+      }
+    },
+    "journal-2024-pig-body-weight-computer-vision": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 21,
+        "record_id": "eJNKcHsAAAAJ:M3ejUd6NZC8C",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1016/j.livsci.2024.105433",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 13,
+        "record_id": "85187690139",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 13,
+        "record_id": "doi:10.1016/j.livsci.2024.105433",
+        "status": "observed"
+      }
+    },
+    "journal-2024-pig-body-weight-supervised-ml": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "eJNKcHsAAAAJ:qxL8FJ1GzNcC",
+        "status": "observed"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.37496/rbz5320240001",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 2,
+        "record_id": "doi:10.37496/rbz5320240001",
+        "status": "observed"
+      }
+    },
+    "journal-2025-beyond-wood-log-eucalyptus-epd": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/ijpb16040124",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "105025783242",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2025-linking-bark-anatomy-eucalyptus-epd": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:QIV2ME_5wuYC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.31421/ijhs/31/2025/15419",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2025-multitrait-selection-coffee-postharvest": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:7PzlFSSx8tAC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1590/1678-992x-2025-0020",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "105024199202",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "doi:10.1590/1678-992x-2025-0020",
+        "status": "observed"
+      }
+    },
+    "journal-2026-comparison-ml-marker-identification-gwas": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:ZeXyd9-uunAC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/ijpb17010006",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "105029115097",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2026-trait-prediction-soybean-shaded": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:qUcmZB5y_30C",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "preprint-2024-trait-prediction-soybean-shaded": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:Zph67rFs4hoC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1101/2024.01.31.578252",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    }
+  },
+  "schema_version": "1.0.0",
+  "source_snapshot": {
+    "fallback_last_updated": "22/09/2026 09:40",
+    "registry_updated_at": "2026-09-23",
+    "source_links_schema_version": "1.0.0"
+  }
+}

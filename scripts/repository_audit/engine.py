@@ -45,6 +45,8 @@ RULE_COVERAGE: dict[Rule, frozenset[str]] = {
     audit_academic_data: frozenset({
         "ACADEMIC_REGISTRY_STRUCTURE", "ACADEMIC_REGISTRY_DUPLICATE_ID",
         "ACADEMIC_REGISTRY_DUPLICATE_DOI", "ACADEMIC_REGISTRY_DUPLICATE_TITLE",
+        "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE",
+        "BIBLIOMETRIC_METRICS_STRUCTURE",
         "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
     }),
     audit_runtime_policy: frozenset({
