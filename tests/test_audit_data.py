@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 import sys
 import tempfile
@@ -184,6 +185,21 @@ class TestProfileFactTranslationContract(unittest.TestCase):
             and v.subject.endswith(":required")
         ]
         self.assertEqual(len(matches), 2)
+
+
+class TestProfilePlaceholderRegistryParity(unittest.TestCase):
+    def test_python_and_javascript_placeholder_registries_match(self):
+        source = (ROOT / "profile-interpolation.js").read_text(encoding="utf-8")
+        match = re.search(
+            r"const PLACEHOLDER_NAMES = Object\.freeze\(\[(.*?)\]\);",
+            source,
+            flags=re.S,
+        )
+        self.assertIsNotNone(match)
+        javascript = frozenset(
+            re.findall(r"'(profile_[a-z0-9_]+)'", match.group(1))
+        )
+        self.assertEqual(javascript, data_rules.PROFILE_FACT_PLACEHOLDERS)
 
 
 class TestProfileRules(unittest.TestCase):
