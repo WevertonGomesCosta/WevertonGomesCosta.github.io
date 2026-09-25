@@ -26,6 +26,9 @@ jobs:
           node --check utils.js
           node tests/test_profile_interpolation.js
 
+      - name: Check bibliometric metrics build
+        run: python scripts/build_bibliometric_metrics.py --check
+
       - name: Run unit tests
         run: python -m unittest discover -s tests -p "test_*.py"
 
