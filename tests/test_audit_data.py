@@ -73,6 +73,7 @@ class RepoFixture:
         "profile.json",
         "academic-registry.json",
         "bibliographic-source-links.json",
+        "bibliometric-metrics.json",
         "fallback-data.json",
         "robots.txt",
         "sitemap.xml",
@@ -1108,6 +1109,101 @@ class TestAcademicRules(unittest.TestCase):
         )
         self.assertIn(
             "source-links:google_scholar:link:1:match-basis",
+            subjects,
+        )
+
+    def test_empty_bibliometric_metrics_contract_is_valid(self):
+        registry = self._registry([])
+        links = self._source_links()
+        fallback = {"academicData": {}}
+        metrics = {
+            "schema_version": "1.0.0",
+            "source_snapshot": {
+                "fallback_last_updated": None,
+                "registry_updated_at": "2026-09-24",
+                "source_links_schema_version": "1.0.0",
+            },
+            "publications": {},
+        }
+        violations = data_rules._audit_bibliometric_metrics(
+            metrics, registry, links, fallback
+        )
+        self.assertEqual(violations, [])
+
+    def test_bibliometric_metrics_status_semantics_are_enforced(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        registry = self._registry([work])
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {"articles": []},
+                "scopus": {
+                    "articles": [
+                        {
+                            "scopus_id": "123456",
+                            "doi": "10.1/a",
+                            "cited_by": {"value": 0},
+                        }
+                    ]
+                },
+                "web_of_science": {"articles": []},
+                "orcid": {"articles": []},
+            }
+        }
+        metrics = {
+            "schema_version": "1.0.0",
+            "source_snapshot": {
+                "fallback_last_updated": None,
+                "registry_updated_at": "2026-09-24",
+                "source_links_schema_version": "1.0.0",
+            },
+            "publications": {
+                "pub-a": {
+                    "google_scholar": {
+                        "alias_record_ids": [],
+                        "citations": None,
+                        "record_id": None,
+                        "status": "record_absent",
+                    },
+                    "scopus": {
+                        "alias_record_ids": [],
+                        "citations": None,
+                        "record_id": "123456",
+                        "status": "observed",
+                    },
+                    "web_of_science": {
+                        "alias_record_ids": [],
+                        "citations": None,
+                        "record_id": None,
+                        "status": "record_absent",
+                    },
+                    "orcid": {
+                        "alias_record_ids": [],
+                        "citations": None,
+                        "record_id": None,
+                        "status": "record_absent",
+                    },
+                }
+            },
+        }
+        violations = data_rules._audit_bibliometric_metrics(
+            metrics, registry, links, fallback
+        )
+        subjects = {
+            violation.subject
+            for violation in violations
+            if violation.rule_id == "BIBLIOMETRIC_METRICS_STRUCTURE"
+        }
+        self.assertIn(
+            "metrics:publication:pub-a:source:scopus:status",
             subjects,
         )
 
