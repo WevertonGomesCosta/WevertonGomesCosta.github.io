@@ -29,6 +29,38 @@ const DateFormatter = {
     }
 };
 
+
+// =================================================================================
+// MÓDULO: Perfil Canônico Gerado
+// =================================================================================
+const SiteProfile = {
+    cached: undefined,
+
+    get() {
+        if (this.cached !== undefined) return this.cached;
+
+        const node = document.getElementById('site-profile-data');
+        if (!node) {
+            console.error('SiteProfile: projeção canônica #site-profile-data não encontrada.');
+            this.cached = null;
+            return null;
+        }
+
+        try {
+            const parsed = JSON.parse(node.textContent || '');
+            if (!parsed || typeof parsed !== 'object' || !parsed.person || !parsed.profiles) {
+                throw new Error('estrutura de perfil inválida');
+            }
+            this.cached = parsed;
+            return parsed;
+        } catch (error) {
+            console.error('SiteProfile: falha ao ler a projeção canônica.', error);
+            this.cached = null;
+            return null;
+        }
+    }
+};
+
 // =================================================================================
 // Módulo: Configurações Gerais da Página
 // --- ALTERAÇÃO (Bug Fix 2: Data Privacidade) ---
@@ -1402,6 +1434,16 @@ const CvPdfGenerator = {
         const lang = typeof currentLang !== 'undefined' ? currentLang : 'pt';
         const langContent = translations[lang] || translations['pt'];
         const pdfStrings = langContent.pdf || {};
+        const profile = SiteProfile.get();
+        const person = profile?.person || {};
+        const linkedinUrl = profile?.profiles?.linkedin?.url || '';
+        const linkedinLabel = linkedinUrl
+            .replace(/^https?:\/\/(?:www\.)?/, '')
+            .replace(/\/$/, '');
+        const location = person.location || {};
+        const profileLocation = [location.city, location.region, location.country_code]
+            .filter(Boolean)
+            .join(' - ');
         const toast = document.getElementById('toast-notification');
         const originalButtonHTML = clickedButton.innerHTML; 
 
@@ -1494,7 +1536,7 @@ const CvPdfGenerator = {
             // Pega o idioma atual (necessário para a correção do Location)
             const lang = window.currentLang || 'pt';
 
-            doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(langContent['hero-name'] || 'Weverton Gomes da Costa', headerX, y + 15, { maxWidth: headerW });
+            doc.setFontSize(20).setFont('helvetica', 'bold').setTextColor(0).text(person.name || document.getElementById('hero-name')?.textContent || '', headerX, y + 15, { maxWidth: headerW });
             
             // --- ALTERAÇÃO: Adicionando todos os subtítulos ---
             
@@ -1511,18 +1553,22 @@ const CvPdfGenerator = {
 
             // Posições 'y' ajustadas para os itens seguintes:
             doc.setFontSize(9).setFont('helvetica', 'normal').setTextColor(80);
-            doc.text(`Email: wevertonufv@gmail.com`, headerX, y + 70); 
-            
-            doc.text(`LinkedIn: linkedin.com/in/wevertoncosta`, headerX, y + 82); 
-            doc.setTextColor(40, 40, 255); 
-            try {
-                doc.textWithLink('linkedin.com/in/wevertoncosta', headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: 'https://linkedin.com/in/wevertoncosta' }); 
-            } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
-            doc.setTextColor(80); 
+            if (person.email) {
+                doc.text(`Email: ${person.email}`, headerX, y + 70);
+            }
+
+            if (linkedinLabel) {
+                doc.text(`LinkedIn: ${linkedinLabel}`, headerX, y + 82);
+                doc.setTextColor(40, 40, 255);
+                try {
+                    doc.textWithLink(linkedinLabel, headerX + doc.getTextWidth('LinkedIn: '), y + 82, { url: linkedinUrl });
+                } catch (e) { console.warn("jsPDF textWithLink pode não ser suportado."); }
+                doc.setTextColor(80);
+            }
 
             // Correção do "Location" (como feito anteriormente)
             const locationLabel = (lang === 'pt') ? 'Localização:' : 'Location:';
-            doc.text(`${locationLabel} ${langContent['pdf-location'] || 'Viçosa - MG, Brazil'}`, headerX, y + 94); 
+            doc.text(`${locationLabel} ${langContent['pdf-location'] || profileLocation}`, headerX, y + 94); 
 
             // --- ALTERAÇÃO: Ajusta o 'y' final para acomodar a imagem maior (avatarSize) e os subtítulos (25 pts) ---
             const finalYIncrement = avatarDataUrl ? avatarSize + 25 : 80 + 25; // Usa o avatarSize (100)
@@ -1892,7 +1938,12 @@ const CvPdfGenerator = {
             } else { 
                 fileNameKey = 'cv-file-name-academic';
             }
-            const fileName = langContent[fileNameKey] || `CV-Weverton_Gomes_da_Costa_${cvType}_${lang}.pdf`; 
+            const profileFileStem = (person.name || 'CV')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^A-Za-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            const fileName = langContent[fileNameKey] || `CV-${profileFileStem}_${cvType}_${lang}.pdf`; 
 
             doc.save(fileName);
 
@@ -1921,7 +1972,11 @@ const CvPdfGenerator = {
 // =================================================================================
 const ClipboardCopier = {
     init() {
-        const emailToCopy = 'wevertonufv@gmail.com';
+        const emailToCopy = SiteProfile.get()?.person?.email;
+        if (!emailToCopy) {
+            console.error('ClipboardCopier: e-mail canônico indisponível.');
+            return;
+        }
 
         const copyTriggers = [
             document.getElementById('copy-email-link'),
