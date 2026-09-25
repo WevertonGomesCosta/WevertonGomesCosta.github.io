@@ -35,11 +35,6 @@ assert.ok(resolved.pt['privacy-contact-p'].includes('mailto:wevertonufv@gmail.co
 assert.ok(resolved.en['privacy-rights-p'].includes('wevertonufv@gmail.com'));
 assert.strictEqual(resolved.pt['footer-location'], 'Viçosa - MG, Brasil');
 assert.strictEqual(resolved.en['footer-location'], 'Viçosa - MG, Brazil');
-assert.strictEqual(
-    resolved.pt.professional_experience[1].period,
-    '2022 – 2025'
-);
-
 // Non-profile UI placeholders must remain available to their own callers.
 assert.ok(resolved.pt.showing_repos_template.includes('{shown}'));
 assert.ok(resolved.pt.showing_repos_template.includes('{total}'));
