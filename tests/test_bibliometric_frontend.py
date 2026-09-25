@@ -137,6 +137,16 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
 
         self.assertEqual(mismatches, [])
 
+    def test_runtime_uses_last_valid_value_for_stale_metric(self):
+        self.assertIn(
+            "(metric.status === 'observed' || metric.status === 'stale')",
+            self.utils,
+        )
+        self.assertIn(
+            "return { value: metric.citations, status: metric.status };",
+            self.utils,
+        )
+
     def test_runtime_keeps_metric_status_with_normalized_publication(self):
         self.assertIn(
             "cited_by: { value: cites, status: citationStatus }",
