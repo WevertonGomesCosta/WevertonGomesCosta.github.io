@@ -17,6 +17,7 @@ REQUIRED_FILES = (
     "404.html",
     "style.css",
     "utils.js",
+    "profile-interpolation.js",
     "translations.json",
     "profile.json",
     "academic-registry.json",
@@ -39,6 +40,99 @@ TRANSLATION_ATTRIBUTES = (
     "data-key-title",
     "data-key-aria-label",
 )
+
+PROFILE_TRANSLATION_PLACEHOLDER_RE = re.compile(r"\{(profile_[a-z0-9_]+)\}")
+PROFILE_FACT_PLACEHOLDERS = frozenset(
+    {
+        "profile_person_name",
+        "profile_display_name",
+        "profile_email",
+        "profile_city",
+        "profile_region",
+        "profile_org_ufv_name",
+        "profile_org_ufv_short",
+        "profile_org_embrapa_name",
+        "profile_org_embrapa_short",
+        "profile_org_cnpq_name",
+        "profile_org_cnpq_short",
+        "profile_org_fapemig_name",
+        "profile_org_fapemig_short",
+        "profile_org_conecta_name",
+        "profile_edu_phd_stat_start_year",
+        "profile_edu_phd_stat_end_label",
+        "profile_edu_phd_gen_start_year",
+        "profile_edu_phd_gen_end_year",
+        "profile_edu_msc_start_year",
+        "profile_edu_msc_end_year",
+        "profile_edu_bsc_start_year",
+        "profile_edu_bsc_end_year",
+        "profile_aff_postdoc_cnpq_2025_start_year",
+        "profile_aff_postdoc_cnpq_2025_end_year",
+        "profile_aff_postdoc_fapemig_start_year",
+        "profile_aff_postdoc_fapemig_end_year",
+        "profile_aff_postdoc_cnpq_2022_start_year",
+        "profile_aff_postdoc_cnpq_2022_end_year",
+        "profile_aff_postdoc_embrapa_start_year",
+        "profile_aff_postdoc_embrapa_end_year",
+        "profile_aff_conecta_start_year",
+        "profile_aff_conecta_end_label",
+        "profile_postdoc_history_start_year",
+        "profile_postdoc_history_end_year",
+        "profile_mentor_phd_stat_advisor",
+        "profile_mentor_postdoc_fapemig_advisor",
+        "profile_mentor_postdoc_cnpq_2022_advisor",
+        "profile_mentor_postdoc_embrapa_advisor",
+        "profile_mentor_phd_gen_advisor",
+        "profile_mentor_phd_gen_coadvisor",
+        "profile_mentor_msc_advisor",
+        "profile_mentor_msc_coadvisor",
+        "profile_mentor_bsc_advisor",
+    }
+)
+
+PROFILE_REQUIRED_PLACEHOLDERS_BY_KEY = {
+    "page-title": frozenset({"profile_display_name"}),
+    "projects-page-title": frozenset({"profile_person_name"}),
+    "publications-page-title": frozenset({"profile_person_name"}),
+    "privacy-page-title": frozenset({"profile_person_name"}),
+    "projects-meta-description": frozenset({"profile_person_name"}),
+    "publications-meta-description": frozenset({"profile_person_name"}),
+    "privacy-meta-description": frozenset({"profile_person_name"}),
+    "footer-title": frozenset({"profile_display_name"}),
+    "footer-location": frozenset({"profile_city", "profile_region"}),
+    "privacy-rights-p": frozenset({"profile_email"}),
+    "privacy-contact-p": frozenset({"profile_email"}),
+    "edu-date1": frozenset(
+        {"profile_edu_phd_stat_start_year", "profile_edu_phd_stat_end_label"}
+    ),
+    "edu-date2": frozenset(
+        {
+            "profile_aff_postdoc_fapemig_start_year",
+            "profile_aff_postdoc_fapemig_end_year",
+        }
+    ),
+    "edu-date3": frozenset(
+        {
+            "profile_aff_postdoc_cnpq_2022_start_year",
+            "profile_aff_postdoc_cnpq_2022_end_year",
+        }
+    ),
+    "edu-date-postdoc-cnpq-2025": frozenset(
+        {"profile_aff_postdoc_cnpq_2025_start_year"}
+    ),
+    "edu-advisor1": frozenset({"profile_mentor_phd_stat_advisor"}),
+    "edu-advisor2": frozenset({"profile_mentor_postdoc_fapemig_advisor"}),
+    "edu-advisor3": frozenset({"profile_mentor_postdoc_cnpq_2022_advisor"}),
+    "edu-advisor4": frozenset({"profile_mentor_postdoc_embrapa_advisor"}),
+    "edu-advisor5": frozenset(
+        {"profile_mentor_phd_gen_advisor", "profile_mentor_phd_gen_coadvisor"}
+    ),
+    "edu-advisor6": frozenset(
+        {"profile_mentor_msc_advisor", "profile_mentor_msc_coadvisor"}
+    ),
+    "edu-advisor7": frozenset({"profile_mentor_bsc_advisor"}),
+    "pdf-location": frozenset({"profile_city"}),
+}
 
 
 def read_repository_json(root: Path, relative: str) -> tuple[object | None, str | None]:
@@ -65,7 +159,123 @@ def _translation_maps(data: object) -> dict[str, dict[str, object]] | None:
     return {language: data[language] for language in SUPPORTED_LANGUAGES}
 
 
-def _audit_translations(root: Path, data: object) -> list[Violation]:
+def _iter_translation_strings(value: object, path: str = ""):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            child = f"{path}.{key}" if path else str(key)
+            yield from _iter_translation_strings(item, child)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from _iter_translation_strings(item, f"{path}[{index}]")
+    elif isinstance(value, str):
+        yield path, value
+
+
+def _profile_protected_translation_literals(profile: object) -> frozenset[str]:
+    if not isinstance(profile, dict):
+        return frozenset()
+
+    values: set[str] = set()
+    person = profile.get("person")
+    if isinstance(person, dict):
+        for key in ("name", "display_name", "email"):
+            value = person.get(key)
+            if isinstance(value, str) and len(value) >= 3:
+                values.add(value)
+
+    organizations = profile.get("organizations")
+    if isinstance(organizations, dict):
+        for organization in organizations.values():
+            if not isinstance(organization, dict):
+                continue
+            for key in ("name", "short_name"):
+                value = organization.get(key)
+                if isinstance(value, str) and len(value) >= 3:
+                    values.add(value)
+
+    for collection in ("education", "affiliations"):
+        records = profile.get(collection)
+        if not isinstance(records, list):
+            continue
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            mentors: list[object] = [record.get("advisor")]
+            coadvisors = record.get("coadvisors")
+            if isinstance(coadvisors, list):
+                mentors.extend(coadvisors)
+            for mentor in mentors:
+                if not isinstance(mentor, dict):
+                    continue
+                name = mentor.get("name")
+                if isinstance(name, str) and len(name) >= 3:
+                    values.add(name)
+
+    return frozenset(values)
+
+
+def _audit_profile_translation_contract(
+    maps: dict[str, dict[str, object]],
+    profile: object,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    protected_literals = _profile_protected_translation_literals(profile)
+
+    for language, mapping in maps.items():
+        for path, value in _iter_translation_strings(mapping):
+            placeholders = frozenset(
+                PROFILE_TRANSLATION_PLACEHOLDER_RE.findall(value)
+            )
+            unknown = sorted(placeholders - PROFILE_FACT_PLACEHOLDERS)
+            if unknown:
+                violations.append(
+                    Violation(
+                        "PROFILE_FACT_CONTRACT",
+                        "translations.json",
+                        f"{language}:{path}:placeholder",
+                        "Unknown profile interpolation placeholder(s): "
+                        + ", ".join(unknown),
+                        metadata={"unknown_placeholders": unknown},
+                    )
+                )
+
+            top_level_key = path.split(".", 1)[0].split("[", 1)[0]
+            required = PROFILE_REQUIRED_PLACEHOLDERS_BY_KEY.get(top_level_key)
+            if required is not None:
+                missing = sorted(required - placeholders)
+                if missing:
+                    violations.append(
+                        Violation(
+                            "PROFILE_FACT_CONTRACT",
+                            "translations.json",
+                            f"{language}:{top_level_key}:required",
+                            "Required canonical profile placeholder(s) missing: "
+                            + ", ".join(missing),
+                            metadata={"missing_placeholders": missing},
+                        )
+                    )
+
+            for literal in sorted(protected_literals, key=lambda item: (-len(item), item)):
+                if literal in value:
+                    violations.append(
+                        Violation(
+                            "PROFILE_FACT_CONTRACT",
+                            "translations.json",
+                            f"{language}:{path}:literal:{literal}",
+                            "Canonical profile fact is duplicated literally in translations; "
+                            "use an approved profile placeholder",
+                            metadata={"literal": literal},
+                        )
+                    )
+
+    return violations
+
+
+def _audit_translations(
+    root: Path,
+    data: object,
+    profile: object | None = None,
+) -> list[Violation]:
     violations: list[Violation] = []
     maps = _translation_maps(data)
     if maps is None:
@@ -151,6 +361,9 @@ def _audit_translations(root: Path, data: object) -> list[Violation]:
                             metadata={"missing_languages": missing},
                         )
                     )
+
+    if profile is not None:
+        violations.extend(_audit_profile_translation_contract(maps, profile))
 
     return violations
 
@@ -801,11 +1014,12 @@ def audit_repository_data(root: Path) -> list[Violation]:
                 )
             )
 
+    profile = parsed.get("profile.json")
+
     translations = parsed.get("translations.json")
     if translations is not None:
-        violations.extend(_audit_translations(root, translations))
+        violations.extend(_audit_translations(root, translations, profile))
 
-    profile = parsed.get("profile.json")
     if profile is not None:
         violations.extend(_audit_profile(profile))
 
