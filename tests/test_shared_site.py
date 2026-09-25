@@ -687,6 +687,17 @@ class TestProductionSemanticControls(unittest.TestCase):
             "CV runtime contains canonical academic literals",
         )
 
+    def test_profile_interpolation_loads_before_utils_on_all_pages(self):
+        for name in PAGES:
+            source = (ROOT / name).read_text(encoding="utf-8")
+            with self.subTest(name=name):
+                self.assertEqual(source.count('src="profile-interpolation.js"'), 1)
+                self.assertEqual(source.count('src="utils.js"'), 1)
+                self.assertLess(
+                    source.index('src="profile-interpolation.js"'),
+                    source.index('src="utils.js"'),
+                )
+
     def test_production_pages_embed_one_runtime_profile_projection(self):
         expected = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
         for name in PAGES:
