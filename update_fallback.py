@@ -15,7 +15,11 @@
 # Autor: Weverton Gomes Costa
 # Versão: 14.0.0 (Pipeline transacional por fonte)
 
-import requests
+try:
+    import requests
+except ModuleNotFoundError:  # Import must remain safe for offline tests.
+    requests = None
+
 import json
 import re
 import csv
@@ -1166,6 +1170,12 @@ def run_update(
 ) -> int:
     """Executa uma atualização completa com reconciliação por fonte."""
     transaction_time = transaction_time or datetime.now()
+    if requests is None:
+        logging.critical(
+            "Dependência 'requests' indisponível; coleta não pode ser executada."
+        )
+        return 1
+
     try:
         config = build_runtime_config(load_keys(str(keys_file)))
     except ConfigurationError as exc:
