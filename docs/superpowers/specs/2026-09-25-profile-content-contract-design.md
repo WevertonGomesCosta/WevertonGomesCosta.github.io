@@ -476,13 +476,16 @@ Controlled interpolation and duplicate-fact protection are complete:
 - `PROFILE_FACT_CONTRACT` rejects protected canonical literals reintroduced into translated content and enforces required placeholders for active identity/contact/academic translation keys;
 - all four rendered pages load the interpolation module before `utils.js`;
 - unused legacy `professional_experience` / `education` translation blocks and four obsolete postdoctoral line/year keys were removed after repository-wide consumer checks confirmed they had no runtime consumer; this removes the remaining dead factual side-channel rather than preserving it;
-- CRLF/LF policy remains enforced after the new script insertion.
+- CRLF/LF policy remains enforced after the new script insertion;
+- shared-component fallbacks for display name and Conecta GEM now derive from `profile.json`, and the project GitHub Pages base URL in `utils.js` derives from `person.website_url`;
+- `404.html` is a profile-only renderer target so its title keeps the existing wording while deriving the person name canonically;
+- the JavaScript and Python approved-placeholder registries are checked for exact parity in the test suite.
 
 Final Block 3B gate:
 
 - profile translation interpolation Node integration: PASS;
 - JavaScript syntax checks: PASS;
-- 111 Python unit tests: PASS;
+- 114 Python unit tests: PASS;
 - shared-site renderer synchronized;
 - known debt: 11;
 - new violations: 0;
