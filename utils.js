@@ -603,12 +603,15 @@ const scholarScript = (function() {
     const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
 
     const publicationCitationMetric = (publicationId, source = 'google_scholar') => {
+        if (!window.bibliometricMetrics?.publications) {
+            return { value: 0, status: 'source_unavailable' };
+        }
         if (!publicationId) {
             return { value: 0, status: 'record_absent' };
         }
 
         const metric = window.bibliometricMetrics
-            ?.publications?.[publicationId]?.[source];
+            .publications?.[publicationId]?.[source];
 
         if (!metric || typeof metric !== 'object') {
             return { value: 0, status: 'record_absent' };
