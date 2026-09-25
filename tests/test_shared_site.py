@@ -1,6 +1,7 @@
 from pathlib import Path
 import contextlib
 import io
+import json
 import sys
 import tempfile
 import unittest
@@ -9,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import render_shared_site as shared
-from repository_audit import html_rules
+from repository_audit import data_rules, html_rules
 
 
 PAGES = (
@@ -421,6 +422,89 @@ class TestProductionSemanticControls(unittest.TestCase):
     def test_production_pages_are_renderer_synchronized(self):
         self.assertEqual(shared.check_all(ROOT), ())
 
+
+
+class TestProductionAccessibilityI18n(unittest.TestCase):
+    def test_block2_i18n_accessibility_rules_are_clean(self):
+        violations = data_rules.audit_repository_data(ROOT)
+        blocked = {
+            "I18N_FIXED_ARIA_LABEL",
+            "I18N_REFERENCE_MISSING",
+        }
+        remaining = [violation for violation in violations if violation.rule_id in blocked]
+        self.assertEqual(remaining, [])
+
+    def test_decorative_shared_profile_icons_are_hidden(self):
+        for name in PAGES:
+            source = (ROOT / name).read_text(encoding="utf-8")
+            document = html_rules.parse_html(name, source)
+            icons = [
+                element
+                for element in document.elements
+                if element.tag == "span"
+                and (element.attr("class") or "").find("icon-img") >= 0
+                and (
+                    (element.attr("class") or "").find("icon-licae") >= 0
+                    or (element.attr("class") or "").find("icon-conectagem") >= 0
+                )
+            ]
+            with self.subTest(name=name):
+                self.assertEqual(len(icons), 2)
+                self.assertTrue(
+                    all(element.attr("aria-hidden") == "true" for element in icons)
+                )
+                self.assertTrue(
+                    all(element.attr("aria-label") is None for element in icons)
+                )
+
+    def test_home_decorative_icons_and_feature_logos_are_hidden(self):
+        document = html_rules.parse_html(
+            "index.html",
+            (ROOT / "index.html").read_text(encoding="utf-8"),
+        )
+
+        emoji_icons = [
+            element
+            for element in document.elements
+            if element.tag == "span" and element.attr("class") == "icon"
+        ]
+        self.assertEqual(len(emoji_icons), 9)
+        self.assertTrue(
+            all(element.attr("aria-hidden") == "true" for element in emoji_icons)
+        )
+        self.assertTrue(
+            all(element.attr("aria-label") is None for element in emoji_icons)
+        )
+        self.assertTrue(all(element.attr("role") is None for element in emoji_icons))
+
+        feature_logos = [
+            element
+            for element in document.elements
+            if element.tag == "div" and element.attr("class") == "feature-logo"
+        ]
+        self.assertEqual(len(feature_logos), 2)
+        self.assertTrue(
+            all(element.attr("aria-hidden") == "true" for element in feature_logos)
+        )
+        self.assertTrue(
+            all(element.attr("aria-label") is None for element in feature_logos)
+        )
+        self.assertTrue(all(element.attr("role") is None for element in feature_logos))
+
+    def test_privacy_services_p2_translation_is_exact(self):
+        translations = json.loads(
+            (ROOT / "translations.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            translations["pt"]["privacy-services-p2"],
+            "Recomendo que você revise as políticas de privacidade desses serviços "
+            "para entender como eles tratam suas informações.",
+        )
+        self.assertEqual(
+            translations["en"]["privacy-services-p2"],
+            "I recommend that you review the privacy policies of these services "
+            "to understand how they handle your information.",
+        )
 
 
 if __name__ == "__main__":
