@@ -203,6 +203,120 @@ class TestProfileRules(unittest.TestCase):
         ]
         self.assertEqual(len(matches), 1)
 
+    def test_academic_relation_references_and_periods_are_validated(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            },
+            "cnpq": {
+                "name": "Conselho Nacional de Desenvolvimento Científico e Tecnológico",
+                "short_name": "CNPq",
+                "url": None,
+            },
+        }
+        profile["affiliations"] = [
+            {
+                "id": "postdoc-ufv",
+                "organization_id": "ufv",
+                "role_codes": ["postdoctoral_researcher"],
+                "start_year": 2025,
+                "end_year": 2025,
+                "current": False,
+                "funder_ids": ["cnpq"],
+                "advisor": {
+                    "name": "Example Advisor",
+                    "title_code": "professor",
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "phd-example",
+                "degree_code": "doctorate",
+                "organization_id": "ufv",
+                "start_year": 2023,
+                "end_year": None,
+                "current": True,
+                "advisor": {
+                    "name": "Example Advisor",
+                    "title_code": "professor",
+                },
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        self.assertFalse(
+            [v for v in violations if v.rule_id == "PROFILE_STRUCTURE"],
+            violations,
+        )
+
+        profile["affiliations"][0]["organization_id"] = "missing"
+        profile["affiliations"][0]["funder_ids"] = ["missing-funder"]
+        profile["education"][0]["end_year"] = 2022
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:affiliations[0].organization_id", subjects)
+        self.assertIn("profile:affiliations[0].funder_ids", subjects)
+        self.assertIn("profile:education[0].end_year", subjects)
+
+    def test_academic_record_ids_roles_and_mentors_are_validated(self):
+        profile = valid_profile()
+        profile["organizations"] = {
+            "ufv": {
+                "name": "Universidade Federal de Viçosa (UFV)",
+                "short_name": "UFV",
+                "url": None,
+            }
+        }
+        profile["affiliations"] = [
+            {
+                "id": "same-id",
+                "organization_id": "ufv",
+                "role_codes": ["unknown-role"],
+                "start_year": 2025,
+                "end_year": None,
+                "current": False,
+                "funder_ids": [],
+                "advisor": {
+                    "name": "Advisor",
+                    "title_code": "unknown-title",
+                },
+                "coadvisors": [],
+            }
+        ]
+        profile["education"] = [
+            {
+                "id": "same-id",
+                "degree_code": "unknown-degree",
+                "organization_id": "ufv",
+                "start_year": 2026,
+                "end_year": 2025,
+                "current": False,
+                "advisor": None,
+                "coadvisors": [],
+            }
+        ]
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:affiliations[0].role_codes", subjects)
+        self.assertIn("profile:affiliations[0].advisor.title_code", subjects)
+        self.assertIn("profile:affiliations[0].end_year", subjects)
+        self.assertIn("profile:education[0].id", subjects)
+        self.assertIn("profile:education[0].degree_code", subjects)
+        self.assertIn("profile:education[0].end_year", subjects)
+
 
 class TestTranslationRules(unittest.TestCase):
     def _audit(self, html: str, translations: dict):
