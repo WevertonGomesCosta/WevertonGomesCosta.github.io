@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+import html
+import json
 import os
 from pathlib import Path
 import re
@@ -12,6 +14,16 @@ from typing import Mapping, Sequence
 
 TOKEN_RE = re.compile(r"@@([A-Z0-9_]+)@@")
 MARKER_RE = re.compile(r"<!-- shared:([a-z0-9-]+):(start|end) -->")
+TAG_RE = re.compile(r"<[^<>]+>")
+PROFILE_ATTR_MARKER_RE = re.compile(
+    r'\\bdata-profile-(content|href|src|alt)="([^"]+)"'
+)
+PROFILE_TEXT_RE = re.compile(
+    r'(?P<open><(?P<tag>[A-Za-z][A-Za-z0-9:-]*)\\b[^<>]*'
+    r'\\bdata-profile-text="(?P<key>[^"]+)"[^<>]*>)'
+    r'(?P<value>[^<>]*)'
+    r'(?P<close></(?P=tag)>)'
+)
 
 
 class RenderContractError(RuntimeError):
@@ -32,7 +44,7 @@ class PageConfig:
 PAGE_CONFIGS = (
     PageConfig(
         "index.html",
-        ("fixed-language", "back-to-top", "nav", "footer"),
+        ("profile-jsonld", "fixed-language", "back-to-top", "nav", "footer", "profile-data"),
         "home",
         None,
         None,
@@ -41,7 +53,7 @@ PAGE_CONFIGS = (
     ),
     PageConfig(
         "publicacoes.html",
-        ("back-to-top", "nav", "footer"),
+        ("back-to-top", "nav", "footer", "profile-data"),
         "inner",
         "nav-title-publications",
         "Publicações Científicas",
@@ -49,7 +61,7 @@ PAGE_CONFIGS = (
     ),
     PageConfig(
         "projetos.html",
-        ("back-to-top", "nav", "footer"),
+        ("back-to-top", "nav", "footer", "profile-data"),
         "inner",
         "nav-title-projects",
         "Todos os Projetos",
@@ -57,7 +69,7 @@ PAGE_CONFIGS = (
     ),
     PageConfig(
         "politica-de-privacidade.html",
-        ("back-to-top", "nav", "footer"),
+        ("back-to-top", "nav", "footer", "profile-data"),
         "inner",
         "nav-title-privacy",
         "Política de Privacidade",
@@ -84,6 +96,130 @@ def read_utf8_strict(path: Path, *, component: bool = False) -> str:
             f"Liquid/Jekyll syntax is not allowed in component: {path}"
         )
     return text
+
+
+def load_profile(root: Path) -> dict:
+    path = root / "profile.json"
+    source = read_utf8_strict(path)
+    try:
+        payload = json.loads(source)
+    except json.JSONDecodeError as exc:
+        raise RenderContractError(
+            f"Malformed profile.json at line {exc.lineno} column {exc.colno}"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise RenderContractError("profile.json must contain a JSON object")
+    if not isinstance(payload.get("person"), dict):
+        raise RenderContractError("profile.json person must be an object")
+    if not isinstance(payload.get("profiles"), dict):
+        raise RenderContractError("profile.json profiles must be an object")
+    return payload
+
+
+def resolve_profile_value(profile: Mapping[str, object], key: str) -> str:
+    current: object = profile
+    for part in key.split("."):
+        if not isinstance(current, Mapping) or part not in current:
+            raise RenderContractError(f"Unknown profile key {key!r}")
+        current = current[part]
+    if not isinstance(current, str) or not current:
+        raise RenderContractError(
+            f"Profile key {key!r} must resolve to a non-empty string"
+        )
+    return current
+
+
+def profile_template_values(profile: Mapping[str, object]) -> dict[str, str]:
+    return {
+        "PROFILE_PERSON_NAME": resolve_profile_value(profile, "person.name"),
+        "PROFILE_DISPLAY_NAME": resolve_profile_value(profile, "person.display_name"),
+        "PROFILE_EMAIL": resolve_profile_value(profile, "person.email"),
+        "PROFILE_WEBSITE_URL": resolve_profile_value(profile, "person.website_url"),
+        "PROFILE_AVATAR_URL": resolve_profile_value(profile, "person.avatar_url"),
+        "PROFILE_GITHUB_URL": resolve_profile_value(profile, "profiles.github.url"),
+        "PROFILE_LINKEDIN_URL": resolve_profile_value(profile, "profiles.linkedin.url"),
+        "PROFILE_LATTES_URL": resolve_profile_value(profile, "profiles.lattes.url"),
+        "PROFILE_SCHOLAR_URL": resolve_profile_value(
+            profile, "profiles.google_scholar.url"
+        ),
+        "PROFILE_ORCID_URL": resolve_profile_value(profile, "profiles.orcid.url"),
+        "PROFILE_SCOPUS_URL": resolve_profile_value(profile, "profiles.scopus.url"),
+        "PROFILE_WOS_URL": resolve_profile_value(
+            profile, "profiles.web_of_science.url"
+        ),
+    }
+
+
+def serialize_profile_for_html(profile: Mapping[str, object]) -> str:
+    value = json.dumps(
+        profile,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return (
+        value.replace("&", "\\u0026")
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("\u2028", "\\u2028")
+        .replace("\u2029", "\\u2029")
+    )
+
+
+def project_profile_bindings(
+    source: str,
+    profile: Mapping[str, object],
+    path: Path,
+) -> str:
+    attribute_markers = len(
+        re.findall(r'\\bdata-profile-(?:content|href|src|alt)="', source)
+    )
+    processed_attributes = 0
+
+    def project_tag(match: re.Match[str]) -> str:
+        nonlocal processed_attributes
+        tag = match.group(0)
+        markers = PROFILE_ATTR_MARKER_RE.findall(tag)
+        for attribute, key in markers:
+            value = html.escape(resolve_profile_value(profile, key), quote=True)
+            attribute_re = re.compile(
+                rf'\\b{re.escape(attribute)}="[^"]*"'
+            )
+            if len(attribute_re.findall(tag)) != 1:
+                raise RenderContractError(
+                    f"Profile binding {key!r} must target exactly one "
+                    f"{attribute!r} attribute in {path}"
+                )
+            tag = attribute_re.sub(
+                lambda _match, attr=attribute, replacement=value:
+                    f'{attr}="{replacement}"',
+                tag,
+                count=1,
+            )
+            processed_attributes += 1
+        return tag
+
+    rendered = TAG_RE.sub(project_tag, source)
+    if processed_attributes != attribute_markers:
+        raise RenderContractError(
+            f"Unresolved profile attribute binding in {path}"
+        )
+
+    text_markers = len(re.findall(r'\\bdata-profile-text="', rendered))
+
+    def project_text(match: re.Match[str]) -> str:
+        value = html.escape(
+            resolve_profile_value(profile, match.group("key")),
+            quote=False,
+        )
+        return match.group("open") + value + match.group("close")
+
+    rendered, text_count = PROFILE_TEXT_RE.subn(project_text, rendered)
+    if text_count != text_markers:
+        raise RenderContractError(
+            f"Profile text binding must contain plain text only in {path}"
+        )
+    return rendered
 
 
 def detect_newline(text: str, path: Path) -> str:
@@ -295,7 +431,12 @@ def read_privacy_segment(root: Path) -> str:
     return value
 
 
-def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
+def _render_fragments(
+    root: Path,
+    config: PageConfig,
+    profile: Mapping[str, object],
+) -> dict[str, str]:
+    profile_values = profile_template_values(profile)
     navbar_switcher = render_language_switcher(root, "")
     fragments: dict[str, str] = {
         "back-to-top": render_template(
@@ -305,6 +446,26 @@ def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
         ),
     }
 
+    if config.path == "index.html":
+        fragments["profile-jsonld"] = render_template(
+            _component(root, "profile-jsonld.html"),
+            {
+                key: profile_values[key]
+                for key in (
+                    "PROFILE_PERSON_NAME",
+                    "PROFILE_WEBSITE_URL",
+                    "PROFILE_AVATAR_URL",
+                    "PROFILE_GITHUB_URL",
+                    "PROFILE_LATTES_URL",
+                    "PROFILE_SCHOLAR_URL",
+                    "PROFILE_ORCID_URL",
+                    "PROFILE_SCOPUS_URL",
+                    "PROFILE_WOS_URL",
+                )
+            },
+            "profile-jsonld.html",
+        )
+
     if config.include_fixed_language:
         fragments["fixed-language"] = render_language_switcher(
             root, " lang-fixed"
@@ -313,7 +474,10 @@ def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
     if config.nav_variant == "home":
         fragments["nav"] = render_template(
             _component(root, "nav-home.html"),
-            {"LANGUAGE_SWITCHER": navbar_switcher},
+            {
+                "LANGUAGE_SWITCHER": navbar_switcher,
+                "PROFILE_AVATAR_URL": profile_values["PROFILE_AVATAR_URL"],
+            },
             "nav-home.html",
         )
     elif config.nav_variant == "inner":
@@ -327,6 +491,8 @@ def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
                 "NAV_TITLE_KEY": config.nav_title_key,
                 "NAV_TITLE_TEXT": config.nav_title_fallback,
                 "LANGUAGE_SWITCHER": navbar_switcher,
+                "PROFILE_AVATAR_URL": profile_values["PROFILE_AVATAR_URL"],
+                "PROFILE_DISPLAY_NAME": profile_values["PROFILE_DISPLAY_NAME"],
             },
             "nav-inner.html",
         )
@@ -340,18 +506,45 @@ def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
         privacy_segment = read_privacy_segment(root) + " "
     fragments["footer"] = render_template(
         _component(root, "footer.html"),
-        {"PRIVACY_SEGMENT": privacy_segment},
+        {
+            "PRIVACY_SEGMENT": privacy_segment,
+            **{
+                key: profile_values[key]
+                for key in (
+                    "PROFILE_PERSON_NAME",
+                    "PROFILE_EMAIL",
+                    "PROFILE_GITHUB_URL",
+                    "PROFILE_LINKEDIN_URL",
+                    "PROFILE_LATTES_URL",
+                    "PROFILE_SCHOLAR_URL",
+                    "PROFILE_ORCID_URL",
+                    "PROFILE_SCOPUS_URL",
+                    "PROFILE_WOS_URL",
+                )
+            },
+        },
         "footer.html",
+    )
+    fragments["profile-data"] = render_template(
+        _component(root, "profile-data.html"),
+        {"PROFILE_JSON": serialize_profile_for_html(profile)},
+        "profile-data.html",
     )
     return fragments
 
 
-def render_page(root: Path, config: PageConfig) -> str:
+def render_page(
+    root: Path,
+    config: PageConfig,
+    profile: Mapping[str, object] | None = None,
+) -> str:
+    if profile is None:
+        profile = load_profile(root)
     path = root / config.path
     source = read_utf8_strict(path)
     newline = detect_newline(source, path)
     validate_region_markers(source, config.regions, path)
-    fragments = _render_fragments(root, config)
+    fragments = _render_fragments(root, config, profile)
     if set(fragments) != set(config.regions):
         raise RenderContractError(
             f"Rendered regions do not match configuration for {config.path}: "
@@ -366,14 +559,15 @@ def render_page(root: Path, config: PageConfig) -> str:
             newline,
             path,
         )
-    return rendered
+    return project_profile_bindings(rendered, profile, path)
 
 
 def render_all(root: Path) -> dict[Path, str]:
     root = root.resolve()
+    profile = load_profile(root)
     rendered: dict[Path, str] = {}
     for config in PAGE_CONFIGS:
-        rendered[root / config.path] = render_page(root, config)
+        rendered[root / config.path] = render_page(root, config, profile)
     return rendered
 
 
