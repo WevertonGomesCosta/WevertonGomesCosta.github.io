@@ -260,32 +260,31 @@ Conceptual shape:
       "google_scholar": {
         "record_id": "eJNKcHsAAAAJ:qjMakFHDy7sC",
         "citations": 18,
-        "status": "current"
+        "status": "observed"
       },
       "scopus": {
         "record_id": "85104263465",
         "citations": 14,
-        "status": "current"
+        "status": "observed"
       },
       "web_of_science": {
         "record_id": "doi:10.1002/csc2.20488",
         "citations": 11,
-        "status": "current"
+        "status": "observed"
       }
     }
   }
 }
 ```
 
-The artifact must distinguish:
+The artifact must distinguish in 3D.1:
 
-- citation value `0`;
-- citation value `null`;
-- source record absent;
-- source unavailable;
-- stale preserved observation.
+- citation value `0` through `status: observed` and `citations: 0`;
+- citation value `null` through `status: value_unavailable`;
+- source record absent through `status: record_absent`;
+- source unavailable through `status: source_unavailable`.
 
-The full current/stale/unavailable preservation policy belongs to Block 3E, but the schema must not collapse those states in 3D.
+A stale-preserved observation is intentionally not emitted yet because 3D.1 has no transactional last-valid-state mechanism. Block 3E will extend this state model when per-source preservation is implemented, without collapsing stale data into current observations.
 
 ## 10. Deterministic builder
 
