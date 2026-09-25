@@ -36,6 +36,7 @@ STATUSES = frozenset(
         "value_unavailable",
         "record_absent",
         "source_unavailable",
+        "stale",
     }
 )
 
@@ -133,6 +134,20 @@ def source_articles(
     if any(not isinstance(article, dict) for article in articles):
         raise BuildError(f"{source} articles must contain objects only")
     return True, articles
+
+
+def source_state_status(fallback: object, source: str) -> str:
+    if isinstance(fallback, dict):
+        states = fallback.get("sourceStates")
+        if isinstance(states, dict):
+            state = states.get(source)
+            if isinstance(state, dict):
+                status = state.get("status")
+                if status in {"current", "stale", "unavailable"}:
+                    return status
+
+    available, _ = source_articles(fallback, source)
+    return "current" if available else "unavailable"
 
 
 def index_source_articles(
@@ -258,6 +273,7 @@ def metric_entry(
     publication_id: str,
     relationship: dict | None,
     source_available: bool,
+    source_state: str,
     article_index: dict[str, list[dict]],
 ) -> dict:
     if relationship is None:
@@ -266,14 +282,16 @@ def metric_entry(
             "citations": None,
             "record_id": None,
             "status": (
-                "record_absent" if source_available else "source_unavailable"
+                "source_unavailable"
+                if source_state == "unavailable" or not source_available
+                else "record_absent"
             ),
         }
 
     record_id = relationship["record_id"]
     aliases = relationship["alias_record_ids"]
 
-    if not source_available:
+    if source_state == "unavailable" or not source_available:
         return {
             "alias_record_ids": aliases,
             "citations": None,
@@ -297,7 +315,13 @@ def metric_entry(
         "alias_record_ids": aliases,
         "citations": citations,
         "record_id": record_id,
-        "status": "observed" if citations is not None else "value_unavailable",
+        "status": (
+            "stale"
+            if source_state == "stale"
+            else "observed"
+            if citations is not None
+            else "value_unavailable"
+        ),
     }
 
 
@@ -332,6 +356,7 @@ def build_metrics(
                 publication_id=publication_id,
                 relationship=relationships[source].get(publication_id),
                 source_available=available,
+                source_state=source_state_status(fallback, source),
                 article_index=article_index,
             )
         publications[publication_id] = source_metrics
