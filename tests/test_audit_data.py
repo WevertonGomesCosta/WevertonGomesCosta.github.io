@@ -1259,6 +1259,232 @@ class TestAcademicRules(unittest.TestCase):
             ),
         )
 
+    def test_reconciled_duplicate_source_group_is_not_reported(self):
+        work = self._work(
+            "pub-a",
+            "Genome-enabled prediction through machine learning methods "
+            "considering different levels of trait complexity",
+            None,
+        )
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:Primary",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:Alias",
+                "publication_id": "pub-a",
+                "role": "alias",
+                "primary_record_id": "Author:Primary",
+                "match_basis": "manual_duplicate_reconciliation",
+            },
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": work["title"],
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:Primary"
+                            ),
+                        },
+                        {
+                            "title": work["title"] + ".",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:Alias"
+                            ),
+                        },
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertFalse(
+            [
+                v
+                for v in violations
+                if v.rule_id == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+            ],
+            violations,
+        )
+
+    def test_duplicate_group_split_across_publications_remains_violation(self):
+        works = [
+            self._work("pub-a", "Duplicate Title", None),
+            self._work("pub-b", "Different Canonical Title", None),
+        ]
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-b",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": "Duplicate Title",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:A"
+                            ),
+                        },
+                        {
+                            "title": "Duplicate Title.",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:B"
+                            ),
+                        },
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry(works),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertEqual(
+            len([
+                v
+                for v in violations
+                if v.rule_id == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+            ]),
+            1,
+        )
+
+    def test_duplicate_group_with_two_primaries_remains_violation(self):
+        work = self._work("pub-a", "Duplicate Title", None)
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": "Duplicate Title",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:A"
+                            ),
+                        },
+                        {
+                            "title": "Duplicate Title.",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:B"
+                            ),
+                        },
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertEqual(
+            len([
+                v
+                for v in violations
+                if v.rule_id == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+            ]),
+            1,
+        )
+
+    def test_duplicate_group_with_alias_to_wrong_primary_remains_violation(self):
+        work = self._work("pub-a", "Duplicate Title", None)
+        links = self._source_links()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:A",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            },
+            {
+                "record_id": "Author:B",
+                "publication_id": "pub-a",
+                "role": "alias",
+                "primary_record_id": "Author:Missing",
+                "match_basis": "manual_duplicate_reconciliation",
+            },
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": "Duplicate Title",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:A"
+                            ),
+                        },
+                        {
+                            "title": "Duplicate Title.",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:B"
+                            ),
+                        },
+                    ]
+                }
+            }
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertEqual(
+            len([
+                v
+                for v in violations
+                if v.rule_id == "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE"
+            ]),
+            1,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
