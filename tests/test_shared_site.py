@@ -653,12 +653,35 @@ class TestProductionSemanticControls(unittest.TestCase):
     def test_production_pages_are_renderer_synchronized(self):
         self.assertEqual(shared.check_all(ROOT), ())
 
+    def test_shared_components_do_not_hardcode_canonical_identity(self):
+        profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
+        components = (
+            ROOT / "_site_components" / "footer.html",
+            ROOT / "_site_components" / "nav-home.html",
+            ROOT / "_site_components" / "nav-inner.html",
+        )
+        protected = {
+            profile["person"]["name"],
+            profile["person"]["display_name"],
+            profile["person"]["email"],
+            profile["person"]["website_url"],
+            profile["organizations"]["conecta-gem"]["name"],
+        }
+        for component in components:
+            source = component.read_text(encoding="utf-8")
+            with self.subTest(component=component.name):
+                self.assertFalse(
+                    {value for value in protected if value in source},
+                    "shared component contains canonical profile literal",
+                )
+
     def test_runtime_identity_constants_are_not_hardcoded_in_utils(self):
         profile = json.loads((ROOT / "profile.json").read_text(encoding="utf-8"))
         source = (ROOT / "utils.js").read_text(encoding="utf-8")
         protected = {
             profile["person"]["name"],
             profile["person"]["email"],
+            profile["person"]["website_url"],
             profile["profiles"]["linkedin"]["url"],
             profile["profiles"]["github"]["url"],
         }
