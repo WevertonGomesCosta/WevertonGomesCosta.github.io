@@ -123,6 +123,19 @@ class RepoFixture:
                     }),
                     encoding="utf-8",
                 )
+            elif name == "bibliometric-metrics.json":
+                path.write_text(
+                    json.dumps({
+                        "schema_version": "1.0.0",
+                        "source_snapshot": {
+                            "fallback_last_updated": None,
+                            "registry_updated_at": None,
+                            "source_links_schema_version": "1.0.0",
+                        },
+                        "publications": {},
+                    }),
+                    encoding="utf-8",
+                )
             elif name.endswith(".json"):
                 path.write_text("{}", encoding="utf-8")
             else:
