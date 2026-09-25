@@ -181,6 +181,26 @@ class TestRendererContract(FixtureMixin, unittest.TestCase):
                         before,
                     )
 
+    def test_cli_rejects_unresolved_tokens_in_back_to_top_without_partial_writes(self):
+        for mode in ("--check", "--write"):
+            with self.subTest(mode=mode):
+                root = self.make_complete_fixture()
+                component = root / "_site_components" / "back-to-top.html"
+                source = component.read_text(encoding="utf-8")
+                write_bytes(component, source.rstrip("\n") + "\n@@UNKNOWN@@\n")
+                before = {
+                    path: path.read_bytes() for path in root.rglob("*.html")
+                }
+                stderr = io.StringIO()
+                with contextlib.redirect_stderr(stderr):
+                    code = shared.main(["--root", str(root), mode])
+                self.assertEqual(code, 2)
+                self.assertIn("back-to-top.html", stderr.getvalue())
+                self.assertEqual(
+                    {path: path.read_bytes() for path in root.rglob("*.html")},
+                    before,
+                )
+
     def test_render_template_indents_multiline_block_token(self):
         template = "<nav>\n    @@LANGUAGE_SWITCHER@@\n</nav>\n"
         rendered = shared.render_template(

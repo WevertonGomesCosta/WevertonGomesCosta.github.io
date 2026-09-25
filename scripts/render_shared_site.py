@@ -298,7 +298,11 @@ def read_privacy_segment(root: Path) -> str:
 def _render_fragments(root: Path, config: PageConfig) -> dict[str, str]:
     navbar_switcher = render_language_switcher(root, "")
     fragments: dict[str, str] = {
-        "back-to-top": _component(root, "back-to-top.html"),
+        "back-to-top": render_template(
+            _component(root, "back-to-top.html"),
+            {},
+            "back-to-top.html",
+        ),
     }
 
     if config.include_fixed_language:
