@@ -61,6 +61,21 @@ const SiteProfile = {
     }
 };
 
+
+const SiteTranslations = {
+    resolve(rawCatalog) {
+        const profile = SiteProfile.get();
+        if (!profile) {
+            throw new Error('Perfil canônico indisponível para interpolar traduções.');
+        }
+        const interpolator = window.ProfileTranslationInterpolator;
+        if (!interpolator || typeof interpolator.interpolateCatalog !== 'function') {
+            throw new Error('Módulo de interpolação de perfil indisponível.');
+        }
+        return interpolator.interpolateCatalog(rawCatalog, profile);
+    }
+};
+
 // =================================================================================
 // Módulo: Configurações Gerais da Página
 // --- ALTERAÇÃO (Bug Fix 2: Data Privacidade) ---
@@ -543,8 +558,12 @@ const scholarScript = (function() {
         try {
             const response = await fetch('translations.json');
             if (!response.ok) throw new Error('HTTP');
-            window.translations = await response.json();
-        } catch (e) { window.translations = { pt: {}, en: {} }; }
+            const rawTranslations = await response.json();
+            window.translations = SiteTranslations.resolve(rawTranslations);
+        } catch (e) {
+            console.warn('Falha ao carregar/interpolar traduções acadêmicas.', e);
+            window.translations = { pt: {}, en: {} };
+        }
     }
 
     async function ensureAcademicRegistryLoaded() {
@@ -2117,9 +2136,10 @@ const LanguageManager = {
             document.querySelector('[id$="-chart"]')
         );
 
-        const translationsRequest = fetch('translations.json').then(response => {
+        const translationsRequest = fetch('translations.json').then(async response => {
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar translations.json`);
-            return response.json();
+            const rawTranslations = await response.json();
+            return SiteTranslations.resolve(rawTranslations);
         });
 
         const fallbackRequest = needsFallbackData
