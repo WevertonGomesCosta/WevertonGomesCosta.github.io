@@ -10,6 +10,54 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from repository_audit import data_rules
 
 
+def valid_profile():
+    return {
+        "schema_version": "1.0.0",
+        "person": {
+            "name": "Example Person",
+            "display_name": "Example P.",
+            "email": "person@example.org",
+            "website_url": "https://example.org/",
+            "avatar_url": "https://example.org/avatar.png",
+            "location": {
+                "city": "Viçosa",
+                "region": "MG",
+                "country_code": "BR",
+            },
+        },
+        "profiles": {
+            "github": {
+                "username": "example",
+                "url": "https://github.com/example",
+            },
+            "linkedin": {"url": "https://www.linkedin.com/in/example/"},
+            "lattes": {
+                "id": "1234567890123456",
+                "url": "https://lattes.cnpq.br/1234567890123456",
+            },
+            "google_scholar": {
+                "author_id": "ScholarId",
+                "url": "https://scholar.google.com/citations?user=ScholarId",
+            },
+            "orcid": {
+                "id": "0000-0002-1825-0097",
+                "url": "https://orcid.org/0000-0002-1825-0097",
+            },
+            "scopus": {
+                "author_id": "1234567890",
+                "url": "https://www.scopus.com/authid/detail.uri?authorId=1234567890",
+            },
+            "web_of_science": {
+                "researcher_id": "ABC-1234-2026",
+                "url": "https://www.webofscience.com/wos/author/record/ABC-1234-2026",
+            },
+        },
+        "organizations": {},
+        "affiliations": [],
+        "education": [],
+    }
+
+
 class RepoFixture:
     REQUIRED = (
         "index.html",
@@ -20,6 +68,7 @@ class RepoFixture:
         "style.css",
         "utils.js",
         "translations.json",
+        "profile.json",
         "academic-registry.json",
         "fallback-data.json",
         "robots.txt",
@@ -43,6 +92,8 @@ class RepoFixture:
                         json.dumps(translations or {"pt": {}, "en": {}}),
                         encoding="utf-8",
                     )
+            elif name == "profile.json":
+                path.write_text(json.dumps(valid_profile()), encoding="utf-8")
             elif name.endswith(".json"):
                 path.write_text("{}", encoding="utf-8")
             else:
@@ -89,6 +140,68 @@ class TestRepositoryDataRules(unittest.TestCase):
             [v for v in violations if v.rule_id in dependent],
             violations,
         )
+
+
+
+
+class TestProfileRules(unittest.TestCase):
+    def _audit(self, profile):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root)
+        (root / "profile.json").write_text(
+            json.dumps(profile), encoding="utf-8"
+        )
+        return data_rules.audit_repository_data(root)
+
+    def test_valid_profile_contract_is_clean(self):
+        violations = self._audit(valid_profile())
+        self.assertFalse(
+            [v for v in violations if v.rule_id == "PROFILE_STRUCTURE"],
+            violations,
+        )
+
+    def test_profile_required_shape_is_enforced(self):
+        profile = valid_profile()
+        del profile["person"]["location"]
+        profile["unexpected"] = True
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:top-level", subjects)
+        self.assertIn("profile:person", subjects)
+
+    def test_profile_identity_formats_and_html_are_rejected(self):
+        profile = valid_profile()
+        profile["person"]["email"] = "invalid"
+        profile["person"]["display_name"] = "<strong>Person</strong>"
+        profile["profiles"]["orcid"]["id"] = "bad-orcid"
+        profile["profiles"]["linkedin"]["url"] = "http://example.org/profile"
+        violations = self._audit(profile)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+        }
+        self.assertIn("profile:person.email", subjects)
+        self.assertIn("profile:profiles.orcid.id", subjects)
+        self.assertIn("profile:profiles.linkedin.url", subjects)
+        self.assertIn("profile:string:person.display_name", subjects)
+
+    def test_profile_duplicate_external_urls_are_rejected(self):
+        profile = valid_profile()
+        profile["profiles"]["linkedin"]["url"] = profile["profiles"]["github"]["url"]
+        violations = self._audit(profile)
+        matches = [
+            v for v in violations
+            if v.rule_id == "PROFILE_STRUCTURE"
+            and v.subject.startswith("profile:profiles.url:")
+        ]
+        self.assertEqual(len(matches), 1)
 
 
 class TestTranslationRules(unittest.TestCase):
