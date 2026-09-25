@@ -267,8 +267,11 @@ def reconcile_source(
     transaction_time: datetime,
 ) -> tuple[object, dict]:
     old_payload = get_source_payload(old_snapshot, source)
-    old_valid = is_valid_previous_payload(source, old_payload)
     old_state = previous_source_state(old_snapshot, source, old_payload)
+    old_valid = (
+        is_valid_previous_payload(source, old_payload)
+        and old_state.get("status") in {"current", "stale"}
+    )
     timestamp = iso_timestamp(transaction_time)
 
     effective_result = result
