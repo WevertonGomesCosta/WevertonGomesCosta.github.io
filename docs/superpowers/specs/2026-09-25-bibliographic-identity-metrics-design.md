@@ -2,7 +2,7 @@
 
 **Repository:** `WevertonGomesCosta/WevertonGomesCosta.github.io`  
 **Date:** 2026-09-25  
-**Status:** design/inventory started after Block 3B merge  
+**Status:** 3C.1 implemented and CI-validated; 3C.2–3D.3 pending  
 **Base:** `main@4b55ec32ed20c33d98084340c844462fa341adfe`
 
 ## 1. Objective
@@ -417,6 +417,51 @@ Final expected gate:
 - known debt: 10;
 - new violations: 0;
 - baseline growth: 0.
+
+## 14.1 Implementation status after 3C.1
+
+The source-link contract is now implemented without freezing any real source mappings.
+
+Current artifact state:
+
+- `bibliographic-source-links.json` exists and is required by the repository audit;
+- the four supported sources are declared with fixed record-ID schemes;
+- all four `links` arrays remain empty;
+- no publication/source association has been committed yet;
+- no citation value is stored in the identity artifact.
+
+The validator enforces:
+
+- exact top-level/source/link schemas;
+- supported source set and record-ID scheme per source;
+- source-specific record ID format;
+- `publication_id` references to the canonical registry;
+- unique record IDs within each source;
+- exactly one primary record for every linked source/publication pair;
+- alias references to a primary record of the same source and publication;
+- approved match-basis values only;
+- rejection of metric fields such as `citations`.
+
+Verified 3C.1 gate:
+
+- profile translation Node integration: PASS;
+- JavaScript syntax checks: PASS;
+- 122 Python unit tests: PASS;
+- shared-site renderer synchronized;
+- known debt: 11;
+- new violations: 0;
+- resolved baseline entries: 0;
+- baseline growth: 0.
+
+Protected production/data files remain unchanged:
+
+- `academic-registry.json`;
+- `fallback-data.json`;
+- `.audit/known-debt.json`;
+- all HTML pages;
+- `utils.js`.
+
+Therefore 3C.1 is frozen with no debt reduction. 3C.2 is the first step allowed to populate real source links.
 
 ## 15. Protected scope
 
