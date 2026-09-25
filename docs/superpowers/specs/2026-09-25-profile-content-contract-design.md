@@ -475,7 +475,7 @@ Controlled interpolation and duplicate-fact protection are complete:
 - non-profile runtime placeholders such as `{shown}`, `{total}`, and `{count}` remain untouched;
 - `PROFILE_FACT_CONTRACT` rejects protected canonical literals reintroduced into translated content and enforces required placeholders for active identity/contact/academic translation keys;
 - all four rendered pages load the interpolation module before `utils.js`;
-- the stale unused aggregate postdoctoral period `2022 – Present` in the translation data was reconciled to the canonical affiliation history `2022 – 2025`; this did not change rendered output because the field was not consumed;
+- unused legacy `professional_experience` / `education` translation blocks and four obsolete postdoctoral line/year keys were removed after repository-wide consumer checks confirmed they had no runtime consumer; this removes the remaining dead factual side-channel rather than preserving it;
 - CRLF/LF policy remains enforced after the new script insertion.
 
 Final Block 3B gate:
