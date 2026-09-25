@@ -408,6 +408,10 @@ class TestProductionSemanticControls(unittest.TestCase):
             submit_buttons[0][1].startswith("form#contact-form>")
         )
 
+    def test_production_pages_are_renderer_synchronized(self):
+        self.assertEqual(shared.check_all(ROOT), ())
+
+
 
 if __name__ == "__main__":
     unittest.main()
