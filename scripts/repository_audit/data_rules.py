@@ -21,6 +21,7 @@ REQUIRED_FILES = (
     "translations.json",
     "profile.json",
     "academic-registry.json",
+    "bibliographic-source-links.json",
     "fallback-data.json",
     "robots.txt",
     "sitemap.xml",
@@ -30,6 +31,7 @@ REQUIRED_DATA_JSON = (
     "translations.json",
     "profile.json",
     "academic-registry.json",
+    "bibliographic-source-links.json",
     "fallback-data.json",
 )
 
@@ -1039,6 +1041,32 @@ ACADEMIC_REQUIRED_TOP_LEVEL = frozenset(
     {"schema_version", "updated_at", "source_basis", "summary", "works"}
 )
 
+BIBLIOGRAPHIC_SOURCE_LINKS_SCHEMA_VERSION = "1.0.0"
+BIBLIOGRAPHIC_SOURCE_SCHEMES = {
+    "google_scholar": "citation_for_view",
+    "scopus": "scopus_id",
+    "web_of_science": "doi",
+    "orcid": "doi",
+}
+BIBLIOGRAPHIC_SOURCE_LINK_TOP_LEVEL = frozenset({"schema_version", "sources"})
+BIBLIOGRAPHIC_SOURCE_ENTRY_FIELDS = frozenset({"record_id_scheme", "links"})
+BIBLIOGRAPHIC_PRIMARY_LINK_FIELDS = frozenset(
+    {"record_id", "publication_id", "role", "match_basis"}
+)
+BIBLIOGRAPHIC_ALIAS_LINK_FIELDS = frozenset(
+    {
+        "record_id",
+        "publication_id",
+        "role",
+        "primary_record_id",
+        "match_basis",
+    }
+)
+BIBLIOGRAPHIC_LINK_ROLES = frozenset({"primary", "alias"})
+BIBLIOGRAPHIC_MATCH_BASES = frozenset(
+    {"doi", "normalized_title", "manual_duplicate_reconciliation"}
+)
+
 
 def normalize_title(value: str | None) -> str:
     if value is None:
@@ -1190,6 +1218,315 @@ def _duplicate_violations(works: list[dict]) -> list[Violation]:
     return violations
 
 
+def _bibliographic_source_link_violation(
+    subject: str,
+    message: str,
+    *,
+    metadata: dict | None = None,
+) -> Violation:
+    return Violation(
+        "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE",
+        "bibliographic-source-links.json",
+        subject,
+        message,
+        metadata=metadata,
+    )
+
+
+def _academic_publication_ids(registry: object) -> frozenset[str]:
+    if not isinstance(registry, dict):
+        return frozenset()
+    works = registry.get("works")
+    if not isinstance(works, list):
+        return frozenset()
+    return frozenset(
+        work["id"].strip()
+        for work in works
+        if isinstance(work, dict)
+        and isinstance(work.get("id"), str)
+        and work["id"].strip()
+    )
+
+
+def _audit_bibliographic_source_links(
+    data: object,
+    registry: object,
+) -> list[Violation]:
+    violations: list[Violation] = []
+    path_prefix = "source-links"
+
+    if not isinstance(data, dict):
+        return [
+            _bibliographic_source_link_violation(
+                f"{path_prefix}:top-level",
+                "Bibliographic source links must be a JSON object",
+            )
+        ]
+
+    actual_top = frozenset(data)
+    if actual_top != BIBLIOGRAPHIC_SOURCE_LINK_TOP_LEVEL:
+        missing = sorted(BIBLIOGRAPHIC_SOURCE_LINK_TOP_LEVEL - actual_top)
+        unknown = sorted(actual_top - BIBLIOGRAPHIC_SOURCE_LINK_TOP_LEVEL)
+        details: list[str] = []
+        if missing:
+            details.append(f"missing keys: {', '.join(missing)}")
+        if unknown:
+            details.append(f"unknown keys: {', '.join(unknown)}")
+        violations.append(
+            _bibliographic_source_link_violation(
+                f"{path_prefix}:top-level",
+                "Invalid bibliographic source link top-level schema; "
+                + "; ".join(details),
+            )
+        )
+
+    if data.get("schema_version") != BIBLIOGRAPHIC_SOURCE_LINKS_SCHEMA_VERSION:
+        violations.append(
+            _bibliographic_source_link_violation(
+                f"{path_prefix}:schema-version",
+                "schema_version must be "
+                f"{BIBLIOGRAPHIC_SOURCE_LINKS_SCHEMA_VERSION!r}",
+            )
+        )
+
+    sources = data.get("sources")
+    if not isinstance(sources, dict):
+        violations.append(
+            _bibliographic_source_link_violation(
+                f"{path_prefix}:sources",
+                "sources must be an object",
+            )
+        )
+        return violations
+
+    expected_sources = frozenset(BIBLIOGRAPHIC_SOURCE_SCHEMES)
+    actual_sources = frozenset(sources)
+    if actual_sources != expected_sources:
+        missing = sorted(expected_sources - actual_sources)
+        unknown = sorted(actual_sources - expected_sources)
+        details = []
+        if missing:
+            details.append(f"missing sources: {', '.join(missing)}")
+        if unknown:
+            details.append(f"unknown sources: {', '.join(unknown)}")
+        violations.append(
+            _bibliographic_source_link_violation(
+                f"{path_prefix}:sources",
+                "Invalid bibliographic sources; " + "; ".join(details),
+            )
+        )
+
+    publication_ids = _academic_publication_ids(registry)
+
+    for source in sorted(BIBLIOGRAPHIC_SOURCE_SCHEMES):
+        expected_scheme = BIBLIOGRAPHIC_SOURCE_SCHEMES[source]
+        entry = sources.get(source)
+        source_subject = f"{path_prefix}:{source}"
+
+        if not isinstance(entry, dict):
+            violations.append(
+                _bibliographic_source_link_violation(
+                    source_subject,
+                    f"{source} source definition must be an object",
+                )
+            )
+            continue
+
+        actual_fields = frozenset(entry)
+        if actual_fields != BIBLIOGRAPHIC_SOURCE_ENTRY_FIELDS:
+            missing = sorted(BIBLIOGRAPHIC_SOURCE_ENTRY_FIELDS - actual_fields)
+            unknown = sorted(actual_fields - BIBLIOGRAPHIC_SOURCE_ENTRY_FIELDS)
+            details = []
+            if missing:
+                details.append(f"missing keys: {', '.join(missing)}")
+            if unknown:
+                details.append(f"unknown keys: {', '.join(unknown)}")
+            violations.append(
+                _bibliographic_source_link_violation(
+                    source_subject,
+                    f"Invalid {source} source definition; " + "; ".join(details),
+                )
+            )
+
+        scheme = entry.get("record_id_scheme")
+        if scheme != expected_scheme:
+            violations.append(
+                _bibliographic_source_link_violation(
+                    f"{source_subject}:record-id-scheme",
+                    f"{source} record_id_scheme must be {expected_scheme!r}",
+                )
+            )
+
+        links = entry.get("links")
+        if not isinstance(links, list):
+            violations.append(
+                _bibliographic_source_link_violation(
+                    f"{source_subject}:links",
+                    f"{source} links must be a list",
+                )
+            )
+            continue
+
+        valid_links: list[dict] = []
+        record_ids: Counter[str] = Counter()
+
+        for index, raw_link in enumerate(links):
+            subject = f"{source_subject}:link:{index}"
+            if not isinstance(raw_link, dict):
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        "source link must be an object",
+                    )
+                )
+                continue
+
+            role = raw_link.get("role")
+            expected_fields = (
+                BIBLIOGRAPHIC_ALIAS_LINK_FIELDS
+                if role == "alias"
+                else BIBLIOGRAPHIC_PRIMARY_LINK_FIELDS
+            )
+            actual_link_fields = frozenset(raw_link)
+            if actual_link_fields != expected_fields:
+                missing = sorted(expected_fields - actual_link_fields)
+                unknown = sorted(actual_link_fields - expected_fields)
+                details = []
+                if missing:
+                    details.append(f"missing keys: {', '.join(missing)}")
+                if unknown:
+                    details.append(f"unknown keys: {', '.join(unknown)}")
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        "Invalid source link fields; " + "; ".join(details),
+                    )
+                )
+
+            record_id = raw_link.get("record_id")
+            if not isinstance(record_id, str) or not record_id.strip():
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:record-id",
+                        "record_id must be a non-empty string",
+                    )
+                )
+            else:
+                record_ids[record_id.strip()] += 1
+
+            publication_id = raw_link.get("publication_id")
+            if not isinstance(publication_id, str) or not publication_id.strip():
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:publication-id",
+                        "publication_id must be a non-empty string",
+                    )
+                )
+            elif publication_id.strip() not in publication_ids:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:publication-id",
+                        f"Unknown publication_id {publication_id!r}",
+                    )
+                )
+
+            if role not in BIBLIOGRAPHIC_LINK_ROLES:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:role",
+                        f"role must be one of {sorted(BIBLIOGRAPHIC_LINK_ROLES)!r}",
+                    )
+                )
+
+            match_basis = raw_link.get("match_basis")
+            if match_basis not in BIBLIOGRAPHIC_MATCH_BASES:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{subject}:match-basis",
+                        "match_basis must be one of "
+                        f"{sorted(BIBLIOGRAPHIC_MATCH_BASES)!r}",
+                    )
+                )
+
+            if (
+                isinstance(record_id, str)
+                and record_id.strip()
+                and isinstance(publication_id, str)
+                and publication_id.strip()
+                and publication_id.strip() in publication_ids
+                and role in BIBLIOGRAPHIC_LINK_ROLES
+                and match_basis in BIBLIOGRAPHIC_MATCH_BASES
+            ):
+                valid_links.append(raw_link)
+
+        for record_id, count in sorted(record_ids.items()):
+            if count > 1:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{source_subject}:record-id:{record_id}",
+                        f"record_id {record_id!r} is duplicated {count} times",
+                    )
+                )
+
+        by_publication: dict[str, list[dict]] = {}
+        by_record_id: dict[str, dict] = {}
+        for link in valid_links:
+            by_publication.setdefault(link["publication_id"], []).append(link)
+            by_record_id[link["record_id"]] = link
+
+        for publication_id, publication_links in sorted(by_publication.items()):
+            primaries = [
+                link for link in publication_links if link["role"] == "primary"
+            ]
+            if len(primaries) != 1:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        f"{source_subject}:publication:{publication_id}:primary",
+                        "Each linked source/publication pair must have exactly "
+                        f"one primary record; found {len(primaries)}",
+                    )
+                )
+
+        for link in valid_links:
+            if link["role"] != "alias":
+                continue
+            subject = f"{source_subject}:record-id:{link['record_id']}:alias"
+            primary_record_id = link.get("primary_record_id")
+            if not isinstance(primary_record_id, str) or not primary_record_id.strip():
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        "alias primary_record_id must be a non-empty string",
+                    )
+                )
+                continue
+            primary = by_record_id.get(primary_record_id)
+            if primary is None:
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        f"alias primary_record_id {primary_record_id!r} does not exist",
+                    )
+                )
+                continue
+            if primary.get("role") != "primary":
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        "alias primary_record_id must reference a primary record",
+                    )
+                )
+            if primary.get("publication_id") != link.get("publication_id"):
+                violations.append(
+                    _bibliographic_source_link_violation(
+                        subject,
+                        "alias and primary must reference the same publication_id",
+                    )
+                )
+
+    return violations
+
+
 def _bibliometric_duplicate_violations(data: object) -> list[Violation]:
     if not isinstance(data, dict):
         return []
@@ -1237,6 +1574,14 @@ def audit_academic_data(root: Path) -> list[Violation]:
         structure, works = _academic_structure_violations(registry)
         violations.extend(structure)
         violations.extend(_duplicate_violations(works))
+
+    source_links, source_links_error = read_repository_json(
+        root, "bibliographic-source-links.json"
+    )
+    if source_links is not None and source_links_error is None:
+        violations.extend(
+            _audit_bibliographic_source_links(source_links, registry)
+        )
 
     fallback, fallback_error = read_repository_json(root, "fallback-data.json")
     if fallback is not None and fallback_error is None:
