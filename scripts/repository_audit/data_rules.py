@@ -2154,7 +2154,86 @@ def _audit_bibliometric_metrics(
     return violations
 
 
-def _bibliometric_duplicate_violations(data: object) -> list[Violation]:
+def _duplicate_source_group_is_reconciled(
+    source: str,
+    articles: list[dict],
+    source_links: object,
+) -> bool:
+    if len(articles) < 2 or not isinstance(source_links, dict):
+        return False
+
+    sources = source_links.get("sources")
+    if not isinstance(sources, dict):
+        return False
+    source_payload = sources.get(source)
+    if not isinstance(source_payload, dict):
+        return False
+    links = source_payload.get("links")
+    if not isinstance(links, list):
+        return False
+
+    record_ids = [
+        _bibliographic_snapshot_record_id(source, article)
+        for article in articles
+    ]
+    if (
+        any(not record_id for record_id in record_ids)
+        or len(record_ids) != len(set(record_ids))
+    ):
+        return False
+
+    links_by_record: dict[str, list[dict]] = {}
+    for link in links:
+        if not isinstance(link, dict):
+            continue
+        record_id = link.get("record_id")
+        if isinstance(record_id, str):
+            links_by_record.setdefault(record_id, []).append(link)
+
+    duplicate_links: list[dict] = []
+    for record_id in record_ids:
+        matches = links_by_record.get(record_id, [])
+        if len(matches) != 1:
+            return False
+        duplicate_links.append(matches[0])
+
+    publication_ids = {
+        link.get("publication_id")
+        for link in duplicate_links
+        if isinstance(link.get("publication_id"), str)
+        and link.get("publication_id")
+    }
+    if len(publication_ids) != 1:
+        return False
+
+    primaries = [
+        link for link in duplicate_links if link.get("role") == "primary"
+    ]
+    if len(primaries) != 1:
+        return False
+
+    primary_record_id = primaries[0].get("record_id")
+    if not isinstance(primary_record_id, str) or not primary_record_id:
+        return False
+
+    for link in duplicate_links:
+        if link is primaries[0]:
+            continue
+        if (
+            link.get("role") != "alias"
+            or link.get("primary_record_id") != primary_record_id
+            or link.get("match_basis")
+            != "manual_duplicate_reconciliation"
+        ):
+            return False
+
+    return True
+
+
+def _bibliometric_duplicate_violations(
+    data: object,
+    source_links: object,
+) -> list[Violation]:
     if not isinstance(data, dict):
         return []
     academic_data = data.get("academicData")
@@ -2168,27 +2247,39 @@ def _bibliometric_duplicate_violations(data: object) -> list[Violation]:
         articles = payload.get("articles")
         if not isinstance(articles, list):
             continue
-        titles = Counter(
-            normalized
-            for article in articles
-            if isinstance(article, dict)
-            and isinstance(article.get("title"), str)
-            for normalized in (normalize_title(article["title"]),)
-            if normalized
-        )
-        for title, count in titles.items():
-            if count > 1:
-                violations.append(
-                    Violation(
-                        "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
-                        "fallback-data.json",
-                        f"source:{source}|title:{title}",
-                        (
-                            f"Bibliometric source {source!r} contains duplicate "
-                            f"normalized title {title!r}"
-                        ),
-                    )
+
+        groups: dict[str, list[dict]] = {}
+        for article in articles:
+            if not isinstance(article, dict):
+                continue
+            title = article.get("title")
+            if not isinstance(title, str):
+                continue
+            normalized = normalize_title(title)
+            if normalized:
+                groups.setdefault(normalized, []).append(article)
+
+        for title, duplicate_articles in groups.items():
+            if len(duplicate_articles) <= 1:
+                continue
+            if _duplicate_source_group_is_reconciled(
+                source,
+                duplicate_articles,
+                source_links,
+            ):
+                continue
+
+            violations.append(
+                Violation(
+                    "BIBLIOMETRIC_SOURCE_DUPLICATE_TITLE",
+                    "fallback-data.json",
+                    f"source:{source}|title:{title}",
+                    (
+                        f"Bibliometric source {source!r} contains unresolved "
+                        f"duplicate normalized title {title!r}"
+                    ),
                 )
+            )
     return violations
 
 
@@ -2230,7 +2321,9 @@ def audit_academic_data(root: Path) -> list[Violation]:
         )
 
     if fallback is not None and fallback_error is None:
-        violations.extend(_bibliometric_duplicate_violations(fallback))
+        violations.extend(
+            _bibliometric_duplicate_violations(fallback, source_links)
+        )
 
     return sorted(
         violations,
