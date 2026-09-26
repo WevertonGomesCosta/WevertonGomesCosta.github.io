@@ -385,6 +385,25 @@ The test suite now covers:
 
 No test performs live API access.
 
+### Pre-merge audit hardening
+
+The integral PR audit identified one transaction-boundary gap before merge: frozen source identity validation checked record-ID presence but did not yet verify that the refreshed raw record still carried the canonical DOI/title evidence associated with that frozen identity.
+
+The transaction core now validates, before accepting a refreshed source payload:
+
+- DOI evidence for Scopus, Web of Science, and ORCID links;
+- normalized-title evidence for Google Scholar primary/alias links;
+- exact consistency with the same normalization semantics used by the repository auditor.
+
+A nominally successful refresh with the correct source record ID but drifted DOI/title is therefore rejected for that source, the previous valid payload is preserved, and the source becomes `stale`.
+
+Regression tests cover both:
+
+- correct `scopus_id` with wrong DOI;
+- correct Scholar `citation_for_view` with wrong title.
+
+This closes the pre-publication validation boundary: invalid frozen bibliographic evidence can no longer be written first and discovered only by the post-publication repository audit.
+
 ### Final gate
 
 Verified at the final implementation HEAD:
@@ -393,7 +412,7 @@ Verified at the final implementation HEAD:
 - Python updater syntax: PASS;
 - deterministic bibliometric metrics check: PASS;
 - JavaScript syntax: PASS;
-- 170 Python unit tests: PASS;
+- 172 Python unit tests: PASS;
 - shared-site renderer synchronized;
 - known debt: 10;
 - new violations: 0;
