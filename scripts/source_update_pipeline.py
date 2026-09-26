@@ -15,7 +15,6 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
-import re
 from typing import Callable, Mapping
 import unicodedata
 
@@ -159,7 +158,9 @@ def normalize_title(value: object) -> str:
     without_marks = "".join(
         char for char in decomposed if not unicodedata.combining(char)
     ).lower()
-    normalized = re.sub(r"[^a-z0-9]+", " ", without_marks)
+    normalized = "".join(
+        char if char.isalnum() else " " for char in without_marks
+    )
     return " ".join(normalized.split())
 
 
@@ -184,34 +185,6 @@ def registry_by_id(registry: object) -> dict[str, dict]:
             )
         indexed[publication_id] = work
     return indexed
-
-
-def frozen_source_record_ids(
-    source_links: object,
-    source: str,
-) -> tuple[str, ...]:
-    if source not in ACADEMIC_SOURCES:
-        return ()
-    if not isinstance(source_links, dict):
-        raise PipelineError("source links must be an object")
-    sources = source_links.get("sources")
-    if not isinstance(sources, dict):
-        raise PipelineError("source links sources must be an object")
-    source_payload = sources.get(source)
-    if not isinstance(source_payload, dict):
-        raise PipelineError(f"missing source-link definition for {source}")
-    links = source_payload.get("links")
-    if not isinstance(links, list):
-        raise PipelineError(f"{source} source links must be a list")
-    record_ids: list[str] = []
-    for link in links:
-        if not isinstance(link, dict):
-            raise PipelineError(f"{source} source link must be an object")
-        record_id = link.get("record_id")
-        if not isinstance(record_id, str) or not record_id.strip():
-            raise PipelineError(f"{source} source link has invalid record_id")
-        record_ids.append(record_id.strip())
-    return tuple(record_ids)
 
 
 def validate_frozen_link_completeness(
