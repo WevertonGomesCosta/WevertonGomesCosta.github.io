@@ -381,7 +381,8 @@ The test suite now covers:
 - fallback/metrics transaction timestamp parity;
 - stale metric value preservation;
 - rollback when the second staged replacement fails;
-- source-link audit behavior for unavailable sources.
+- source-link audit behavior for unavailable sources;
+- unexpected collector exceptions are isolated to their source and converted into controlled failure results.
 
 No test performs live API access.
 
@@ -412,7 +413,7 @@ Verified at the final implementation HEAD:
 - Python updater syntax: PASS;
 - deterministic bibliometric metrics check: PASS;
 - JavaScript syntax: PASS;
-- 172 Python unit tests: PASS;
+- 173 Python unit tests: PASS;
 - shared-site renderer synchronized;
 - known debt: 10;
 - new violations: 0;
