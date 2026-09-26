@@ -26,6 +26,9 @@ jobs:
           node --check utils.js
           node tests/test_profile_interpolation.js
 
+      - name: Check Python update pipeline syntax
+        run: python -m py_compile update_fallback.py scripts/source_update_pipeline.py scripts/build_bibliometric_metrics.py
+
       - name: Check bibliometric metrics build
         run: python scripts/build_bibliometric_metrics.py --check
 

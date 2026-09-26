@@ -13,19 +13,23 @@
 # Implementa fallback automático e trata falhas de conexão.
 #
 # Autor: Weverton Gomes Costa
-# Versão: 13.0.0 (Final - Sem Merge)
+# Versão: 14.0.0 (Pipeline transacional por fonte)
 
-import requests
+try:
+    import requests
+except ModuleNotFoundError:  # Import must remain safe for offline tests.
+    requests = None
+
 import json
 import re
 import csv
-import math
 from datetime import datetime
-import sys
 import os
 import logging
-import shutil       # <--- Adicionar
-import unicodedata  # <--- Adicionar
+import unicodedata
+from pathlib import Path
+
+from scripts import source_update_pipeline as update_pipeline
 
 # ==============================================================================
 # CONFIGURAÇÃO DO LOGGING
@@ -39,107 +43,71 @@ logging.basicConfig(
 # ==============================================================================
 # CARREGAMENTO DE CONFIGURAÇÕES
 # ==============================================================================
+class ConfigurationError(RuntimeError):
+    """Erro de configuração reportado pelo entrypoint, nunca durante import."""
+
+
 def load_keys(keys_file: str = "keys.json") -> dict:
-    """
-    Carrega as configurações e chaves de um arquivo JSON.
-    Interrompe o script em caso de erro crítico.
-    """
+    """Carrega configurações sem encerrar o interpretador."""
     try:
         logging.info(f"Carregando configurações do arquivo '{keys_file}'...")
         with open(keys_file, "r", encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+    except FileNotFoundError as exc:
+        raise ConfigurationError(
+            f"O arquivo de chaves '{keys_file}' não foi encontrado."
+        ) from exc
+    except json.JSONDecodeError as exc:
+        raise ConfigurationError(
+            f"O arquivo '{keys_file}' contém JSON inválido."
+        ) from exc
 
-    except FileNotFoundError:
-        logging.critical(
-            f"ERRO CRÍTICO: O arquivo de chaves '{keys_file}' não foi encontrado."
-        )
-        sys.exit(1)
+    if not isinstance(data, dict):
+        raise ConfigurationError("keys.json deve conter um objeto JSON.")
+    return data
 
-    except json.JSONDecodeError:
-        logging.critical(
-            f"ERRO CRÍTICO: O arquivo '{keys_file}' contém um JSON inválido."
+
+def build_runtime_config(keys: dict) -> dict:
+    """Valida as credenciais necessárias somente no runtime."""
+    serpapi_keys = [
+        key
+        for key in (
+            keys.get("serpapi_api_key"),
+            keys.get("serpapi_api_key2"),
         )
-        sys.exit(1)
+        if isinstance(key, str) and key and "CHAVE" not in key.upper()
+    ]
+    config = {
+        "github_username": keys.get("github_username"),
+        "github_token": keys.get("github_token"),
+        "scholar_author_id": keys.get("scholar_author_id"),
+        "serpapi_keys": serpapi_keys,
+        "orcid_id": keys.get("orcid_id"),
+        "scopus_api_key": keys.get("scopus_api_key"),
+        "scopus_author_id": keys.get("scopus_author_id"),
+        "wos_api_key": keys.get("wos_api_key"),
+        "wos_researcher_id": keys.get("wos_researcher_id"),
+    }
+
+    missing = [
+        key
+        for key in ("github_username", "scholar_author_id", "orcid_id")
+        if not config.get(key)
+    ]
+    if missing:
+        raise ConfigurationError(
+            "Configuração obrigatória ausente: " + ", ".join(missing)
+        )
+    if not serpapi_keys:
+        raise ConfigurationError("Nenhuma chave válida da SerpApi configurada.")
+
+    return config
 
 
 # ==============================================================================
-# CARREGAMENTO DAS CHAVES
+# ARQUIVOS DE SAÍDA
 # ==============================================================================
-keys = load_keys()
-
-# ------------------------------------------------------------------------------
-# 1. Identidade do autor e fontes principais (CRÍTICAS)
-# ------------------------------------------------------------------------------
-GITHUB_USERNAME = keys.get("github_username")
-SCHOLAR_AUTHOR_ID = keys.get("scholar_author_id")
-ORCID_ID = keys.get("orcid_id")
-
-# ------------------------------------------------------------------------------
-# 2. Credenciais e tokens (NÃO CRÍTICOS, exceto SerpApi)
-# ------------------------------------------------------------------------------
-GITHUB_TOKEN = keys.get("github_token")  # Opcional
-
-# SerpApi: permite múltiplas chaves com rotação
-SERPAPI_KEYS_RAW = [
-    keys.get("serpapi_api_key"),
-    keys.get("serpapi_api_key2"),
-]
-
-SERPAPI_KEYS = [
-    key for key in SERPAPI_KEYS_RAW
-    if key and "CHAVE" not in key.upper()
-]
-
-# ------------------------------------------------------------------------------
-# 3. Métricas acadêmicas adicionais (opcionais / fallback)
-# ------------------------------------------------------------------------------
-SCOPUS_API_KEY = keys.get("scopus_api_key")
-SCOPUS_AUTHOR_ID = keys.get("scopus_author_id")
-
-WOS_API_KEY = keys.get("wos_api_key")
-WOS_RESEARCHER_ID = keys.get("wos_researcher_id")
-
-# ------------------------------------------------------------------------------
-# 4. Arquivos de saída
-# ------------------------------------------------------------------------------
 MAIN_FILENAME = "fallback-data.json"
-TEMP_FILENAME = "fallback-data-temp.json"
-
-# ==============================================================================
-# VALIDAÇÃO DAS CONFIGURAÇÕES
-# ==============================================================================
-
-# ---- Validações CRÍTICAS (site não funciona sem isso) -------------------------
-if not GITHUB_USERNAME:
-    logging.critical("ERRO CRÍTICO: 'github_username' não configurado em keys.json.")
-    sys.exit(1)
-
-if not SCHOLAR_AUTHOR_ID:
-    logging.critical("ERRO CRÍTICO: 'scholar_author_id' não configurado em keys.json.")
-    sys.exit(1)
-
-if not ORCID_ID:
-    logging.critical("ERRO CRÍTICO: 'orcid_id' não configurado em keys.json.")
-    sys.exit(1)
-
-if not SERPAPI_KEYS:
-    logging.critical(
-        "ERRO CRÍTICO: Nenhuma chave válida da SerpApi encontrada em keys.json."
-    )
-    sys.exit(1)
-
-# ---- Validações NÃO CRÍTICAS (fallback ativado) --------------------------------
-if not SCOPUS_API_KEY or not SCOPUS_AUTHOR_ID:
-    logging.warning(
-        "AVISO: Chaves do Scopus não detectadas ou incompletas. "
-        "Será utilizado fallback (CSV/manual) quando disponível."
-    )
-
-if not WOS_API_KEY or not WOS_RESEARCHER_ID:
-    logging.warning(
-        "AVISO: Chaves do Web of Science não detectadas ou incompletas. "
-        "As métricas do WoS serão ignoradas."
-    )
 
 # ==============================================================================
 # FUNÇÕES AUXILIARES
@@ -253,14 +221,14 @@ def calculate_i10(citations_list) -> int:
 # FUNÇÕES DE BUSCA DE DADOS - GITHUB
 # ==============================================================================
 
-def fetch_github_repos(username: str):
+def fetch_github_repos(username: str, token: str | None = None):
     """
     Busca os repositórios públicos de um usuário no GitHub.
-    Retorna lista vazia em caso de falha (não interrompe o pipeline).
+    Retorna None em falha; lista vazia é um resultado bem-sucedido válido.
     """
     if not username:
         logging.error("Usuário do GitHub não informado.")
-        return []
+        return None
 
     logging.info("Buscando repositórios do GitHub...")
 
@@ -274,8 +242,8 @@ def fetch_github_repos(username: str):
         "Accept": "application/vnd.github.v3+json"
     }
 
-    if GITHUB_TOKEN:
-        headers["Authorization"] = f"token {GITHUB_TOKEN}"
+    if token:
+        headers["Authorization"] = f"token {token}"
 
     try:
         response = requests.get(
@@ -296,14 +264,14 @@ def fetch_github_repos(username: str):
                 )
             else:
                 logging.error("Limite de requisições do GitHub atingido (403).")
-            return []
+            return None
 
         response.raise_for_status()
         repos = response.json()
 
         if not isinstance(repos, list):
             logging.error("Resposta inesperada da API do GitHub.")
-            return []
+            return None
 
         formatted_repos = []
 
@@ -334,11 +302,11 @@ def fetch_github_repos(username: str):
 
     except requests.exceptions.Timeout:
         logging.error("Timeout ao conectar à API do GitHub.")
-        return []
+        return None
 
     except requests.exceptions.RequestException as e:
         logging.error(f"Erro ao buscar repositórios do GitHub: {e}")
-        return []
+        return None
 
 
 # ==============================================================================
@@ -452,9 +420,15 @@ def fetch_scholar_data(author_id: str, api_key: str):
             "num": page_size
         })
 
-        if not page: break
+        if page is None:
+            logging.error("Scholar: paginação incompleta; descartando coleta parcial.")
+            return None
         articles_batch = page.get("articles", [])
-        if not articles_batch: break
+        if not isinstance(articles_batch, list):
+            logging.error("Scholar: campo articles inválido; descartando coleta.")
+            return None
+        if not articles_batch:
+            break
 
         all_raw_articles.extend(articles_batch)
 
@@ -478,12 +452,14 @@ def fetch_scholar_data(author_id: str, api_key: str):
             y_int = int(year_str)
             yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
 
-        # Normaliza Citações
-        cites_val = 0
-        raw_cites = art.get("cited_by", {})
+        # Normaliza citações sem confundir ausência com zero.
+        cites_val = None
+        raw_cites = art.get("cited_by")
         if isinstance(raw_cites, dict):
-            cites_val = raw_cites.get("value", 0)
-        elif isinstance(raw_cites, int):
+            raw_value = raw_cites.get("value")
+            if isinstance(raw_value, int) and not isinstance(raw_value, bool):
+                cites_val = raw_value
+        elif isinstance(raw_cites, int) and not isinstance(raw_cites, bool):
             cites_val = raw_cites
 
         cleaned_articles.append({
@@ -609,25 +585,22 @@ def fetch_orcid_works(orcid_id):
         return orcid_works
 
     except Exception as e:
-        # Loga o erro mas retorna lista vazia para não travar o script
         logging.error(f"Erro ao buscar dados do ORCID: {e}")
-        return []
+        return None
 
 # ==============================================================================
 # FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Com Proteção de IP/Home Office)
 # ==============================================================================
-def fetch_scopus_data(author_id, api_key, previous_data=None):
+def fetch_scopus_data(author_id, api_key):
     """
     Busca dados do Scopus via Elsevier API.
     
-    PROTEÇÃO "HOME OFFICE":
-    Se a API retornar a lista de artigos, mas FALHAR em obter o histórico 
-    detalhado de citações (comum fora da rede da universidade), 
-    a função descarta os dados novos incompletos e retorna o 'previous_data'.
+    Retorna None quando a coleta estiver incompleta. A preservação do
+    snapshot anterior pertence ao pipeline transacional, não ao fetcher.
     """
     if not author_id or not api_key:
         logging.warning("--- [Scopus] Pulei: ID ou API Key ausentes ---")
-        return previous_data
+        return None
 
     logging.info(f"--- [Scopus] Iniciando conexão para Author ID: {author_id} ---")
 
@@ -718,10 +691,10 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
             critical_error = True
             break
 
-    # Se falhou na busca básica, aborta e usa o antigo
-    if (critical_error or not cleaned_articles) and previous_data:
-        logging.warning("⚠️  [Scopus] Falha na busca de artigos. Mantendo dados antigos.")
-        return previous_data
+    # Se falhou na busca básica, a coleta inteira é inválida.
+    if critical_error or not cleaned_articles:
+        logging.warning("⚠️  [Scopus] Falha/incompletude na busca de artigos.")
+        return None
 
     # ==========================================================================
     # 2. HISTÓRICO DE CITAÇÕES (Bloqueado fora da Universidade)
@@ -788,11 +761,8 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
         logging.warning("⚠️  [Scopus] DETECTADO BLOQUEIO DE IP (Home Office).")
         logging.warning("    A lista de artigos foi baixada, mas o histórico de citações veio vazio.")
         
-        if previous_data:
-            logging.warning("    >>> AÇÃO: Descartando dados incompletos e MANTENDO DADOS ANTIGOS.")
-            return previous_data
-        else:
-            logging.warning("    >>> AÇÃO: Nenhum dado antigo disponível. O gráfico ficará vazio.")
+        logging.warning("    >>> AÇÃO: Descartando coleta incompleta.")
+        return None
 
     # ==========================================================================
     # 3. FORMATAÇÃO FINAL (Se chegou aqui, os dados são válidos)
@@ -846,13 +816,11 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
 # FUNÇÕES DE BUSCA DE DADOS – WEB OF SCIENCE (Modo Offline / Fallback)
 # ==============================================================================
 
-def fetch_wos_data(researcher_id, api_key):
+def fetch_wos_data(researcher_id=None, api_key=None, txt_file="savedrecs.txt"):
     """
     Processa dados do Web of Science a partir de um arquivo local 'savedrecs.txt'.
     A API foi removida temporariamente.
     """
-    txt_file = "savedrecs.txt"
-    
     # Se o arquivo não existir, retorna imediatamente
     if not os.path.exists(txt_file):
         logging.warning(f"Arquivo '{txt_file}' não encontrado. WoS será ignorado.")
@@ -1125,159 +1093,178 @@ def analyze_changes(old_data, new_data):
     return report_lines, modification_notes
 
 # ==============================================================================
-# FUNÇÕES DE GERAÇÃO E ATUALIZAÇÃO DE ARQUIVOS (MANTIDAS COMO PEDIDO)
+# PIPELINE TRANSACIONAL
 # ==============================================================================
-def generate_fallback_file(data, filename):
-    """
-    Gera o arquivo JSON de forma atômica.
-    Escreve primeiro em '<filename>.writing' e depois substitui o arquivo final.
-    """
-    logging.info(f"Gerando o arquivo '{filename}'...")
-    temp_writing_filename = f"{filename}.writing"
-
+def safe_collect(source_name: str, collector, *args, **kwargs):
+    """Converte exceções inesperadas de uma fonte em falha isolada."""
     try:
-        with open(temp_writing_filename, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-            f.flush()
-            os.fsync(f.fileno())
-
-        os.replace(temp_writing_filename, filename)
-        logging.info(f"✓ Arquivo '{filename}' gerado com sucesso.")
-        return True
-
-    except Exception as e:
-        logging.error(f"Erro ao gerar JSON em '{filename}': {e}")
-        return False
-
-    finally:
-        if os.path.exists(temp_writing_filename):
-            try:
-                os.remove(temp_writing_filename)
-            except OSError:
-                pass
-
-def update_main_file(main_file, temp_file):
-    """
-    Atualiza o arquivo principal a partir de um temporário.
-    """
-    if not os.path.exists(temp_file):
-        logging.error(f"Arquivo temporário '{temp_file}' não encontrado.")
-        return False
-
-    try:
-        shutil.move(temp_file, main_file)
-        logging.info(f"✓ Arquivo principal '{main_file}' atualizado com sucesso.")
-        return True
-
-    except Exception as e:
-        logging.error(f"Erro crítico ao atualizar '{main_file}': {e}")
-        if os.path.exists(temp_file):
-            try:
-                os.remove(temp_file)
-            except OSError:
-                pass
-        return False
+        return collector(*args, **kwargs)
+    except Exception as exc:
+        logging.error(
+            "%s: falha inesperada durante coleta/normalização: %s",
+            source_name,
+            exc,
+        )
+        return None
 
 
-# ==============================================================================
-# EXECUÇÃO PRINCIPAL (ATUALIZADA)
-# ==============================================================================
-if __name__ == "__main__":
-    logging.info("\n" + "="*60)
-    logging.info(" INICIANDO SCRIPT DE ATUALIZAÇÃO ACADÊMICA")
-    logging.info("="*60)
+def collect_source_results(config: dict, root: Path) -> dict:
+    """Executa coleta e retorna resultados não ambíguos por fonte."""
+    results = {}
 
-    # 1. Carregar dados antigos para comparação
-    logging.info(">>> 1. Carregando dados anteriores...")
-    old_data = load_json_data(MAIN_FILENAME)
-    
-    # Extrai o "cache" antigo do Scopus para caso de falha
-    old_scopus_data = old_data.get("academicData", {}).get("scopus")
-    if old_scopus_data:
-        logging.info(f"    [Cache] Scopus antigo encontrado ({len(old_scopus_data.get('articles', []))} artigos).")
-    else:
-        logging.info("    [Cache] Nenhum dado Scopus anterior.")
+    github = safe_collect(
+        "GitHub",
+        fetch_github_repos,
+        config["github_username"],
+        token=config.get("github_token"),
+    )
+    results["github"] = (
+        update_pipeline.SourceResult.success(github)
+        if github is not None
+        else update_pipeline.SourceResult.failure("fetch_failed")
+    )
 
-    # 2. Coleta de Dados
-    logging.info("\n>>> 2. Iniciando Coleta de Dados das APIs...")
-    
-    # GITHUB
-    logging.info("    > GitHub...")
-    github_repos = fetch_github_repos(GITHUB_USERNAME)
-
-    # SCHOLAR
-    logging.info("    > Google Scholar...")
-    scholar_data = None
-    for api_key in SERPAPI_KEYS:
-        scholar_data = fetch_scholar_data(SCHOLAR_AUTHOR_ID, api_key)
-        if scholar_data: 
-            logging.info("      [Scholar] Coleta realizada com sucesso.")
+    scholar = None
+    for api_key in config["serpapi_keys"]:
+        scholar = safe_collect(
+            "Google Scholar",
+            fetch_scholar_data,
+            config["scholar_author_id"],
+            api_key,
+        )
+        if scholar is not None:
             break
-    if not scholar_data: logging.warning("      [Scholar] Falha em todas as chaves.")
+    results["google_scholar"] = (
+        update_pipeline.SourceResult.success(scholar)
+        if scholar is not None
+        else update_pipeline.SourceResult.failure("fetch_failed")
+    )
 
-    # SCOPUS (Agora passamos o old_scopus_data)
-    logging.info("    > Scopus...")
-    scopus_data = None
-    if SCOPUS_API_KEY and SCOPUS_AUTHOR_ID:
-        scopus_data = fetch_scopus_data(SCOPUS_AUTHOR_ID, SCOPUS_API_KEY, previous_data=old_scopus_data)
+    if config.get("scopus_api_key") and config.get("scopus_author_id"):
+        scopus = safe_collect(
+            "Scopus",
+            fetch_scopus_data,
+            config["scopus_author_id"],
+            config["scopus_api_key"],
+        )
+        results["scopus"] = (
+            update_pipeline.SourceResult.success(scopus)
+            if scopus is not None
+            else update_pipeline.SourceResult.failure("fetch_failed")
+        )
     else:
-        logging.warning("      [Scopus] Chaves não configuradas.")
+        results["scopus"] = update_pipeline.SourceResult.skipped(
+            "not_configured"
+        )
 
-    # WEB OF SCIENCE
-    logging.info("    > Web of Science...")
-    wos_data = fetch_wos_data(WOS_RESEARCHER_ID, WOS_API_KEY) if WOS_RESEARCHER_ID else None
-    
-    # ORCID
-    logging.info("    > ORCID...")
-    orcid_raw = fetch_orcid_works(ORCID_ID) if ORCID_ID else []
-    if isinstance(orcid_raw, dict):
-         orcid_list = orcid_raw.get("articles", [])
+    wos_file = root / "savedrecs.txt"
+    if wos_file.exists():
+        wos = safe_collect(
+            "Web of Science",
+            fetch_wos_data,
+            config.get("wos_researcher_id"),
+            config.get("wos_api_key"),
+            txt_file=str(wos_file),
+        )
+        results["web_of_science"] = (
+            update_pipeline.SourceResult.success(wos)
+            if wos is not None
+            else update_pipeline.SourceResult.failure("local_parse_failed")
+        )
     else:
-         orcid_list = orcid_raw
-    logging.info(f"      [ORCID] {len(orcid_list)} itens recuperados.")
+        results["web_of_science"] = update_pipeline.SourceResult.skipped(
+            "local_source_missing"
+        )
 
-    # 3. Montagem do JSON Final
-    logging.info("\n>>> 3. Montando estrutura do JSON Final...")
+    orcid = safe_collect(
+        "ORCID",
+        fetch_orcid_works,
+        config["orcid_id"],
+    )
+    results["orcid"] = (
+        update_pipeline.SourceResult.success(
+            {"source_name": "ORCID", "articles": orcid}
+        )
+        if orcid is not None
+        else update_pipeline.SourceResult.failure("fetch_failed")
+    )
 
-    new_data = {
-        "githubRepos": github_repos,
-        "lastUpdated": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "academicData": {
-            "google_scholar": scholar_data,
-            "scopus": scopus_data,
-            "web_of_science": wos_data,
-            "orcid": {
-                "source_name": "ORCID",
-                "articles": orcid_list
-            }
-        }
-    }
+    return results
 
-    # 4. Análise de Mudanças
-    logging.info("\n>>> 4. Analisando diferenças (Diff)...")
-    
-    report_lines, _ = analyze_changes(old_data, new_data)
 
+def run_update(
+    *,
+    root: Path,
+    keys_file: Path,
+    transaction_time: datetime | None = None,
+) -> int:
+    """Executa uma atualização completa com reconciliação por fonte."""
+    transaction_time = transaction_time or datetime.now()
+    if requests is None:
+        logging.critical(
+            "Dependência 'requests' indisponível; coleta não pode ser executada."
+        )
+        return 1
+
+    try:
+        config = build_runtime_config(load_keys(str(keys_file)))
+    except ConfigurationError as exc:
+        logging.critical("Configuração inválida: %s", exc)
+        return 1
+
+    old_data = load_json_data(str(root / MAIN_FILENAME))
+    registry = load_json_data(str(root / "academic-registry.json"))
+    source_links = load_json_data(str(root / "bibliographic-source-links.json"))
+    if registry is None or source_links is None:
+        logging.critical(
+            "Registry/source links indisponíveis; transação cancelada."
+        )
+        return 1
+
+    results = collect_source_results(config, root)
+
+    try:
+        candidate = update_pipeline.build_transaction_candidate(
+            old_snapshot=old_data,
+            results=results,
+            registry=registry,
+            source_links=source_links,
+            transaction_time=transaction_time,
+        )
+    except (update_pipeline.PipelineError, RuntimeError) as exc:
+        logging.critical("Candidato transacional inválido: %s", exc)
+        return 1
+
+    if not candidate.changed:
+        logging.info("Nenhuma alteração material; arquivos mantidos.")
+        return 0
+
+    report_lines, _ = analyze_changes(old_data, candidate.fallback)
     if report_lines:
         print("\n" + "=" * 60)
         print(" RELATÓRIO DE MUDANÇAS DETECTADAS")
         print("=" * 60)
-        for line in report_lines: print(line)
+        for line in report_lines:
+            print(line)
         print("=" * 60 + "\n")
-        
-        logging.info(">>> Mudanças válidas. Salvando arquivo...")
-        
-        if generate_fallback_file(new_data, TEMP_FILENAME):
-            _ = update_main_file(MAIN_FILENAME, TEMP_FILENAME)
-            logging.info(">>> PROCESSO CONCLUÍDO COM SUCESSO: Arquivo atualizado.")
-            
-    else:
-        print("\n=== Nenhuma alteração relevante detectada. Mantendo versão anterior. ===\n")
-        logging.info(">>> Sem mudanças relevantes. Arquivo original mantido.")
-        
-        if os.path.exists(TEMP_FILENAME):
-            try:
-                os.remove(TEMP_FILENAME)
-            except: pass
 
-    logging.info("="*60 + "\n")
+    try:
+        update_pipeline.publish_candidate(root, candidate)
+    except update_pipeline.PipelineError as exc:
+        logging.critical("Falha na publicação transacional: %s", exc)
+        return 1
+
+    logging.info(
+        "PROCESSO CONCLUÍDO: fallback e métricas publicados na mesma transação."
+    )
+    return 0
+
+
+def main(argv=None) -> int:
+    root = Path(".").resolve()
+    keys_file = root / "keys.json"
+    return run_update(root=root, keys_file=keys_file)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

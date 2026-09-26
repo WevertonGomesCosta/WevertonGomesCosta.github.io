@@ -618,11 +618,11 @@ const scholarScript = (function() {
         }
 
         if (
-            metric.status === 'observed'
+            (metric.status === 'observed' || metric.status === 'stale')
             && Number.isInteger(metric.citations)
             && metric.citations >= 0
         ) {
-            return { value: metric.citations, status: 'observed' };
+            return { value: metric.citations, status: metric.status };
         }
 
         return {

@@ -1918,5 +1918,32 @@
                 }
             ]
         }
+    },
+    "sourceStates": {
+        "github": {
+            "status": "current",
+            "last_valid_at": "2026-09-22T09:40:00",
+            "error_code": null
+        },
+        "google_scholar": {
+            "status": "current",
+            "last_valid_at": "2026-09-22T09:40:00",
+            "error_code": null
+        },
+        "scopus": {
+            "status": "current",
+            "last_valid_at": "2026-09-22T09:40:00",
+            "error_code": null
+        },
+        "web_of_science": {
+            "status": "current",
+            "last_valid_at": "2026-09-22T09:40:00",
+            "error_code": null
+        },
+        "orcid": {
+            "status": "current",
+            "last_valid_at": "2026-09-22T09:40:00",
+            "error_code": null
+        }
     }
 }
