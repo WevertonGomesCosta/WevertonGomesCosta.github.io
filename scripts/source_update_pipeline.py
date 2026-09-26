@@ -15,7 +15,9 @@ from datetime import datetime
 import json
 import os
 from pathlib import Path
+import re
 from typing import Callable, Mapping
+import unicodedata
 
 try:
     from scripts import build_bibliometric_metrics as metrics_builder
@@ -150,6 +152,40 @@ def is_valid_previous_payload(source: str, payload: object) -> bool:
     return True
 
 
+def normalize_title(value: object) -> str:
+    if not isinstance(value, str):
+        return ""
+    decomposed = unicodedata.normalize("NFKD", value)
+    without_marks = "".join(
+        char for char in decomposed if not unicodedata.combining(char)
+    ).lower()
+    normalized = re.sub(r"[^a-z0-9]+", " ", without_marks)
+    return " ".join(normalized.split())
+
+
+def registry_by_id(registry: object) -> dict[str, dict]:
+    if not isinstance(registry, dict):
+        raise PipelineError("academic registry must be an object")
+    works = registry.get("works")
+    if not isinstance(works, list):
+        raise PipelineError("academic registry works must be a list")
+
+    indexed: dict[str, dict] = {}
+    for work in works:
+        if not isinstance(work, dict):
+            raise PipelineError("academic registry works must contain objects")
+        publication_id = work.get("id")
+        if not isinstance(publication_id, str) or not publication_id.strip():
+            raise PipelineError("academic registry work has invalid id")
+        publication_id = publication_id.strip()
+        if publication_id in indexed:
+            raise PipelineError(
+                f"duplicate academic registry publication id: {publication_id}"
+            )
+        indexed[publication_id] = work
+    return indexed
+
+
 def frozen_source_record_ids(
     source_links: object,
     source: str,
@@ -182,31 +218,96 @@ def validate_frozen_link_completeness(
     source: str,
     payload: object,
     source_links: object,
+    registry: object,
 ) -> None:
     if source not in ACADEMIC_SOURCES:
         return
     validate_source_payload(source, payload)
-    required_ids = frozen_source_record_ids(source_links, source)
-    articles = payload["articles"]
+    publications = registry_by_id(registry)
 
-    counts: dict[str, int] = {}
+    sources = (
+        source_links.get("sources")
+        if isinstance(source_links, dict)
+        else None
+    )
+    source_definition = (
+        sources.get(source) if isinstance(sources, dict) else None
+    )
+    links = (
+        source_definition.get("links")
+        if isinstance(source_definition, dict)
+        else None
+    )
+    if not isinstance(links, list):
+        raise PipelineError(f"{source} source links must be a list")
+
+    articles = payload["articles"]
+    indexed: dict[str, list[dict]] = {}
     for article in articles:
         record_id = metrics_builder.extract_record_id(source, article)
         if record_id:
-            counts[record_id] = counts.get(record_id, 0) + 1
+            indexed.setdefault(record_id, []).append(article)
 
-    invalid = {
-        record_id: counts.get(record_id, 0)
-        for record_id in required_ids
-        if counts.get(record_id, 0) != 1
-    }
-    if invalid:
-        detail = ", ".join(
-            f"{record_id}={count}" for record_id, count in sorted(invalid.items())
-        )
-        raise PipelineError(
-            f"{source} frozen source-link completeness failed: {detail}"
-        )
+    for link in links:
+        if not isinstance(link, dict):
+            raise PipelineError(f"{source} source link must be an object")
+        record_id = link.get("record_id")
+        publication_id = link.get("publication_id")
+        match_basis = link.get("match_basis")
+        if not isinstance(record_id, str) or not record_id.strip():
+            raise PipelineError(f"{source} source link has invalid record_id")
+        if (
+            not isinstance(publication_id, str)
+            or publication_id not in publications
+        ):
+            raise PipelineError(
+                f"{source} source link has unknown publication_id"
+            )
+
+        matches = indexed.get(record_id.strip(), [])
+        if len(matches) != 1:
+            raise PipelineError(
+                f"{source} frozen source record {record_id!r} must resolve "
+                f"exactly once; found {len(matches)}"
+            )
+
+        article = matches[0]
+        publication = publications[publication_id]
+
+        if match_basis == "doi":
+            source_doi = metrics_builder.normalize_doi(article.get("doi"))
+            canonical_doi = metrics_builder.normalize_doi(
+                publication.get("doi")
+            )
+            if (
+                not source_doi
+                or not canonical_doi
+                or source_doi != canonical_doi
+            ):
+                raise PipelineError(
+                    f"{source} frozen record {record_id!r} DOI evidence "
+                    "does not match canonical publication"
+                )
+        elif match_basis in {
+            "normalized_title",
+            "manual_duplicate_reconciliation",
+        }:
+            source_title = normalize_title(article.get("title"))
+            canonical_title = normalize_title(publication.get("title"))
+            if (
+                not source_title
+                or not canonical_title
+                or source_title != canonical_title
+            ):
+                raise PipelineError(
+                    f"{source} frozen record {record_id!r} title evidence "
+                    "does not match canonical publication"
+                )
+        else:
+            raise PipelineError(
+                f"{source} frozen record {record_id!r} has unsupported "
+                f"match_basis {match_basis!r}"
+            )
 
 
 def previous_source_state(
@@ -264,6 +365,7 @@ def reconcile_source(
     result: SourceResult,
     old_snapshot: object,
     source_links: object,
+    registry: object,
     transaction_time: datetime,
 ) -> tuple[object, dict]:
     old_payload = get_source_payload(old_snapshot, source)
@@ -279,7 +381,7 @@ def reconcile_source(
         try:
             validate_source_payload(source, result.payload)
             validate_frozen_link_completeness(
-                source, result.payload, source_links
+                source, result.payload, source_links, registry
             )
         except PipelineError:
             effective_result = SourceResult.failure("invalid_or_incomplete")
@@ -412,6 +514,7 @@ def build_transaction_candidate(
             result=results[source],
             old_snapshot=old_snapshot,
             source_links=source_links,
+            registry=registry,
             transaction_time=transaction_time,
         )
         set_source_payload(candidate, source, payload)
