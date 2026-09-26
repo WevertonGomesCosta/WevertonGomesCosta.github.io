@@ -166,6 +166,54 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
             ["author_id", "api_key"],
         )
 
+    def test_unexpected_source_exception_is_isolated(self):
+        config = {
+            "github_username": "example",
+            "github_token": None,
+            "scholar_author_id": "Author",
+            "serpapi_keys": ["key"],
+            "orcid_id": "0000-0000-0000-0000",
+            "scopus_api_key": None,
+            "scopus_author_id": None,
+            "wos_api_key": None,
+            "wos_researcher_id": None,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with (
+                mock.patch.object(
+                    update_fallback,
+                    "fetch_github_repos",
+                    side_effect=ValueError("malformed payload"),
+                ),
+                mock.patch.object(
+                    update_fallback,
+                    "fetch_scholar_data",
+                    return_value={"profile": {}, "articles": []},
+                ),
+                mock.patch.object(
+                    update_fallback,
+                    "fetch_orcid_works",
+                    return_value=[],
+                ),
+            ):
+                results = update_fallback.collect_source_results(
+                    config,
+                    root,
+                )
+
+        self.assertEqual(results["github"].status, "failure")
+        self.assertEqual(
+            results["google_scholar"].status,
+            "success",
+        )
+        self.assertEqual(results["orcid"].status, "success")
+        self.assertEqual(results["scopus"].status, "skipped")
+        self.assertEqual(
+            results["web_of_science"].status,
+            "skipped",
+        )
+
     def test_initial_generation_without_old_fallback_does_not_crash(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
