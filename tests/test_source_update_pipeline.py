@@ -269,6 +269,100 @@ class TestSourceUpdatePipeline(unittest.TestCase):
             "current",
         )
 
+    def test_wrong_doi_evidence_turns_nominal_success_into_stale(self):
+        old = old_snapshot()
+        old["academicData"]["scopus"] = {
+            "articles": [
+                {
+                    "scopus_id": "123456",
+                    "title": "Publication A",
+                    "doi": "10.1/a",
+                    "cited_by": {"value": 5},
+                }
+            ]
+        }
+        links = source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        results = all_success(old)
+        results["scopus"] = pipeline.SourceResult.success(
+            {
+                "articles": [
+                    {
+                        "scopus_id": "123456",
+                        "title": "Publication A",
+                        "doi": "10.1/wrong",
+                        "cited_by": {"value": 99},
+                    }
+                ]
+            }
+        )
+
+        candidate = pipeline.build_transaction_candidate(
+            old_snapshot=old,
+            results=results,
+            registry=registry(),
+            source_links=links,
+            transaction_time=NOW,
+        )
+
+        self.assertEqual(
+            candidate.fallback["academicData"]["scopus"],
+            old["academicData"]["scopus"],
+        )
+        self.assertEqual(
+            candidate.fallback["sourceStates"]["scopus"]["status"],
+            "stale",
+        )
+        metric = candidate.metrics["publications"]["pub-a"]["scopus"]
+        self.assertEqual(metric["status"], "stale")
+        self.assertEqual(metric["citations"], 5)
+
+    def test_wrong_title_evidence_turns_scholar_refresh_stale(self):
+        old = old_snapshot()
+        results = all_success(old)
+        results["google_scholar"] = pipeline.SourceResult.success(
+            {
+                "profile": {},
+                "articles": [
+                    {
+                        "title": "Completely Different Publication",
+                        "link": (
+                            "https://scholar.google.com/citations?"
+                            "citation_for_view=Author:A"
+                        ),
+                        "cited_by": {"value": 999},
+                    }
+                ],
+            }
+        )
+
+        candidate = pipeline.build_transaction_candidate(
+            old_snapshot=old,
+            results=results,
+            registry=registry(),
+            source_links=source_links(),
+            transaction_time=NOW,
+        )
+
+        self.assertEqual(
+            candidate.fallback["academicData"]["google_scholar"],
+            old["academicData"]["google_scholar"],
+        )
+        self.assertEqual(
+            candidate.fallback["sourceStates"]["google_scholar"]["status"],
+            "stale",
+        )
+        metric = candidate.metrics["publications"]["pub-a"]["google_scholar"]
+        self.assertEqual(metric["status"], "stale")
+        self.assertEqual(metric["citations"], 7)
+
     def test_missing_frozen_record_turns_nominal_success_into_stale(self):
         old = old_snapshot()
         results = all_success(old)
