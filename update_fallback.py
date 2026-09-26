@@ -1095,11 +1095,26 @@ def analyze_changes(old_data, new_data):
 # ==============================================================================
 # PIPELINE TRANSACIONAL
 # ==============================================================================
+def safe_collect(source_name: str, collector, *args, **kwargs):
+    """Converte exceções inesperadas de uma fonte em falha isolada."""
+    try:
+        return collector(*args, **kwargs)
+    except Exception as exc:
+        logging.error(
+            "%s: falha inesperada durante coleta/normalização: %s",
+            source_name,
+            exc,
+        )
+        return None
+
+
 def collect_source_results(config: dict, root: Path) -> dict:
     """Executa coleta e retorna resultados não ambíguos por fonte."""
     results = {}
 
-    github = fetch_github_repos(
+    github = safe_collect(
+        "GitHub",
+        fetch_github_repos,
         config["github_username"],
         token=config.get("github_token"),
     )
@@ -1111,7 +1126,12 @@ def collect_source_results(config: dict, root: Path) -> dict:
 
     scholar = None
     for api_key in config["serpapi_keys"]:
-        scholar = fetch_scholar_data(config["scholar_author_id"], api_key)
+        scholar = safe_collect(
+            "Google Scholar",
+            fetch_scholar_data,
+            config["scholar_author_id"],
+            api_key,
+        )
         if scholar is not None:
             break
     results["google_scholar"] = (
@@ -1121,7 +1141,9 @@ def collect_source_results(config: dict, root: Path) -> dict:
     )
 
     if config.get("scopus_api_key") and config.get("scopus_author_id"):
-        scopus = fetch_scopus_data(
+        scopus = safe_collect(
+            "Scopus",
+            fetch_scopus_data,
             config["scopus_author_id"],
             config["scopus_api_key"],
         )
@@ -1137,7 +1159,9 @@ def collect_source_results(config: dict, root: Path) -> dict:
 
     wos_file = root / "savedrecs.txt"
     if wos_file.exists():
-        wos = fetch_wos_data(
+        wos = safe_collect(
+            "Web of Science",
+            fetch_wos_data,
             config.get("wos_researcher_id"),
             config.get("wos_api_key"),
             txt_file=str(wos_file),
@@ -1152,7 +1176,11 @@ def collect_source_results(config: dict, root: Path) -> dict:
             "local_source_missing"
         )
 
-    orcid = fetch_orcid_works(config["orcid_id"])
+    orcid = safe_collect(
+        "ORCID",
+        fetch_orcid_works,
+        config["orcid_id"],
+    )
     results["orcid"] = (
         update_pipeline.SourceResult.success(
             {"source_name": "ORCID", "articles": orcid}
