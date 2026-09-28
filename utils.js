@@ -529,9 +529,9 @@ const scholarScript = (function() {
 
     const initialPubsToShow = 3; 
     const pubsPerLoad = 3;        
-    const platformOrder = ['scholar', 'scopus', 'wos', 'max'];
+    const platformOrder = ['scholar', 'scopus', 'wos'];
 
-    let dashboardData = { scholar: null, scopus: null, wos: null, max: null };
+    let dashboardData = { scholar: null, scopus: null, wos: null };
     let allArticles = [];
     let allWorks = [];
     let showingPubsCount = 0;
@@ -835,7 +835,7 @@ const scholarScript = (function() {
         const rangeCit = [0, maxCitVal > 0 ? maxCitVal * 1.1 : 10];
         const rangeX = [minYear - 0.5, maxYear + 0.5];
 
-        const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6', max: '#F59E0B' }[platform] || '#10b981';
+        const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6' }[platform] || '#10b981';
         const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
         const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
@@ -1261,7 +1261,7 @@ const scholarScript = (function() {
         dashboardData.scholar = processPlatformData('scholar', 'google_scholar');
         dashboardData.scopus = processPlatformData('scopus', 'scopus');
         dashboardData.wos = processPlatformData('wos', 'web_of_science');
-        dashboardData.max = processPlatformData('max', 'maximized');
+
 
         const fb = window.fallbackData;
         const acad = fb ? (fb.academicData || fb) : {};
@@ -1296,7 +1296,7 @@ const scholarScript = (function() {
                     return posA - posB;
                 });
         } else {
-            const raw = acad.maximized?.articles || scholarArticles;
+            const raw = scholarArticles;
             allArticles = raw
                 .map(article => normalizeArticle(article))
                 .sort((a, b) => b.cited_by.value - a.cited_by.value);
