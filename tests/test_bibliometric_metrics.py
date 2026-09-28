@@ -137,6 +137,70 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         self.assertEqual(unavailable["record_id"], "123456")
         self.assertIsNone(unavailable["citations"])
 
+    def test_stale_source_preserves_last_valid_citation_value(self):
+        reg = registry(["pub-stale"])
+        links = source_links_empty()
+        links["sources"]["google_scholar"]["links"] = [
+            {
+                "record_id": "Author:Stale",
+                "publication_id": "pub-stale",
+                "role": "primary",
+                "match_basis": "normalized_title",
+            }
+        ]
+        fallback = {
+            "academicData": {
+                "google_scholar": {
+                    "articles": [
+                        {
+                            "title": "pub-stale",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:Stale"
+                            ),
+                            "cited_by": {"value": 12},
+                        }
+                    ]
+                },
+                "scopus": {"articles": []},
+                "web_of_science": {"articles": []},
+                "orcid": {"articles": []},
+            },
+            "sourceStates": {
+                "github": {
+                    "status": "unavailable",
+                    "last_valid_at": None,
+                    "error_code": "fixture_unavailable",
+                },
+                "google_scholar": {
+                    "status": "stale",
+                    "last_valid_at": "2026-09-22T09:40:00",
+                    "error_code": "fetch_failed",
+                },
+                "scopus": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "web_of_science": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "orcid": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+            },
+        }
+
+        metrics = builder.build_metrics(reg, links, fallback)
+        metric = metrics["publications"]["pub-stale"]["google_scholar"]
+        self.assertEqual(metric["status"], "stale")
+        self.assertEqual(metric["citations"], 12)
+        self.assertEqual(metric["record_id"], "Author:Stale")
+
     def test_scholar_alias_is_not_summed_and_order_is_irrelevant(self):
         registry_payload = json.loads(
             (ROOT / "academic-registry.json").read_text(encoding="utf-8")

@@ -11,6 +11,37 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from repository_audit import data_rules
 
 
+def with_source_states(fallback=None):
+    payload = dict(fallback or {})
+    academic = payload.get("academicData")
+    if not isinstance(academic, dict):
+        academic = {}
+        payload["academicData"] = academic
+
+    states = {}
+    github_valid = isinstance(payload.get("githubRepos"), list)
+    states["github"] = {
+        "status": "current" if github_valid else "unavailable",
+        "last_valid_at": "2026-09-25T12:00:00" if github_valid else None,
+        "error_code": None if github_valid else "fixture_unavailable",
+    }
+
+    for source in ("google_scholar", "scopus", "web_of_science", "orcid"):
+        source_payload = academic.get(source)
+        valid = (
+            isinstance(source_payload, dict)
+            and isinstance(source_payload.get("articles"), list)
+        )
+        states[source] = {
+            "status": "current" if valid else "unavailable",
+            "last_valid_at": "2026-09-25T12:00:00" if valid else None,
+            "error_code": None if valid else "fixture_unavailable",
+        }
+
+    payload["sourceStates"] = states
+    return payload
+
+
 def valid_profile():
     return {
         "schema_version": "1.0.0",
@@ -134,6 +165,19 @@ class RepoFixture:
                         },
                         "publications": {},
                     }),
+                    encoding="utf-8",
+                )
+            elif name == "fallback-data.json":
+                path.write_text(
+                    json.dumps(with_source_states({
+                        "githubRepos": [],
+                        "academicData": {
+                            "google_scholar": {"articles": []},
+                            "scopus": {"articles": []},
+                            "web_of_science": {"articles": []},
+                            "orcid": {"articles": []},
+                        },
+                    })),
                     encoding="utf-8",
                 )
             elif name.endswith(".json"):
@@ -576,6 +620,68 @@ class TestTranslationRules(unittest.TestCase):
         )
 
 
+class TestSourceUpdateStateRules(unittest.TestCase):
+    def _audit(self, fallback):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        root = Path(temp.name)
+        RepoFixture.create(root)
+        (root / "fallback-data.json").write_text(
+            json.dumps(fallback), encoding="utf-8"
+        )
+        return data_rules.audit_academic_data(root)
+
+    def test_current_stale_and_unavailable_state_contract(self):
+        fallback = with_source_states({
+            "githubRepos": [],
+            "academicData": {
+                "google_scholar": {"articles": []},
+                "scopus": {"articles": []},
+                "web_of_science": {"articles": []},
+                "orcid": {"articles": []},
+            },
+        })
+        fallback["sourceStates"]["google_scholar"] = {
+            "status": "stale",
+            "last_valid_at": "2026-09-25T10:00:00",
+            "error_code": "fetch_failed",
+        }
+        fallback["academicData"]["orcid"] = None
+        fallback["sourceStates"]["orcid"] = {
+            "status": "unavailable",
+            "last_valid_at": None,
+            "error_code": "fetch_failed",
+        }
+        violations = self._audit(fallback)
+        self.assertFalse(
+            [
+                v for v in violations
+                if v.rule_id == "SOURCE_UPDATE_STATE_STRUCTURE"
+            ],
+            violations,
+        )
+
+    def test_stale_requires_preserved_payload_and_last_valid_time(self):
+        fallback = with_source_states({
+            "academicData": {
+                "google_scholar": {"articles": []},
+            },
+        })
+        fallback["academicData"]["google_scholar"] = None
+        fallback["sourceStates"]["google_scholar"] = {
+            "status": "stale",
+            "last_valid_at": None,
+            "error_code": "fetch_failed",
+        }
+        violations = self._audit(fallback)
+        subjects = {
+            v.subject
+            for v in violations
+            if v.rule_id == "SOURCE_UPDATE_STATE_STRUCTURE"
+        }
+        self.assertIn("sourceStates:google_scholar", subjects)
+
+
 class TestAcademicRules(unittest.TestCase):
     def _root(self, registry, fallback=None, source_links=None):
         temp = tempfile.TemporaryDirectory()
@@ -586,7 +692,7 @@ class TestAcademicRules(unittest.TestCase):
             json.dumps(registry), encoding="utf-8"
         )
         (root / "fallback-data.json").write_text(
-            json.dumps(fallback or {}), encoding="utf-8"
+            json.dumps(with_source_states(fallback)), encoding="utf-8"
         )
         if source_links is not None:
             (root / "bibliographic-source-links.json").write_text(
@@ -976,6 +1082,40 @@ class TestAcademicRules(unittest.TestCase):
         )
         violations = data_rules.audit_academic_data(root)
         self.assertIn(
+            "source-links:scopus:record-id:123456:snapshot",
+            {
+                v.subject
+                for v in violations
+                if v.rule_id == "BIBLIOGRAPHIC_SOURCE_LINKS_STRUCTURE"
+            },
+        )
+
+    def test_frozen_source_link_snapshot_is_not_required_when_source_unavailable(self):
+        work = self._work("pub-a", "Publication A", "10.1/a")
+        links = self._source_links()
+        links["sources"]["scopus"]["links"] = [
+            {
+                "record_id": "123456",
+                "publication_id": "pub-a",
+                "role": "primary",
+                "match_basis": "doi",
+            }
+        ]
+        fallback = with_source_states(
+            {"academicData": {"scopus": None}}
+        )
+        fallback["sourceStates"]["scopus"] = {
+            "status": "unavailable",
+            "last_valid_at": None,
+            "error_code": "fetch_failed",
+        }
+        root = self._root(
+            self._registry([work]),
+            fallback=fallback,
+            source_links=links,
+        )
+        violations = data_rules.audit_academic_data(root)
+        self.assertNotIn(
             "source-links:scopus:record-id:123456:snapshot",
             {
                 v.subject

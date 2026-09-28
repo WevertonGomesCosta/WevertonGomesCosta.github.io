@@ -156,7 +156,45 @@ def make_clean_repo(root: Path) -> None:
             "publications": {},
         },
     )
-    write_json(root / "fallback-data.json", {"academicData": {}})
+    write_json(
+        root / "fallback-data.json",
+        {
+            "githubRepos": [],
+            "academicData": {
+                "google_scholar": {"articles": []},
+                "scopus": {"articles": []},
+                "web_of_science": {"articles": []},
+                "orcid": {"articles": []},
+            },
+            "sourceStates": {
+                "github": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "google_scholar": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "scopus": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "web_of_science": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+                "orcid": {
+                    "status": "current",
+                    "last_valid_at": "2026-09-25T12:00:00",
+                    "error_code": None,
+                },
+            },
+        },
+    )
     (root / "robots.txt").write_text("", encoding="utf-8")
     (root / "sitemap.xml").write_text("", encoding="utf-8")
     (root / ".audit").mkdir()
