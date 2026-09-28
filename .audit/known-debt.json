@@ -9,20 +9,6 @@
       "reason": "Pre-existing debt frozen before structural block 2"
     },
     {
-      "rule_id": "LEGACY_MAXIMIZED_REFERENCE",
-      "path": "utils.js",
-      "subject": "processPlatformData:maximized",
-      "fingerprint": "23c73145ed5c03dbf784fffe750a3c2e48e6b045edcbcc53cdd8c574105af4fa",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "LEGACY_MAXIMIZED_REFERENCE",
-      "path": "utils.js",
-      "subject": "property:acad.maximized",
-      "fingerprint": "4520dc07601c99630e9adcd6902e087039e3f3e96dfb585c7515a6d5facb95b4",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
       "rule_id": "SECURITY_CSP_POLICY",
       "path": "404.html",
       "subject": "document:csp-meta",
