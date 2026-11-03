@@ -2,13 +2,6 @@
   "schema_version": 1,
   "entries": [
     {
-      "rule_id": "A11Y_REDUCED_MOTION_POLICY",
-      "path": "style.css",
-      "subject": "site:prefers-reduced-motion",
-      "fingerprint": "401ab21be6747f2182ad6815f7af31daf40407e6177781f201b76a3f17170cf2",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
       "rule_id": "SECURITY_CSP_POLICY",
       "path": "404.html",
       "subject": "document:csp-meta",
