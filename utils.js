@@ -77,6 +77,26 @@ const SiteTranslations = {
 };
 
 // =================================================================================
+// MÓDULO: Preferência de Movimento
+// =================================================================================
+const MotionPreference = {
+    mediaQuery: null,
+
+    getMediaQuery() {
+        if (this.mediaQuery) return this.mediaQuery;
+        if (typeof window.matchMedia !== 'function') return null;
+
+        this.mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        return this.mediaQuery;
+    },
+
+    isReduced() {
+        return this.getMediaQuery()?.matches === true;
+    }
+};
+
+
+// =================================================================================
 // Módulo: Configurações Gerais da Página
 // --- ALTERAÇÃO (Bug Fix 2: Data Privacidade) ---
 // Garante que updateDates seja chamado de forma confiável após a carga inicial.
@@ -190,10 +210,20 @@ const ParticleBackground = {
         this.ctx = this.canvas.getContext('2d');
         this.setCanvasSize();
         this.createParticles();
-        this.animate();
+
+        if (MotionPreference.isReduced()) {
+            this.renderStatic();
+        } else {
+            this.animate();
+        }
+
         window.addEventListener('resize', () => {
             this.setCanvasSize();
             this.createParticles();
+
+            if (MotionPreference.isReduced()) {
+                this.renderStatic();
+            }
         });
     },
     setCanvasSize() {
@@ -227,7 +257,17 @@ const ParticleBackground = {
             }
         }
     },
+    renderStatic() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.particles.forEach(p => p.draw());
+        this.connectParticles();
+    },
     animate() {
+        if (MotionPreference.isReduced()) {
+            this.renderStatic();
+            return;
+        }
+
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.particles.forEach(p => p.update());
         this.connectParticles();
@@ -686,6 +726,12 @@ const scholarScript = (function() {
         let target = parseInt(value, 10);
         if (isNaN(target)) { el.textContent = value; return; }
 
+        if (MotionPreference.isReduced()) {
+            el.textContent = target.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
+            delete el.dataset.animId;
+            return;
+        }
+
         el.textContent = "0"; // Reset visual
 
         const duration = 1200; 
@@ -744,6 +790,8 @@ const scholarScript = (function() {
     function renderPlatform(platformPrefix, shouldAnimate = true) {
         const data = dashboardData[platformPrefix];
         if (!data) return;
+
+        shouldAnimate = shouldAnimate && !MotionPreference.isReduced();
 
         // Animação dos Números
         ['cit', 'h', 'i10', 'pubs'].forEach(metric => {
@@ -810,6 +858,7 @@ const scholarScript = (function() {
 
     // --- GRÁFICO OTIMIZADO (DESIGN MODERNO + MOBILE TOUCH) ---
     function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
+        shouldAnimate = shouldAnimate && !MotionPreference.isReduced();
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
         
@@ -2333,13 +2382,27 @@ const LanguageManager = {
     },
 
     _restartSubtitleAnimation() {
-        if (document.getElementById('subtitle')) {
-            clearTimeout(this.subtitleState.timeout);
-            this.subtitleState.index = 0;
-            this.subtitleState.charIndex = 0;
-            this.subtitleState.isDeleting = false;
-            this.typeAndEraseSubtitle();
+        const subtitleEl = document.getElementById('subtitle');
+        if (!subtitleEl) return;
+
+        clearTimeout(this.subtitleState.timeout);
+        this.subtitleState.index = 0;
+        this.subtitleState.charIndex = 0;
+        this.subtitleState.isDeleting = false;
+
+        if (MotionPreference.isReduced()) {
+            const phrases = [
+                translations[this.currentLang]['subtitle-1'],
+                translations[this.currentLang]['subtitle-2'],
+                translations[this.currentLang]['subtitle-3'],
+                translations[this.currentLang]['subtitle-4']
+            ].filter(Boolean);
+
+            subtitleEl.textContent = phrases[0] || '';
+            return;
         }
+
+        this.typeAndEraseSubtitle();
     },
     
     _notifyOtherScripts() {
@@ -2388,6 +2451,25 @@ const App = {
 
     // --- Configuração de Observadores (Animações de Scroll) ---
     _setupObservers() {
+        if (MotionPreference.isReduced()) {
+            document.querySelectorAll('.reveal').forEach(el => {
+                el.classList.add('visible');
+            });
+
+            document.querySelectorAll('.skill-item').forEach(el => {
+                el.classList.add('visible');
+
+                const level = el.dataset.level;
+                const bar = el.querySelector('.skill-bar');
+                if (bar && level) {
+                    bar.style.setProperty('--proficiency-level', level);
+                }
+            });
+
+            this._setupNavObserver();
+            return;
+        }
+
         this._setupRevealObserver();
         this._setupSkillObserver();
         this._setupNavObserver();
