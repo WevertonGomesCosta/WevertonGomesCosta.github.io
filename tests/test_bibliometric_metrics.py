@@ -252,12 +252,12 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         metrics = builder.build_from_root(ROOT)
         expected = {
             "google_scholar": {
-                "observed": 22,
-                "value_unavailable": 5,
+                "observed": 23,
+                "value_unavailable": 4,
                 "record_absent": 5,
             },
             "scopus": {
-                "observed": 22,
+                "stale": 22,
                 "record_absent": 10,
             },
             "web_of_science": {
