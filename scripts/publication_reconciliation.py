@@ -88,17 +88,39 @@ def _crossref_year(metadata: dict) -> int | None:
     return None
 
 
+NAME_PARTICLES = {
+    "da", "das", "de", "del", "della", "di", "do", "dos",
+    "du", "la", "le", "van", "von",
+}
+
+
 def _author_label(author: dict) -> str:
     family = author.get("family")
     given = author.get("given")
     if not isinstance(family, str) or not family.strip():
         return ""
-    initials = ""
-    if isinstance(given, str):
-        tokens = re.findall(r"[A-Za-zÀ-ÿ]+", given)
-        initials = " ".join(f"{token[0].upper()}." for token in tokens if token)
-    family = family.strip().upper()
-    return f"{family}, {initials}".strip().rstrip(",")
+
+    family_tokens = re.findall(r"[A-Za-zÀ-ÿ]+", family)
+    while (
+        len(family_tokens) > 1
+        and family_tokens[0].lower() in NAME_PARTICLES
+    ):
+        family_tokens.pop(0)
+    if not family_tokens:
+        return ""
+
+    given_tokens = (
+        re.findall(r"[A-Za-zÀ-ÿ]+", given)
+        if isinstance(given, str)
+        else []
+    )
+    initials = " ".join(
+        f"{token[0].upper()}."
+        for token in given_tokens
+        if token.lower() not in NAME_PARTICLES
+    )
+    family_label = " ".join(family_tokens).upper()
+    return f"{family_label}, {initials}".strip().rstrip(",")
 
 
 def _slug(value: str) -> str:
@@ -147,7 +169,7 @@ def _ensure_source_links(
     source: str,
     publication_id: str,
     matches: list[tuple[dict, str]],
-) -> None:
+) -> bool:
     sources = links_payload.setdefault("sources", {})
     definition = sources.setdefault(source, {"links": []})
     links = definition.setdefault("links", [])
@@ -182,6 +204,7 @@ def _ensure_source_links(
         candidates.append((record_id, match_basis))
 
     candidates.sort(key=lambda item: item[0])
+    changed = False
     for record_id, match_basis in candidates:
         if primary is None:
             links.append(
@@ -204,6 +227,75 @@ def _ensure_source_links(
                 }
             )
         existing_ids.add(record_id)
+        changed = True
+
+    return changed
+
+
+def _reconcile_existing_source_links(
+    registry: dict,
+    source_links: dict,
+    results: Mapping[str, object],
+) -> bool:
+    """Attach newly observed source records to already canonical works."""
+    works = registry.get("works", [])
+    if not isinstance(works, list):
+        return False
+
+    changed = False
+    for work in works:
+        if not isinstance(work, dict):
+            continue
+
+        publication_id = work.get("id")
+        title = work.get("title")
+        year = work.get("year")
+        doi = metrics_builder.normalize_doi(work.get("doi"))
+        if not isinstance(publication_id, str) or not publication_id:
+            continue
+
+        presence = work.setdefault("source_presence", {})
+        if not isinstance(presence, dict):
+            presence = {}
+            work["source_presence"] = presence
+
+        for source in ACADEMIC_SOURCES:
+            matches: list[tuple[dict, str]] = []
+            target_title = normalize_title(title)
+            for article in successful_articles(results, source):
+                article_doi = metrics_builder.normalize_doi(article.get("doi"))
+                if doi and article_doi and article_doi == doi:
+                    matches.append((article, "doi"))
+                    continue
+
+                article_title = normalize_title(article.get("title"))
+                article_year = str(article.get("year") or "").strip()
+                work_year = str(year or "").strip()
+                if (
+                    target_title
+                    and article_title == target_title
+                    and article_year
+                    and work_year
+                    and article_year == work_year
+                ):
+                    matches.append((article, "normalized_title"))
+
+            if not matches:
+                continue
+
+            if _ensure_source_links(
+                source_links,
+                source=source,
+                publication_id=publication_id,
+                matches=matches,
+            ):
+                changed = True
+
+            if presence.get(source) is not True:
+                presence[source] = True
+                changed = True
+
+    return changed
 
 
 def _refresh_summary(registry: dict) -> None:
@@ -367,7 +459,12 @@ def reconcile_publications(
             }
         )
 
-    changed = bool(promoted)
+    linked_existing = _reconcile_existing_source_links(
+        reconciled_registry,
+        reconciled_links,
+        results,
+    )
+    changed = bool(promoted) or linked_existing
     if changed:
         reconciled_registry["updated_at"] = updated_at
         _refresh_summary(reconciled_registry)
