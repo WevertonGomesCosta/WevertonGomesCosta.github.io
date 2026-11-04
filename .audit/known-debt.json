@@ -1,40 +1,4 @@
 {
   "schema_version": 1,
-  "entries": [
-    {
-      "rule_id": "SECURITY_CSP_POLICY",
-      "path": "404.html",
-      "subject": "document:csp-meta",
-      "fingerprint": "e6602fb68e52001dcd9a1ac9a3ae2d4a67a277f52dd67c2d4d460cf9a9d82d73",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_CSP_POLICY",
-      "path": "index.html",
-      "subject": "document:csp-meta",
-      "fingerprint": "785cd32caf5ff6cae7c59f23c70564285b4a2815c8acdf305a875a1d0edf405c",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_CSP_POLICY",
-      "path": "politica-de-privacidade.html",
-      "subject": "document:csp-meta",
-      "fingerprint": "0ee511f7b24e3dcc3de785470f4debaed4c77fb847cf48063245589009069afe",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_CSP_POLICY",
-      "path": "projetos.html",
-      "subject": "document:csp-meta",
-      "fingerprint": "4dc2d0aec4a2b3b292edcf6b867a93c6ba8adfe97c5f2d078d72b8778dc09575",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_CSP_POLICY",
-      "path": "publicacoes.html",
-      "subject": "document:csp-meta",
-      "fingerprint": "be91c6d571ccad216de68576e28f28428bfa50c423effeb9b25c4f037670000a",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    }
-  ]
+  "entries": []
 }
