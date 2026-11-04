@@ -347,6 +347,95 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
             "skipped",
         )
 
+    def test_collect_source_results_uses_versioned_wos_export(self):
+        config = {
+            "github_username": "example",
+            "github_token": None,
+            "scholar_author_id": "Author",
+            "serpapi_keys": ["key"],
+            "orcid_id": "0000-0000-0000-0000",
+            "scopus_api_key": None,
+            "scopus_author_id": None,
+            "wos_api_key": None,
+            "wos_researcher_id": None,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            export = (
+                root / "data" / "sources" / "web-of-science" / "savedrecs.txt"
+            )
+            export.parent.mkdir(parents=True)
+            export.write_text("Title,Authors\\n", encoding="utf-8")
+
+            with (
+                mock.patch.object(
+                    update_fallback, "fetch_github_repos", return_value=[]
+                ),
+                mock.patch.object(
+                    update_fallback,
+                    "fetch_scholar_data",
+                    return_value={"profile": {}, "articles": []},
+                ),
+                mock.patch.object(
+                    update_fallback, "fetch_orcid_works", return_value=[]
+                ),
+                mock.patch.object(
+                    update_fallback,
+                    "fetch_wos_data",
+                    return_value={"profile": {}, "articles": []},
+                ) as fetch_wos,
+            ):
+                results = update_fallback.collect_source_results(config, root)
+
+            self.assertEqual(results["web_of_science"].status, "success")
+            self.assertEqual(
+                Path(fetch_wos.call_args.kwargs["txt_file"]), export
+            )
+
+    def test_scopus_history_does_not_put_api_key_in_url(self):
+        responses = [
+            FakeResponse({
+                "search-results": {
+                    "opensearch:totalResults": "1",
+                    "entry": [{
+                        "dc:identifier": "SCOPUS_ID:999",
+                        "dc:title": "Publication",
+                        "prism:coverDate": "2026-01-01",
+                        "citedby-count": "3",
+                    }],
+                }
+            }),
+            FakeResponse({}, status_code=401),
+        ]
+        calls = []
+
+        def fake_get(url, **kwargs):
+            calls.append((url, kwargs))
+            return responses.pop(0)
+
+        previous = {
+            "profile": {
+                "total_publications": 1,
+                "cited_by": {"table": [], "graph": []},
+            },
+            "articles": [],
+        }
+        with mock.patch.object(
+            update_fallback, "requests", mock.Mock(get=fake_get)
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author", "api-key", previous_data=previous
+            )
+
+        self.assertEqual(result["history_status"], "stale")
+        self.assertEqual(len(calls), 2)
+        history_url, history_kwargs = calls[1]
+        self.assertNotIn("api-key", history_url)
+        self.assertNotIn("apiKey", history_kwargs["params"])
+        self.assertEqual(
+            history_kwargs["headers"]["X-ELS-APIKey"], "api-key"
+        )
+
     def test_initial_generation_without_old_fallback_does_not_crash(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
