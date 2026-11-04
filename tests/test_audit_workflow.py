@@ -12,7 +12,7 @@ class TestWorkflowContract(unittest.TestCase):
         required_literals = (
             "pull_request:",
             "push:",
-            "branches: [main]",
+            'branches: [main, "automation/academic-refresh/**"]',
             "fetch-depth: 0",
             'python-version: "3.13"',
             'python -m unittest discover -s tests -p "test_*.py"',

@@ -45,7 +45,22 @@ class TestAcademicWorkflowContract(unittest.TestCase):
             with self.subTest(filename=filename):
                 self.assertIn(filename, source)
         self.assertIn("gh auth setup-git", source)
-        self.assertIn("git push origin HEAD:main", source)
+        self.assertIn("checks: read", source)
+        self.assertIn('candidate_branch="automation/academic-refresh/', source)
+        self.assertIn("git push origin HEAD:", source)
+        self.assertIn('Wait for required repository audit', source)
+        self.assertIn('check_name=audit', source)
+        self.assertIn('.app.id == 15368', source)
+        self.assertIn("git push origin HEAD:refs/heads/main", source)
+        self.assertLess(
+            source.index("git push origin HEAD:\"refs/heads/$candidate_branch\""),
+            source.index("Wait for required repository audit"),
+        )
+        self.assertLess(
+            source.index("Wait for required repository audit"),
+            source.index("git push origin HEAD:refs/heads/main"),
+        )
+        self.assertIn('Remove temporary audit branch', source)
         self.assertNotIn("git add -A", source)
         self.assertNotIn("git add .", source)
 

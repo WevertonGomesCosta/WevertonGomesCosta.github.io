@@ -89,6 +89,13 @@ O workflow `.github/workflows/update-academic-data.yml` executa o pipeline
 semanalmente às quartas-feiras, às 06h17 (horário de Brasília), e também pode
 ser iniciado manualmente em **Actions → Update academic data → Run workflow**.
 Ele só executa na branch `main` e valida os arquivos antes de publicar.
+Para respeitar o ruleset da `main`, o commit é enviado primeiro a uma
+branch temporária `automation/academic-refresh/<run-id>`. O workflow de
+auditoria executa nessa branch; somente depois do status obrigatório
+`audit` ser aprovado **para o mesmo commit**, o workflow envia esse
+commit à `main` sem force push. Após a tentativa, remove a branch
+temporária. Se a auditoria falhar ou a `main` avançar, a publicação
+não ocorre e a execução falha sem alterar os dados publicados.
 
 Configure os seguintes **Repository secrets** em
 **Settings → Secrets and variables → Actions**:

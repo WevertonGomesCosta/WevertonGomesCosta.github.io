@@ -3,7 +3,7 @@ name: Repository audit
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, "automation/academic-refresh/**"]
 
 permissions:
   contents: read

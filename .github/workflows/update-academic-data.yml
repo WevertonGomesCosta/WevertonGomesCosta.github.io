@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  checks: read
 
 concurrency:
   group: update-academic-data-main
@@ -95,7 +96,8 @@ jobs:
           python scripts/audit_repository.py
           git diff --check
 
-      - name: Publish validated data changes
+      - name: Stage candidate on temporary audit branch
+        id: candidate
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ACADEMIC_UPDATE_PUSH_TOKEN }}
@@ -107,12 +109,78 @@ jobs:
             academic-registry.json \
             bibliographic-source-links.json
           if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "No academic data changes to publish."
             exit 0
           fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore(data): refresh academic metrics"
-          # PAT-authenticated pushes trigger branch-based Pages builds; GITHUB_TOKEN pushes do not.
+
+          candidate_branch="automation/academic-refresh/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$candidate_branch" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+          # PAT-authenticated branch pushes trigger Repository audit.
           gh auth setup-git
-          git push origin HEAD:main
+          git push origin HEAD:"refs/heads/$candidate_branch"
+
+      - name: Wait for required repository audit
+        if: steps.candidate.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          # Rule set 'main' requires the 'audit' check from GitHub Actions (app 15368).
+          # The check is attached to the exact candidate commit SHA, not the branch.
+          for attempt in $(seq 1 36); do
+            audit_result="$(gh api \
+              "repos/$GITHUB_REPOSITORY/commits/$CANDIDATE_SHA/check-runs?check_name=audit" \
+              --jq '[.check_runs[] | select(.name == "audit" and .app.id == 15368) | if .status == "completed" then .conclusion else "pending" end][0] // "pending"')"
+            case "$audit_result" in
+              success)
+                echo "Required audit passed on commit $CANDIDATE_SHA."
+                exit 0
+                ;;
+              pending)
+                echo "Awaiting repository audit (attempt $attempt/36)."
+                sleep 10
+                ;;
+              *)
+                echo "::error::Required repository audit finished with $audit_result."
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::Timed out waiting for the required repository audit."
+          exit 1
+
+      - name: Publish audited commit to main
+        if: steps.candidate.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.ACADEMIC_UPDATE_PUSH_TOKEN }}
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          gh auth setup-git
+          # No force push: fail if main has changed since checkout.
+          # Required audit already succeeded on this exact commit SHA.
+          git push origin HEAD:refs/heads/main
+
+      - name: Remove temporary audit branch
+        if: always() && steps.candidate.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.ACADEMIC_UPDATE_PUSH_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.branch }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          git push origin ":refs/heads/$CANDIDATE_BRANCH" || \
+            echo "::warning::Could not remove the temporary audit branch."
