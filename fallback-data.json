@@ -8,7 +8,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-04T15:27:20Z",
+            "updated_at": "2026-11-04T20:27:13Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -22,7 +22,7 @@
             "language": "Python",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2026-10-08T19:54:07Z",
+            "updated_at": "2026-11-04T20:07:14Z",
             "topics": [
                 "google-sheets",
                 "optimization",
@@ -449,7 +449,7 @@
             "language": "Python",
             "stargazers_count": 3,
             "forks_count": 4,
-            "updated_at": "2026-05-18T03:44:21Z",
+            "updated_at": "2026-11-04T18:44:35Z",
             "topics": [
                 "agriculture",
                 "animal-science",
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "04/11/2026 15:40",
+    "lastUpdated": "04/11/2026 17:37",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -2011,7 +2011,7 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-04T15:40:58",
+            "last_valid_at": "2026-11-04T17:37:52",
             "error_code": null
         },
         "google_scholar": {
