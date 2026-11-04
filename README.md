@@ -78,10 +78,34 @@ No Windows fora do Git Bash, ative o ambiente virtual pelo mecanismo apropriado 
 Com `keys.json` configurado localmente:
 
 ```bash
+# Apenas atualizar os dados no computador (sem criar PR):
 python update_fallback.py
+
+# Atualizar os dados, criar PR e fazer merge após aprovação do check audit:
+python update_fallback.py --publish
 ```
 
-O pipeline preserva a identidade canônica das publicações, reconcilia novas publicações verificadas e atualiza os artefatos acadêmicos de forma transacional.
+Ambos os modos exibem um comparativo **anterior → atual** para GitHub,
+Google Scholar, Scopus, Web of Science e ORCID. O relatório mostra contagem
+de publicações/registros, citações e índices h/i10 (quando disponíveis),
+inclusive métricas desde 2021. `n/d` indica valor ausente, e `stale`
+indica que uma coleta falhou e o último dado válido foi preservado.
+
+Para atualizar o Web of Science, substitua
+`data/sources/web-of-science/savedrecs.txt` pelo novo export antes da
+execução. **`--publish` inclui esse arquivo no mesmo PR dos quatro JSONs**,
+de modo que a atualização do WoS não seja perdida na próxima coleta agendada.
+
+O modo `--publish` depende de Git e da [GitHub CLI](https://cli.github.com/)
+instalados e autenticados (`gh auth login`), além de uma `main` local
+sincronizada com `origin/main`. Execute na raiz do repositório e na branch
+`main`. Por segurança, o modo recusará alterações de outros arquivos,
+não fará `force push` e não realizará merge se a auditoria do PR falhar.
+O PR permanecerá disponível para inspeção caso ocorra falha. **O modo
+padrão não publica nem cria PR**, inclusive quando chamado pelo GitHub Actions.
+
+O pipeline preserva a identidade canônica das publicações, reconcilia novas
+publicações verificadas e atualiza os artefatos acadêmicos de forma transacional.
 
 ### Atualização automática no GitHub Actions
 
