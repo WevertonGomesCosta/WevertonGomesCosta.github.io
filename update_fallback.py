@@ -20,6 +20,7 @@ try:
 except ModuleNotFoundError:  # Import must remain safe for offline tests.
     requests = None
 
+import argparse
 import json
 import re
 import csv
@@ -33,6 +34,8 @@ from pathlib import Path
 from scripts import build_bibliometric_metrics as metrics_builder
 from scripts import publication_reconciliation
 from scripts import source_update_pipeline as update_pipeline
+from scripts import update_report
+from scripts import local_academic_publish
 
 REPO_ROOT = Path(__file__).resolve().parent
 WOS_RELATIVE_FILE = Path("data/sources/web-of-science/savedrecs.txt")
@@ -1337,6 +1340,7 @@ def run_update(
         )
         return 1
 
+    previous_registry = registry
     results = collect_source_results(config, root, old_data)
 
     try:
@@ -1361,7 +1365,14 @@ def run_update(
         logging.critical("Candidato transacional inválido: %s", exc)
         return 1
 
+    comparison = update_report.render_source_comparison(
+        old_data,
+        candidate.fallback,
+        old_registry=previous_registry,
+        new_registry=registry,
+    )
     if not candidate.changed and not reconciliation.changed:
+        print(comparison)
         logging.info("Nenhuma alteração material; arquivos mantidos.")
         return 0
 
@@ -1406,6 +1417,7 @@ def run_update(
         logging.critical("Falha na publicação transacional: %s", exc)
         return 1
 
+    print(comparison)
     logging.info(
         "PROCESSO CONCLUÍDO: artefatos acadêmicos publicados "
         "na mesma transação."
@@ -1414,9 +1426,35 @@ def run_update(
 
 
 def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Atualiza os dados acadêmicos e opcionalmente publica por PR."
+    )
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        help="Após coletar, criar PR, aguardar audit e fazer merge na main.",
+    )
+    args = parser.parse_args(argv)
     root = Path(".").resolve()
     keys_file = root / "keys.json"
-    return run_update(root=root, keys_file=keys_file)
+
+    if args.publish:
+        try:
+            local_academic_publish.check_publish_ready(root)
+        except local_academic_publish.LocalPublishError as exc:
+            logging.error("Publicação local indisponível: %s", exc)
+            return 1
+
+    result = run_update(root=root, keys_file=keys_file)
+    if result != 0 or not args.publish:
+        return result
+
+    try:
+        local_academic_publish.publish_local(root)
+    except local_academic_publish.LocalPublishError as exc:
+        logging.error("Não foi possível concluir PR/merge: %s", exc)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
