@@ -728,6 +728,17 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
         logging.warning("⚠️  [Scopus] Falha/incompletude na busca de artigos.")
         return None
 
+    # O Search API ordena por citações, mas não garante ordem estável nos
+    # empates. Normalizamos localmente para que duas coletas idênticas gerem o
+    # mesmo snapshot e não avancem timestamps sem mudança material.
+    cleaned_articles.sort(
+        key=lambda article: (
+            -int((article.get("cited_by") or {}).get("value") or 0),
+            str(article.get("title") or "").casefold(),
+            str(article.get("scopus_id") or ""),
+        )
+    )
+
     # ==========================================================================
     # 2. HISTÓRICO DE CITAÇÕES (Bloqueado fora da Universidade)
     # ==========================================================================
