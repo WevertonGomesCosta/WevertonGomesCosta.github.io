@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import date
 from typing import Callable, Mapping
 import re
 import unicodedata
@@ -85,6 +86,28 @@ def _crossref_year(metadata: dict) -> int | None:
                 return year
             if isinstance(year, str) and year.isdigit():
                 return int(year)
+    return None
+
+
+def _crossref_date(metadata: dict) -> str | None:
+    for key in ("published-print", "published-online", "published", "issued"):
+        value = metadata.get(key)
+        if not isinstance(value, dict):
+            continue
+        parts = value.get("date-parts")
+        if (
+            not isinstance(parts, list)
+            or not parts
+            or not isinstance(parts[0], list)
+            or len(parts[0]) < 3
+        ):
+            continue
+
+        try:
+            year, month, day = (int(part) for part in parts[0][:3])
+            return date(year, month, day).isoformat()
+        except (TypeError, ValueError):
+            continue
     return None
 
 
@@ -407,6 +430,7 @@ def reconcile_publications(
         title = _first_text(metadata.get("title"))
         container_title = _first_text(metadata.get("container-title"))
         year = _crossref_year(metadata)
+        publication_date = _crossref_date(metadata)
         authors = [
             label
             for label in (
@@ -437,6 +461,7 @@ def reconcile_publications(
             "title": title,
             "authors": authors,
             "year": year,
+            "publication_date": publication_date,
             "container_title": container_title,
             "doi": doi,
             "source_presence": {
