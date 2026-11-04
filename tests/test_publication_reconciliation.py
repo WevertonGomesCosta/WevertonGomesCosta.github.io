@@ -92,6 +92,23 @@ def results_for_new_article():
 
 
 class TestPublicationReconciliation(unittest.TestCase):
+    def test_author_label_matches_canonical_particle_style(self):
+        self.assertEqual(
+            reconciliation._author_label(
+                {"given": "Weverton Gomes", "family": "da Costa"}
+            ),
+            "COSTA, W. G.",
+        )
+        self.assertEqual(
+            reconciliation._author_label(
+                {
+                    "given": "Noé Mitterhofer Eiterer Ponce de Leon da",
+                    "family": "Costa",
+                }
+            ),
+            "COSTA, N. M. E. P. L.",
+        )
+
     def test_promotes_verified_journal_article_and_links_sources(self):
         result = reconciliation.reconcile_publications(
             empty_registry(),
@@ -180,6 +197,89 @@ class TestPublicationReconciliation(unittest.TestCase):
 
         self.assertEqual(result.registry["summary"]["published_preprints"], 1)
 
+    def test_existing_doi_gets_new_source_link_without_duplicate_promotion(self):
+        registry = empty_registry()
+        registry["works"].append(
+            {
+                "id": "journal-2026-existing",
+                "type": "journal_article",
+                "status": "published",
+                "title": "Existing Article",
+                "authors": ["COSTA, W. G."],
+                "year": 2026,
+                "container_title": "Journal",
+                "doi": "10.1000/existing",
+                "source_presence": {
+                    "lattes": True,
+                    "orcid": False,
+                    "google_scholar": False,
+                    "scopus": False,
+                    "web_of_science": False,
+                },
+            }
+        )
+        results = {
+            "github": pipeline.SourceResult.success([]),
+            "google_scholar": pipeline.SourceResult.success(
+                {
+                    "profile": {},
+                    "articles": [
+                        {
+                            "title": "Existing Article",
+                            "year": "2026",
+                            "link": (
+                                "https://scholar.google.com/citations?"
+                                "citation_for_view=Author:Existing"
+                            ),
+                            "doi": None,
+                            "cited_by": {"value": 3},
+                        }
+                    ],
+                }
+            ),
+            "scopus": pipeline.SourceResult.success(
+                {
+                    "articles": [
+                        {
+                            "scopus_id": "777",
+                            "title": "Existing Article",
+                            "year": "2026",
+                            "doi": "10.1000/existing",
+                            "cited_by": {"value": 2},
+                        }
+                    ]
+                }
+            ),
+            "web_of_science": pipeline.SourceResult.success({"articles": []}),
+            "orcid": pipeline.SourceResult.success(
+                {"source_name": "ORCID", "articles": []}
+            ),
+        }
+
+        result = reconciliation.reconcile_publications(
+            registry,
+            empty_links(),
+            results,
+            resolve_doi=lambda doi: self.fail("resolver must not be called"),
+            updated_at="2026-11-04",
+        )
+
+        self.assertTrue(result.changed)
+        self.assertEqual(len(result.promoted), 0)
+        work = result.registry["works"][0]
+        self.assertTrue(work["source_presence"]["google_scholar"])
+        self.assertTrue(work["source_presence"]["scopus"])
+        self.assertEqual(
+            result.source_links["sources"]["google_scholar"]["links"][0][
+                "publication_id"
+            ],
+            "journal-2026-existing",
+        )
+        self.assertEqual(
+            result.source_links["sources"]["scopus"]["links"][0]["record_id"],
+            "777",
+        )
+
     def test_existing_doi_is_not_promoted_again(self):
         registry = empty_registry()
         registry["works"].append(
@@ -196,10 +296,21 @@ class TestPublicationReconciliation(unittest.TestCase):
         )
         original = copy.deepcopy(registry)
 
+        results = {
+            "github": pipeline.SourceResult.success([]),
+            "google_scholar": pipeline.SourceResult.success(
+                {"profile": {}, "articles": []}
+            ),
+            "scopus": pipeline.SourceResult.success({"articles": []}),
+            "web_of_science": pipeline.SourceResult.success({"articles": []}),
+            "orcid": pipeline.SourceResult.success(
+                {"source_name": "ORCID", "articles": []}
+            ),
+        }
         result = reconciliation.reconcile_publications(
             registry,
             empty_links(),
-            results_for_new_article(),
+            results,
             resolve_doi=lambda doi: self.fail("resolver must not be called"),
             updated_at="2026-11-04",
         )
