@@ -90,7 +90,7 @@ def _crossref_year(metadata: dict) -> int | None:
 
 
 def _crossref_date(metadata: dict) -> str | None:
-    for key in ("published-print", "published-online", "published", "issued"):
+    for key in ("published-online", "published", "published-print", "issued"):
         value = metadata.get(key)
         if not isinstance(value, dict):
             continue
