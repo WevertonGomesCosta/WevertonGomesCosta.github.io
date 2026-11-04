@@ -229,7 +229,7 @@ def _refresh_summary(registry: dict) -> None:
         for work in works
         if isinstance(work, dict)
         and work.get("type") == "preprint"
-        and work.get("status") == "published"
+        and work.get("status") in {"published", "published_preprint"}
     )
     summary["accepted_journal_articles"] = sum(
         1
