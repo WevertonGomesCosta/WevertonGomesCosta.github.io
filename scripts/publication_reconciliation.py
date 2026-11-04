@@ -150,15 +150,26 @@ def _source_matches(
     *,
     doi: str,
     title: str,
+    year: int,
 ) -> list[tuple[dict, str]]:
     target_title = normalize_title(title)
+    target_year = str(year)
     matches: list[tuple[dict, str]] = []
     for article in articles:
         article_doi = metrics_builder.normalize_doi(article.get("doi"))
-        if article_doi and article_doi == doi:
-            matches.append((article, "doi"))
+        if article_doi:
+            if article_doi == doi:
+                matches.append((article, "doi"))
+            # Conflicting DOI evidence must not fall back to title matching.
             continue
-        if target_title and normalize_title(article.get("title")) == target_title:
+
+        article_title = normalize_title(article.get("title"))
+        article_year = str(article.get("year") or "").strip()
+        if (
+            target_title
+            and article_title == target_title
+            and article_year == target_year
+        ):
             matches.append((article, "normalized_title"))
     return matches
 
@@ -254,18 +265,15 @@ def _reconcile_existing_source_links(
         if not isinstance(publication_id, str) or not publication_id:
             continue
 
-        presence = work.setdefault("source_presence", {})
-        if not isinstance(presence, dict):
-            presence = {}
-            work["source_presence"] = presence
-
         for source in ACADEMIC_SOURCES:
             matches: list[tuple[dict, str]] = []
             target_title = normalize_title(title)
             for article in successful_articles(results, source):
                 article_doi = metrics_builder.normalize_doi(article.get("doi"))
-                if doi and article_doi and article_doi == doi:
-                    matches.append((article, "doi"))
+                if doi and article_doi:
+                    if article_doi == doi:
+                        matches.append((article, "doi"))
+                    # Conflicting DOI evidence must not be overridden by title/year.
                     continue
 
                 article_title = normalize_title(article.get("title"))
@@ -282,6 +290,11 @@ def _reconcile_existing_source_links(
 
             if not matches:
                 continue
+
+            presence = work.get("source_presence")
+            if not isinstance(presence, dict):
+                presence = {}
+                work["source_presence"] = presence
 
             if _ensure_source_links(
                 source_links,
@@ -394,11 +407,6 @@ def reconcile_publications(
         title = _first_text(metadata.get("title"))
         container_title = _first_text(metadata.get("container-title"))
         year = _crossref_year(metadata)
-        if not title or not container_title or year is None:
-            rejected.append({"doi": doi, "reason": "incomplete_crossref_metadata"})
-            continue
-
-        publication_id = _unique_publication_id(works, year, title)
         authors = [
             label
             for label in (
@@ -408,13 +416,18 @@ def reconcile_publications(
             )
             if label
         ]
+        if not title or not container_title or year is None or not authors:
+            rejected.append({"doi": doi, "reason": "incomplete_crossref_metadata"})
+            continue
 
+        publication_id = _unique_publication_id(works, year, title)
         source_matches: dict[str, list[tuple[dict, str]]] = {}
         for source in ACADEMIC_SOURCES:
             source_matches[source] = _source_matches(
                 successful_articles(results, source),
                 doi=doi,
                 title=title,
+                year=year,
             )
 
         work = {
@@ -427,7 +440,7 @@ def reconcile_publications(
             "container_title": container_title,
             "doi": doi,
             "source_presence": {
-                "lattes": False,
+                "lattes": None,
                 "orcid": bool(source_matches["orcid"]),
                 "google_scholar": bool(source_matches["google_scholar"]),
                 "scopus": bool(source_matches["scopus"]),
