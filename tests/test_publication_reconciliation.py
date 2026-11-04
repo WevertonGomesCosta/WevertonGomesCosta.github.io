@@ -148,6 +148,38 @@ class TestPublicationReconciliation(unittest.TestCase):
         self.assertEqual(result.source_links, empty_links())
         self.assertEqual(result.rejected[0]["reason"], "crossref_type:dissertation")
 
+    def test_summary_preserves_published_preprint_status(self):
+        registry = empty_registry()
+        registry["works"].append(
+            {
+                "id": "preprint-2024-example",
+                "type": "preprint",
+                "status": "published_preprint",
+                "title": "Example Preprint",
+                "authors": [],
+                "year": 2024,
+                "doi": "10.1101/example",
+            }
+        )
+        results = results_for_new_article()
+
+        result = reconciliation.reconcile_publications(
+            registry,
+            empty_links(),
+            results,
+            resolve_doi=lambda doi: {
+                "DOI": doi,
+                "type": "journal-article",
+                "title": ["A New Journal Article"],
+                "container-title": ["Journal of Testing"],
+                "published-online": {"date-parts": [[2026, 10, 20]]},
+                "author": [],
+            },
+            updated_at="2026-11-04",
+        )
+
+        self.assertEqual(result.registry["summary"]["published_preprints"], 1)
+
     def test_existing_doi_is_not_promoted_again(self):
         registry = empty_registry()
         registry["works"].append(
