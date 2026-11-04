@@ -1,2 +1,9 @@
 exclude:
   - docs/superpowers
+  - data/sources
+  - scripts
+  - tests
+  - update_fallback.py
+  - requirements.txt
+  - README.md
+  - WevertonGomesCosta.github.io.Rproj
