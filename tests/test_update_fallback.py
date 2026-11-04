@@ -211,8 +211,15 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         self.assertEqual(result["history_status"], "stale")
         self.assertEqual(result["articles"][0]["scopus_id"], "999")
         self.assertEqual(
-            result["profile"]["cited_by"],
-            previous["profile"]["cited_by"],
+            result["profile"]["cited_by"]["table"],
+            previous["profile"]["cited_by"]["table"],
+        )
+        self.assertEqual(
+            result["profile"]["cited_by"]["graph"],
+            [
+                {"year": 2025, "citations": 4, "publications": 0},
+                {"year": 2026, "citations": 0, "publications": 1},
+            ],
         )
         self.assertEqual(result["profile"]["total_publications"], 1)
 
