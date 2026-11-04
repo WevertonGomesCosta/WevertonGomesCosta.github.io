@@ -10,10 +10,10 @@ from repository_audit import data_rules
 
 
 EXPECTED_SOURCE_SNAPSHOTS = {
-    "google_scholar": (28, "a2b70a09"),
-    "scopus": (22, "42d639e8"),
-    "web_of_science": (21, "10b3d50e"),
-    "orcid": (27, "38412a9e"),
+    "google_scholar": (30, "99809df1"),
+    "scopus": (24, "94b54634"),
+    "web_of_science": (22, "918dad1d"),
+    "orcid": (29, "cdc9a3d6"),
 }
 
 SCHOLAR_DUPLICATE_PUBLICATION_ID = (

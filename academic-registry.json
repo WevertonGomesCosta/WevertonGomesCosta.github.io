@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-09-23",
+  "updated_at": "2026-11-04",
   "source_basis": {
     "lattes_generated_at": "2026-09-23T11:20:32-03:00",
     "note": "Canonical bibliography reconciled from the updated Lattes export and the repository bibliometric fallback sources. Bibliographic identity is kept separate from citation metrics."
   },
   "summary": {
-    "total_records": 32,
-    "published_journal_articles": 27,
+    "total_records": 34,
+    "published_journal_articles": 29,
     "published_preprints": 1,
     "accepted_journal_articles": 1,
     "published_book_chapters": 3,
@@ -1028,6 +1028,62 @@
         "web_of_science": null
       },
       "relations": []
+    },
+    {
+      "id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Non-linear kernel methods for genomic prediction of soybean yield and quality in multi-environment trials",
+      "authors": [
+        "PAIVA, W. A. L.",
+        "COSTA, W. G.",
+        "MACHADO, L. P.",
+        "NASCIMENTO, A. C. C.",
+        "JARQUIN, D.",
+        "NASCIMENTO, M."
+      ],
+      "year": 2026,
+      "container_title": "Theoretical and Applied Genetics",
+      "doi": "10.1007/s00122-026-05387-3",
+      "source_presence": {
+        "lattes": null,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": true
+      },
+      "relations": [],
+      "source_notes": [
+        "Automatically reconciled from external bibliographic sources after Crossref journal-article verification."
+      ]
+    },
+    {
+      "id": "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via",
+      "type": "journal_article",
+      "status": "published",
+      "title": "Complex and Non-Linear Modeling of Genotype × Environment Interaction via Tree-Based Learning Algorithms and Shapley Decomposition",
+      "authors": [
+        "NASCIMENTO, M.",
+        "COSTA, N. M. E. P. L.",
+        "NASCIMENTO, A. C. C.",
+        "COSTA, W. G.",
+        "PAIVA, W. A. L.",
+        "JARQUÍN, D."
+      ],
+      "year": 2026,
+      "container_title": "Agriculture",
+      "doi": "10.3390/agriculture16202290",
+      "source_presence": {
+        "lattes": null,
+        "orcid": true,
+        "google_scholar": true,
+        "scopus": true,
+        "web_of_science": false
+      },
+      "relations": [],
+      "source_notes": [
+        "Automatically reconciled from external bibliographic sources after Crossref journal-article verification."
+      ]
     }
   ]
 }

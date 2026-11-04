@@ -172,6 +172,18 @@
           "publication_id": "preprint-2024-trait-prediction-soybean-shaded",
           "role": "primary",
           "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:HDshCWvjkbEC",
+          "publication_id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
+          "role": "primary",
+          "match_basis": "normalized_title"
+        },
+        {
+          "record_id": "eJNKcHsAAAAJ:R3hNpaxXUhUC",
+          "publication_id": "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via",
+          "role": "primary",
+          "match_basis": "normalized_title"
         }
       ]
     },
@@ -309,6 +321,18 @@
           "publication_id": "journal-2026-comparison-ml-marker-identification-gwas",
           "role": "primary",
           "match_basis": "doi"
+        },
+        {
+          "record_id": "105051391409",
+          "publication_id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "105054550228",
+          "publication_id": "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via",
+          "role": "primary",
+          "match_basis": "doi"
         }
       ]
     },
@@ -438,6 +462,12 @@
         {
           "record_id": "doi:10.1590/1678-992x-2025-0020",
           "publication_id": "journal-2025-multitrait-selection-coffee-postharvest",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1007/s00122-026-05387-3",
+          "publication_id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
           "role": "primary",
           "match_basis": "doi"
         }
@@ -605,6 +635,18 @@
         {
           "record_id": "doi:10.1101/2024.01.31.578252",
           "publication_id": "preprint-2024-trait-prediction-soybean-shaded",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.1007/s00122-026-05387-3",
+          "publication_id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
+          "role": "primary",
+          "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agriculture16202290",
+          "publication_id": "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via",
           "role": "primary",
           "match_basis": "doi"
         }

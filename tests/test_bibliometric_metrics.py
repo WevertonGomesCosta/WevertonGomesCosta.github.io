@@ -253,19 +253,19 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         expected = {
             "google_scholar": {
                 "observed": 23,
-                "value_unavailable": 4,
+                "value_unavailable": 6,
                 "record_absent": 5,
             },
             "scopus": {
-                "stale": 22,
+                "observed": 24,
                 "record_absent": 10,
             },
             "web_of_science": {
-                "observed": 21,
-                "record_absent": 11,
+                "observed": 22,
+                "record_absent": 12,
             },
             "orcid": {
-                "value_unavailable": 27,
+                "value_unavailable": 29,
                 "record_absent": 5,
             },
         }

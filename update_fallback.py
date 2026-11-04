@@ -23,12 +23,15 @@ except ModuleNotFoundError:  # Import must remain safe for offline tests.
 import json
 import re
 import csv
+from copy import deepcopy
 from datetime import datetime
 import os
 import logging
 import unicodedata
 from pathlib import Path
 
+from scripts import build_bibliometric_metrics as metrics_builder
+from scripts import publication_reconciliation
 from scripts import source_update_pipeline as update_pipeline
 
 # ==============================================================================
@@ -215,6 +218,34 @@ def calculate_i10(citations_list) -> int:
         1 for c in citations_list
         if c is not None and int(c) >= 10
     )
+
+
+def fetch_crossref_work(doi: str):
+    """Resolve um DOI no Crossref; falhas não interrompem a atualização."""
+    doi = metrics_builder.normalize_doi(doi)
+    if not doi or requests is None:
+        return None
+
+    try:
+        response = requests.get(
+            f"https://api.crossref.org/works/{doi}",
+            headers={
+                "Accept": "application/json",
+                "User-Agent": (
+                    "WevertonGomesCosta.github.io/1.0 "
+                    "(https://github.com/WevertonGomesCosta/"
+                    "WevertonGomesCosta.github.io)"
+                ),
+            },
+            timeout=20,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        message = payload.get("message") if isinstance(payload, dict) else None
+        return message if isinstance(message, dict) else None
+    except Exception as exc:
+        logging.warning("Crossref: falha ao resolver DOI %s: %s", doi, exc)
+        return None
 
 
 # ==============================================================================
@@ -591,12 +622,13 @@ def fetch_orcid_works(orcid_id):
 # ==============================================================================
 # FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Com Proteção de IP/Home Office)
 # ==============================================================================
-def fetch_scopus_data(author_id, api_key):
+def fetch_scopus_data(author_id, api_key, previous_data=None):
     """
     Busca dados do Scopus via Elsevier API.
-    
-    Retorna None quando a coleta estiver incompleta. A preservação do
-    snapshot anterior pertence ao pipeline transacional, não ao fetcher.
+
+    A lista do Search API é independente do histórico anual. Quando o Search
+    funciona mas o Citation Overview está bloqueado, aceita a lista atual e
+    preserva apenas o histórico anterior, se houver.
     """
     if not author_id or not api_key:
         logging.warning("--- [Scopus] Pulei: ID ou API Key ausentes ---")
@@ -696,6 +728,17 @@ def fetch_scopus_data(author_id, api_key):
         logging.warning("⚠️  [Scopus] Falha/incompletude na busca de artigos.")
         return None
 
+    # O Search API ordena por citações, mas não garante ordem estável nos
+    # empates. Normalizamos localmente para que duas coletas idênticas gerem o
+    # mesmo snapshot e não avancem timestamps sem mudança material.
+    cleaned_articles.sort(
+        key=lambda article: (
+            -int((article.get("cited_by") or {}).get("value") or 0),
+            str(article.get("title") or "").casefold(),
+            str(article.get("scopus_id") or ""),
+        )
+    )
+
     # ==========================================================================
     # 2. HISTÓRICO DE CITAÇÕES (Bloqueado fora da Universidade)
     # ==========================================================================
@@ -754,14 +797,64 @@ def fetch_scopus_data(author_id, api_key):
     total_cited_in_search = sum(a["cited_by"]["value"] for a in cleaned_articles)
     total_cited_in_history = sum(yearly_citation_totals.values())
 
-    # Lógica: Se a busca diz que temos citações (ex: 100), mas o histórico diz 0,
-    # significa que a API de histórico falhou (bloqueio de IP).
-    # Nesse caso, NÃO podemos usar os dados novos, pois o gráfico ficará vazio.
+    # O Search API e o histórico são superfícies independentes. Se apenas o
+    # histórico falhar, mantemos a lista atual de artigos e reutilizamos o
+    # histórico anterior, evitando perder publicações novas por restrição de IP.
     if total_cited_in_search > 0 and total_cited_in_history == 0:
-        logging.warning("⚠️  [Scopus] DETECTADO BLOQUEIO DE IP (Home Office).")
-        logging.warning("    A lista de artigos foi baixada, mas o histórico de citações veio vazio.")
-        
-        logging.warning("    >>> AÇÃO: Descartando coleta incompleta.")
+        logging.warning("⚠️  [Scopus] HISTÓRICO INDISPONÍVEL (Home Office).")
+        logging.warning("    A lista atual de artigos foi obtida pelo Search API.")
+
+        previous_profile = (
+            deepcopy(previous_data.get("profile"))
+            if isinstance(previous_data, dict)
+            and isinstance(previous_data.get("profile"), dict)
+            else None
+        )
+        if (
+            isinstance(previous_profile, dict)
+            and isinstance(previous_profile.get("cited_by"), dict)
+        ):
+            previous_profile["total_publications"] = len(cleaned_articles)
+
+            previous_graph = previous_profile["cited_by"].get("graph", [])
+            citations_by_year = {}
+            if isinstance(previous_graph, list):
+                for point in previous_graph:
+                    if not isinstance(point, dict):
+                        continue
+                    year = point.get("year")
+                    citations = point.get("citations")
+                    if isinstance(year, int) and isinstance(citations, int):
+                        citations_by_year[year] = citations
+
+            all_years = sorted(
+                set(citations_by_year) | set(yearly_pub_counts)
+            )
+            previous_profile["cited_by"]["graph"] = [
+                {
+                    "year": year,
+                    "citations": citations_by_year.get(year, 0),
+                    "publications": yearly_pub_counts.get(year, 0),
+                }
+                for year in all_years
+                if 2010 <= year <= datetime.now().year + 1
+            ]
+
+            logging.warning(
+                "    >>> AÇÃO: preservando citações históricas anteriores, "
+                "atualizando publicações por ano e aceitando a lista atual."
+            )
+            return {
+                "source_name": "Scopus",
+                "profile": previous_profile,
+                "articles": cleaned_articles,
+                "history_status": "stale",
+            }
+
+        logging.warning(
+            "    >>> AÇÃO: sem histórico anterior válido; coleta Scopus "
+            "permanece indisponível."
+        )
         return None
 
     # ==========================================================================
@@ -809,7 +902,8 @@ def fetch_scopus_data(author_id, api_key):
                 "graph": graph_data
             }
         },
-        "articles": cleaned_articles
+        "articles": cleaned_articles,
+        "history_status": "current",
     }
 
 # ==============================================================================
@@ -1108,7 +1202,11 @@ def safe_collect(source_name: str, collector, *args, **kwargs):
         return None
 
 
-def collect_source_results(config: dict, root: Path) -> dict:
+def collect_source_results(
+    config: dict,
+    root: Path,
+    old_snapshot: object = None,
+) -> dict:
     """Executa coleta e retorna resultados não ambíguos por fonte."""
     results = {}
 
@@ -1141,11 +1239,16 @@ def collect_source_results(config: dict, root: Path) -> dict:
     )
 
     if config.get("scopus_api_key") and config.get("scopus_author_id"):
+        previous_scopus = update_pipeline.get_source_payload(
+            old_snapshot,
+            "scopus",
+        )
         scopus = safe_collect(
             "Scopus",
             fetch_scopus_data,
             config["scopus_author_id"],
             config["scopus_api_key"],
+            previous_data=previous_scopus,
         )
         results["scopus"] = (
             update_pipeline.SourceResult.success(scopus)
@@ -1221,9 +1324,19 @@ def run_update(
         )
         return 1
 
-    results = collect_source_results(config, root)
+    results = collect_source_results(config, root, old_data)
 
     try:
+        reconciliation = publication_reconciliation.reconcile_publications(
+            registry,
+            source_links,
+            results,
+            resolve_doi=fetch_crossref_work,
+            updated_at=transaction_time.date().isoformat(),
+        )
+        registry = reconciliation.registry
+        source_links = reconciliation.source_links
+
         candidate = update_pipeline.build_transaction_candidate(
             old_snapshot=old_data,
             results=results,
@@ -1235,11 +1348,18 @@ def run_update(
         logging.critical("Candidato transacional inválido: %s", exc)
         return 1
 
-    if not candidate.changed:
+    if not candidate.changed and not reconciliation.changed:
         logging.info("Nenhuma alteração material; arquivos mantidos.")
         return 0
 
     report_lines, _ = analyze_changes(old_data, candidate.fallback)
+    for promoted in reconciliation.promoted:
+        report_lines.append(
+            "  [+] Registro canônico: "
+            f"{promoted['title']} ({promoted['year']}) — "
+            f"DOI {promoted['doi']}"
+        )
+
     if report_lines:
         print("\n" + "=" * 60)
         print(" RELATÓRIO DE MUDANÇAS DETECTADAS")
@@ -1248,14 +1368,34 @@ def run_update(
             print(line)
         print("=" * 60 + "\n")
 
+    outputs = {}
+    if candidate.changed:
+        outputs[root / "fallback-data.json"] = (
+            update_pipeline.serialize_fallback(candidate.fallback)
+        )
+
+    if candidate.changed or reconciliation.changed:
+        outputs[root / "bibliometric-metrics.json"] = (
+            metrics_builder.serialize_metrics(candidate.metrics)
+        )
+
+    if reconciliation.changed:
+        outputs[root / "academic-registry.json"] = (
+            json.dumps(registry, ensure_ascii=False, indent=2) + "\n"
+        )
+        outputs[root / "bibliographic-source-links.json"] = (
+            json.dumps(source_links, ensure_ascii=False, indent=2) + "\n"
+        )
+
     try:
-        update_pipeline.publish_candidate(root, candidate)
+        update_pipeline.staged_publish_json(outputs)
     except update_pipeline.PipelineError as exc:
         logging.critical("Falha na publicação transacional: %s", exc)
         return 1
 
     logging.info(
-        "PROCESSO CONCLUÍDO: fallback e métricas publicados na mesma transação."
+        "PROCESSO CONCLUÍDO: artefatos acadêmicos publicados "
+        "na mesma transação."
     )
     return 0
 
