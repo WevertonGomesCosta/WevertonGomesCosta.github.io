@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.13 standard library, HTML/CSS/vanilla JavaScript, `unittest`, GitHub Actions, existing GitHub Pages/Jekyll deployment.
 
-**Spec:** `docs/superpowers/specs/2026-09-24-shared-site-architecture-design.md`
+**Spec:** `docs/engineering/specs/2026-09-24-shared-site-architecture-design.md`
 
 **Status:** Approved after implementation-plan audit; ready for Native execution
 
@@ -59,8 +59,8 @@ translations.json                   privacy-services-p2 in PT and EN
 .github/workflows/repository-audit.yml
 tests/test_audit_workflow.py        render-check CI contract
 
-docs/superpowers/specs/2026-09-24-shared-site-architecture-design.md
-docs/superpowers/plans/2026-09-24-shared-site-architecture.md
+docs/engineering/specs/2026-09-24-shared-site-architecture-design.md
+docs/engineering/plans/2026-09-24-shared-site-architecture.md
 ```
 
 `utils.js`, `404.html`, academic datasets, and security/runtime detectors are not implementation targets for this block.
@@ -1718,8 +1718,8 @@ _site_components/footer.html
 _site_components/language-switcher.html
 _site_components/nav-home.html
 _site_components/nav-inner.html
-docs/superpowers/plans/2026-09-24-shared-site-architecture.md
-docs/superpowers/specs/2026-09-24-shared-site-architecture-design.md
+docs/engineering/plans/2026-09-24-shared-site-architecture.md
+docs/engineering/specs/2026-09-24-shared-site-architecture-design.md
 index.html
 politica-de-privacidade.html
 projetos.html

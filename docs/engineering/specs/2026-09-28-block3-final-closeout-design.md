@@ -65,13 +65,13 @@ Failure:
 ```text
 Liquid syntax error:
 Tag '{% ... %}' was not properly terminated
-docs/superpowers/specs/2026-09-24-shared-site-architecture-design.md
+docs/engineering/specs/2026-09-24-shared-site-architecture-design.md
 ```
 
 Root cause:
 
 - GitHub Pages runs Jekyll over repository Markdown;
-- `docs/superpowers` contains internal design/plan documents with literal Liquid and GitHub Actions template examples;
+- `docs/engineering` contains internal design/plan documents with literal Liquid and GitHub Actions template examples;
 - these documents are engineering sources, not website content;
 - there is currently no root `_config.yml` excluding them.
 
@@ -87,7 +87,7 @@ Keep the default GitHub Pages/Jekyll publishing path, but exclude the internal e
 
 ```yaml
 exclude:
-  - docs/superpowers
+  - docs/engineering
 ```
 
 This is narrower than adding `.nojekyll` and avoids changing the publication behavior of unrelated repository files.

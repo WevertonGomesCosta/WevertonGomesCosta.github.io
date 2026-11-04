@@ -1,5 +1,5 @@
 exclude:
-  - docs/superpowers
+  - docs/engineering
   - data/sources
   - scripts
   - tests

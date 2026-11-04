@@ -3,7 +3,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-INTERNAL_DOCS = ROOT / "docs" / "superpowers"
+INTERNAL_DOCS = ROOT / "docs" / "engineering"
 
 
 class TestPagesConfiguration(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestPagesConfiguration(unittest.TestCase):
             if line.strip() and not line.lstrip().startswith("#")
         }
         self.assertIn("exclude:", lines)
-        self.assertIn("- docs/superpowers", lines)
+        self.assertIn("- docs/engineering", lines)
 
         for path in (
             "data/sources",

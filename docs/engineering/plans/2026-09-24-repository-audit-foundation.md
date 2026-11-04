@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.13 standard library only; GitHub Actions with actions/checkout@v4 and actions/setup-python@v5.
 
-**Spec:** docs/superpowers/specs/2026-09-24-repository-audit-foundation-design.md
+**Spec:** docs/engineering/specs/2026-09-24-repository-audit-foundation-design.md
 
 ## Global Constraints
 
@@ -903,8 +903,8 @@ Expected changed set only:
 - .audit/known-debt.json
 - .audit/policy.json
 - .github/workflows/repository-audit.yml
-- docs/superpowers/plans/2026-09-24-repository-audit-foundation.md
-- docs/superpowers/specs/2026-09-24-repository-audit-foundation-design.md
+- docs/engineering/plans/2026-09-24-repository-audit-foundation.md
+- docs/engineering/specs/2026-09-24-repository-audit-foundation-design.md
 - scripts/audit_repository.py
 - scripts/repository_audit/__init__.py
 - scripts/repository_audit/core.py
