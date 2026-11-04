@@ -17,6 +17,17 @@ class TestPagesConfiguration(unittest.TestCase):
         self.assertIn("exclude:", lines)
         self.assertIn("- docs/superpowers", lines)
 
+        for path in (
+            "data/sources",
+            "scripts",
+            "tests",
+            "update_fallback.py",
+            "requirements.txt",
+            "README.md",
+            "WevertonGomesCosta.github.io.Rproj",
+        ):
+            self.assertIn(f"- {path}", lines)
+
     def test_rendered_markdown_outside_internal_docs_has_no_liquid_tokens(self):
         violations = []
         for path in ROOT.rglob("*.md"):

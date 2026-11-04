@@ -6,7 +6,7 @@
 # - Google Scholar (via SerpApi)
 # - ORCID
 # - Scopus (Elsevier API)
-# - Web of Science (fallback CSV)
+# - Web of Science (local export fallback)
 #
 # O script combina os dados e gera um arquivo JSON puro para o frontend.
 # As chaves e configurações são carregadas de um arquivo 'keys.json' unificado.
@@ -33,6 +33,11 @@ from pathlib import Path
 from scripts import build_bibliometric_metrics as metrics_builder
 from scripts import publication_reconciliation
 from scripts import source_update_pipeline as update_pipeline
+
+REPO_ROOT = Path(__file__).resolve().parent
+WOS_SOURCE_FILE = (
+    REPO_ROOT / "data" / "sources" / "web-of-science" / "savedrecs.txt"
+)
 
 # ==============================================================================
 # CONFIGURAÇÃO DO LOGGING
@@ -910,13 +915,17 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
 # FUNÇÕES DE BUSCA DE DADOS – WEB OF SCIENCE (Modo Offline / Fallback)
 # ==============================================================================
 
-def fetch_wos_data(researcher_id=None, api_key=None, txt_file="savedrecs.txt"):
+def fetch_wos_data(researcher_id=None, api_key=None, txt_file=None):
     """
-    Processa dados do Web of Science a partir de um arquivo local 'savedrecs.txt'.
+    Processa dados do Web of Science a partir do export local versionado.
     A API foi removida temporariamente.
     """
+    if txt_file is None:
+        txt_file = WOS_SOURCE_FILE
+    txt_file = Path(txt_file)
+
     # Se o arquivo não existir, retorna imediatamente
-    if not os.path.exists(txt_file):
+    if not txt_file.exists():
         logging.warning(f"Arquivo '{txt_file}' não encontrado. WoS será ignorado.")
         return None
 

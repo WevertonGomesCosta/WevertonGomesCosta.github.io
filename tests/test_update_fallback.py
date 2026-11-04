@@ -62,6 +62,28 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         self.assertTrue(callable(update_fallback.run_update))
         self.assertTrue(callable(update_fallback.load_keys))
 
+    def test_wos_default_source_uses_versioned_data_directory(self):
+        root = Path(update_fallback.__file__).resolve().parent
+        expected = (
+            root
+            / "data"
+            / "sources"
+            / "web-of-science"
+            / "savedrecs.txt"
+        )
+        self.assertEqual(update_fallback.WOS_SOURCE_FILE, expected)
+        self.assertTrue(expected.is_file())
+
+    def test_runtime_dependency_is_declared(self):
+        root = Path(update_fallback.__file__).resolve().parent
+        requirements = (root / "requirements.txt").read_text(
+            encoding="utf-8"
+        )
+        self.assertRegex(
+            requirements,
+            r"(?m)^requests(?:[<>=!~].*)?$",
+        )
+
     def test_missing_keys_raises_normal_exception_not_system_exit(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "missing-keys.json"
