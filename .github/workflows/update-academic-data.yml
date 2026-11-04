@@ -18,6 +18,8 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      TZ: America/Sao_Paulo
 
     steps:
       - name: Checkout repository
