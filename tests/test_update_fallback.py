@@ -223,6 +223,60 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         )
         self.assertEqual(result["profile"]["total_publications"], 1)
 
+    def test_scopus_equal_citations_have_deterministic_article_order(self):
+        search = FakeResponse(
+            {
+                "search-results": {
+                    "opensearch:totalResults": "2",
+                    "entry": [
+                        {
+                            "dc:identifier": "SCOPUS_ID:2",
+                            "dc:title": "Zulu Article",
+                            "prism:coverDate": "2026-01-01",
+                            "prism:publicationName": "Journal",
+                            "prism:doi": "10.1000/zulu",
+                            "citedby-count": "5",
+                        },
+                        {
+                            "dc:identifier": "SCOPUS_ID:1",
+                            "dc:title": "Alpha Article",
+                            "prism:coverDate": "2026-01-01",
+                            "prism:publicationName": "Journal",
+                            "prism:doi": "10.1000/alpha",
+                            "citedby-count": "5",
+                        },
+                    ],
+                }
+            }
+        )
+        history_blocked = FakeResponse({}, status_code=401)
+        previous = {
+            "profile": {
+                "total_publications": 2,
+                "cited_by": {
+                    "table": [{"citations": {"all": 10, "since_2021": 10}}],
+                    "graph": [],
+                },
+            },
+            "articles": [],
+        }
+
+        with mock.patch.object(
+            update_fallback,
+            "requests",
+            FakeRequests(side_effect=[search, history_blocked]),
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author",
+                "api-key",
+                previous_data=previous,
+            )
+
+        self.assertEqual(
+            [article["scopus_id"] for article in result["articles"]],
+            ["1", "2"],
+        )
+
     def test_unexpected_source_exception_is_isolated(self):
         config = {
             "github_username": "example",
