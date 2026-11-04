@@ -80,6 +80,15 @@
 
             <div class="controls reveal">
                 <input id="publication-search" aria-label="Buscar publicações" data-key-aria-label="publication-search-aria" data-key-placeholder="search-pub-placeholder">
+                <div class="publication-sort-control">
+                    <label for="publication-sort" class="publication-sort-label" data-key="sort-publications-label">Ordenar por</label>
+                    <select id="publication-sort" aria-label="Ordenar publicações" data-key-aria-label="publication-sort-aria">
+                        <option value="citations_desc" data-key="sort-citations-desc">Mais citados</option>
+                        <option value="date_desc" data-key="sort-date-desc">Mais recentes</option>
+                        <option value="date_asc" data-key="sort-date-asc">Mais antigos</option>
+                        <option value="title_asc" data-key="sort-title-asc">Título A–Z</option>
+                    </select>
+                </div>
                 <button type="button" id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search" data-key="clear-btn">Limpar</button>
                 <button id="export-bibtex-btn" type="button" data-key="export-bibtex">Exportar BibTeX</button>
             </div>
