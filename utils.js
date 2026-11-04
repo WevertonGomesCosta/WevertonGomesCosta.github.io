@@ -2415,10 +2415,6 @@ const LanguageManager = {
     }
 };
 
-// Expor globalmente a função de alternância para ser usada no HTML (ex: onclick)
-window.toggleLanguage = () => LanguageManager.toggleLanguage();
-
-
 // =================================================================================
 // MÓDULO PRINCIPAL DA APLICAÇÃO (UI & Interações)
 // =================================================================================
@@ -2535,6 +2531,10 @@ const App = {
     _setupEventListeners() {
         window.addEventListener('scroll', this._handleScroll.bind(this), { passive: true });
         this.UI.body.addEventListener('mousemove', this._handleCardHover.bind(this));
+
+        document.querySelectorAll('.lang-switcher, .lang-switch-fixed, .lang-switch').forEach(button => {
+            button.addEventListener('click', () => LanguageManager.toggleLanguage());
+        });
 
         if (this.UI.timeline) {
             this.UI.timeline.addEventListener('click', this._handleTimelineToggle.bind(this));

@@ -35,20 +35,6 @@
       "subject": "document:csp-meta",
       "fingerprint": "be91c6d571ccad216de68576e28f28428bfa50c423effeb9b25c4f037670000a",
       "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
-      "path": "index.html",
-      "subject": "https://cdn.plot.ly/plotly-2.27.0.min.js",
-      "fingerprint": "e8d7ca9ddf12bf7557081d0c5f3d542aad92beefd0397f82d9a67833f0a87994",
-      "reason": "Pre-existing debt frozen before structural block 2"
-    },
-    {
-      "rule_id": "SECURITY_EXTERNAL_SCRIPT_INTEGRITY",
-      "path": "index.html",
-      "subject": "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
-      "fingerprint": "474651a03c4cd26d36b3a5bd4f4596d88f019526c1053058ff70824e6a831f4b",
-      "reason": "Pre-existing debt frozen before structural block 2"
     }
   ]
 }
