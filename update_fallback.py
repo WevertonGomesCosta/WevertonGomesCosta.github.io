@@ -804,9 +804,34 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
             and isinstance(previous_profile.get("cited_by"), dict)
         ):
             previous_profile["total_publications"] = len(cleaned_articles)
+
+            previous_graph = previous_profile["cited_by"].get("graph", [])
+            citations_by_year = {}
+            if isinstance(previous_graph, list):
+                for point in previous_graph:
+                    if not isinstance(point, dict):
+                        continue
+                    year = point.get("year")
+                    citations = point.get("citations")
+                    if isinstance(year, int) and isinstance(citations, int):
+                        citations_by_year[year] = citations
+
+            all_years = sorted(
+                set(citations_by_year) | set(yearly_pub_counts)
+            )
+            previous_profile["cited_by"]["graph"] = [
+                {
+                    "year": year,
+                    "citations": citations_by_year.get(year, 0),
+                    "publications": yearly_pub_counts.get(year, 0),
+                }
+                for year in all_years
+                if 2010 <= year <= datetime.now().year + 1
+            ]
+
             logging.warning(
-                "    >>> AÇÃO: preservando histórico anterior e aceitando "
-                "a lista atual de artigos."
+                "    >>> AÇÃO: preservando citações históricas anteriores, "
+                "atualizando publicações por ano e aceitando a lista atual."
             )
             return {
                 "source_name": "Scopus",
