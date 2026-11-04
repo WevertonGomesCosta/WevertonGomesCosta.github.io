@@ -1,8 +1,20 @@
-.Rproj.user
+# R / RStudio
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Local credentials and transient data
 indexador-de-site-57bae5ef5fc4.json
+keys.json
+pending_urls.json
+
+# Legacy local helper scripts
 busca_github.js
 validate_form.js
 update_date.js
@@ -11,5 +23,7 @@ indexador-de-paginas.py
 validar_paginas_sitemap.R
 busca_google_scholar.js
 cv_pdf_generator.js
-keys.json
-pending_urls.json
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
