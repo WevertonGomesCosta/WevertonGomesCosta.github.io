@@ -35,9 +35,8 @@ from scripts import publication_reconciliation
 from scripts import source_update_pipeline as update_pipeline
 
 REPO_ROOT = Path(__file__).resolve().parent
-WOS_SOURCE_FILE = (
-    REPO_ROOT / "data" / "sources" / "web-of-science" / "savedrecs.txt"
-)
+WOS_RELATIVE_FILE = Path("data/sources/web-of-science/savedrecs.txt")
+WOS_SOURCE_FILE = REPO_ROOT / WOS_RELATIVE_FILE
 
 # ==============================================================================
 # CONFIGURAÇÃO DO LOGGING
@@ -388,7 +387,8 @@ def fetch_scholar_data(author_id: str, api_key: str):
             logging.error("Scholar: timeout na SerpApi.")
             return None
         except Exception as e:
-            logging.error(f"Scholar: erro na SerpApi: {e}")
+            # Requests errors may include a URL with the SerpApi key.
+            logging.error("Scholar: erro na SerpApi (%s).", type(e).__name__)
             return None
 
     # ------------------------------------------------------------------
@@ -763,10 +763,14 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
 
             for batch in batches:
                 ids_str = ",".join(batch)
-                manual_url = f"{base_url}?scopus_id={ids_str}&date={date_range_str}&apiKey={api_key}&httpAccept=application/json"
-                
+                # API key stays in a request header, never in the URL.
                 try:
-                    resp = requests.get(manual_url, headers={}, timeout=25)
+                    resp = requests.get(
+                        base_url,
+                        headers=headers,
+                        params={"scopus_id": ids_str, "date": date_range_str},
+                        timeout=25,
+                    )
                     if resp.status_code == 200:
                         data = resp.json()
                         root = data.get("abstract-citations-response") or data.get("citation-overview") or {}
@@ -1269,7 +1273,7 @@ def collect_source_results(
             "not_configured"
         )
 
-    wos_file = root / "savedrecs.txt"
+    wos_file = root / WOS_RELATIVE_FILE
     if wos_file.exists():
         wos = safe_collect(
             "Web of Science",
