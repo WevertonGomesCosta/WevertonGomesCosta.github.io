@@ -121,7 +121,7 @@
         "alias_record_ids": [],
         "citations": 22,
         "record_id": "85073253514",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -147,7 +147,7 @@
         "alias_record_ids": [],
         "citations": 4,
         "record_id": "85071667621",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -173,7 +173,7 @@
         "alias_record_ids": [],
         "citations": 5,
         "record_id": "85090047441",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -199,7 +199,7 @@
         "alias_record_ids": [],
         "citations": 2,
         "record_id": "85095700543",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -225,7 +225,7 @@
         "alias_record_ids": [],
         "citations": 1,
         "record_id": "85122793528",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -249,9 +249,9 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 3,
+        "citations": 4,
         "record_id": "85117190747",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -277,9 +277,9 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 14,
+        "citations": 15,
         "record_id": "85104263465",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -305,7 +305,7 @@
         "alias_record_ids": [],
         "citations": 10,
         "record_id": "85099892397",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -357,7 +357,7 @@
         "alias_record_ids": [],
         "citations": 5,
         "record_id": "85117372664",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -381,9 +381,9 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 19,
+        "citations": 22,
         "record_id": "85139307465",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -409,7 +409,7 @@
         "alias_record_ids": [],
         "citations": 5,
         "record_id": "85135566113",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -435,7 +435,7 @@
         "alias_record_ids": [],
         "citations": 1,
         "record_id": "85138658502",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -461,7 +461,7 @@
         "alias_record_ids": [],
         "citations": 9,
         "record_id": "85152360293",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -487,7 +487,7 @@
         "alias_record_ids": [],
         "citations": 6,
         "record_id": "85160444099",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -539,7 +539,7 @@
         "alias_record_ids": [],
         "citations": 1,
         "record_id": "85188537023",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -563,9 +563,9 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 7,
+        "citations": 8,
         "record_id": "85213532603",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -591,7 +591,7 @@
         "alias_record_ids": [],
         "citations": 1,
         "record_id": "85208483551",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -617,7 +617,7 @@
         "alias_record_ids": [],
         "citations": 4,
         "record_id": "85207560508",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -641,9 +641,9 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 13,
+        "citations": 14,
         "record_id": "85187690139",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -695,7 +695,7 @@
         "alias_record_ids": [],
         "citations": 0,
         "record_id": "105025783242",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -747,7 +747,7 @@
         "alias_record_ids": [],
         "citations": 0,
         "record_id": "105024199202",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
@@ -771,15 +771,67 @@
       },
       "scopus": {
         "alias_record_ids": [],
-        "citations": 0,
+        "citations": 1,
         "record_id": "105029115097",
-        "status": "stale"
+        "status": "observed"
       },
       "web_of_science": {
         "alias_record_ids": [],
         "citations": null,
         "record_id": null,
         "status": "record_absent"
+      }
+    },
+    "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:R3hNpaxXUhUC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.3390/agriculture16202290",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "105054550228",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": null,
+        "status": "record_absent"
+      }
+    },
+    "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield": {
+      "google_scholar": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "eJNKcHsAAAAJ:HDshCWvjkbEC",
+        "status": "value_unavailable"
+      },
+      "orcid": {
+        "alias_record_ids": [],
+        "citations": null,
+        "record_id": "doi:10.1007/s00122-026-05387-3",
+        "status": "value_unavailable"
+      },
+      "scopus": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "105051391409",
+        "status": "observed"
+      },
+      "web_of_science": {
+        "alias_record_ids": [],
+        "citations": 0,
+        "record_id": "doi:10.1007/s00122-026-05387-3",
+        "status": "observed"
       }
     },
     "journal-2026-trait-prediction-soybean-shaded": {
@@ -837,8 +889,8 @@
   },
   "schema_version": "1.0.0",
   "source_snapshot": {
-    "fallback_last_updated": "03/11/2026 16:55",
-    "registry_updated_at": "2026-09-23",
+    "fallback_last_updated": "04/11/2026 15:40",
+    "registry_updated_at": "2026-11-04",
     "source_links_schema_version": "1.0.0"
   }
 }
