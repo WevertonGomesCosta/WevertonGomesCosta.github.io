@@ -2594,11 +2594,20 @@ const App = {
 // --- ALTERAÇÃO: Simplificada, chamada após carregamento dos JSONs ---
 // =================================================================================
 function initializeModule(name, initializer) {
+    const reportFailure = (error) => {
+        console.error(`initializePageComponents: falha isolada em ${name}.`, error);
+    };
+
     try {
-        initializer();
+        const result = initializer();
+
+        if (result && typeof result.then === 'function') {
+            result.catch(reportFailure);
+        }
+
         return true;
     } catch (error) {
-        console.error(`initializePageComponents: falha isolada em ${name}.`, error);
+        reportFailure(error);
         return false;
     }
 }
