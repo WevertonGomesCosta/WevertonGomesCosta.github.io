@@ -74,6 +74,13 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
         cls.metrics = json.loads(
             (ROOT / "bibliometric-metrics.json").read_text(encoding="utf-8")
         )
+        cls.home = (ROOT / "index.html").read_text(encoding="utf-8")
+        cls.publications_page = (
+            ROOT / "publicacoes.html"
+        ).read_text(encoding="utf-8")
+        cls.translations = json.loads(
+            (ROOT / "translations.json").read_text(encoding="utf-8")
+        )
 
     def test_legacy_title_based_scholar_join_is_absent_from_frontend(self):
         self.assertNotIn("normalizeIdentityTitle", self.utils)
@@ -116,9 +123,9 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
             self.utils,
         )
 
-    def test_home_publications_use_publication_date_before_citations(self):
+    def test_default_publication_sort_prioritizes_citations_then_date(self):
         self.assertIn(
-            "publicationDate: rawArt.publication_date || null",
+            "const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);",
             self.utils,
         )
         self.assertIn(
@@ -126,10 +133,39 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
             self.utils,
         )
         self.assertIn(
-            "allArticles = allWorks\n                .filter(work =>",
+            "return citationDiff || dateDiff || titleDiff;",
+            self.utils,
+        )
+        self.assertIn(
+            "activePublicationSort = 'citations_desc'",
             self.utils,
         )
 
+    def test_publication_sort_control_exists_on_home_and_publications_page(self):
+        for markup in (self.home, self.publications_page):
+            self.assertIn('id="publication-sort"', markup)
+            self.assertIn('value="citations_desc"', markup)
+            self.assertIn('value="date_desc"', markup)
+            self.assertIn('value="date_asc"', markup)
+            self.assertIn('value="title_asc"', markup)
+
+        for lang in ("pt", "en"):
+            catalog = self.translations[lang]
+            for key in (
+                "sort-publications-label",
+                "publication-sort-aria",
+                "sort-citations-desc",
+                "sort-date-desc",
+                "sort-date-asc",
+                "sort-title-asc",
+            ):
+                self.assertIn(key, catalog)
+
+    def test_recent_publication_dates_remain_available_for_date_sorting(self):
+        self.assertIn(
+            "publicationDate: rawArt.publication_date || null",
+            self.utils,
+        )
         dates = {
             work["doi"]: work.get("publication_date")
             for work in self.registry["works"]
