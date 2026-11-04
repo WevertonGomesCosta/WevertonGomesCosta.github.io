@@ -1,73 +1,110 @@
-# 🌱 Weverton Gomes da Costa — Portfólio Pessoal
+# WevertonGomesCosta.github.io
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/wevertoncosta/)
-[![ORCID](https://img.shields.io/badge/ORCID-0000--0003--0742--5936-green?style=flat&logo=orcid&logoColor=white)](https://orcid.org/0000-0003-0742-5936)
-[![Lattes](https://img.shields.io/badge/Lattes-CNPq-blue)](https://lattes.cnpq.br/2723811288754046)
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?style=flat&logo=github)](https://github.com/WevertonGomesCosta)
-[![Google Scholar](https://img.shields.io/badge/Google%20Scholar-Profile-4285F4?style=flat&logo=google-scholar&logoColor=white)](https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ)
-[![LICAE/UFV](https://img.shields.io/badge/LICAE-UFV-2c3e50)](https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/)
-[![Conecta GEM](https://img.shields.io/badge/Conecta%20GEM-AgTech-success)](https://www.conectagem.com/sobre)
+Repositório do site acadêmico e portfólio de **Weverton Gomes da Costa**, publicado com GitHub Pages.
 
----
+**Site:** https://wevertongomescosta.github.io/
 
-## 👨‍🔬 Sobre mim
+## Estrutura do projeto
 
-Sou **Engenheiro Agrônomo** pela **Universidade Federal de Viçosa (2015)**, com **Mestrado (2018)** e **Doutorado (2022) em Genética e Melhoramento** pela mesma instituição. Atualmente, sou **doutorando em Estatística Aplicada e Biometria na UFV**. Minha trajetória inclui pós-doutorados na **UFV** (CNPq e FAPEMIG) e na **Embrapa Mandioca e Fruticultura** (CNPq).  
+O repositório separa conteúdo publicado, dados canônicos, fontes externas e infraestrutura de manutenção.
 
-Minha trajetória inclui:  
-- 📊 **Graduação**: estágio na **EPAMIG**, com planejamento experimental e análises estatísticas para o melhoramento genético de arroz irrigado.  
-- 🔬 **Mestrado**: atuação no **Laboratório de Bioinformática (UFV)**, pesquisando meta-análise e modelos mistos aplicados ao melhoramento vegetal.  
-- 🤖 **Doutorado**: integração ao **Laboratório de Bioinformática** e ao **LICAE/UFV**, com foco em dados genotípicos simulados, predição e importância de marcadores via **machine learning** e **redes neurais**.  
-- 🔬 **Pós-doutorados (UFV)**: períodos financiados pelo **CNPq** (2022–2023 e 2025) e pela **FAPEMIG** (2023–2025), com atuação em seleção genômica, biometria e machine learning.  
-- 🌱 **Pós-doutorado (Embrapa Mandioca e Fruticultura, 2022)**: análises de **GWS**, **GWAS** e modelos mistos no projeto *Melhoramento genético de mandioca: ações integradas para o desenvolvimento de novas cultivares para alimentação e uso industrial – Fase II*.  
+### Site publicado
 
-Atualmente, busco aprofundar a aplicação de **métodos estatísticos avançados** e **técnicas biométricas** para enfrentar desafios contemporâneos no **melhoramento de plantas** e na **agricultura digital**.
+- `index.html` — página inicial.
+- `publicacoes.html` — publicações e métricas bibliométricas.
+- `projetos.html` — projetos.
+- `politica-de-privacidade.html` — política de privacidade.
+- `404.html` — página de erro.
+- `style.css`, `utils.js` e `profile-interpolation.js` — apresentação e comportamento do frontend.
+- `_site_components/` — componentes HTML compartilhados usados pelo renderer.
 
-**Áreas de experiência:**  
-- 🌾 Melhoramento de plantas e genética quantitativa  
-- 📈 Modelos mistos, diversidade genética, seleção genômica ampla e estudos de associação genômica  
-- 🤖 Machine Learning e redes neurais aplicadas à biologia  
-- 💻 Softwares e linguagens: **R, Python, MATLAB, GENES, Selegen**, entre outros  
+### Dados canônicos e gerados
 
----
+- `profile.json` — fonte canônica dos dados pessoais e institucionais reutilizados pelo site.
+- `academic-registry.json` — catálogo canônico da produção acadêmica.
+- `bibliographic-source-links.json` — vínculos entre registros canônicos e fontes bibliográficas.
+- `bibliometric-metrics.json` — métricas bibliométricas normalizadas.
+- `fallback-data.json` — snapshot consolidado das fontes externas.
+- `translations.json` — conteúdo textual PT/EN.
 
-## 🚀 Projetos em Destaque
-- **[Bayesian-ridge-regression-papaya](https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya)** — predição e seleção genômica em mamoeiro com regressão Bayesiana, RR-BLUP e GBLUP.
-- **[Genomic-Prediction-using-Regularized-Artificial-Neural-Networks](https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks)** — estudo reprodutível de predição genômica com redes neurais regularizadas e GBLUP-ADE.
-- **[Integrating-nir-genomic-kernel](https://github.com/WevertonGomesCosta/Integrating-nir-genomic-kernel)** — integração de dados espectrais NIR e genômicos para predição fenotípica.
-- **[nonlinear-ge-interaction-shap](https://github.com/WevertonGomesCosta/nonlinear-ge-interaction-shap)** — modelagem não linear de interação genótipo × ambiente com métodos baseados em árvores e decomposição de Shapley.
+Evite duplicar informações pessoais ou acadêmicas em arquivos auxiliares. Atualizações estruturadas devem ocorrer nas fontes canônicas e ser propagadas pelo pipeline.
 
-👉 Veja todos os projetos na [página de projetos](https://wevertongomescosta.github.io/projetos.html) ou no meu [perfil do GitHub](https://github.com/WevertonGomesCosta).
+### Fontes externas
 
----
+Arquivos brutos usados pelo pipeline ficam em `data/sources/`.
 
-## 🏢 Conecta GEM
+Atualmente:
 
-Sou **CEO e Cofundador da [Conecta GEM](https://www.conectagem.com/sobre)**, uma empresa de base tecnológica que conecta **estatística, ciência de dados e agricultura**.  
+- `data/sources/web-of-science/savedrecs.txt` — export local do Web of Science.
 
-A Conecta GEM nasceu com o propósito de **transformar dados em soluções inteligentes para o agronegócio**, aproximando **pesquisa científica** e **aplicações práticas**.  
+Credenciais e chaves ficam apenas em `keys.json`, que é ignorado pelo Git e nunca deve ser versionado.
 
-Nossas principais frentes de atuação incluem:  
-- 📊 Consultoria em **modelagem estatística e biometria**  
-- 🌱 Aplicação de **seleção genômica e estudos de associação**  
-- 🤖 Desenvolvimento de soluções em **machine learning e inteligência artificial**  
-- 💻 Treinamentos e capacitações em **R, Python e análise de dados**
-  
----
+### Scripts e testes
 
-## 🛠️ Habilidades Técnicas
-- **Linguagens:** Python, R  
-- **Bibliotecas/Frameworks:** Pandas, Scikit-learn, TensorFlow, tidyverse, caret, Shiny  
-- **Áreas:** Machine Learning, Estatística, Bioinformática, Seleção Genômica  
-- **Ferramentas:** Git/GitHub, pipelines reprodutíveis, visualização de dados  
+- `update_fallback.py` — coleta e reconcilia fontes acadêmicas e de desenvolvimento.
+- `scripts/` — geração de métricas, reconciliação de publicações, renderer compartilhado e auditoria.
+- `tests/` — testes unitários e contratos estruturais.
+- `.audit/` — política e baseline da auditoria do repositório.
+- `.github/workflows/` — validação automática em pull requests e em `main`.
 
----
+### Documentação de engenharia
 
-## 📫 Contato
-- 📍 Viçosa, MG — Brasil  
-- ✉️ [Email](mailto:wevertonufv@gmail.com)  
-- 🔗 [LinkedIn](https://www.linkedin.com/in/wevertoncosta/) | [ORCID](https://orcid.org/0000-0003-0742-5936) | [Lattes](https://lattes.cnpq.br/2723811288754046) | [GitHub](https://github.com/WevertonGomesCosta) | [LICAE/UFV](https://www.licae.ufv.br/equipe/weverton-gomes-da-costa/) | [Conecta GEM](https://www.conectagem.com/sobre) | [Google Scholar](https://scholar.google.com.br/citations?hl=pt-BR&user=eJNKcHsAAAAJ)
+Decisões arquiteturais, planos e especificações históricas ficam em:
 
----
+`docs/engineering/`
 
-✨ Este repositório hospeda meu **site pessoal/portfólio**: [WevertonGomesCosta.github.io](https://wevertongomescosta.github.io/)
+Esses documentos são fontes internas de engenharia e são excluídos do build do GitHub Pages.
+
+## Ambiente local
+
+O repositório também pode ser aberto como projeto do RStudio por meio de:
+
+`WevertonGomesCosta.github.io.Rproj`
+
+O estado local do RStudio (`.Rproj.user/`) não é versionado.
+
+Para o ambiente Python:
+
+```bash
+python -m venv .venv
+source .venv/Scripts/activate
+python -m pip install -r requirements.txt
+```
+
+No Windows fora do Git Bash, ative o ambiente virtual pelo mecanismo apropriado ao terminal utilizado.
+
+## Atualização dos dados
+
+Com `keys.json` configurado localmente:
+
+```bash
+python update_fallback.py
+```
+
+O pipeline preserva a identidade canônica das publicações, reconcilia novas publicações verificadas e atualiza os artefatos acadêmicos de forma transacional.
+
+## Validação
+
+Antes de integrar alterações relevantes:
+
+```bash
+node --check profile-interpolation.js
+node --check utils.js
+node tests/test_profile_interpolation.js
+
+python scripts/build_bibliometric_metrics.py --check
+python -m unittest discover -s tests -p "test_*.py"
+python -B scripts/render_shared_site.py --check
+python scripts/audit_repository.py
+```
+
+O mesmo conjunto de controles é executado pelo workflow `Repository audit` no GitHub.
+
+## Regras de manutenção
+
+- Não versionar `keys.json`, `.venv/`, `.Rproj.user/`, caches ou arquivos temporários.
+- Não editar manualmente artefatos gerados quando existir script responsável por sua geração.
+- Manter dados pessoais e institucionais centralizados em `profile.json`.
+- Manter produção acadêmica canônica em `academic-registry.json`.
+- Preservar os testes e a auditoria ao alterar arquitetura, dados ou frontend.
+- Preferir mudanças pequenas e verificáveis, integradas por pull request.
