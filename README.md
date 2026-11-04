@@ -83,6 +83,47 @@ python update_fallback.py
 
 O pipeline preserva a identidade canônica das publicações, reconcilia novas publicações verificadas e atualiza os artefatos acadêmicos de forma transacional.
 
+### Atualização automática no GitHub Actions
+
+O workflow `.github/workflows/update-academic-data.yml` executa o pipeline
+semanalmente às quartas-feiras, às 06h17 (horário de Brasília), e também pode
+ser iniciado manualmente em **Actions → Update academic data → Run workflow**.
+Ele só executa na branch `main` e valida os arquivos antes de publicar.
+
+Configure os seguintes **Repository secrets** em
+**Settings → Secrets and variables → Actions**:
+
+- `SERPAPI_API_KEY`: chave principal da SerpApi (obrigatória).
+- `SERPAPI_API_KEY2`: segunda chave SerpApi para contingência (opcional).
+- `SCOPUS_API_KEY`: chave da API Elsevier/Scopus (obrigatória).
+- `ACADEMIC_UPDATE_PUSH_TOKEN`: fine-grained personal access token com
+  acesso **somente a este repositório**, permissão **Contents: Read and write**
+  e prazo de validade acompanhado pelo proprietário. É necessário para que
+  o push dos JSONs dispare tanto a auditoria quanto a publicação do GitHub Pages.
+  Não use `GITHUB_TOKEN` para esse push: ele não aciona o build do Pages
+  configurado para publicação por branch.
+
+Os identificadores públicos de perfil são lidos diretamente de `profile.json`.
+O workflow gera `keys.json` temporariamente com permissões restritas e o apaga
+ao terminar a coleta. Não compartilhe nem registre valores de secrets no código.
+
+A execução atualiza, quando necessário, apenas `fallback-data.json`,
+`bibliometric-metrics.json`, `academic-registry.json` e
+`bibliographic-source-links.json`. Falhas nos testes/auditoria bloqueiam o
+commit. Um push rejeitado (por conflito ou proteção da branch) também provoca
+falha, sem reescrever a história do repositório.
+
+O Web of Science usa o export **versionado**
+`data/sources/web-of-science/savedrecs.txt`; suas citações só mudam após
+substituição manual por um novo export e uma execução do pipeline. No Scopus,
+a consulta de publicações pode funcionar mesmo quando o histórico de citações
+está indisponível; nesse caso o histórico anterior é preservado.
+
+Após configurar os secrets, faça uma execução manual e confirme o sucesso do
+workflow, da auditoria e da atualização do site. Caso o Pages esteja configurado
+para outro modo de publicação, confira **Settings → Pages** antes de ativar
+o agendamento.
+
 ## Validação
 
 Antes de integrar alterações relevantes:
