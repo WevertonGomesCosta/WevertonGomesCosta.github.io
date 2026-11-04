@@ -2247,7 +2247,9 @@ const LanguageManager = {
         })
         .catch(error => {
             console.error("FALHA CRÍTICA AO CARREGAR translations.json:", error);
-            document.body.innerHTML = '<div style="color:red; padding: 20px;">Erro crítico: Não foi possível carregar as traduções essenciais. Verifique o console.</div>';
+            console.warn("A página será preservada e os módulos independentes serão inicializados em modo degradado.");
+            window.fallbackData = null;
+            initializePageComponents();
         });
     },
     
@@ -2591,17 +2593,28 @@ const App = {
 // Inicialização Centralizada dos Módulos
 // --- ALTERAÇÃO: Simplificada, chamada após carregamento dos JSONs ---
 // =================================================================================
+function initializeModule(name, initializer) {
+    try {
+        initializer();
+        return true;
+    } catch (error) {
+        console.error(`initializePageComponents: falha isolada em ${name}.`, error);
+        return false;
+    }
+}
+
 function initializePageComponents() {
     console.log("initializePageComponents: Iniciando módulos pertinentes à página...");
-    ParticleBackground.init();
-    MobileNavHandler.init();
-    PageSetup.init();
-    ClipboardCopier.init();
-    ContactForm.init();
-    App.init();
+
+    initializeModule('ParticleBackground', () => ParticleBackground.init());
+    initializeModule('MobileNavHandler', () => MobileNavHandler.init());
+    initializeModule('PageSetup', () => PageSetup.init());
+    initializeModule('ClipboardCopier', () => ClipboardCopier.init());
+    initializeModule('ContactForm', () => ContactForm.init());
+    initializeModule('App', () => App.init());
 
     if (document.querySelector('[data-cv-type]')) {
-        CvPdfGenerator.init();
+        initializeModule('CvPdfGenerator', () => CvPdfGenerator.init());
     }
 
     const hasAcademicUi = !!(
@@ -2609,11 +2622,11 @@ function initializePageComponents() {
         document.querySelector('[id$="-chart"]')
     );
     if (hasAcademicUi) {
-        scholarScript.init();
+        initializeModule('scholarScript', () => scholarScript.init());
     }
 
     if (document.getElementById('projects-list')) {
-        GithubReposModule.init({
+        initializeModule('GithubReposModule', () => GithubReposModule.init({
             listSelector: '#projects-list',
             metaSelector: '#projects-meta',
             searchSelector: '#project-search',
@@ -2623,9 +2636,10 @@ function initializePageComponents() {
             isPaginated: !!document.getElementById('toggle-more'),
             initialCount: 3,
             incrementCount: 3
-        });
+        }));
     }
-    console.log("initializePageComponents: Módulos inicializados.");
+
+    console.log("initializePageComponents: Inicialização dos módulos concluída.");
 }
 
 // =================================================================================
