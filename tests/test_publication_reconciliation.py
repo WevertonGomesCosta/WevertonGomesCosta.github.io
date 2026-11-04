@@ -134,6 +134,7 @@ class TestPublicationReconciliation(unittest.TestCase):
         self.assertEqual(work["type"], "journal_article")
         self.assertEqual(work["status"], "published")
         self.assertEqual(work["doi"], "10.1000/new")
+        self.assertEqual(work["publication_date"], "2026-10-20")
         self.assertEqual(work["container_title"], "Journal of Testing")
         self.assertEqual(work["authors"][0], "COSTA, W. G.")
         self.assertEqual(

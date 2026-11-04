@@ -81,7 +81,10 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
         self.assertNotIn("scholarArticles.find(", self.utils)
 
     def test_frontend_loads_metrics_and_looks_up_by_publication_id(self):
-        self.assertIn("fetch('bibliometric-metrics.json')", self.utils)
+        self.assertIn(
+            "fetch('bibliometric-metrics.json', { cache: 'no-store' })",
+            self.utils,
+        )
         self.assertIn(
             ".publications?.[publicationId]?.[source]",
             self.utils,
@@ -97,6 +100,50 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
         self.assertNotIn(
             ".map(work => normalizeArticle(work, scholarArticles))",
             self.utils,
+        )
+
+    def test_academic_json_fetches_bypass_stale_browser_cache(self):
+        self.assertIn(
+            "fetch('fallback-data.json', { cache: 'no-store' })",
+            self.utils,
+        )
+        self.assertIn(
+            "fetch('academic-registry.json', { cache: 'no-store' })",
+            self.utils,
+        )
+        self.assertIn(
+            "fetch('bibliometric-metrics.json', { cache: 'no-store' })",
+            self.utils,
+        )
+
+    def test_home_publications_use_publication_date_before_citations(self):
+        self.assertIn(
+            "publicationDate: rawArt.publication_date || null",
+            self.utils,
+        )
+        self.assertIn(
+            "const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);",
+            self.utils,
+        )
+        self.assertIn(
+            "allArticles = allWorks\n                .filter(work =>",
+            self.utils,
+        )
+
+        dates = {
+            work["doi"]: work.get("publication_date")
+            for work in self.registry["works"]
+            if work.get("doi") in {
+                "10.1007/s00122-026-05387-3",
+                "10.3390/agriculture16202290",
+            }
+        }
+        self.assertEqual(
+            dates,
+            {
+                "10.1007/s00122-026-05387-3": "2026-09-23",
+                "10.3390/agriculture16202290": "2026-10-20",
+            },
         )
 
     def test_current_canonical_scholar_counts_preserve_legacy_visible_values(self):

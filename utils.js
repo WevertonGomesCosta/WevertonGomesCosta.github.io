@@ -610,7 +610,7 @@ const scholarScript = (function() {
     async function ensureAcademicRegistryLoaded() {
         if (window.academicRegistry?.works) return;
         try {
-            const response = await fetch('academic-registry.json');
+            const response = await fetch('academic-registry.json', { cache: 'no-store' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             window.academicRegistry = await response.json();
         } catch (e) {
@@ -623,7 +623,7 @@ const scholarScript = (function() {
     async function ensureBibliometricMetricsLoaded() {
         if (window.bibliometricMetrics?.publications) return;
         try {
-            const response = await fetch('bibliometric-metrics.json');
+            const response = await fetch('bibliometric-metrics.json', { cache: 'no-store' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const payload = await response.json();
             if (!payload || typeof payload !== 'object' || !payload.publications) {
@@ -641,6 +641,16 @@ const scholarScript = (function() {
 
     // --- HELPERS ---
     const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
+
+    const publicationTimestamp = (work) => {
+        if (work?.publicationDate) {
+            const parsed = Date.parse(work.publicationDate);
+            if (Number.isFinite(parsed)) return parsed;
+        }
+
+        const year = parseInt(work?.year, 10);
+        return Number.isFinite(year) ? Date.UTC(year, 0, 1) : 0;
+    };
 
     const publicationCitationMetric = (publicationId, source = 'google_scholar') => {
         if (!window.bibliometricMetrics?.publications) {
@@ -712,6 +722,7 @@ const scholarScript = (function() {
             link: doiLink || rawArt.link || null,
             doi,
             doiLink,
+            publicationDate: rawArt.publication_date || null,
             lattesPosition: rawArt.lattes?.position ?? null,
             cited_by: { value: cites, status: citationStatus }
         };
@@ -1321,34 +1332,32 @@ const scholarScript = (function() {
             allWorks = registryWorks
                 .map(work => normalizeArticle(work))
                 .sort((a, b) => {
-                    const yearDiff = (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
-                    if (yearDiff !== 0) return yearDiff;
+                    const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);
+                    if (dateDiff !== 0) return dateDiff;
 
                     const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
                     const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
-                    return posA - posB;
+                    if (posA !== posB) return posA - posB;
+
+                    const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
+                    if (citationDiff !== 0) return citationDiff;
+
+                    return a.title.localeCompare(b.title);
                 });
 
             allArticles = allWorks
                 .filter(work =>
                     work.type === 'journal_article' && work.status === 'published'
-                )
-                .sort((a, b) => {
-                    const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
-                    if (citationDiff !== 0) return citationDiff;
-
-                    const yearDiff = (parseInt(b.year, 10) || 0) - (parseInt(a.year, 10) || 0);
-                    if (yearDiff !== 0) return yearDiff;
-
-                    const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
-                    const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
-                    return posA - posB;
-                });
+                );
         } else {
             const raw = scholarArticles;
             allArticles = raw
                 .map(article => normalizeArticle(article))
-                .sort((a, b) => b.cited_by.value - a.cited_by.value);
+                .sort((a, b) => {
+                    const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);
+                    if (dateDiff !== 0) return dateDiff;
+                    return (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
+                });
             allWorks = [...allArticles];
         }
 
@@ -2222,7 +2231,7 @@ const LanguageManager = {
         });
 
         const fallbackRequest = needsFallbackData
-            ? fetch('fallback-data.json')
+            ? fetch('fallback-data.json', { cache: 'no-store' })
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status} ao buscar fallback-data.json`);
                     return response.json();
