@@ -47,6 +47,7 @@ class StubRun:
 
 
 class TestLocalAcademicPublish(unittest.TestCase):
+    @mock.patch.dict("os.environ", {"GITHUB_ACTIONS": ""})
     def test_reject_other_uncommitted_files(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
@@ -58,6 +59,7 @@ class TestLocalAcademicPublish(unittest.TestCase):
                     publish.check_publish_ready(root, run=stub)
             self.assertFalse(any(x[:2] == ("git", "fetch") for x in stub.calls))
 
+    @mock.patch.dict("os.environ", {"GITHUB_ACTIONS": ""})
     def test_reject_outdated_main(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp).resolve()
