@@ -159,12 +159,62 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIsNone(result["articles"][0]["cited_by"]["value"])
 
-    def test_scopus_fetcher_no_longer_accepts_previous_data(self):
+    def test_scopus_fetcher_accepts_previous_data_for_history_fallback(self):
         signature = inspect.signature(update_fallback.fetch_scopus_data)
         self.assertEqual(
             list(signature.parameters),
-            ["author_id", "api_key"],
+            ["author_id", "api_key", "previous_data"],
         )
+
+    def test_scopus_history_failure_keeps_current_search_article_list(self):
+        search = FakeResponse(
+            {
+                "search-results": {
+                    "opensearch:totalResults": "1",
+                    "entry": [
+                        {
+                            "dc:identifier": "SCOPUS_ID:999",
+                            "dc:title": "New Scopus Article",
+                            "prism:coverDate": "2026-10-20",
+                            "prism:publicationName": "Journal",
+                            "prism:doi": "10.1000/new-scopus",
+                            "citedby-count": "5",
+                        }
+                    ],
+                }
+            }
+        )
+        history_blocked = FakeResponse({}, status_code=401)
+        previous = {
+            "profile": {
+                "total_publications": 1,
+                "cited_by": {
+                    "table": [{"citations": {"all": 4, "since_2021": 4}}],
+                    "graph": [{"year": 2025, "citations": 4, "publications": 1}],
+                },
+            },
+            "articles": [],
+        }
+
+        with mock.patch.object(
+            update_fallback,
+            "requests",
+            FakeRequests(side_effect=[search, history_blocked]),
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author",
+                "api-key",
+                previous_data=previous,
+            )
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result["history_status"], "stale")
+        self.assertEqual(result["articles"][0]["scopus_id"], "999")
+        self.assertEqual(
+            result["profile"]["cited_by"],
+            previous["profile"]["cited_by"],
+        )
+        self.assertEqual(result["profile"]["total_publications"], 1)
 
     def test_unexpected_source_exception_is_isolated(self):
         config = {
