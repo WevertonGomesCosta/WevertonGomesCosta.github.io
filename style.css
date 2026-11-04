@@ -1027,6 +1027,52 @@ body:not(#index-page) nav.scrolled .nav-title {
     outline: none;
 }
 
+.publication-sort-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.publication-sort-label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.controls select {
+    min-width: 170px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--glass);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.controls select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+    outline: none;
+}
+
+.controls select option {
+    background: var(--bg);
+    color: var(--text);
+}
+
+@media (max-width: 640px) {
+    .publication-sort-control {
+        width: 100%;
+    }
+
+    .controls select {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
 .controls button {
     padding: 10px 14px;
     border-radius: 12px;

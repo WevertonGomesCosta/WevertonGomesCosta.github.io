@@ -577,6 +577,7 @@ const scholarScript = (function() {
     let showingPubsCount = 0;
     let activeYearFilter = null;
     let activePublicationCategory = 'articles';
+    let activePublicationSort = 'citations_desc';
     let isPublicationsPage = false;
     let currentSlideIndex = 0;
     let hasViewedSection = false;
@@ -587,6 +588,7 @@ const scholarScript = (function() {
         nextBtn: null, prevBtn: null, dots: [],
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
+        pubSortSelect: null,
         pubTypeButtons: [],
         pubsShownCount: null, pubsLoadMoreBtn: null,
         dashboardSection: null,
@@ -650,6 +652,39 @@ const scholarScript = (function() {
 
         const year = parseInt(work?.year, 10);
         return Number.isFinite(year) ? Date.UTC(year, 0, 1) : 0;
+    };
+
+    const comparePublicationTitles = (a, b) => (
+        (a.title || '').localeCompare(
+            b.title || '',
+            window.currentLang === 'en' ? 'en-US' : 'pt-BR',
+            { sensitivity: 'base' }
+        )
+    );
+
+    const sortPublications = (list, mode = activePublicationSort) => {
+        const sorted = [...list];
+
+        sorted.sort((a, b) => {
+            const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
+            const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);
+            const titleDiff = comparePublicationTitles(a, b);
+
+            if (mode === 'date_desc') {
+                return dateDiff || citationDiff || titleDiff;
+            }
+            if (mode === 'date_asc') {
+                return -dateDiff || citationDiff || titleDiff;
+            }
+            if (mode === 'title_asc') {
+                return titleDiff || dateDiff || citationDiff;
+            }
+
+            // Default: most cited first; newest publication breaks citation ties.
+            return citationDiff || dateDiff || titleDiff;
+        });
+
+        return sorted;
     };
 
     const publicationCitationMetric = (publicationId, source = 'google_scholar') => {
@@ -1144,7 +1179,7 @@ const scholarScript = (function() {
             });
         }
 
-        return list;
+        return sortPublications(list);
     }
 
     function updateCategoryFilterUI() {
@@ -1313,6 +1348,7 @@ const scholarScript = (function() {
         UI.pubsGrid = document.getElementById("publicacoes-grid");
         UI.pubSearchInput = document.getElementById('publication-search');
         UI.pubClearBtn = document.getElementById('publication-clear-btn');
+        UI.pubSortSelect = document.getElementById('publication-sort');
         UI.pubTypeButtons = Array.from(document.querySelectorAll('[data-publication-filter]'));
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
@@ -1329,35 +1365,19 @@ const scholarScript = (function() {
         const registryWorks = window.academicRegistry?.works;
 
         if (Array.isArray(registryWorks)) {
-            allWorks = registryWorks
-                .map(work => normalizeArticle(work))
-                .sort((a, b) => {
-                    const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);
-                    if (dateDiff !== 0) return dateDiff;
-
-                    const posA = a.lattesPosition ?? Number.MAX_SAFE_INTEGER;
-                    const posB = b.lattesPosition ?? Number.MAX_SAFE_INTEGER;
-                    if (posA !== posB) return posA - posB;
-
-                    const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
-                    if (citationDiff !== 0) return citationDiff;
-
-                    return a.title.localeCompare(b.title);
-                });
-
-            allArticles = allWorks
-                .filter(work =>
+            allWorks = registryWorks.map(work => normalizeArticle(work));
+            allArticles = sortPublications(
+                allWorks.filter(work =>
                     work.type === 'journal_article' && work.status === 'published'
-                );
+                ),
+                'citations_desc'
+            );
         } else {
             const raw = scholarArticles;
-            allArticles = raw
-                .map(article => normalizeArticle(article))
-                .sort((a, b) => {
-                    const dateDiff = publicationTimestamp(b) - publicationTimestamp(a);
-                    if (dateDiff !== 0) return dateDiff;
-                    return (b.cited_by?.value || 0) - (a.cited_by?.value || 0);
-                });
+            allArticles = sortPublications(
+                raw.map(article => normalizeArticle(article)),
+                'citations_desc'
+            );
             allWorks = [...allArticles];
         }
 
@@ -1392,6 +1412,15 @@ const scholarScript = (function() {
         if(UI.pubClearBtn) {
             UI.pubClearBtn.addEventListener('click', () => {
                 UI.pubSearchInput.value = '';
+                showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
+                renderPublications();
+            });
+        }
+
+        if (UI.pubSortSelect) {
+            activePublicationSort = UI.pubSortSelect.value || 'citations_desc';
+            UI.pubSortSelect.addEventListener('change', () => {
+                activePublicationSort = UI.pubSortSelect.value || 'citations_desc';
                 showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
                 renderPublications();
             });
