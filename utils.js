@@ -605,6 +605,37 @@ const GithubReposModule = {
 // =================================================================================
 // MÓDULO: DASHBOARD ACADÊMICO (FINAL: ANIMAÇÃO DE NÚMEROS E GRÁFICOS)
 // =================================================================================
+// Independent publication history derived from the canonical academic registry.
+// Do not use Scopus document records, citation counts, or annual API series.
+const PortfolioPublicationHistory = {
+    byYear(registry) {
+        if (!Array.isArray(registry?.works)) return [];
+        const totals = new Map();
+        const seenIds = new Set();
+
+        for (const work of registry.works) {
+            if (work?.type !== 'journal_article' || work.status !== 'published') continue;
+            const yearText = String(work.year ?? '');
+            if (!/^\d{4}$/.test(yearText)) continue;
+            const year = Number(yearText);
+            if (year < 1900 || year > new Date().getFullYear() + 1) continue;
+            if (work.id) {
+                if (seenIds.has(work.id)) continue;
+                seenIds.add(work.id);
+            }
+            totals.set(year, (totals.get(year) || 0) + 1);
+        }
+
+        if (totals.size === 0) return [];
+        const years = [...totals.keys()].sort((a, b) => a - b);
+        const first = years[0], last = years[years.length - 1];
+        return Array.from({ length: last - first + 1 }, (_, index) => ({
+            year: first + index,
+            publications: totals.get(first + index) || 0
+        }));
+    }
+};
+
 const scholarScript = (function() {
     'use strict';
 
@@ -873,8 +904,93 @@ const scholarScript = (function() {
         return result;
     }
 
+    // This graph uses the site's bibliographic registry, not Scopus history.
+    function renderPortfolioPublicationChart() {
+        const container = document.getElementById('scopus-chart');
+        if (!container) return;
+
+        const t = window.translations?.[window.currentLang] || {};
+        const history = PortfolioPublicationHistory.byYear(window.academicRegistry);
+        const unavailableText = t['scopus-registry-chart-unavailable'] || 'Gráfico indisponível';
+        if (!history.length || !window.Plotly?.newPlot) {
+            if (container.dataset.portfolioChartInitialized === 'true') {
+                window.Plotly?.purge?.(container);
+            }
+            container.textContent = unavailableText;
+            container.dataset.portfolioChartInitialized = 'false';
+            container.dataset.portfolioChartClickBound = 'false';
+            return;
+        }
+
+        const mobile = window.innerWidth < 768;
+        const maxCount = Math.max(...history.map(point => point.publications));
+        const width = container.getBoundingClientRect().width;
+        const layout = {
+            width: width >= 50 ? width : Math.max(240, window.innerWidth - (mobile ? 50 : 90)),
+            height: mobile ? 250 : 270,
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: '#94a3b8', family: 'Inter, sans-serif' },
+            margin: { t: 22, l: 36, r: 12, b: mobile ? 66 : 40 },
+            showlegend: false,
+            hovermode: 'closest',
+            dragmode: false,
+            xaxis: {
+                type: 'category',
+                tickangle: mobile ? -45 : 0,
+                tickfont: { size: mobile ? 10 : 11, color: '#94a3b8' },
+                showgrid: false,
+                fixedrange: true
+            },
+            yaxis: {
+                range: [0, maxCount + 1],
+                dtick: 1,
+                rangemode: 'tozero',
+                tickfont: { size: 11, color: '#94a3b8' },
+                gridcolor: 'rgba(255,255,255,0.07)',
+                zeroline: false,
+                fixedrange: true
+            }
+        };
+        const series = [{
+            type: 'bar',
+            x: history.map(point => String(point.year)),
+            y: history.map(point => point.publications),
+            marker: { color: '#64748b', line: { color: '#94a3b8', width: 1 } },
+            text: history.map(point => String(point.publications)),
+            textposition: 'outside',
+            cliponaxis: false,
+            hovertemplate: '%{x}: %{y} ' + (t['scopus-registry-chart-hover'] || 'artigos') + '<extra></extra>'
+        }];
+        const config = { responsive: true, displayModeBar: false, staticPlot: false };
+        const chart = container.dataset.portfolioChartInitialized === 'true'
+            ? window.Plotly.react(container, series, layout, config)
+            : window.Plotly.newPlot(container, series, layout, config);
+        container.dataset.portfolioChartInitialized = 'true';
+
+        // Match other academic charts: selecting a year filters the publication list.
+        Promise.resolve(chart).then(() => {
+            if (container.dataset.portfolioChartClickBound === 'true' || typeof container.on !== 'function') return;
+            container.on('plotly_click', event => {
+                const year = Number(event?.points?.[0]?.x);
+                if (!Number.isInteger(year)) return;
+                activeYearFilter = activeYearFilter === year ? null : year;
+                showingPubsCount = initialPubsToShow;
+                renderPublications();
+                updateFilterUI();
+            });
+            container.dataset.portfolioChartClickBound = 'true';
+        }).catch(error => {
+            console.warn('Could not render independent publication history.', error);
+            container.textContent = unavailableText;
+            container.dataset.portfolioChartInitialized = 'false';
+        });
+    }
+
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
+        // The portfolio bibliography can render even when Scopus is unavailable.
+        if (platformPrefix === 'scopus') renderPortfolioPublicationChart();
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
@@ -931,8 +1047,8 @@ const scholarScript = (function() {
         }
         updatePeriodLabels(platformPrefix, data.metrics);
 
-        // Annual Scopus citation data are intentionally excluded from public
-        // artifacts. Preserve the explanatory panel instead of attempting a chart.
+        // Scopus has a separate chart based on the site's bibliographic registry.
+        // Never render Scopus citation-by-year API data into public artifacts.
         if (platformPrefix === 'scopus') return;
 
         // Renderização do Gráfico (passando shouldAnimate)

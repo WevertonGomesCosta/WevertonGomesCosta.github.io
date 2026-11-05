@@ -27,6 +27,7 @@ jobs:
           node tests/test_profile_interpolation.js
           node tests/test_github_repos.js
           node tests/test_mobile_nav.js
+          node tests/test_publication_history.js
 
       - name: Check Python update pipeline syntax
         run: python -m py_compile update_fallback.py scripts/source_update_pipeline.py scripts/build_bibliometric_metrics.py
