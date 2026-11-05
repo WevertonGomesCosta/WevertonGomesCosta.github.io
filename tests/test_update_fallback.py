@@ -357,11 +357,102 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         self.assertEqual(
             result["profile"]["cited_by"]["graph"],
             [
-                {"year": 2025, "citations": 4, "publications": 0},
-                {"year": 2026, "citations": 0, "publications": 1},
+                {"year": 2025, "citations": 4, "publications": 1},
             ],
+            "When citation overview fails, the last complete annual series must remain intact",
         )
         self.assertEqual(result["profile"]["total_publications"], 1)
+
+    def test_scopus_successful_citation_overview_refreshes_native_history(self):
+        search = FakeResponse({
+            "search-results": {
+                "opensearch:totalResults": "1",
+                "entry": [{
+                    "dc:identifier": "SCOPUS_ID:123",
+                    "dc:title": "Source-specific history",
+                    "prism:coverDate": "2026-04-05",
+                    "citedby-count": "3",
+                }],
+            }
+        })
+        history = FakeResponse({
+            "abstract-citations-response": {
+                "citeInfoMatrix": {
+                    "citeInfoMatrixXML": {
+                        "citationMatrix": {
+                            "citeInfo": [{"cc": [
+                                {"$": "0"} for _ in range(16)
+                            ] + [{"$": "3"}]}]
+                        }
+                    }
+                }
+            }
+        })
+        with mock.patch.object(
+            update_fallback, "requests",
+            FakeRequests(side_effect=[search, history]),
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author", "api-key"
+            )
+        self.assertIsNotNone(result)
+        self.assertEqual(result["history_status"], "current")
+        self.assertEqual(
+            result["profile"]["cited_by"]["graph"],
+            [{"year": 2026, "citations": 3, "publications": 1}],
+        )
+
+    def test_scopus_partial_batches_do_not_publish_partial_citation_history(self):
+        # More than 20 document IDs forces two Citation Overview batches.
+        first_items = [{
+            "dc:identifier": f"SCOPUS_ID:{index}",
+            "dc:title": f"Article {index}",
+            "prism:coverDate": "2026-02-01",
+            "citedby-count": "1",
+        } for index in range(21)]
+        search = FakeResponse({
+            "search-results": {
+                "opensearch:totalResults": "21",
+                "entry": first_items,
+            }
+        })
+        successful_first_batch = FakeResponse({
+            "abstract-citations-response": {
+                "citeInfoMatrix": {"citeInfoMatrixXML": {
+                    "citationMatrix": {"citeInfo": [{
+                        "cc": [{"$": "0"} for _ in range(16)] + [{"$": "20"}]
+                    }]}
+                }}
+            }
+        })
+        blocked_second_batch = FakeResponse({}, status_code=401)
+        previous = {
+            "profile": {
+                "total_publications": 21,
+                "cited_by": {
+                    "table": [{"citations": {"all": 21, "since_2021": 21}}],
+                    "graph": [
+                        {"year": 2025, "citations": 19, "publications": 20}
+                    ],
+                },
+            },
+        }
+        with mock.patch.object(
+            update_fallback, "requests",
+            FakeRequests(side_effect=[
+                search, successful_first_batch, blocked_second_batch,
+            ]),
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author", "api-key", previous_data=previous
+            )
+        self.assertEqual(result["history_status"], "stale")
+        self.assertEqual(
+            result["profile"]["cited_by"]["graph"],
+            previous["profile"]["cited_by"]["graph"],
+            "Partial results must never replace the validated historical series",
+        )
+        self.assertEqual(len(result["articles"]), 21)
 
     def test_scopus_equal_citations_have_deterministic_article_order(self):
         search = FakeResponse(
