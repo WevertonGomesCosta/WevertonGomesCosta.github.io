@@ -68,5 +68,36 @@ class TestAcademicWorkflowContract(unittest.TestCase):
         self.assertNotIn("git add .", source)
 
 
+    def test_private_operational_summary_runs_after_failure_or_noop(self):
+        source = WORKFLOW.read_text(encoding="utf-8")
+        for expected in (
+            "id: secrets",
+            "id: collect",
+            "id: validation",
+            "id: audit",
+            "id: publish",
+            "id: cleanup",
+            'ACADEMIC_HEALTH_SUMMARY_PATH="$GITHUB_STEP_SUMMARY"',
+            "Summarize academic workflow outcome",
+            "if: always()",
+            "COLLECTION_OUTCOME:",
+            "AUDIT_OUTCOME:",
+            "PUBLISH_OUTCOME:",
+            "CANDIDATE_BRANCH:",
+            '>> "$GITHUB_STEP_SUMMARY"',
+        ):
+            with self.subTest(expected=expected):
+                self.assertIn(expected, source)
+        self.assertLess(
+            source.index("Remove temporary audit branch"),
+            source.index("Summarize academic workflow outcome"),
+        )
+        self.assertIn('"$CANDIDATE_CHANGED" == "false"', source)
+        self.assertIn('"$PUBLISH_OUTCOME" == "success"', source)
+        self.assertIn('"$COLLECTION_OUTCOME" != "success"', source)
+        self.assertNotIn("git add -A", source)
+
+
+
 if __name__ == "__main__":
     unittest.main()
