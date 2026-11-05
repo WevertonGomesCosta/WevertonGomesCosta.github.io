@@ -1016,8 +1016,8 @@ def fetch_wos_data(researcher_id=None, api_key=None, txt_file=None):
         # ----------------------------------------------------------------------
         # 1. DETECÇÃO DE FORMATO (Tab vs Vírgula e Cabeçalho)
         # ----------------------------------------------------------------------
-        delimiter = '\t' 
-        header_pos = 0
+        delimiter = '\t'
+        header_pos = None
         
         # Lê as primeiras linhas para descobrir onde começa o cabeçalho
         with open(txt_file, 'r', encoding='utf-8-sig', errors='replace') as f:
@@ -1030,7 +1030,9 @@ def fetch_wos_data(researcher_id=None, api_key=None, txt_file=None):
                     if '","' in line or ',"' in line: 
                         delimiter = ','
                     break
-        
+        if header_pos is None:
+            raise ValueError("Cabeçalho WoS não encontrado (Title/Authors).")
+
         # ----------------------------------------------------------------------
         # 2. PROCESSAMENTO DOS DADOS
         # ----------------------------------------------------------------------
@@ -1039,22 +1041,66 @@ def fetch_wos_data(researcher_id=None, api_key=None, txt_file=None):
             for _ in range(header_pos): 
                 next(f)
             
-            reader = csv.DictReader(f, delimiter=delimiter)
-            
-            for row in reader:
-                # Tenta pegar o título em colunas comuns do WoS
-                title = row.get("Title") or row.get("Article Title")
-                if not title: continue 
+            reader = csv.DictReader(f, delimiter=delimiter, strict=True)
+            fields = reader.fieldnames or []
+            if (len(set(fields)) != len(fields) or
+                    not ({"Title", "Article Title"} & set(fields)) or
+                    "Authors" not in fields or
+                    "Publication Year" not in fields or
+                    not ({"Times Cited, WoS Core", "Total Citations"} & set(fields))):
+                raise ValueError("Colunas obrigatórias ausentes ou duplicadas no export WoS.")
 
+            citation_years = [
+                key for key in fields if key.isdigit() and len(key) == 4
+            ]
+            if not citation_years:
+                raise ValueError("Export WoS sem colunas anuais de citações.")
+            if any(int(year) < 1900 or int(year) > datetime.now().year + 1
+                   for year in citation_years):
+                raise ValueError("Coluna anual WoS fora do intervalo permitido.")
+
+            seen_dois = set()
+            for line_number, row in enumerate(reader, start=header_pos + 2):
+                if all(value is None or not str(value).strip()
+                       for value in row.values()):
+                    continue  # Permit trailing blank CSV rows.
+                if None in row or any(value is None for value in row.values()):
+                    raise ValueError(
+                        f"Linha WoS {line_number} possui quantidade de colunas incorreta."
+                    )
+
+                title = row.get("Title") or row.get("Article Title")
+                if not isinstance(title, str) or not title.strip():
+                    raise ValueError(f"Linha WoS {line_number} sem título.")
                 doi = row.get("DOI", "")
+                if doi and doi.strip():
+                    normalized_doi = doi.strip().lower()
+                    if normalized_doi in seen_dois:
+                        raise ValueError(
+                            f"DOI duplicado na linha WoS {line_number}: {normalized_doi}"
+                        )
+                    seen_dois.add(normalized_doi)
+
                 year_str = row.get("Publication Year", "")
-                
-                # Citações Totais (All Time) - Limpeza de string "1,200" para int 1200
-                raw_cites = row.get("Times Cited, WoS Core") or row.get("Total Citations") or "0"
+                if (not year_str.isdigit() or not 1900 <= int(year_str)
+                        <= datetime.now().year + 1):
+                    raise ValueError(
+                        f"Ano de publicação inválido na linha WoS {line_number}."
+                    )
+
+                raw_cites = (
+                    row.get("Times Cited, WoS Core")
+                    or row.get("Total Citations")
+                    or ""
+                )
                 try:
-                    cites_all_time = int(raw_cites.replace(',', '').strip())
-                except:
-                    cites_all_time = 0
+                    cites_all_time = int(raw_cites.replace(",", "").strip())
+                    if cites_all_time < 0:
+                        raise ValueError("negative")
+                except (TypeError, ValueError) as exc:
+                    raise ValueError(
+                        f"Total de citações inválido na linha WoS {line_number}."
+                    ) from exc
 
                 # Adiciona Artigo à lista final
                 articles.append({
@@ -1073,28 +1119,36 @@ def fetch_wos_data(researcher_id=None, api_key=None, txt_file=None):
                     y_int = int(year_str)
                     yearly_pub_counts[y_int] = yearly_pub_counts.get(y_int, 0) + 1
 
-                # B. Iterar colunas dinâmicas para achar anos de citação (ex: "2021", "2022")
-                # O export do WoS cria uma coluna para cada ano que teve citação.
+                # Colunas anuais precisam representar o total WoS completo;
+                # não converter valores incorretos silenciosamente em zero.
                 cites_recent_for_this_article = 0
-                
-                for key, val in row.items():
-                    # Verifica se a coluna é um ano (4 dígitos numéricos)
-                    if key and key.isdigit() and len(key) == 4:
-                        try:
-                            c_year = int(key)
-                            c_val = int(val) if val and val.strip() else 0
-                            
-                            if c_val > 0:
-                                # 1. Soma ao gráfico global de citações
-                                yearly_citation_totals[c_year] = yearly_citation_totals.get(c_year, 0) + c_val
-                                
-                                # 2. Se for >= 2021, conta para as métricas "Since 2021"
-                                if c_year >= 2021:
-                                    cites_recent_for_this_article += c_val
-                        except:
-                            continue
-                
-                # Guarda o total recente deste artigo para calcular H-index/i10 depois
+                cites_yearly_for_this_article = 0
+                for key in citation_years:
+                    raw_annual = row[key].strip()
+                    try:
+                        c_val = int(raw_annual.replace(",", "")) if raw_annual else 0
+                        if c_val < 0:
+                            raise ValueError("negative")
+                    except ValueError as exc:
+                        raise ValueError(
+                            f"Citações anuais inválidas ({key}) na linha WoS "
+                            f"{line_number}."
+                        ) from exc
+
+                    cites_yearly_for_this_article += c_val
+                    if c_val > 0:
+                        c_year = int(key)
+                        yearly_citation_totals[c_year] = (
+                            yearly_citation_totals.get(c_year, 0) + c_val
+                        )
+                        if c_year >= 2021:
+                            cites_recent_for_this_article += c_val
+
+                if cites_yearly_for_this_article != cites_all_time:
+                    raise ValueError(
+                        f"Soma anual diferente do total na linha WoS {line_number}: "
+                        f"{cites_yearly_for_this_article} != {cites_all_time}."
+                    )
                 recent_citations_per_article.append(cites_recent_for_this_article)
 
         logging.info(f"✓ WoS Local: {len(articles)} artigos processados.")
