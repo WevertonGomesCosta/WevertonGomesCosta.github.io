@@ -605,55 +605,6 @@ const GithubReposModule = {
 // =================================================================================
 // MÓDULO: DASHBOARD ACADÊMICO (FINAL: ANIMAÇÃO DE NÚMEROS E GRÁFICOS)
 // =================================================================================
-// Independent publication history derived from the canonical academic registry.
-// Do not use Scopus document records, citation counts, or annual API series.
-const PortfolioPublicationHistory = {
-    byYear(registry) {
-        if (!Array.isArray(registry?.works)) return [];
-        const totals = new Map();
-        const seenIds = new Set();
-
-        for (const work of registry.works) {
-            if (work?.type !== 'journal_article' || work.status !== 'published') continue;
-            const yearText = String(work.year ?? '');
-            if (!/^\d{4}$/.test(yearText)) continue;
-            const year = Number(yearText);
-            if (year < 1900 || year > new Date().getFullYear() + 1) continue;
-            if (work.id) {
-                if (seenIds.has(work.id)) continue;
-                seenIds.add(work.id);
-            }
-            totals.set(year, (totals.get(year) || 0) + 1);
-        }
-
-        if (totals.size === 0) return [];
-        const years = [...totals.keys()].sort((a, b) => a - b);
-        const first = years[0], last = years[years.length - 1];
-        return Array.from({ length: last - first + 1 }, (_, index) => ({
-            year: first + index,
-            publications: totals.get(first + index) || 0
-        }));
-    },
-    withIndependentCitations(registry, scholarGraph) {
-        const publications = this.byYear(registry);
-        if (!publications.length || !Array.isArray(scholarGraph)) return [];
-        const citations = new Map();
-        for (const item of scholarGraph) {
-            const year = Number(item?.year);
-            const value = Number(item?.citations);
-            if (!Number.isInteger(year) || !Number.isSafeInteger(value) || value < 0) continue;
-            citations.set(year, value);
-        }
-        // A missing annual value is not equivalent to zero citations.
-        if (!publications.every(item => citations.has(item.year))) return [];
-        return publications.map(item => ({
-            year: item.year,
-            publications: item.publications,
-            citations: citations.get(item.year)
-        }));
-    }
-};
-
 const scholarScript = (function() {
     'use strict';
 
@@ -922,42 +873,9 @@ const scholarScript = (function() {
         return result;
     }
 
-    // This graph uses the site's bibliographic registry, not Scopus history.
-    // Reuse the exact Plotly dual-axis chart used by Scholar and Web of Science.
-    // Bars come from the canonical portfolio registry; the citation line comes
-    // from the independent Google Scholar history, never from Scopus API records.
-    function renderPortfolioPublicationChart(shouldAnimate = false) {
-        const container = document.getElementById('scopus-chart');
-        if (!container) return;
-
-        const t = window.translations?.[window.currentLang] || {};
-        const data = PortfolioPublicationHistory.withIndependentCitations(
-            window.academicRegistry,
-            dashboardData.scholar?.graphData
-        );
-
-        if (!data.length) {
-            if (window.Plotly?.purge && container.classList?.contains('js-plotly-plot')) {
-                window.Plotly.purge(container);
-            }
-            container.textContent = t['scopus-registry-chart-unavailable'] ||
-                (window.currentLang === 'en' ? 'Independent chart data unavailable.' :
-                    'Dados do gráfico independente indisponíveis.');
-            return;
-        }
-
-        renderDualAxisChart(container, data, 'scopus', shouldAnimate, {
-            publications: t['scopus-registry-chart-legend'] ||
-                (window.currentLang === 'en' ? 'Portfolio articles' : 'Artigos do portfólio'),
-            citations: t['scopus-registry-chart-citations'] ||
-                (window.currentLang === 'en' ? 'Google Scholar citations' : 'Citações Google Scholar')
-        });
-    }
-
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
-        // The portfolio bibliography can render even when Scopus is unavailable.
-        if (platformPrefix === 'scopus') renderPortfolioPublicationChart(shouldAnimate);
+        // All platforms use the shared dual-axis chart renderer.
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
@@ -973,20 +891,25 @@ const scholarScript = (function() {
                 ? rawTimestamp : rawTimestamp + '-03:00';
             const observedAt = Date.parse(timestamp);
             scopusExpired = !Number.isFinite(observedAt)
-                || sourceState.status === 'unavailable'
+                || sourceState?.status === 'unavailable'
                 || Date.now() - observedAt > 7 * 24 * 60 * 60 * 1000;
             const statusElement = document.getElementById('scopus-refresh-status');
             if (statusElement) {
                 const pt = window.currentLang !== 'en';
-                // Only display notices when the Scopus author summary is not current.
                 const stale = sourceState?.status === 'stale';
-                statusElement.hidden = !scopusExpired && !stale;
+                const historyStale = window.fallbackData?.academicData?.scopus?.history_status === 'stale';
+                // No routine update banner; warn when the author summary or
+                // its separate annual citation series is not current.
+                statusElement.hidden = !scopusExpired && !stale && !historyStale;
                 statusElement.textContent = scopusExpired
                     ? (pt ? 'Scopus: dados temporariamente indisponíveis ou com mais de sete dias.'
                         : 'Scopus: data temporarily unavailable or older than seven days.')
                     : stale
                     ? (pt ? 'Scopus: último resultado validado preservado; nova coleta indisponível.'
                         : 'Scopus: last validated result preserved; new retrieval unavailable.')
+                    : historyStale
+                    ? (pt ? 'Scopus: histórico anual preservado da coleta anterior, aguardando atualização.'
+                        : 'Scopus: annual history retained from an earlier retrieval, awaiting refresh.')
                     : '';
             }
         }
@@ -1010,20 +933,15 @@ const scholarScript = (function() {
                 const period = document.getElementById(`scopus-${metric}-period`);
                 if (period) period.style.display = 'none';
             });
-            // The independent portfolio chart has already been rendered above.
-            return;
+        } else {
+            updatePeriodLabels(platformPrefix, data.metrics);
         }
-        updatePeriodLabels(platformPrefix, data.metrics);
-
-        // Scopus has a separate chart based on the site's bibliographic registry.
-        // Never render Scopus citation-by-year API data into public artifacts.
-        if (platformPrefix === 'scopus') return;
 
         // Renderização do Gráfico (passando shouldAnimate)
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
         if (chartDiv) {
              // Se o container estiver vazio ou com mensagem de erro, ou se for para animar, renderiza
-            if (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados') || shouldAnimate) {
+            if (!chartDiv.innerHTML || chartDiv.innerHTML.includes('Sem dados') || shouldAnimate || platformPrefix === 'scopus') {
                 if (data.graphData?.length > 0) {
                     renderDualAxisChart(chartDiv, data.graphData, platformPrefix, shouldAnimate);
                 } else {
@@ -1071,7 +989,7 @@ const scholarScript = (function() {
     }
 
     // --- GRÁFICO OTIMIZADO (DESIGN MODERNO + MOBILE TOUCH) ---
-    function renderDualAxisChart(container, rawData, platform, shouldAnimate, customLabels = null) {
+    function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
         shouldAnimate = shouldAnimate && !MotionPreference.isReduced();
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -1099,8 +1017,8 @@ const scholarScript = (function() {
         const rangeX = [minYear - 0.5, maxYear + 0.5];
 
         const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6' }[platform] || '#10b981';
-        const lblPubs = customLabels?.publications || t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
-        const lblCits = customLabels?.citations || t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
+        const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
+        const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
         // Dimensões
         const isMobile = window.innerWidth < 768;
