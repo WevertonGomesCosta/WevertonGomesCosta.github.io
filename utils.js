@@ -883,86 +883,6 @@ const scholarScript = (function() {
         return result;
     }
 
-
-    // Text alternative to the existing Plotly plot, using the same source's
-    // observed annual series. Missing intermediate years follow the chart's
-    // explicit zero-fill convention; entirely unavailable series stay absent.
-    function renderHistoricalTable(platformPrefix, rawData) {
-        const body = document.getElementById(`${platformPrefix}-history-body`);
-        if (!body) return;
-        const t = window.translations?.[window.currentLang] || {};
-        const valid = (Array.isArray(rawData) ? rawData : []).filter(row => (
-            Number.isInteger(Number(row.year))
-            && Number(row.year) >= 1900 && Number(row.year) <= 2100
-            && Number.isFinite(Number(row.citations)) && Number(row.citations) >= 0
-            && Number.isFinite(Number(row.publications)) && Number(row.publications) >= 0
-        ));
-        const active = valid.filter(row =>
-            Number(row.citations) > 0 || Number(row.publications) > 0
-        );
-        if (!active.length) {
-            body.innerHTML = `<tr><td colspan="3">${escapeHtml(
-                t['history-unavailable'] || 'Dados anuais não disponíveis'
-            )}</td></tr>`;
-        } else {
-            const byYear = new Map(valid.map(row => [Number(row.year), row]));
-            const years = active.map(row => Number(row.year));
-            const minYear = Math.min(...years), maxYear = Math.max(...years);
-            const locale = window.currentLang === 'en' ? 'en-US' : 'pt-BR';
-            const rows = [];
-            for (let year = maxYear; year >= minYear; year--) {
-                const point = byYear.get(year);
-                const pubs = Number(point?.publications ?? 0);
-                const cits = Number(point?.citations ?? 0);
-                rows.push(`<tr><th scope="row">${year}</th><td>${pubs.toLocaleString(locale)}</td><td>${cits.toLocaleString(locale)}</td></tr>`);
-            }
-            body.innerHTML = rows.join('');
-        }
-
-        const status = document.getElementById(`${platformPrefix}-history-status`);
-        if (status) {
-            const retainedHistory = platformPrefix === 'scopus'
-                && window.fallbackData?.academicData?.scopus?.history_status === 'stale';
-            status.textContent = retainedHistory
-                ? (t['history-retained-note'] || 'Série anual da última coleta válida.')
-                : '';
-        }
-    }
-
-    function renderCoverageNote() {
-        const el = document.getElementById('bibliometric-coverage-note');
-        if (!el) return;
-        const t = window.translations?.[window.currentLang] || {};
-        const summary = window.academicRegistry?.summary;
-        if (!summary || !Number.isInteger(summary.total_records)) {
-            el.textContent = t['bibliometric-coverage-fallback']
-                || 'Catálogo e perfis bibliométricos usam critérios próprios de cobertura.';
-            return;
-        }
-        const acad = window.fallbackData?.academicData || {};
-        const profileCount = source => {
-            const value = acad[source]?.profile?.total_publications
-                ?? acad[source]?.total_publications;
-            return Number.isInteger(value) && value >= 0
-                ? String(value)
-                : (t['bibliometric-count-unknown'] || 'n/d');
-        };
-        const numbers = {
-            canonical: summary.total_records,
-            articles: summary.published_journal_articles,
-            chapters: summary.published_book_chapters,
-            accepted: summary.accepted_journal_articles,
-            preprints: summary.published_preprints,
-            scholar: profileCount('google_scholar'),
-            scopus: profileCount('scopus'),
-            wos: profileCount('web_of_science')
-        };
-        const template = t['bibliometric-coverage-template']
-            || 'Catálogo: {canonical} trabalhos. Google Scholar: {scholar}; Scopus: {scopus}; Web of Science: {wos}. Os totais usam critérios diferentes.';
-        el.textContent = template.replace(/\{(canonical|articles|chapters|accepted|preprints|scholar|scopus|wos)\}/g,
-            (_, key) => String(numbers[key] ?? '—'));
-    }
-
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
         // All platforms use the shared dual-axis chart renderer.
@@ -1009,9 +929,6 @@ const scholarScript = (function() {
             updatePeriodLabels(platformPrefix, data.metrics);
         }
 
-        // Annual table preserves the same source and historical period as the plot.
-        renderHistoricalTable(platformPrefix, data.graphData);
-
         // Renderização do Gráfico (passando shouldAnimate)
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
         if (chartDiv) {
@@ -1051,7 +968,6 @@ const scholarScript = (function() {
 
     function updateAllTexts() {
         platformOrder.forEach(p => renderPlatform(p, false));
-        renderCoverageNote();
         renderPublications();
         // Se já viu a seção, reanima apenas o gráfico atual ao trocar idioma (opcional, aqui deixei false para não distrair)
         if (hasViewedSection && window.Plotly?.Plots?.resize) {
@@ -1404,15 +1320,13 @@ const scholarScript = (function() {
                 const canShowCitation = (work.type === 'journal_article' && work.status === 'published') || work.type === 'preprint';
                 const hasCount = hasObservedCitation(work);
                 const countTemplate = work.cited_by?.value === 1
-                    ? (t['pub-scholar-citation-one'] || 'Google Scholar: {count} citação')
-                    : (t['pub-scholar-citation-many'] || 'Google Scholar: {count} citações');
+                    ? (t['pub-citation-one'] || '{count} citação')
+                    : (t['pub-citation-many'] || '{count} citações');
                 const countText = hasCount
                     ? countTemplate.replace('{count}', work.cited_by.value)
-                    : (t['pub-scholar-unavailable'] || 'Google Scholar: citações não disponíveis');
-                const staleText = hasCount && work.cited_by.status === 'stale'
-                    ? ` ${t['pub-scholar-retained'] || '(valor preservado)'}` : '';
+                    : (t['pub-citation-unavailable'] || 'Citações não disponíveis');
                 const citation = canShowCitation
-                    ? `<div class="citations">${escapeHtml(countText + staleText)}</div>`
+                    ? `<div class="citations">${escapeHtml(countText)}</div>`
                     : '';
 
                 const readLink = link
@@ -1566,7 +1480,6 @@ const scholarScript = (function() {
         showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
         
         platformOrder.forEach(p => renderPlatform(p, false));
-        renderCoverageNote();
         renderPublications();
         initCarouselLogic();
 

@@ -279,8 +279,8 @@ const lum = hex => {
 const textColor = '#e2e8f0';
 const menuColor = '#1e293b';
 assert.ok((lum(textColor) + 0.05) / (lum(menuColor) + 0.05) >= 7);
-assert.match(homeHtml, /style\.css\?v=20261105-bibliometric-lot2/);
-assert.match(publicationHtml, /style\.css\?v=20261105-bibliometric-lot2/);
+assert.match(homeHtml, /style\.css\?v=20261105-bibliometric-simplified/);
+assert.match(publicationHtml, /style\.css\?v=20261105-bibliometric-simplified/);
 
 
 // Lot 2: per-work citation counts must not confuse unavailable with observed zero.
@@ -340,91 +340,36 @@ vm.runInContext(
     rankVM
 );
 rankVM.renderCitationCards();
-assert.match(listingGrid.innerHTML, /Google Scholar: 0 citações/);
-assert.match(listingGrid.innerHTML, /Google Scholar: 5 citações/);
-assert.match(listingGrid.innerHTML, /Google Scholar: citações não disponíveis/);
-assert.match(listingGrid.innerHTML, /\(valor anterior preservado\)/);
+assert.match(listingGrid.innerHTML, />0 citações<\/div>/);
+assert.match(listingGrid.innerHTML, />5 citações<\/div>/);
+assert.match(listingGrid.innerHTML, />Citações não disponíveis<\/div>/);
+assert.match(listingGrid.innerHTML, />3 citações<\/div>/);
 assert.equal((listingGrid.innerHTML.match(/publication-card/g) || []).length, 4);
 rankVM.window.currentLang = 'en';
 rankVM.renderCitationCards();
-assert.match(listingGrid.innerHTML, /Google Scholar: 0 citations/);
-assert.match(listingGrid.innerHTML, /Google Scholar: citation count unavailable/);
+assert.match(listingGrid.innerHTML, />0 citations<\/div>/);
+assert.match(listingGrid.innerHTML, />Citations unavailable<\/div>/);
 assert.match(source, /function generateBibTeX\(\)/);
 assert.match(publicationHtml, /id="export-bibtex-btn"/);
 
-// The coverage note reads two independent populations; source totals are
-// not added together, and it must not invent zero when snapshot is missing.
-const coverageStart = source.indexOf('    function renderCoverageNote() {');
-const coverageEnd = source.indexOf('\n\n    // --- RENDERIZAÇÃO ---', coverageStart);
-assert.ok(coverageStart >= 0 && coverageEnd > coverageStart);
-const coverageEl = { textContent: '' };
-const coverageVM = {
-    window: {
-        currentLang: 'pt', translations: catalog,
-        academicRegistry, fallbackData: fallback
-    },
-    document: { getElementById(id) { return id === 'bibliometric-coverage-note' ? coverageEl : null; } }
-};
-vm.createContext(coverageVM);
-vm.runInContext(source.slice(coverageStart, coverageEnd) +
-    '\nglobalThis.showCoverage = renderCoverageNote;', coverageVM);
-coverageVM.showCoverage();
-assert.match(coverageEl.textContent, /Catálogo canônico: 34 trabalhos/);
-assert.match(coverageEl.textContent, /Google Scholar 38, Scopus 24 e Web of Science 22 registros/);
-assert.match(coverageEl.textContent, /não devem ser somados/);
-coverageVM.window.currentLang = 'en';
-coverageVM.showCoverage();
-assert.match(coverageEl.textContent, /Canonical catalog: 34 works/);
-assert.match(coverageEl.textContent, /must not be added together/);
-coverageVM.window.academicRegistry = null;
-coverageVM.showCoverage();
-assert.match(coverageEl.textContent, /different coverage criteria/);
-
-// Annual tables provide source-faithful textual access, including retained
-// Scopus history and explicit empty-state messaging.
-const historyStart = source.indexOf('    function renderHistoricalTable(platformPrefix, rawData) {');
-const historyEnd = source.indexOf('\n\n    function renderCoverageNote()', historyStart);
-assert.ok(historyStart >= 0 && historyEnd > historyStart);
-const tableBody = { innerHTML: '' };
-const historyNote = { textContent: '' };
-const tableVM = {
-    window: {
-        currentLang: 'pt', translations: catalog,
-        fallbackData: { academicData: { scopus: { history_status: 'stale' } } }
-    },
-    document: { getElementById(id) {
-        if (id === 'scopus-history-body') return tableBody;
-        if (id === 'scopus-history-status') return historyNote;
-        return null;
-    } },
-    escapeHtml: value => String(value ?? '')
-};
-vm.createContext(tableVM);
-vm.runInContext(source.slice(historyStart, historyEnd) +
-    '\nglobalThis.showAnnualTable = renderHistoricalTable;', tableVM);
-tableVM.showAnnualTable('scopus', [
-    { year: 2023, publications: 2, citations: 0 },
-    { year: 2025, publications: 3, citations: 7 }
-]);
-assert.match(tableBody.innerHTML, /<th scope="row">2025<\/th><td>3<\/td><td>7<\/td>/);
-assert.match(tableBody.innerHTML, /<th scope="row">2024<\/th><td>0<\/td><td>0<\/td>/);
-assert.match(tableBody.innerHTML, /<th scope="row">2023<\/th><td>2<\/td><td>0<\/td>/);
-assert.match(historyNote.textContent, /Scopus/);
-tableVM.window.currentLang = 'en';
-tableVM.showAnnualTable('scopus', []);
-assert.match(tableBody.innerHTML, /Annual data unavailable/);
-assert.match(historyNote.textContent, /earlier valid retrieval/);
-
-for (const item of [
-    ['scholar', 'Google Scholar'], ['scopus', 'Scopus'], ['wos', 'Web of Science']
-]) {
-    const name = item[0];
-    assert.match(homeHtml, new RegExp('id="' + name + '-history-body"'));
-    assert.match(homeHtml, new RegExp('data-key-aria-label="history-aria-' + name + '"'));
+// The visitor requested a compact presentation: keep the graphs and
+// observed/unavailable citation distinction, but no explanation or tables.
+assert.doesNotMatch(listingGrid.innerHTML, /Google Scholar:/);
+assert.doesNotMatch(listingGrid.innerHTML, /valor anterior preservado/);
+for (const name of ['scholar', 'scopus', 'wos']) {
     assert.match(homeHtml, new RegExp('id="' + name + '-chart"[^>]*role="img"'));
+    assert.doesNotMatch(homeHtml, new RegExp('id="' + name + '-history-body"'));
 }
-assert.match(homeHtml, /id="bibliometric-coverage-note"/);
-assert.match(publicationHtml, /id="bibliometric-coverage-note"/);
+for (const html of [homeHtml, publicationHtml]) {
+    assert.doesNotMatch(html, /bibliometric-coverage-note|bibliometric-history/);
+    assert.match(html, /style\.css\?v=20261105-bibliometric-simplified/);
+    assert.match(html, /utils\.js\?v=20261105-bibliometric-simplified/);
+}
+assert.doesNotMatch(source, /renderCoverageNote|renderHistoricalTable|pub-scholar-/);
 assert.match(publicationHtml, /id="pubs-shown-count"[^>]*aria-live=|aria-live="polite"[^>]*id="pubs-shown-count"/);
+for (const locale of ['pt', 'en']) {
+    assert.equal(catalog[locale]['pub-citation-many'].includes('Google Scholar'), false);
+    assert.doesNotMatch(catalog[locale]['scholar-chart-aria'], /table|tabela/i);
+}
 
 console.log('PASS: Scopus source, shared dual-axis chart, language, expiry guard, year filter and privacy');
