@@ -1413,15 +1413,7 @@ body:not(#index-page) nav.scrolled .nav-title {
     line-height: 1.5;
 }
 
-/* Scopus annual bars use the same shared .chart-container and Plotly
-   dimensions as Google Scholar and WoS; the source remains clearly separate. */
-#index-page .stats-card .scopus-registry-source {
-    margin: 0;
-    max-width: 590px;
-    color: var(--text-muted);
-    font-size: 0.78rem;
-    line-height: 1.4;
-}
+/* Do not show the Scopus status slot when metrics and annual history are current. */
 #scopus-refresh-status[hidden] {
     display: none;
 }
