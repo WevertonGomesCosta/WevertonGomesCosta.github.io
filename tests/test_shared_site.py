@@ -755,7 +755,7 @@ class TestProductionSemanticControls(unittest.TestCase):
                 self.assertEqual(source.count('src="profile-interpolation.js"'), 1)
                 # Accept cache-busting query strings without allowing duplicate scripts.
                 self.assertEqual(
-                    len(re.findall(r'src="utils\\.js(?:\\?[^"]*)?"', source)),
+                    len(re.findall(r'src="utils[.]js(?:[?][^"]*)?"', source)),
                     1,
                 )
                 self.assertLess(
