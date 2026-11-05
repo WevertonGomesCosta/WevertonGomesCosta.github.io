@@ -143,3 +143,85 @@ def render_source_comparison(
         "",
     ])
     return "\n".join(lines)
+
+
+def render_operational_health(results: object, snapshot: object) -> str:
+    """Administrative Markdown summary for the existing GitHub Actions page.
+
+    A successful collection does not necessarily rewrite last_valid_at:
+    unchanged snapshots intentionally retain their prior timestamp.
+    No article-level payloads or credentials are included.
+    """
+    result_map = results if isinstance(results, dict) else {}
+    states = snapshot.get("sourceStates") if isinstance(snapshot, dict) else None
+    states = states if isinstance(states, dict) else {}
+    lines = [
+        "## Saúde das fontes acadêmicas",
+        "",
+        "Resumo da coleta **desta execução**. O carimbo `last_valid_at` "
+        "é o valor registrado no snapshot e pode permanecer anterior "
+        "quando os dados não mudaram.",
+        "",
+        "| Fonte | Coleta | Dados disponíveis | last_valid_at | Detalhe |",
+        "| --- | --- | --- | --- | --- |",
+    ]
+    has_warning = False
+    for source, label in SOURCES:
+        result = result_map.get(source)
+        collected = getattr(result, "status", None)
+        state = states.get(source)
+        state = state if isinstance(state, dict) else {}
+        stored = state.get("status")
+        collection_label = {
+            "success": "Sucesso",
+            "failure": "Falha",
+            "skipped": "Não executada",
+        }.get(collected, "Não informada")
+        data_label = {
+            "current": "Atual",
+            "stale": "Preservado (stale)",
+            "unavailable": "Indisponível",
+        }.get(stored, "Não informado")
+        date = state.get("last_valid_at")
+        date_label = (
+            date[:19].replace("T", " ")
+            if isinstance(date, str) and len(date) >= 10
+            else "n/d"
+        )
+        notes = []
+        code = getattr(result, "error_code", None)
+        if collected in {"failure", "skipped"}:
+            has_warning = True
+            if isinstance(code, str):
+                # Restrict detail to safe controlled error-code characters.
+                safe_code = "".join(
+                    c if c.isascii() and (c.isalnum() or c in "_:-") else "_"
+                    for c in code
+                )[:64]
+                if safe_code:
+                    notes.append(safe_code)
+        if stored in {"stale", "unavailable"}:
+            has_warning = True
+        if source == "web_of_science" and collected == "success":
+            notes.append("Export local versionado; atualização manual")
+        if source == "scopus":
+            academic = snapshot.get("academicData") if isinstance(snapshot, dict) else None
+            scopus = academic.get("scopus") if isinstance(academic, dict) else None
+            history = scopus.get("history_status") if isinstance(scopus, dict) else None
+            if history == "stale":
+                notes.append("Histórico anual preservado (stale)")
+                has_warning = True
+            elif history == "current":
+                notes.append("Histórico anual atual")
+        lines.append(
+            f"| {label} | {collection_label} | {data_label} "
+            f"| {date_label} | {', '.join(notes) or '—'} |"
+        )
+    lines.extend([
+        "",
+        "**Atenção:** confira os avisos e os logs da execução."
+        if has_warning
+        else "**Fontes:** nenhuma falha ou dado preservado por erro identificado.",
+        "",
+    ])
+    return "\n".join(lines)
