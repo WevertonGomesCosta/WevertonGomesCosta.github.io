@@ -105,7 +105,8 @@ assert.deepEqual(clean(sandbox.history.byYear(fixture)), [
     assert.doesNotMatch(JSON.stringify(traces), /citations|99999|1999/);
     assert.equal(config.displayModeBar, false);
     assert.equal(layout.height, 270);
-    await Promise.resolve();
+    // Plotly signals readiness asynchronously; flush the next event-loop turn.
+    await new Promise(resolve => setImmediate(resolve));
     assert.equal(typeof plotClickHandler, 'function');
 
     plotClickHandler({ points: [{ x: '2024' }] });
