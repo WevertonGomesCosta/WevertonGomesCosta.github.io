@@ -89,7 +89,13 @@
                         <option value="title_asc" data-key="sort-title-asc">Título A–Z</option>
                     </select>
                 </div>
-                <button type="button" id="publication-clear-btn" title="Limpar busca" data-key-title="clear-pub-search" data-key="clear-btn">Limpar</button>
+                <div class="publication-sort-control">
+                    <label for="publication-year" class="publication-sort-label" data-key="publication-year-label">Filtrar por ano</label>
+                    <select id="publication-year" aria-label="Filtrar por ano" data-key-aria-label="publication-year-label">
+                        <option value="" data-key="publication-all-years">Todos os anos</option>
+                    </select>
+                </div>
+                <button type="button" id="publication-clear-btn" title="Limpar filtros" data-key-title="clear-pub-filters" data-key="clear-pub-filters">Limpar filtros</button>
                 <button id="export-bibtex-btn" type="button" data-key="export-bibtex">Exportar BibTeX</button>
             </div>
 
@@ -205,6 +211,6 @@
 
 
     <script src="profile-interpolation.js" defer></script>
-    <script src="utils.js" defer></script> 
+    <script src="utils.js?v=20261105-site-ux-lot1" defer></script> 
 </body>
 </html>
