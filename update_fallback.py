@@ -1226,6 +1226,18 @@ def analyze_changes(old_data, new_data):
     ]
 
     for source_key, label in sources_to_check:
+        if (
+            source_key == "scopus"
+            and old_data.get("academicData", {}).get("scopus", {}).get(
+                "distribution"
+            ) == "author_summary_only"
+        ):
+            # The public Scopus snapshot intentionally has no article list.
+            # Treating its empty list as a comparable baseline reports every
+            # existing publication as new on each scheduled refresh.
+            # Aggregate author metrics are compared by update_report instead.
+            continue
+
         # Pega as listas de artigos antiga e nova
         old_list = old_data.get("academicData", {}).get(source_key, {}).get("articles", [])
         new_list = new_data.get("academicData", {}).get(source_key, {}).get("articles", [])
