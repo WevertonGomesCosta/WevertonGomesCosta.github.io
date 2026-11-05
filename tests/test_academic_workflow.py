@@ -20,6 +20,8 @@ class TestAcademicWorkflowContract(unittest.TestCase):
             "SERPAPI_API_KEY2",
             "SCOPUS_API_KEY",
             "SCOPUS_INSTTOKEN",
+            "ACADEMIC_SCHEDULED_REFRESH",
+            "github.event_name == 'schedule'",
             "ACADEMIC_UPDATE_PUSH_TOKEN",
             "github.token",
             'trap \'rm -f keys.json\' EXIT',
