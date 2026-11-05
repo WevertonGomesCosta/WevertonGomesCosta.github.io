@@ -20,7 +20,7 @@
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔬</text></svg>">
 
-    <link rel="stylesheet" href="style.css?v=20261105-registry-chart">
+    <link rel="stylesheet" href="style.css?v=20261105-scopus-unified">
 
     <meta property="og:type" content="profile">
     <meta property="og:title" content="Weverton Gomes da Costa | Pesquisador & Cientista de Dados">
@@ -376,13 +376,9 @@
                                         <div><a href="https://www.scopus.com/authid/detail.uri?authorId=57211264440" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline;text-underline-offset:3px"><span class="metric-value" id="scopus-i10">—</span> <span class="metric-value-period" id="scopus-i10-period"></span></a></div>
                                     </div>
                                 </div>
-                                <p id="scopus-refresh-status" class="small-muted" aria-live="polite">Fonte: Scopus.</p>
-                                <div class="scopus-registry-visual">
-                                    <h4 data-key="scopus-registry-chart-title">Artigos publicados por ano</h4>
-                                    <div id="scopus-chart" class="chart-container scopus-registry-chart" role="img" data-key-aria-label="scopus-registry-chart-aria" aria-label="Gráfico de artigos publicados por ano do registro acadêmico próprio" aria-describedby="scopus-registry-source"></div>
-                                    <p id="scopus-registry-source" class="scopus-registry-source" data-key="scopus-registry-chart-source">Fonte do gráfico: registro bibliográfico do portfólio (Lattes e referências reconciliadas). Não representa o histórico de citações ou os documentos indexados no Scopus.</p>
-                                    <a class="scopus-registry-link" href="publicacoes.html" data-key="scopus-registry-chart-link">Ver publicações do portfólio</a>
-                                </div>
+                                <p id="scopus-refresh-status" class="small-muted" aria-live="polite" hidden></p>
+                                <div id="scopus-chart" class="chart-container scopus-registry-chart" role="img" data-key-aria-label="scopus-registry-chart-aria" aria-label="Gráfico de artigos publicados por ano do registro acadêmico próprio" aria-describedby="scopus-registry-source"></div>
+                                <p id="scopus-registry-source" class="scopus-registry-source" data-key="scopus-registry-chart-source">Barras: artigos publicados em periódicos (registro do portfólio/Lattes; não Scopus).</p>
                             </div>
                         </li>
                         
