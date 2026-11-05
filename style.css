@@ -1211,6 +1211,7 @@ body:not(#index-page) nav.scrolled .nav-title {
     gap: 6px;
 }
 
+/* Repository topics are metadata, not clickable controls. */
 .topic-tag {
     background: rgba(59, 130, 246, 0.1);
     border: 1px solid rgba(59, 130, 246, 0.3);
@@ -1219,14 +1220,6 @@ body:not(#index-page) nav.scrolled .nav-title {
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.topic-tag:hover, .topic-tag.active {
-    background: var(--secondary);
-    color: var(--dark);
-    transform: scale(1.05);
 }
 
 /* Metadados (Rodapé do Card) */
