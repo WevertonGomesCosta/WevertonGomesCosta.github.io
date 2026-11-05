@@ -181,6 +181,61 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIsNone(result["articles"][0]["cited_by"]["value"])
 
+    def test_public_scopus_summary_does_not_report_phantom_new_articles(self):
+        old_data = {
+            "githubRepos": [],
+            "academicData": {
+                "scopus": {
+                    "distribution": "author_summary_only",
+                    "articles": [],
+                    "profile": {"total_publications": 24},
+                }
+            },
+        }
+        new_data = {
+            "githubRepos": [],
+            "academicData": {
+                "scopus": {
+                    "articles": [
+                        {"title": "Already indexed", "doi": "10.1000/existing",
+                         "cited_by": {"value": 5}},
+                    ],
+                    "profile": {"total_publications": 24},
+                }
+            },
+        }
+        report, notes = update_fallback.analyze_changes(old_data, new_data)
+        self.assertEqual(report, [])
+        self.assertEqual(notes, [])
+
+    def test_scopus_legacy_full_snapshot_still_compares_new_articles(self):
+        old_data = {
+            "githubRepos": [],
+            "academicData": {
+                "scopus": {
+                    "articles": [
+                        {"title": "Existing", "doi": "10.1000/existing",
+                         "cited_by": {"value": 1}},
+                    ],
+                }
+            },
+        }
+        new_data = {
+            "githubRepos": [],
+            "academicData": {
+                "scopus": {
+                    "articles": [
+                        {"title": "Existing", "doi": "10.1000/existing",
+                         "cited_by": {"value": 1}},
+                        {"title": "New", "doi": "10.1000/new",
+                         "cited_by": {"value": 0}},
+                    ],
+                }
+            },
+        }
+        report, _ = update_fallback.analyze_changes(old_data, new_data)
+        self.assertTrue(any("Scopus: 1 novos artigos" in line for line in report))
+
     def test_scopus_fetcher_accepts_previous_data_for_history_fallback(self):
         signature = inspect.signature(update_fallback.fetch_scopus_data)
         self.assertEqual(
