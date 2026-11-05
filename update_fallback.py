@@ -804,7 +804,7 @@ def fetch_scopus_data(author_id, api_key, previous_data=None, insttoken=None):
     # ==========================================================================
     # 2. HISTÓRICO DE CITAÇÕES (Citation Overview)
     # ==========================================================================
-    history_success = False # Flag para saber se conseguimos o detalhe anual
+    history_success = False  # True only when all citation batches return valid matrices
 
     if scopus_ids_list:
         logging.info(f"--- [Scopus] Etapa 2: Tentando histórico para {len(scopus_ids_list)} IDs ---")
@@ -818,6 +818,7 @@ def fetch_scopus_data(author_id, api_key, previous_data=None, insttoken=None):
             batch_size = 20
             batches = [scopus_ids_list[i:i + batch_size] for i in range(0, len(scopus_ids_list), batch_size)]
 
+            all_batches_valid = bool(batches)
             for batch in batches:
                 ids_str = ",".join(batch)
                 # API key stays in a request header, never in the URL.
@@ -837,6 +838,9 @@ def fetch_scopus_data(author_id, api_key, previous_data=None, insttoken=None):
                         cite_info_list = matrix_root.get("citeInfo", [])
                         
                         if isinstance(cite_info_list, dict): cite_info_list = [cite_info_list]
+                        if not isinstance(cite_info_list, list) or not cite_info_list:
+                            all_batches_valid = False
+                            continue
 
                         for article_data in cite_info_list:
                             cc_list = article_data.get("cc", [])
@@ -850,11 +854,14 @@ def fetch_scopus_data(author_id, api_key, previous_data=None, insttoken=None):
                                         yearly_citation_totals[year_mapped] = yearly_citation_totals.get(year_mapped, 0) + val
                                 except: pass
                     else:
+                        all_batches_valid = False
                         logging.warning(f"    [Scopus] API Histórico recusada (Status {resp.status_code}). Provável restrição de IP.")
                 except Exception:
-                    pass
+                    all_batches_valid = False
+            history_success = all_batches_valid
 
         except Exception as e:
+            history_success = False
             logging.error(f"!!! [Scopus] Erro ao conectar na API de histórico: {e}")
 
     # ==========================================================================
@@ -866,7 +873,7 @@ def fetch_scopus_data(author_id, api_key, previous_data=None, insttoken=None):
     # O Search API e o histórico são superfícies independentes. Se apenas o
     # histórico falhar, mantemos a lista atual de artigos e reutilizamos o
     # histórico anterior, evitando perder publicações novas por restrição de IP.
-    if total_cited_in_search > 0 and total_cited_in_history == 0:
+    if total_cited_in_search > 0 and (total_cited_in_history == 0 or not history_success):
         logging.warning("⚠️  [Scopus] HISTÓRICO INDISPONÍVEL (Home Office).")
         logging.warning("    A lista atual de artigos foi obtida pelo Search API.")
 
