@@ -141,14 +141,14 @@ reposModule.state.currentFilter = 'analise genomica para cafe';
 search.value = reposModule.state.currentFilter;
 reposModule.filterAndRender();
 assert.equal(listEl.items.length, 1);
-assert.match(listEl.items[0].innerHTML, /genomic-project-2/);
+assert.match(listEl.items[0].innerHTML, /Genomic Project 2/);
 assert.equal(shown.textContent, 'Exibindo 1 de 1');
 
 reposModule.state.currentFilter = 'CAFÉ';
 search.value = reposModule.state.currentFilter;
 reposModule.filterAndRender();
 assert.equal(listEl.items.length, 1);
-assert.match(listEl.items[0].innerHTML, /genomic-project-2/);
+assert.match(listEl.items[0].innerHTML, /Genomic Project 2/);
 
 // Untrusted repository text must not execute as HTML or supply unsafe URLs.
 const malicious = {
