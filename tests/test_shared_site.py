@@ -753,10 +753,14 @@ class TestProductionSemanticControls(unittest.TestCase):
             source = (ROOT / name).read_text(encoding="utf-8")
             with self.subTest(name=name):
                 self.assertEqual(source.count('src="profile-interpolation.js"'), 1)
-                self.assertEqual(source.count('src="utils.js"'), 1)
+                # Accept cache-busting query strings without allowing duplicate scripts.
+                self.assertEqual(
+                    len(re.findall(r'src="utils[.]js(?:[?][^"]*)?"', source)),
+                    1,
+                )
                 self.assertLess(
                     source.index('src="profile-interpolation.js"'),
-                    source.index('src="utils.js"'),
+                    source.index('src="utils.js'),
                 )
 
     def test_production_pages_embed_one_runtime_profile_projection(self):
