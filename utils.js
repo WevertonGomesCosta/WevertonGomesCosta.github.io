@@ -174,19 +174,35 @@ const PageSetup = {
 const MobileNavHandler = {
     init() {
         const navToggle = document.getElementById('nav-toggle');
-        const navLinks = document.querySelectorAll('.nav-col-center a');
+        const navMenu = document.getElementById('site-primary-navigation');
+        if (!navToggle || !navMenu) return;
 
-        if (!navToggle || !navLinks.length) {
-            return;
-        }
+        const isOpen = () => navToggle.getAttribute('aria-expanded') === 'true';
+        const closeMenu = () => navToggle.setAttribute('aria-expanded', 'false');
 
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                if (navToggle.checked) {
-                    navToggle.checked = false;
-                }
-            });
+        navToggle.addEventListener('click', () => {
+            navToggle.setAttribute('aria-expanded', String(!isOpen()));
         });
+
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && isOpen()) {
+                closeMenu();
+                navToggle.focus();
+            }
+        });
+
+        document.addEventListener('click', event => {
+            if (isOpen() && !navToggle.contains(event.target) && !navMenu.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        // Reset disclosure state when crossing the desktop/mobile breakpoint.
+        window.matchMedia?.('(max-width: 992px)')?.addEventListener?.('change', closeMenu);
     }
 };
 
@@ -415,41 +431,66 @@ const GithubReposModule = {
         .replace(/(^|\s)(\p{Ll})/gu, (_, space, letter) => space + letter.toUpperCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
     
+    // Data from GitHub is untrusted and must remain text, not markup.
+    escapeHtml: (value) => String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;'),
+    safeHttpUrl(value) {
+        if (typeof value !== 'string' || !value.trim()) return '';
+        try {
+            const parsed = new URL(value.trim());
+            return parsed.protocol === 'https:' || parsed.protocol === 'http:' ? parsed.href : '';
+        } catch {
+            return '';
+        }
+    },
     createCard(repo) {
         const card = document.createElement('div');
         card.className = 'project-card card';
         card.setAttribute('role', 'listitem');
-        
-        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
-                      ? translations[currentLang] 
-                      : {};
-        
-        const portfolioBaseUrl = SiteProfile.get()?.person?.website_url?.replace(/\/+$/, '') || '';
-        const siteUrl = repo.homepage || (repo.has_pages && portfolioBaseUrl ? `${portfolioBaseUrl}/${repo.name}/` : null);
-    
-        let actionsHtml = '';
-        if (siteUrl) actionsHtml += `<a class="link-btn" href="${siteUrl}" target="_blank" rel="noopener" data-key="repo-live-site">${trans['repo-live-site'] || 'Ver Site'}</a>`;
-        actionsHtml += `<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${repo.html_url}" target="_blank" rel="noopener" data-key="repo-view-repo">${trans['repo-view-repo'] || 'Repositório'}</a>`;
 
-        let languageTag = repo.language ? `<span class="meta-badge language-badge" aria-label="Linguagem">${repo.language}</span>` : '';
-    
+        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined')
+            ? translations[currentLang] : {};
+        const esc = this.escapeHtml;
+        const repoName = String(repo.name ?? '');
+        const baseUrl = this.safeHttpUrl(SiteProfile.get()?.person?.website_url || '');
+        const fallbackSite = repo.has_pages && baseUrl && repoName
+            ? this.safeHttpUrl(`${baseUrl.replace(/\\/+$/, '')}/${encodeURIComponent(repoName)}/`)
+            : '';
+        const siteUrl = this.safeHttpUrl(repo.homepage) || fallbackSite;
+        const repositoryUrl = this.safeHttpUrl(repo.html_url);
+
+        const links = [];
+        if (siteUrl) links.push(`<a class="link-btn" href="${esc(siteUrl)}" target="_blank" rel="noopener" data-key="repo-live-site">${esc(trans['repo-live-site'] || 'Ver Site')}</a>`);
+        if (repositoryUrl) links.push(`<a class="link-btn ${siteUrl ? 'secondary' : ''}" href="${esc(repositoryUrl)}" target="_blank" rel="noopener" data-key="repo-view-repo">${esc(trans['repo-view-repo'] || 'Repositório')}</a>`);
+
+        const languageTag = repo.language
+            ? `<span class="meta-badge language-badge" aria-label="${esc(trans['repo-language-label'] || 'Linguagem')}">${esc(repo.language)}</span>`
+            : '';
+        const stars = Number.isSafeInteger(Number(repo.stargazers_count)) && Number(repo.stargazers_count) >= 0
+            ? Number(repo.stargazers_count) : 0;
+        const forks = Number.isSafeInteger(Number(repo.forks_count)) && Number(repo.forks_count) >= 0
+            ? Number(repo.forks_count) : 0;
+        const topics = (Array.isArray(repo.topics) ? repo.topics : []).slice(0, 4)
+            .map(topic => `<span class="topic-tag">${esc(topic)}</span>`).join('');
         const formattedUpdateDate = DateFormatter.formatWithLabel(repo.updated_at, 'repo-last-update');
-        
-        let metaBottomHtml = `<span class="update-date">${formattedUpdateDate}</span>`;
-    
+
         card.innerHTML = `
-            <div class="project-top"><h3>${this.titleCase(repo.name)}</h3></div>
-            <p class="project-desc">${repo.description || (trans.no_description || 'Sem descrição.')}</p>
+            <div class="project-top"><h3>${esc(this.titleCase(repoName))}</h3></div>
+            <p class="project-desc">${esc(repo.description || trans.no_description || 'Sem descrição.')}</p>
             <div class="project-meta meta-icons">
                 <div class="meta-icons">
-                    <span class="meta-badge" aria-label="${repo.stargazers_count} estrelas">⭐ ${repo.stargazers_count}</span>
-                    <span class="meta-badge" aria-label="${repo.forks_count} forks">🍴 ${repo.forks_count}</span>
+                    <span class="meta-badge" aria-label="${esc(`${stars} ${trans['repo-stars-label'] || 'estrelas'}`)}">⭐ ${stars}</span>
+                    <span class="meta-badge" aria-label="${esc(`${forks} ${trans['repo-forks-label'] || 'forks'}`)}">🍴 ${forks}</span>
                 </div>
             </div>
-            <div class="project-meta">${(repo.topics || []).slice(0, 4).map(t => `<span class="topic-tag">${t}</span>`).join('')}</div>
+            <div class="project-meta">${topics}</div>
             <div class="project-meta" style="margin-top: auto;">${languageTag}</div>
-            <div class="project-meta" style="margin-top: auto;">${metaBottomHtml}</div>
-            <div class="actions">${actionsHtml}</div>`;
+            <div class="project-meta" style="margin-top: auto;"><span class="update-date">${esc(formattedUpdateDate)}</span></div>
+            <div class="actions">${links.join('')}</div>`;
         return card;
     },
 
