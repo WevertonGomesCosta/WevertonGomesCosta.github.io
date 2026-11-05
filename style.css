@@ -1413,43 +1413,43 @@ body:not(#index-page) nav.scrolled .nav-title {
     line-height: 1.5;
 }
 
-/* Scopus publishes author-level metrics only; keep a legible non-chart state. */
-.chart-container.scopus-history-note {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px 20px;
-}
-.scopus-history-content {
-    max-width: 470px;
+/* Portfolio bibliography chart within the Scopus author-metrics card.
+   The chart is NOT a Scopus citation-history or Scopus-indexed document count. */
+.scopus-registry-visual {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
-.scopus-history-content h4 {
-    margin: 0;
+.scopus-registry-visual h4 {
+    margin: 8px 0 0;
     font-size: 1.05rem;
     font-weight: 600;
     color: var(--text);
 }
-#index-page .stats-card .scopus-history-content p {
+#scopus-chart.chart-container {
+    height: 270px;
+    min-height: 270px;
+    padding: 0;
+}
+#index-page .stats-card .scopus-registry-source {
     margin: 0;
+    max-width: 590px;
     color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-size: 0.82rem;
+    line-height: 1.5;
 }
-.scopus-history-content a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding: 7px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+.scopus-registry-link {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: 0.9rem;
     font-weight: 600;
+    padding: 5px 8px;
 }
-.scopus-history-content a:hover {
-    border-color: var(--primary);
+.scopus-registry-link:hover {
+    color: var(--text);
 }
 
 /* --- CONTROLES DO CARROSSEL --- */
