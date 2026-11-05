@@ -1514,6 +1514,28 @@ def run_update(
         old_data, public_fallback, results, transaction_time,
         scheduled=os.environ.get("ACADEMIC_SCHEDULED_REFRESH") == "true",
     )
+    # The scheduled workflow explicitly opts in to a private Actions summary.
+    # Do not create local files or publish diagnostic data in the site JSON.
+    summary_path = os.environ.get("ACADEMIC_HEALTH_SUMMARY_PATH")
+    if summary_path:
+        summary_snapshot = deepcopy(public_fallback)
+        if scopus_renewal:
+            summary_snapshot["sourceStates"]["scopus"]["last_valid_at"] = (
+                update_pipeline.iso_timestamp(transaction_time)
+            )
+        try:
+            with open(summary_path, "a", encoding="utf-8") as summary:
+                summary.write(
+                    update_report.render_operational_health(
+                        results, summary_snapshot
+                    ) + "\n"
+                )
+        except OSError as exc:
+            logging.warning(
+                "Não foi possível registrar o resumo administrativo: %s",
+                type(exc).__name__,
+            )
+
     if not (meaningful_change or reconciliation.changed or scopus_renewal):
         print(comparison)
         logging.info(
