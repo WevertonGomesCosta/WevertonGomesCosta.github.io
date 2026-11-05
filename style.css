@@ -1413,43 +1413,17 @@ body:not(#index-page) nav.scrolled .nav-title {
     line-height: 1.5;
 }
 
-/* Portfolio bibliography chart within the Scopus author-metrics card.
-   The chart is NOT a Scopus citation-history or Scopus-indexed document count. */
-.scopus-registry-visual {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-}
-.scopus-registry-visual h4 {
-    margin: 8px 0 0;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text);
-}
-#scopus-chart.chart-container {
-    height: 270px;
-    min-height: 270px;
-    padding: 0;
-}
+/* Scopus annual bars use the same shared .chart-container and Plotly
+   dimensions as Google Scholar and WoS; the source remains clearly separate. */
 #index-page .stats-card .scopus-registry-source {
     margin: 0;
     max-width: 590px;
     color: var(--text-muted);
-    font-size: 0.82rem;
-    line-height: 1.5;
+    font-size: 0.78rem;
+    line-height: 1.4;
 }
-.scopus-registry-link {
-    color: var(--primary);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    padding: 5px 8px;
-}
-.scopus-registry-link:hover {
-    color: var(--text);
+#scopus-refresh-status[hidden] {
+    display: none;
 }
 
 /* --- CONTROLES DO CARROSSEL --- */

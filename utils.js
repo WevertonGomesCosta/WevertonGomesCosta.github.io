@@ -923,44 +923,65 @@ const scholarScript = (function() {
         }
 
         const mobile = window.innerWidth < 768;
-        const maxCount = Math.max(...history.map(point => point.publications));
         const width = container.getBoundingClientRect().width;
+        const firstYear = history[0].year;
+        const lastYear = history[history.length - 1].year;
+        const maxCount = Math.max(...history.map(point => point.publications));
+        const label = t['scopus-registry-chart-legend'] ||
+            (window.currentLang === 'en' ? 'Portfolio articles' : 'Artigos do portfólio');
+        // Match Google Scholar / WoS chart styling. Only the independent
+        // publication bar trace is available: no synthetic citation line.
         const layout = {
-            width: width >= 50 ? width : Math.max(240, window.innerWidth - (mobile ? 50 : 90)),
-            height: mobile ? 250 : 270,
+            width: width >= 50 ? width : Math.max(240, window.innerWidth - (mobile ? 40 : 80)),
+            height: mobile ? 260 : 350,
             paper_bgcolor: 'rgba(0,0,0,0)',
             plot_bgcolor: 'rgba(0,0,0,0)',
             font: { color: '#94a3b8', family: 'Inter, sans-serif' },
-            margin: { t: 22, l: 36, r: 12, b: mobile ? 66 : 40 },
-            showlegend: false,
-            hovermode: 'closest',
+            legend: {
+                orientation: 'h',
+                x: 0,
+                y: mobile ? 1.2 : 1.1,
+                font: { size: 12, color: '#cbd5e1' }
+            },
+            margin: { t: 40, l: 30, r: 30, b: 30 },
+            hovermode: 'x unified',
+            hoverlabel: {
+                bgcolor: 'rgba(15, 23, 42, 0.95)',
+                bordercolor: 'rgba(255, 255, 255, 0.1)',
+                font: { family: 'Inter, sans-serif', size: 14, color: '#f8fafc' },
+                namelength: -1
+            },
             dragmode: false,
             xaxis: {
-                type: 'category',
+                type: 'linear',
+                tickmode: 'linear',
+                dtick: 1,
+                range: [firstYear - 0.5, lastYear + 0.5],
                 tickangle: mobile ? -45 : 0,
-                tickfont: { size: mobile ? 10 : 11, color: '#94a3b8' },
+                tickfont: { size: mobile ? 10 : 11, color: '#64748b' },
                 showgrid: false,
                 fixedrange: true
             },
             yaxis: {
-                range: [0, maxCount + 1],
+                range: [0, Math.max(2, maxCount * 1.15)],
                 dtick: 1,
-                rangemode: 'tozero',
-                tickfont: { size: 11, color: '#94a3b8' },
-                gridcolor: 'rgba(255,255,255,0.07)',
-                zeroline: false,
-                fixedrange: true
+                tickfont: { size: 10, color: '#64748b' },
+                gridcolor: 'rgba(255,255,255,0.05)',
+                showgrid: true,
+                fixedrange: true,
+                zeroline: false
             }
         };
         const series = [{
             type: 'bar',
-            x: history.map(point => String(point.year)),
+            name: label,
+            x: history.map(point => point.year),
             y: history.map(point => point.publications),
-            marker: { color: '#64748b', line: { color: '#94a3b8', width: 1 } },
-            text: history.map(point => String(point.publications)),
-            textposition: 'outside',
-            cliponaxis: false,
-            hovertemplate: '%{x}: %{y} ' + (t['scopus-registry-chart-hover'] || 'artigos') + '<extra></extra>'
+            marker: {
+                color: 'rgba(255,255,255,0.1)',
+                line: { color: 'rgba(255,255,255,0.2)', width: 1 }
+            },
+            hoverinfo: 'y+name'
         }];
         const config = { responsive: true, displayModeBar: false, staticPlot: false };
         const chart = container.dataset.portfolioChartInitialized === 'true'
@@ -1011,14 +1032,16 @@ const scholarScript = (function() {
             const statusElement = document.getElementById('scopus-refresh-status');
             if (statusElement) {
                 const pt = window.currentLang !== 'en';
+                // Only display notices when the Scopus author summary is not current.
+                const stale = sourceState?.status === 'stale';
+                statusElement.hidden = !scopusExpired && !stale;
                 statusElement.textContent = scopusExpired
                     ? (pt ? 'Scopus: dados temporariamente indisponíveis ou com mais de sete dias.'
                         : 'Scopus: data temporarily unavailable or older than seven days.')
-                    : sourceState.status === 'stale'
+                    : stale
                     ? (pt ? 'Scopus: último resultado validado preservado; nova coleta indisponível.'
                         : 'Scopus: last validated result preserved; new retrieval unavailable.')
-                    : (pt ? 'Fonte: Scopus. Atualização semanal.'
-                        : 'Source: Scopus. Refreshed weekly.');
+                    : '';
             }
         }
 
@@ -1041,8 +1064,7 @@ const scholarScript = (function() {
                 const period = document.getElementById(`scopus-${metric}-period`);
                 if (period) period.style.display = 'none';
             });
-            // The Scopus chart region contains a permanent explanation of
-            // the author-summary-only public data policy, not a Plotly chart.
+            // The independent portfolio chart has already been rendered above.
             return;
         }
         updatePeriodLabels(platformPrefix, data.metrics);
