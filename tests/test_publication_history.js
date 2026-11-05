@@ -100,11 +100,17 @@ assert.deepEqual(clean(sandbox.history.byYear(fixture)), [
     const [, traces, layout, config] = calls[0].args;
     assert.equal(traces.length, 1, 'Only a publication bar series is allowed');
     assert.equal(traces[0].type, 'bar');
-    assert.deepEqual(clean(traces[0].x), series.map(p => String(p.year)));
+    assert.deepEqual(clean(traces[0].x), series.map(p => p.year));
     assert.deepEqual(clean(traces[0].y), series.map(p => p.publications));
     assert.doesNotMatch(JSON.stringify(traces), /citations|99999|1999/);
     assert.equal(config.displayModeBar, false);
-    assert.equal(layout.height, 270);
+    assert.equal(layout.height, 350);
+    assert.equal(layout.hovermode, 'x unified');
+    assert.equal(layout.legend.orientation, 'h');
+    assert.equal(layout.xaxis.dtick, 1);
+    assert.equal(traces[0].name, 'Artigos do portfólio');
+    assert.equal(traces[0].hoverinfo, 'y+name');
+    assert.equal(traces[0].marker.color, 'rgba(255,255,255,0.1)');
     // Plotly signals readiness asynchronously; flush the next event-loop turn.
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(typeof plotClickHandler, 'function');
@@ -119,8 +125,9 @@ assert.deepEqual(clean(sandbox.history.byYear(fixture)), [
     sandbox.window.innerWidth = 420;
     sandbox.renderChart();
     assert.equal(calls[1].action, 'react');
-    assert.equal(calls[1].args[2].height, 250);
-    assert.match(calls[1].args[1][0].hovertemplate, /articles/);
+    assert.equal(calls[1].args[2].height, 260);
+    assert.equal(calls[1].args[1][0].name, 'Portfolio articles');
+    assert.equal(calls[1].args[2].xaxis.tickangle, -45);
 
     sandbox.window.academicRegistry = null;
     sandbox.renderChart();
