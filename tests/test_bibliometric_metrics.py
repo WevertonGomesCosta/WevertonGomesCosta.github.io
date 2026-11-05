@@ -336,7 +336,8 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
             self.assertEqual(before["citations"], after["citations"])
             if before["record_id"] is not None:
                 linked_count += 1
-                self.assertEqual(after["status"], "stale")
+                self.assertEqual(after["status"], "value_unavailable")
+                self.assertIsNone(after["citations"])
             else:
                 self.assertEqual(after["status"], "record_absent")
         self.assertEqual(linked_count, 24)
