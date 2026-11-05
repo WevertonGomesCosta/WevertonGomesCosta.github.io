@@ -42,7 +42,10 @@ class StubRun:
         if args[:3] == ("gh", "pr", "create"):
             return "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io/pull/999"
         if args[:2] == ("gh", "api"):
-            return self.audit.pop(0)
+            outcome = self.audit.pop(0)
+            if isinstance(outcome, Exception):
+                raise outcome
+            return outcome
         return ""
 
 
@@ -121,7 +124,11 @@ class TestLocalAcademicPublish(unittest.TestCase):
                     " M fallback-data.json\n"
                     " M data/sources/web-of-science/savedrecs.txt"
                 ),
-                audit=["pending", "success"],
+                audit=[
+                    "pending",
+                    publish.LocalPublishError("gh api falhou: unexpected end of JSON input"),
+                    "success",
+                ],
             )
             pr = publish.publish_local(root, run=stub, sleep=lambda _: None)
             self.assertTrue(pr.endswith("/pull/999"))
@@ -131,6 +138,10 @@ class TestLocalAcademicPublish(unittest.TestCase):
             merged = next(i for i, x in enumerate(commands) if x[:3] == ("gh", "pr", "merge"))
             self.assertLess(created, checked)
             self.assertLess(checked, merged)
+            self.assertEqual(
+                sum(x[:2] == ("gh", "api") for x in commands), 3,
+                "A falha transitória deve ser repetida antes do merge",
+            )
             self.assertIn("--match-head-commit", commands[merged])
             self.assertIn("candidate456", commands[merged])
             self.assertIn("--squash", commands[merged])
@@ -158,6 +169,57 @@ class TestLocalAcademicPublish(unittest.TestCase):
             self.assertTrue(any(x[:3] == ("gh", "pr", "create") for x in stub.calls))
             self.assertFalse(any(x[:3] == ("gh", "pr", "merge") for x in stub.calls))
             self.assertEqual(stub.current_branch, "main")
+
+    def test_transient_errors_exhaust_retries_and_preserve_pr(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            stub = StubRun(
+                root,
+                changed=" M data/sources/web-of-science/savedrecs.txt",
+                audit=[
+                    publish.LocalPublishError("unexpected end of JSON input"),
+                    publish.LocalPublishError("temporary API error"),
+                    publish.LocalPublishError("unexpected end of JSON input"),
+                ],
+            )
+            with self.assertRaisesRegex(
+                publish.LocalPublishError, "Tempo excedido aguardando audit"
+            ):
+                publish.wait_for_audit(
+                    root, "example/site", "a" * 40,
+                    run=stub, sleep=lambda _: None, attempts=3,
+                )
+
+            self.assertEqual(
+                sum(x[:2] == ("gh", "api") for x in stub.calls), 3
+            )
+            self.assertFalse(any(x[:3] == ("gh", "pr", "merge") for x in stub.calls))
+
+    def test_explicit_failed_audit_does_not_retry_or_merge(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            stub = StubRun(root, audit=["failure"])
+            with self.assertRaisesRegex(
+                publish.LocalPublishError, "Auditoria obrigatória não aprovada"
+            ):
+                publish.wait_for_audit(
+                    root, "example/site", "a" * 40,
+                    run=stub, sleep=lambda _: None, attempts=3,
+                )
+            self.assertEqual(
+                sum(x[:2] == ("gh", "api") for x in stub.calls), 1
+            )
+
+    def test_invalid_retry_budget_fails_before_calling_api(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp).resolve()
+            stub = StubRun(root)
+            with self.assertRaises(ValueError):
+                publish.wait_for_audit(
+                    root, "example/site", "a" * 40,
+                    run=stub, sleep=lambda _: None, attempts=0,
+                )
+            self.assertFalse(any(x[:2] == ("gh", "api") for x in stub.calls))
 
     def test_argparse_publish_is_explicit_opt_in(self):
         with (
