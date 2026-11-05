@@ -633,6 +633,24 @@ const PortfolioPublicationHistory = {
             year: first + index,
             publications: totals.get(first + index) || 0
         }));
+    },
+    withIndependentCitations(registry, scholarGraph) {
+        const publications = this.byYear(registry);
+        if (!publications.length || !Array.isArray(scholarGraph)) return [];
+        const citations = new Map();
+        for (const item of scholarGraph) {
+            const year = Number(item?.year);
+            const value = Number(item?.citations);
+            if (!Number.isInteger(year) || !Number.isSafeInteger(value) || value < 0) continue;
+            citations.set(year, value);
+        }
+        // A missing annual value is not equivalent to zero citations.
+        if (!publications.every(item => citations.has(item.year))) return [];
+        return publications.map(item => ({
+            year: item.year,
+            publications: item.publications,
+            citations: citations.get(item.year)
+        }));
     }
 };
 
@@ -905,113 +923,41 @@ const scholarScript = (function() {
     }
 
     // This graph uses the site's bibliographic registry, not Scopus history.
-    function renderPortfolioPublicationChart() {
+    // Reuse the exact Plotly dual-axis chart used by Scholar and Web of Science.
+    // Bars come from the canonical portfolio registry; the citation line comes
+    // from the independent Google Scholar history, never from Scopus API records.
+    function renderPortfolioPublicationChart(shouldAnimate = false) {
         const container = document.getElementById('scopus-chart');
         if (!container) return;
 
         const t = window.translations?.[window.currentLang] || {};
-        const history = PortfolioPublicationHistory.byYear(window.academicRegistry);
-        const unavailableText = t['scopus-registry-chart-unavailable'] || 'Gráfico indisponível';
-        if (!history.length || !window.Plotly?.newPlot) {
-            if (container.dataset.portfolioChartInitialized === 'true') {
-                window.Plotly?.purge?.(container);
+        const data = PortfolioPublicationHistory.withIndependentCitations(
+            window.academicRegistry,
+            dashboardData.scholar?.graphData
+        );
+
+        if (!data.length) {
+            if (window.Plotly?.purge && container.classList?.contains('js-plotly-plot')) {
+                window.Plotly.purge(container);
             }
-            container.textContent = unavailableText;
-            container.dataset.portfolioChartInitialized = 'false';
-            container.dataset.portfolioChartClickBound = 'false';
+            container.textContent = t['scopus-registry-chart-unavailable'] ||
+                (window.currentLang === 'en' ? 'Independent chart data unavailable.' :
+                    'Dados do gráfico independente indisponíveis.');
             return;
         }
 
-        const mobile = window.innerWidth < 768;
-        const width = container.getBoundingClientRect().width;
-        const firstYear = history[0].year;
-        const lastYear = history[history.length - 1].year;
-        const maxCount = Math.max(...history.map(point => point.publications));
-        const label = t['scopus-registry-chart-legend'] ||
-            (window.currentLang === 'en' ? 'Portfolio articles' : 'Artigos do portfólio');
-        // Match Google Scholar / WoS chart styling. Only the independent
-        // publication bar trace is available: no synthetic citation line.
-        const layout = {
-            width: width >= 50 ? width : Math.max(240, window.innerWidth - (mobile ? 40 : 80)),
-            height: mobile ? 260 : 350,
-            paper_bgcolor: 'rgba(0,0,0,0)',
-            plot_bgcolor: 'rgba(0,0,0,0)',
-            font: { color: '#94a3b8', family: 'Inter, sans-serif' },
-            legend: {
-                orientation: 'h',
-                x: 0,
-                y: mobile ? 1.2 : 1.1,
-                font: { size: 12, color: '#cbd5e1' }
-            },
-            margin: { t: 40, l: 30, r: 30, b: 30 },
-            hovermode: 'x unified',
-            hoverlabel: {
-                bgcolor: 'rgba(15, 23, 42, 0.95)',
-                bordercolor: 'rgba(255, 255, 255, 0.1)',
-                font: { family: 'Inter, sans-serif', size: 14, color: '#f8fafc' },
-                namelength: -1
-            },
-            dragmode: false,
-            xaxis: {
-                type: 'linear',
-                tickmode: 'linear',
-                dtick: 1,
-                range: [firstYear - 0.5, lastYear + 0.5],
-                tickangle: mobile ? -45 : 0,
-                tickfont: { size: mobile ? 10 : 11, color: '#64748b' },
-                showgrid: false,
-                fixedrange: true
-            },
-            yaxis: {
-                range: [0, Math.max(2, maxCount * 1.15)],
-                dtick: 1,
-                tickfont: { size: 10, color: '#64748b' },
-                gridcolor: 'rgba(255,255,255,0.05)',
-                showgrid: true,
-                fixedrange: true,
-                zeroline: false
-            }
-        };
-        const series = [{
-            type: 'bar',
-            name: label,
-            x: history.map(point => point.year),
-            y: history.map(point => point.publications),
-            marker: {
-                color: 'rgba(255,255,255,0.1)',
-                line: { color: 'rgba(255,255,255,0.2)', width: 1 }
-            },
-            hoverinfo: 'y+name'
-        }];
-        const config = { responsive: true, displayModeBar: false, staticPlot: false };
-        const chart = container.dataset.portfolioChartInitialized === 'true'
-            ? window.Plotly.react(container, series, layout, config)
-            : window.Plotly.newPlot(container, series, layout, config);
-        container.dataset.portfolioChartInitialized = 'true';
-
-        // Match other academic charts: selecting a year filters the publication list.
-        Promise.resolve(chart).then(() => {
-            if (container.dataset.portfolioChartClickBound === 'true' || typeof container.on !== 'function') return;
-            container.on('plotly_click', event => {
-                const year = Number(event?.points?.[0]?.x);
-                if (!Number.isInteger(year)) return;
-                activeYearFilter = activeYearFilter === year ? null : year;
-                showingPubsCount = initialPubsToShow;
-                renderPublications();
-                updateFilterUI();
-            });
-            container.dataset.portfolioChartClickBound = 'true';
-        }).catch(error => {
-            console.warn('Could not render independent publication history.', error);
-            container.textContent = unavailableText;
-            container.dataset.portfolioChartInitialized = 'false';
+        renderDualAxisChart(container, data, 'scopus', shouldAnimate, {
+            publications: t['scopus-registry-chart-legend'] ||
+                (window.currentLang === 'en' ? 'Portfolio articles' : 'Artigos do portfólio'),
+            citations: t['scopus-registry-chart-citations'] ||
+                (window.currentLang === 'en' ? 'Google Scholar citations' : 'Citações Google Scholar')
         });
     }
 
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
         // The portfolio bibliography can render even when Scopus is unavailable.
-        if (platformPrefix === 'scopus') renderPortfolioPublicationChart();
+        if (platformPrefix === 'scopus') renderPortfolioPublicationChart(shouldAnimate);
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
@@ -1125,7 +1071,7 @@ const scholarScript = (function() {
     }
 
     // --- GRÁFICO OTIMIZADO (DESIGN MODERNO + MOBILE TOUCH) ---
-    function renderDualAxisChart(container, rawData, platform, shouldAnimate) {
+    function renderDualAxisChart(container, rawData, platform, shouldAnimate, customLabels = null) {
         shouldAnimate = shouldAnimate && !MotionPreference.isReduced();
         const t = window.translations?.[window.currentLang] || {};
         const active = rawData.filter(d => d.citations > 0 || d.publications > 0);
@@ -1153,8 +1099,8 @@ const scholarScript = (function() {
         const rangeX = [minYear - 0.5, maxYear + 0.5];
 
         const color = { scholar: '#4285F4', scopus: '#ff7f0e', wos: '#8b5cf6' }[platform] || '#10b981';
-        const lblPubs = t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
-        const lblCits = t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
+        const lblPubs = customLabels?.publications || t['chart-pubs'] || (window.currentLang === 'pt' ? 'Publicações' : 'Publications');
+        const lblCits = customLabels?.citations || t['chart-cits'] || (window.currentLang === 'pt' ? 'Citações' : 'Citations');
 
         // Dimensões
         const isMobile = window.innerWidth < 768;
