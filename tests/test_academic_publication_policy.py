@@ -28,7 +28,12 @@ def snapshot():
                 "distribution": "author_summary_only",
                 "source_name": "Scopus",
                 "profile": {"total_publications": 24,
-                            "cited_by": {"table": [{"citations": {"all": 140}}], "graph": []}},
+                            "cited_by": {
+                                "table": [{"citations": {"all": 140}}],
+                                "graph": [
+                                    {"year": 2026, "citations": 7, "publications": 1}
+                                ],
+                            }},
                 "articles": [],
                 "history_status": "current",
             },

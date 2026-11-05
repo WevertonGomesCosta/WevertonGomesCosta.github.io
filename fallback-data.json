@@ -1096,11 +1096,52 @@
                             }
                         }
                     ],
-                    "graph": []
+                    "graph": [
+                        {
+                            "year": 2019,
+                            "citations": 0,
+                            "publications": 2
+                        },
+                        {
+                            "year": 2020,
+                            "citations": 2,
+                            "publications": 2
+                        },
+                        {
+                            "year": 2021,
+                            "citations": 16,
+                            "publications": 5
+                        },
+                        {
+                            "year": 2022,
+                            "citations": 11,
+                            "publications": 3
+                        },
+                        {
+                            "year": 2023,
+                            "citations": 15,
+                            "publications": 2
+                        },
+                        {
+                            "year": 2024,
+                            "citations": 24,
+                            "publications": 5
+                        },
+                        {
+                            "year": 2025,
+                            "citations": 37,
+                            "publications": 2
+                        },
+                        {
+                            "year": 2026,
+                            "citations": 27,
+                            "publications": 3
+                        }
+                    ]
                 }
             },
             "articles": [],
-            "history_status": "current"
+            "history_status": "stale"
         },
         "web_of_science": {
             "profile": {

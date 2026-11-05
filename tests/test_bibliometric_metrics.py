@@ -352,7 +352,11 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         scopus = sanitized["academicData"]["scopus"]
         self.assertEqual(scopus["distribution"], "author_summary_only")
         self.assertEqual(scopus["articles"], [])
-        self.assertEqual(scopus["profile"]["cited_by"]["graph"], [])
+        self.assertEqual(
+            scopus["profile"]["cited_by"]["graph"],
+            fallback["academicData"]["scopus"]["profile"]["cited_by"]["graph"],
+            "Sanitizer preserves only authorized year-level aggregates",
+        )
         publications = builder.build_metrics(
             json.loads((ROOT / "academic-registry.json").read_text(encoding="utf-8")),
             json.loads((ROOT / "bibliographic-source-links.json").read_text(encoding="utf-8")),
