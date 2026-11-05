@@ -141,29 +141,38 @@ jobs:
           set -euo pipefail
           # Rule set 'main' requires the 'audit' check from GitHub Actions (app 15368).
           # The check is attached to the exact candidate commit SHA, not the branch.
+          # Transient GitHub API errors (including truncated JSON) must not
+          # prevent a previously validated dataset from being published.
+          # The audit check must still succeed on this exact candidate SHA.
           for attempt in $(seq 1 36); do
-            audit_result="$(gh api \
+            if audit_result="$(gh api \
               "repos/$GITHUB_REPOSITORY/commits/$CANDIDATE_SHA/check-runs?check_name=audit" \
-              --jq '[.check_runs[] | select(.name == "audit" and .app.id == 15368) | if .status == "completed" then .conclusion else "pending" end][0] // "pending"')"
-            case "$audit_result" in
-              success)
-                echo "Required audit passed on commit $CANDIDATE_SHA."
-                exit 0
-                ;;
-              pending)
-                echo "Awaiting repository audit (attempt $attempt/36)."
-                sleep 10
-                ;;
-              *)
-                echo "::error::Required repository audit finished with $audit_result."
-                exit 1
-                ;;
-            esac
+              --jq '[.check_runs[] | select(.name == "audit" and .app.id == 15368) | if .status == "completed" then .conclusion else "pending" end][0] // "pending"')"; then
+              case "$audit_result" in
+                success)
+                  echo "Required audit passed on commit $CANDIDATE_SHA."
+                  exit 0
+                  ;;
+                pending)
+                  echo "Awaiting repository audit (attempt $attempt/36)."
+                  ;;
+                *)
+                  # Explicit failure/cancellation or unexpected results
+                  # never authorize a push to the protected main branch.
+                  echo "::error::Required repository audit finished with $audit_result."
+                  exit 1
+                  ;;
+              esac
+            else
+              echo "::warning::GitHub check API temporarily unavailable (attempt $attempt/36); retrying."
+            fi
+            if [[ "$attempt" -lt 36 ]]; then sleep 10; fi
           done
-          echo "::error::Timed out waiting for the required repository audit."
+          echo "::error::Timed out waiting for a successful required repository audit."
           exit 1
 
       - name: Publish audited commit to main
+        id: publish
         if: steps.candidate.outputs.changed == 'true'
         shell: bash
         env:
@@ -178,7 +187,8 @@ jobs:
           git push origin HEAD:refs/heads/main
 
       - name: Remove temporary audit branch
-        if: always() && steps.candidate.outputs.changed == 'true'
+        # Keep the candidate branch for recovery whenever validation/push fails.
+        if: always() && steps.candidate.outputs.changed == 'true' && steps.publish.outcome == 'success'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.ACADEMIC_UPDATE_PUSH_TOKEN }}
