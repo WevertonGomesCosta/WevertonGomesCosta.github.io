@@ -1413,6 +1413,45 @@ body:not(#index-page) nav.scrolled .nav-title {
     line-height: 1.5;
 }
 
+/* Scopus publishes author-level metrics only; keep a legible non-chart state. */
+.chart-container.scopus-history-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+}
+.scopus-history-content {
+    max-width: 470px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.scopus-history-content h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+}
+#index-page .stats-card .scopus-history-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.scopus-history-content a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-weight: 600;
+}
+.scopus-history-content a:hover {
+    border-color: var(--primary);
+}
+
 /* --- CONTROLES DO CARROSSEL --- */
 .carousel-btn {
     position: absolute;
