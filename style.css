@@ -1061,8 +1061,10 @@ body:not(#index-page) nav.scrolled .nav-title {
     padding: 11px 12px;
     border-radius: 12px;
     border: 1px solid var(--border);
-    background: var(--glass);
+    /* Solid surface and native dark menu for legible year/sort options. */
+    background: var(--dark-light);
     color: var(--text);
+    color-scheme: dark;
     font: inherit;
     cursor: pointer;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -1074,7 +1076,7 @@ body:not(#index-page) nav.scrolled .nav-title {
 }
 
 .controls select option {
-    background: var(--bg);
+    background: var(--dark-light);
     color: var(--text);
 }
 
