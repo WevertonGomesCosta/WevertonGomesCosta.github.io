@@ -35,6 +35,7 @@ from scripts import build_bibliometric_metrics as metrics_builder
 from scripts import publication_reconciliation
 from scripts import source_update_pipeline as update_pipeline
 from scripts import scopus_public_data
+from scripts import academic_publication_policy
 from scripts import update_report
 from scripts import local_academic_publish
 
@@ -1457,10 +1458,41 @@ def run_update(
         old_registry=previous_registry,
         new_registry=registry,
     )
-    if not candidate.changed and not reconciliation.changed:
+    # The private Scopus Search response contains article-level data, while
+    # the public snapshot intentionally contains only author-level metrics.
+    # Decide publication from the *public* payload, not from that private/public
+    # representation change or volatile collection timestamps.
+    public_fallback = scopus_public_data.sanitize_fallback(candidate.fallback)
+    meaningful_change = academic_publication_policy.has_material_change(
+        old_data, public_fallback
+    )
+    scopus_renewal = academic_publication_policy.scopus_refresh_due(
+        old_data, public_fallback, results, transaction_time
+    )
+    if not (meaningful_change or reconciliation.changed or scopus_renewal):
         print(comparison)
-        logging.info("Nenhuma alteração material; arquivos mantidos.")
+        logging.info(
+            "Sem alterações relevantes nos dados publicados; "
+            "arquivos preservados e PR desnecessário."
+        )
         return 0
+
+    if scopus_renewal and not (meaningful_change or reconciliation.changed):
+        logging.info(
+            "Renovação semanal do cache Scopus: publicação da data de "
+            "validação necessária para cumprir a política da Elsevier."
+        )
+
+    # The version stamp belongs to the actual public publication, not to
+    # every locally attempted collection. A successful weekly Scopus refresh
+    # must update the last_valid_at exposed to the seven-day frontend guard.
+    public_fallback["lastUpdated"] = update_pipeline.legacy_timestamp(
+        transaction_time
+    )
+    if scopus_renewal:
+        public_fallback["sourceStates"]["scopus"]["last_valid_at"] = (
+            update_pipeline.iso_timestamp(transaction_time)
+        )
 
     report_lines, _ = analyze_changes(old_data, candidate.fallback)
     for promoted in reconciliation.promoted:
@@ -1480,21 +1512,18 @@ def run_update(
 
     # Public GitHub Pages artifacts must not contain a downloadable Scopus
     # article-level dataset. Reconciliation above used full data in-memory.
-    public_fallback = scopus_public_data.sanitize_fallback(candidate.fallback)
     public_metrics = metrics_builder.build_metrics(
         registry, source_links, public_fallback
     )
 
-    outputs = {}
-    if candidate.changed:
-        outputs[root / "fallback-data.json"] = (
+    outputs = {
+        root / "fallback-data.json": (
             update_pipeline.serialize_fallback(public_fallback)
-        )
-
-    if candidate.changed or reconciliation.changed:
-        outputs[root / "bibliometric-metrics.json"] = (
+        ),
+        root / "bibliometric-metrics.json": (
             metrics_builder.serialize_metrics(public_metrics)
-        )
+        ),
+    }
 
     if reconciliation.changed:
         outputs[root / "academic-registry.json"] = (
