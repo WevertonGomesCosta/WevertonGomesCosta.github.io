@@ -925,11 +925,15 @@ const scholarScript = (function() {
                 const period = document.getElementById(`scopus-${metric}-period`);
                 if (period) period.style.display = 'none';
             });
-            const chart = document.getElementById('scopus-chart');
-            if (chart) chart.textContent = '—';
+            // The Scopus chart region contains a permanent explanation of
+            // the author-summary-only public data policy, not a Plotly chart.
             return;
         }
         updatePeriodLabels(platformPrefix, data.metrics);
+
+        // Annual Scopus citation data are intentionally excluded from public
+        // artifacts. Preserve the explanatory panel instead of attempting a chart.
+        if (platformPrefix === 'scopus') return;
 
         // Renderização do Gráfico (passando shouldAnimate)
         const chartDiv = document.getElementById(`${platformPrefix}-chart`);
