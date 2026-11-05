@@ -41,10 +41,11 @@ jobs:
         env:
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           SCOPUS_API_KEY: ${{ secrets.SCOPUS_API_KEY }}
+          SCOPUS_INSTTOKEN: ${{ secrets.SCOPUS_INSTTOKEN }}
           ACADEMIC_UPDATE_PUSH_TOKEN: ${{ secrets.ACADEMIC_UPDATE_PUSH_TOKEN }}
         run: |
           set -euo pipefail
-          for name in SERPAPI_API_KEY SCOPUS_API_KEY ACADEMIC_UPDATE_PUSH_TOKEN; do
+          for name in SERPAPI_API_KEY SCOPUS_API_KEY SCOPUS_INSTTOKEN ACADEMIC_UPDATE_PUSH_TOKEN; do
             if [[ -z "${!name}" ]]; then
               echo "::error::Missing GitHub Actions secret: ${name}"
               exit 1
@@ -57,6 +58,7 @@ jobs:
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
           SERPAPI_API_KEY2: ${{ secrets.SERPAPI_API_KEY2 }}
           SCOPUS_API_KEY: ${{ secrets.SCOPUS_API_KEY }}
+          SCOPUS_INSTTOKEN: ${{ secrets.SCOPUS_INSTTOKEN }}
           GH_API_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
@@ -77,6 +79,7 @@ jobs:
               "serpapi_api_key2": os.environ.get("SERPAPI_API_KEY2", ""),
               "orcid_id": sources["orcid"]["id"],
               "scopus_api_key": os.environ["SCOPUS_API_KEY"],
+              "scopus_insttoken": os.environ["SCOPUS_INSTTOKEN"],
               "scopus_author_id": sources["scopus"]["author_id"],
               "wos_researcher_id": sources["web_of_science"]["researcher_id"],
           }
