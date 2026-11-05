@@ -1523,13 +1523,17 @@ def run_update(
             summary_snapshot["sourceStates"]["scopus"]["last_valid_at"] = (
                 update_pipeline.iso_timestamp(transaction_time)
             )
+        health_report = update_report.render_operational_health(
+            results, summary_snapshot
+        )
+        if "**Atenção:**" in health_report:
+            print(
+                "::warning::Fontes acadêmicas com falha ou histórico "
+                "preservado. Consulte o resumo da execução."
+            )
         try:
             with open(summary_path, "a", encoding="utf-8") as summary:
-                summary.write(
-                    update_report.render_operational_health(
-                        results, summary_snapshot
-                    ) + "\n"
-                )
+                summary.write(health_report + "\n")
         except OSError as exc:
             logging.warning(
                 "Não foi possível registrar o resumo administrativo: %s",
