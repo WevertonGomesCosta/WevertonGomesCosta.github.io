@@ -96,6 +96,22 @@ Para atualizar o Web of Science, substitua
 execução. **`--publish` inclui esse arquivo no mesmo PR dos quatro JSONs**,
 de modo que a atualização do WoS não seja perdida na próxima coleta agendada.
 
+**Política de publicação:** a coleta e o relatório comparativo sempre são
+executados, mas `--publish` só abre PR quando houver alteração relevante
+no conteúdo público (citações, publicações, indicadores, status de fonte,
+vínculos canônicos, atividade GitHub que não seja apenas `updated_at`)
+ou quando o export versionado do WoS tiver sido alterado. Horários de
+execução (`lastUpdated`, `last_valid_at`) e `updated_at` dos
+repositórios GitHub, isoladamente, **não geram PR**. Na ausência de mudança,
+o programa preserva os JSONs atuais e informa que o PR é desnecessário.
+
+**Exceção contratual Scopus:** os indicadores exibidos precisam de validação
+publicada pelo menos semanalmente. A execução do agendamento semanal publica
+a renovação de `last_valid_at` se a consulta Scopus foi bem-sucedida,
+mesmo que as métricas estejam iguais. Uma execução manual recente renova
+essa data somente após seis dias, impedindo PRs repetitivos e evitando
+que os indicadores desapareçam por expiração do cache público.
+
 O modo `--publish` depende de Git e da [GitHub CLI](https://cli.github.com/)
 instalados e autenticados (`gh auth login`), além de uma `main` local
 sincronizada com `origin/main`. Execute na raiz do repositório e na branch
