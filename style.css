@@ -1001,9 +1001,10 @@ body:not(#index-page) nav.scrolled .nav-title {
     box-shadow: 0 10px 35px rgba(2, 6, 23, 0.4);
 }
 
-/* Separação entre os cards e o botão de retorno na página Projetos */
+/* Separação visual fixa entre o painel de projetos e a navegação de retorno */
 #page-projects .back-to-home-container {
-    margin-top: 32px;
+    margin-top: 0;
+    padding-top: 28px;
 }
 
 /* Controles de Busca */
