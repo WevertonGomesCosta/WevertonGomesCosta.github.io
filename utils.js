@@ -845,7 +845,7 @@ const scholarScript = (function() {
         if (platformPrefix === 'scopus') {
             const sourceState = window.fallbackData?.sourceStates?.scopus;
             const rawTimestamp = sourceState?.last_valid_at || '';
-            const timestamp = /(?:Z|[+-]\\d{2}:\\d{2})$/.test(rawTimestamp)
+            const timestamp = /(?:Z|[+-]\d{2}:\d{2})$/.test(rawTimestamp)
                 ? rawTimestamp : rawTimestamp + '-03:00';
             const observedAt = Date.parse(timestamp);
             scopusExpired = !Number.isFinite(observedAt)
