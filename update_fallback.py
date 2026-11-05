@@ -1612,6 +1612,16 @@ def main(argv=None) -> int:
             logging.error("Publicação local indisponível: %s", exc)
             return 1
 
+        # A corrupted local WoS export must not be committed merely because
+        # the transaction can preserve the previously published WoS snapshot.
+        export = root / WOS_RELATIVE_FILE
+        if fetch_wos_data(txt_file=str(export)) is None:
+            logging.error(
+                "Export WoS inválido ou ausente. Corrija savedrecs.txt "
+                "antes de executar --publish; nenhum PR será criado."
+            )
+            return 1
+
     result = run_update(root=root, keys_file=keys_file)
     if result != 0 or not args.publish:
         return result
