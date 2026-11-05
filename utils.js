@@ -913,7 +913,12 @@ const scholarScript = (function() {
         const history = PortfolioPublicationHistory.byYear(window.academicRegistry);
         const unavailableText = t['scopus-registry-chart-unavailable'] || 'Gráfico indisponível';
         if (!history.length || !window.Plotly?.newPlot) {
+            if (container.dataset.portfolioChartInitialized === 'true') {
+                window.Plotly?.purge?.(container);
+            }
             container.textContent = unavailableText;
+            container.dataset.portfolioChartInitialized = 'false';
+            container.dataset.portfolioChartClickBound = 'false';
             return;
         }
 
@@ -984,6 +989,8 @@ const scholarScript = (function() {
 
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
+        // The portfolio bibliography can render even when Scopus is unavailable.
+        if (platformPrefix === 'scopus') renderPortfolioPublicationChart();
         const data = dashboardData[platformPrefix];
         if (!data) return;
 
@@ -1014,9 +1021,6 @@ const scholarScript = (function() {
                         : 'Source: Scopus. Refreshed weekly.');
             }
         }
-
-        // Independent of the freshness of the licensed Scopus author summary.
-        if (platformPrefix === 'scopus') renderPortfolioPublicationChart();
 
         // Animação dos Números
         ['cit', 'h', 'i10', 'pubs'].forEach(metric => {
