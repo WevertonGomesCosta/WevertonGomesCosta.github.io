@@ -140,24 +140,42 @@ def wait_for_audit(
     sleep=time.sleep,
     attempts: int = 36,
 ) -> None:
-    """Accept only the required Actions audit check for this exact commit."""
-    for _ in range(attempts):
-        status = run(
-            root,
-            "gh",
-            "api",
-            f"repos/{repo}/commits/{sha}/check-runs?check_name=audit",
-            "--jq",
-            AUDIT_QUERY,
-        ).strip()
-        if status == "success":
-            return
-        if status != "pending":
-            raise LocalPublishError(
-                f"Auditoria obrigatória não aprovada ({status}). "
-                "PR mantido para verificação; nenhum merge efetuado."
+    """Require the audited SHA; retry only transient GitHub API errors.
+
+    A failed/cancelled audit is final and must never authorize a merge.
+    """
+    if attempts < 1:
+        raise ValueError("attempts deve ser maior ou igual a 1")
+
+    for attempt in range(1, attempts + 1):
+        try:
+            status = run(
+                root,
+                "gh",
+                "api",
+                f"repos/{repo}/commits/{sha}/check-runs?check_name=audit",
+                "--jq",
+                AUDIT_QUERY,
+            ).strip()
+        except LocalPublishError as exc:
+            # An unavailable/truncated JSON response is not an audit failure.
+            # The branch and PR remain intact if retries are exhausted.
+            print(
+                f"Consulta temporariamente indisponível "
+                f"(tentativa {attempt}/{attempts}); nova tentativa."
             )
-        sleep(10)
+        else:
+            if status == "success":
+                return
+            if status != "pending":
+                raise LocalPublishError(
+                    f"Auditoria obrigatória não aprovada ({status}). "
+                    "PR mantido para verificação; nenhum merge efetuado."
+                )
+
+        if attempt < attempts:
+            sleep(10)
+
     raise LocalPublishError(
         "Tempo excedido aguardando audit. PR mantido sem merge."
     )
