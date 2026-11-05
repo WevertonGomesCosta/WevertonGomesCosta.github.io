@@ -73,6 +73,9 @@ class TestPublicationOnlyOnRealChanges(unittest.TestCase):
             env = {"ACADEMIC_SCHEDULED_REFRESH": "true" if scheduled else ""}
             with (
                 mock.patch.dict("os.environ", env),
+                # This test exercises the publication decision without making
+                # network calls; requests is deliberately optional at import.
+                mock.patch.object(update_fallback, "requests", object()),
                 mock.patch.object(update_fallback, "load_keys", return_value={}),
                 mock.patch.object(update_fallback, "build_runtime_config", return_value={}),
                 mock.patch.object(
