@@ -893,25 +893,7 @@ const scholarScript = (function() {
             scopusExpired = !Number.isFinite(observedAt)
                 || sourceState?.status === 'unavailable'
                 || Date.now() - observedAt > 7 * 24 * 60 * 60 * 1000;
-            const statusElement = document.getElementById('scopus-refresh-status');
-            if (statusElement) {
-                const pt = window.currentLang !== 'en';
-                const stale = sourceState?.status === 'stale';
-                const historyStale = window.fallbackData?.academicData?.scopus?.history_status === 'stale';
-                // No routine update banner; warn when the author summary or
-                // its separate annual citation series is not current.
-                statusElement.hidden = !scopusExpired && !stale && !historyStale;
-                statusElement.textContent = scopusExpired
-                    ? (pt ? 'Scopus: dados temporariamente indisponíveis ou com mais de sete dias.'
-                        : 'Scopus: data temporarily unavailable or older than seven days.')
-                    : stale
-                    ? (pt ? 'Scopus: último resultado validado preservado; nova coleta indisponível.'
-                        : 'Scopus: last validated result preserved; new retrieval unavailable.')
-                    : historyStale
-                    ? (pt ? 'Scopus: histórico anual preservado da coleta anterior, aguardando atualização.'
-                        : 'Scopus: annual history retained from an earlier retrieval, awaiting refresh.')
-                    : '';
-            }
+
         }
 
         // Animação dos Números
