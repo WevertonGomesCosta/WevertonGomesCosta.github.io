@@ -883,7 +883,6 @@ const scholarScript = (function() {
         return result;
     }
 
-
     // --- RENDERIZAÇÃO ---
     function renderPlatform(platformPrefix, shouldAnimate = true) {
         // All platforms use the shared dual-axis chart renderer.
