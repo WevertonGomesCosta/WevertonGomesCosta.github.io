@@ -145,4 +145,117 @@ sandbox.window.currentLang = 'pt';
 sandbox.renderScopus();
 assert.equal(calls.length, 4, 'Never fall back to Scholar when the Scopus history is missing');
 
+// Site UX: accent-insensitive search and a keyboard-accessible year select.
+const publicationHtml = fs.readFileSync(path.join(root, 'publicacoes.html'), 'utf8');
+const homeHtml = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+for (const html of [publicationHtml, homeHtml]) {
+    assert.match(html, /<label for="publication-year"/);
+    assert.match(html, /<select id="publication-year"[^>]*>/);
+    assert.match(html, /data-key="publication-all-years"/);
+    assert.match(html, /data-key="clear-pub-filters"/);
+}
+assert.match(source, /UI\.pubYearSelect\.addEventListener\('change'/);
+assert.doesNotMatch(source, /year-filter-chip/);
+
+const normStart = source.indexOf('    const normalizeTitle = (str) =>');
+const normEnd = source.indexOf('\n\n    const publicationTimestamp', normStart);
+assert.ok(normStart >= 0 && normEnd > normStart);
+const searchFilter = extract(
+    '    function getFilteredPublicationList() {',
+    '\n    }\n\n    function updateCategoryFilterUI()'
+);
+const yearFilter = extract(
+    '    function updateFilterUI() {',
+    '\n    }\n\n    // --- INIT ---'
+);
+const samplePublications = [
+    { title: 'Genômica aplicada', year: '2024', journalTitle: 'Revista Café', publisher: '', isbn: '', authors: ['BORÉM, A.'] },
+    { title: 'Seleção vegetal', year: '2026', journalTitle: 'Revista de Pesquisa', publisher: '', isbn: '', authors: ['SILVA, B.'] }
+];
+const publicationYearSelect = { innerHTML: '', value: '' };
+const searchControl = { value: '' };
+const uxSandbox = {
+    window: { currentLang: 'pt', translations: catalog },
+    UI: { pubYearSelect: publicationYearSelect, pubSearchInput: searchControl },
+    activeYearFilter: null,
+    escapeHtml: value => String(value),
+    getPublicationBaseList: () => samplePublications,
+    sortPublications: items => items
+};
+vm.createContext(uxSandbox);
+vm.runInContext(
+    source.slice(normStart, normEnd) + '\n' + searchFilter + '\n' + yearFilter
+        + '\nglobalThis.normalizePublicationSearch = normalizeTitle;'
+        + '\nglobalThis.filterPublications = getFilteredPublicationList;'
+        + '\nglobalThis.refreshYearFilter = updateFilterUI;',
+    uxSandbox
+);
+assert.equal(uxSandbox.normalizePublicationSearch('BORÉM'), 'borem');
+assert.equal(uxSandbox.normalizePublicationSearch('Genômica'), 'genomica');
+searchControl.value = 'borem';
+assert.deepEqual(
+    clean(uxSandbox.filterPublications().map(work => work.year)),
+    ['2024']
+);
+searchControl.value = 'cafe';
+assert.deepEqual(
+    clean(uxSandbox.filterPublications().map(work => work.year)),
+    ['2024']
+);
+searchControl.value = '';
+uxSandbox.activeYearFilter = 2024;
+uxSandbox.refreshYearFilter();
+assert.equal(publicationYearSelect.value, '2024');
+assert.match(publicationYearSelect.innerHTML, /Todos os anos/);
+assert.match(publicationYearSelect.innerHTML, /<option value="2026">2026<\/option>/);
+assert.match(publicationYearSelect.innerHTML, /<option value="2024">2024<\/option>/);
+uxSandbox.window.currentLang = 'en';
+uxSandbox.activeYearFilter = null;
+uxSandbox.refreshYearFilter();
+assert.equal(publicationYearSelect.value, '');
+assert.match(publicationYearSelect.innerHTML, /All years/);
+
+// Native select and clear button must update the same year/category state.
+const handlerStart = source.indexOf('        if (UI.pubYearSelect) {', source.indexOf('    async function init()'));
+const handlerEnd = source.indexOf('\n\n        if(UI.pubsLoadMoreBtn)', handlerStart);
+const resetStart = source.indexOf('        if(UI.pubClearBtn) {', source.indexOf('    async function init()'));
+const resetEnd = source.indexOf('\n\n        if (UI.pubSortSelect)', resetStart);
+assert.ok(handlerStart >= 0 && handlerEnd > handlerStart && resetStart >= 0 && resetEnd > resetStart);
+const events = {};
+const listenerSandbox = {
+    UI: {
+        pubYearSelect: { value: '', addEventListener(type, handler) { events['year:' + type] = handler; } },
+        pubClearBtn: { addEventListener(type, handler) { events['clear:' + type] = handler; } },
+        pubSearchInput: { value: 'cafe', focus() { this.focused = true; } }
+    },
+    activeYearFilter: null,
+    activePublicationCategory: 'chapters',
+    showingPubsCount: 3,
+    isPublicationsPage: true,
+    allWorks: samplePublications,
+    initialPubsToShow: 3,
+    rendered: 0,
+    renderPublications() { this.rendered++; }
+};
+listenerSandbox.renderPublications = () => { listenerSandbox.rendered++; };
+vm.createContext(listenerSandbox);
+vm.runInContext(
+    source.slice(handlerStart, handlerEnd)
+        + '\n' + source.slice(resetStart, resetEnd),
+    listenerSandbox
+);
+listenerSandbox.UI.pubYearSelect.value = '2024';
+events['year:change']();
+assert.equal(listenerSandbox.activeYearFilter, 2024);
+listenerSandbox.UI.pubYearSelect.value = '';
+events['year:change']();
+assert.equal(listenerSandbox.activeYearFilter, null);
+listenerSandbox.activeYearFilter = 2026;
+events['clear:click']();
+assert.equal(listenerSandbox.activeYearFilter, null);
+assert.equal(listenerSandbox.activePublicationCategory, 'articles');
+assert.equal(listenerSandbox.UI.pubSearchInput.value, '');
+assert.equal(listenerSandbox.UI.pubSearchInput.focused, true);
+assert.equal(listenerSandbox.rendered, 3);
+
 console.log('PASS: Scopus source, shared dual-axis chart, language, expiry guard, year filter and privacy');
