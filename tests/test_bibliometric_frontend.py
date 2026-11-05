@@ -123,9 +123,17 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
             self.utils,
         )
 
-    def test_default_publication_sort_prioritizes_citations_then_date(self):
+    def test_default_publication_sort_prioritizes_observed_citations_then_date(self):
         self.assertIn(
-            "const citationDiff = (b.cited_by?.value || 0) - (a.cited_by?.value || 0);",
+            "const hasA = hasObservedCitation(a);",
+            self.utils,
+        )
+        self.assertIn(
+            "const hasB = hasObservedCitation(b);",
+            self.utils,
+        )
+        self.assertIn(
+            "const citationDiff = hasA && hasB ? b.cited_by.value - a.cited_by.value : 0;",
             self.utils,
         )
         self.assertIn(
@@ -133,7 +141,7 @@ class TestBibliometricFrontendMigration(unittest.TestCase):
             self.utils,
         )
         self.assertIn(
-            "return citationDiff || dateDiff || titleDiff;",
+            "return Number(hasB) - Number(hasA) || citationDiff || dateDiff || titleDiff;",
             self.utils,
         )
         self.assertIn(
