@@ -282,4 +282,149 @@ assert.ok((lum(textColor) + 0.05) / (lum(menuColor) + 0.05) >= 7);
 assert.match(homeHtml, /style\.css\?v=20261105-dropdown-contrast/);
 assert.match(publicationHtml, /style\.css\?v=20261105-dropdown-contrast/);
 
+
+// Lot 2: per-work citation counts must not confuse unavailable with observed zero.
+const academicRegistry = JSON.parse(fs.readFileSync(path.join(root, 'academic-registry.json'), 'utf8'));
+const citationMetrics = JSON.parse(fs.readFileSync(path.join(root, 'bibliometric-metrics.json'), 'utf8'));
+assert.equal(academicRegistry.works.length, academicRegistry.summary.total_records);
+assert.ok(academicRegistry.works.every(work => citationMetrics.publications[work.id]));
+
+const sortStart = source.indexOf('    const hasObservedCitation = (work) =>');
+const sortEnd = source.indexOf('    const publicationCitationMetric =', sortStart);
+assert.ok(sortStart >= 0 && sortEnd > sortStart);
+const rankVM = {
+    window: { currentLang: 'pt', translations: catalog },
+    activePublicationSort: 'citations_desc',
+    publicationTimestamp: work => Date.UTC(Number(work.year || 2024), 0, 1),
+    comparePublicationTitles: (a, b) => a.title.localeCompare(b.title),
+    escapeHtml: value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;')
+};
+vm.createContext(rankVM);
+vm.runInContext(
+    source.slice(sortStart, sortEnd) +
+    '\nglobalThis.rankCitations = sortPublications;' +
+    '\nglobalThis.isCitationObserved = hasObservedCitation;',
+    rankVM
+);
+const exampleWorks = [
+    { id: 'missing', type: 'journal_article', status: 'published', title: 'Missing', year: '2026', cited_by: { value: 0, status: 'value_unavailable' } },
+    { id: 'zero', type: 'journal_article', status: 'published', title: 'Observed zero', year: '2025', cited_by: { value: 0, status: 'observed' } },
+    { id: 'positive', type: 'journal_article', status: 'published', title: 'Observed five', year: '2024', cited_by: { value: 5, status: 'observed' } },
+    { id: 'retained', type: 'journal_article', status: 'published', title: 'Retained three', year: '2023', cited_by: { value: 3, status: 'stale' } }
+];
+assert.equal(rankVM.isCitationObserved(exampleWorks[0]), false);
+assert.equal(rankVM.isCitationObserved(exampleWorks[1]), true);
+assert.deepEqual(
+    clean(rankVM.rankCitations(exampleWorks).map(work => work.id)),
+    ['positive', 'retained', 'zero', 'missing']
+);
+assert.deepEqual(
+    clean(rankVM.rankCitations(exampleWorks, 'date_desc').map(work => work.id)),
+    ['missing', 'zero', 'positive', 'retained']
+);
+
+const renderStart = source.indexOf('    function renderPublications() {');
+const renderEnd = source.indexOf('\n\n    function generateBibTeX()', renderStart);
+assert.ok(renderStart >= 0 && renderEnd > renderStart);
+const listingGrid = { innerHTML: '' };
+rankVM.UI = { pubsGrid: listingGrid, pubsShownCount: { textContent: '' }, pubsLoadMoreBtn: { style: {} } };
+rankVM.getFilteredPublicationList = () => exampleWorks;
+rankVM.updateCategoryFilterUI = () => {};
+rankVM.updateFilterUI = () => {};
+rankVM.publicationTypeKey = () => 'pub-type-article';
+rankVM.showingPubsCount = exampleWorks.length;
+rankVM.isPublicationsPage = true;
+vm.runInContext(
+    source.slice(renderStart, renderEnd) +
+    '\nglobalThis.renderCitationCards = renderPublications;',
+    rankVM
+);
+rankVM.renderCitationCards();
+assert.match(listingGrid.innerHTML, /Google Scholar: 0 citações/);
+assert.match(listingGrid.innerHTML, /Google Scholar: 5 citações/);
+assert.match(listingGrid.innerHTML, /Google Scholar: citações não disponíveis/);
+assert.match(listingGrid.innerHTML, /\(valor anterior preservado\)/);
+assert.equal((listingGrid.innerHTML.match(/publication-card/g) || []).length, 4);
+rankVM.window.currentLang = 'en';
+rankVM.renderCitationCards();
+assert.match(listingGrid.innerHTML, /Google Scholar: 0 citations/);
+assert.match(listingGrid.innerHTML, /Google Scholar: citation count unavailable/);
+assert.match(source, /function generateBibTeX\(\)/);
+assert.match(publicationHtml, /id="export-bibtex-btn"/);
+
+// The coverage note reads two independent populations; source totals are
+// not added together, and it must not invent zero when snapshot is missing.
+const coverageStart = source.indexOf('    function renderCoverageNote() {');
+const coverageEnd = source.indexOf('\n\n    // --- RENDERIZAÇÃO ---', coverageStart);
+assert.ok(coverageStart >= 0 && coverageEnd > coverageStart);
+const coverageEl = { textContent: '' };
+const coverageVM = {
+    window: {
+        currentLang: 'pt', translations: catalog,
+        academicRegistry, fallbackData: fallback
+    },
+    document: { getElementById(id) { return id === 'bibliometric-coverage-note' ? coverageEl : null; } }
+};
+vm.createContext(coverageVM);
+vm.runInContext(source.slice(coverageStart, coverageEnd) +
+    '\nglobalThis.showCoverage = renderCoverageNote;', coverageVM);
+coverageVM.showCoverage();
+assert.match(coverageEl.textContent, /Catálogo canônico: 34 trabalhos/);
+assert.match(coverageEl.textContent, /Google Scholar 38, Scopus 24 e Web of Science 22 registros/);
+assert.match(coverageEl.textContent, /não devem ser somados/);
+coverageVM.window.currentLang = 'en';
+coverageVM.showCoverage();
+assert.match(coverageEl.textContent, /Canonical catalog: 34 works/);
+assert.match(coverageEl.textContent, /must not be added together/);
+coverageVM.window.academicRegistry = null;
+coverageVM.showCoverage();
+assert.match(coverageEl.textContent, /different coverage criteria/);
+
+// Annual tables provide source-faithful textual access, including retained
+// Scopus history and explicit empty-state messaging.
+const historyStart = source.indexOf('    function renderHistoricalTable(platformPrefix, rawData) {');
+const historyEnd = source.indexOf('\n\n    function renderCoverageNote()', historyStart);
+assert.ok(historyStart >= 0 && historyEnd > historyStart);
+const tableBody = { innerHTML: '' };
+const historyNote = { textContent: '' };
+const tableVM = {
+    window: {
+        currentLang: 'pt', translations: catalog,
+        fallbackData: { academicData: { scopus: { history_status: 'stale' } } }
+    },
+    document: { getElementById(id) {
+        if (id === 'scopus-history-body') return tableBody;
+        if (id === 'scopus-history-status') return historyNote;
+        return null;
+    } },
+    escapeHtml: value => String(value ?? '')
+};
+vm.createContext(tableVM);
+vm.runInContext(source.slice(historyStart, historyEnd) +
+    '\nglobalThis.showAnnualTable = renderHistoricalTable;', tableVM);
+tableVM.showAnnualTable('scopus', [
+    { year: 2023, publications: 2, citations: 0 },
+    { year: 2025, publications: 3, citations: 7 }
+]);
+assert.match(tableBody.innerHTML, /<th scope="row">2025<\/th><td>3<\/td><td>7<\/td>/);
+assert.match(tableBody.innerHTML, /<th scope="row">2024<\/th><td>0<\/td><td>0<\/td>/);
+assert.match(tableBody.innerHTML, /<th scope="row">2023<\/th><td>2<\/td><td>0<\/td>/);
+assert.match(historyNote.textContent, /Scopus/);
+tableVM.window.currentLang = 'en';
+tableVM.showAnnualTable('scopus', []);
+assert.match(tableBody.innerHTML, /Annual data unavailable/);
+assert.match(historyNote.textContent, /earlier valid retrieval/);
+
+for (const item of [
+    ['scholar', 'Google Scholar'], ['scopus', 'Scopus'], ['wos', 'Web of Science']
+]) {
+    const name = item[0];
+    assert.match(homeHtml, new RegExp('id="' + name + '-history-body"'));
+    assert.match(homeHtml, new RegExp('data-key-aria-label="history-aria-' + name + '"'));
+    assert.match(homeHtml, new RegExp('id="' + name + '-chart"[^>]*role="img"'));
+}
+assert.match(homeHtml, /id="bibliometric-coverage-note"/);
+assert.match(publicationHtml, /id="bibliometric-coverage-note"/);
+assert.match(publicationHtml, /id="pubs-shown-count"[^>]*aria-live=|aria-live="polite"[^>]*id="pubs-shown-count"/);
+
 console.log('PASS: Scopus source, shared dual-axis chart, language, expiry guard, year filter and privacy');
