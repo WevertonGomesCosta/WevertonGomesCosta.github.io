@@ -249,8 +249,17 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         self.assertEqual(scholar, expected_scholar)
 
     def test_current_snapshot_status_counts_are_stable(self):
+        # Check the number of linked/absent records independently of whether
+        # an API is temporarily stale. Stale is a legitimate result of the
+        # transactional fallback policy, not evidence of lost publications.
         metrics = builder.build_from_root(ROOT)
-        expected = {
+        fallback = json.loads(
+            (ROOT / "fallback-data.json").read_text(encoding="utf-8")
+        )
+        total_publications = len(metrics["publications"])
+        self.assertEqual(total_publications, 34)
+
+        expected_current = {
             "google_scholar": {
                 "observed": 23,
                 "value_unavailable": 6,
@@ -270,12 +279,58 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
             },
         }
 
-        for source, expected_counts in expected.items():
+        for source, baseline in expected_current.items():
+            state = fallback["sourceStates"][source]["status"]
+            self.assertIn(state, {"current", "stale", "unavailable"})
+            linked = baseline.get("observed", 0) + baseline.get(
+                "value_unavailable", 0
+            )
+            if state == "stale":
+                expected_counts = {
+                    "stale": linked,
+                    "record_absent": baseline["record_absent"],
+                }
+            elif state == "unavailable":
+                expected_counts = {"source_unavailable": total_publications}
+            else:
+                expected_counts = baseline
+
             counts = {}
             for publication in metrics["publications"].values():
                 status = publication[source]["status"]
                 counts[status] = counts.get(status, 0) + 1
             self.assertEqual(counts, expected_counts, source)
+
+    def test_scopus_api_failure_changes_status_not_previous_citations(self):
+        registry_payload = json.loads(
+            (ROOT / "academic-registry.json").read_text(encoding="utf-8")
+        )
+        links_payload = json.loads(
+            (ROOT / "bibliographic-source-links.json").read_text(encoding="utf-8")
+        )
+        fallback = json.loads(
+            (ROOT / "fallback-data.json").read_text(encoding="utf-8")
+        )
+        expected = builder.build_metrics(
+            registry_payload, links_payload, fallback
+        )
+        stale = copy.deepcopy(fallback)
+        stale.setdefault("sourceStates", {})["scopus"]["status"] = "stale"
+        updated = builder.build_metrics(
+            registry_payload, links_payload, stale
+        )
+        linked_count = 0
+        for publication_id, row in expected["publications"].items():
+            before = row["scopus"]
+            after = updated["publications"][publication_id]["scopus"]
+            self.assertEqual(before["record_id"], after["record_id"])
+            self.assertEqual(before["citations"], after["citations"])
+            if before["record_id"] is not None:
+                linked_count += 1
+                self.assertEqual(after["status"], "stale")
+            else:
+                self.assertEqual(after["status"], "record_absent")
+        self.assertEqual(linked_count, 24)
 
     def test_check_output_detects_drift(self):
         with tempfile.TemporaryDirectory() as tmp:
