@@ -143,6 +143,7 @@ assert.equal(elements['scopus-cit'].textContent, '—', 'Expired author metric m
 assert.equal(calls.length, 4, 'Historical graph remains available despite expired author summary');
 
 fallback.academicData.scopus.profile.cited_by.graph = [];
+sandbox.chartData.graphData = []; // Module caches source data at initialization.
 sandbox.window.currentLang = 'pt';
 sandbox.renderScopus();
 assert.equal(calls.length, 4, 'Never fall back to Scholar when the Scopus history is missing');
