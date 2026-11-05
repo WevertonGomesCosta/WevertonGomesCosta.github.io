@@ -8,7 +8,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-05T12:40:49Z",
+            "updated_at": "2026-11-05T15:47:49Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "05/11/2026 09:45",
+    "lastUpdated": "05/11/2026 13:13",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -1134,14 +1134,14 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 27,
+                            "citations": 35,
                             "publications": 3
                         }
                     ]
                 }
             },
             "articles": [],
-            "history_status": "stale"
+            "history_status": "current"
         },
         "web_of_science": {
             "profile": {
@@ -1723,7 +1723,7 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-05T09:45:45",
+            "last_valid_at": "2026-11-05T13:13:59",
             "error_code": null
         },
         "google_scholar": {
@@ -1733,7 +1733,7 @@
         },
         "scopus": {
             "status": "current",
-            "last_valid_at": "2026-11-05T09:45:45",
+            "last_valid_at": "2026-11-05T13:13:59",
             "error_code": null
         },
         "web_of_science": {
