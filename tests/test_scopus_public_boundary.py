@@ -52,38 +52,58 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertEqual(published["academicData"]["scopus"]["articles"], [])
         self.assertEqual(published["academicData"]["scopus"]["profile"]["cited_by"]["graph"], [])
 
-    def test_scopus_author_only_card_explains_missing_history(self):
+    def test_registry_publication_chart_is_distinct_from_scopus_metrics(self):
         markup = (ROOT / "index.html").read_text(encoding="utf-8")
         card = markup.split('data-source="scopus"', 1)[1].split(
             'data-source="wos"', 1
         )[0]
-        self.assertIn('class="chart-container scopus-history-note"', card)
-        self.assertIn('role="note"', card)
-        self.assertIn('data-key="scopus-history-title"', card)
-        self.assertIn('data-key="scopus-history-description"', card)
-        self.assertIn('data-key="scopus-history-link"', card)
-        self.assertIn('https://www.scopus.com/authid/detail.uri?authorId=57211264440', card)
-        self.assertNotIn("Sem dados históricos", card)
+        self.assertIn('class="chart-container scopus-registry-chart"', card)
+        self.assertIn('role="img"', card)
+        self.assertIn('data-key-aria-label="scopus-registry-chart-aria"', card)
+        self.assertIn('aria-describedby="scopus-registry-source"', card)
+        for key in (
+            "scopus-registry-chart-title",
+            "scopus-registry-chart-source",
+            "scopus-registry-chart-link",
+        ):
+            self.assertIn(f'data-key="{key}"', card)
+        self.assertIn('href="publicacoes.html"', card)
+        self.assertNotIn("Histórico anual não exibido", card)
 
         catalog = json.loads((ROOT / "translations.json").read_text(encoding="utf-8"))
+        keys = (
+            "scopus-registry-chart-title",
+            "scopus-registry-chart-source",
+            "scopus-registry-chart-aria",
+            "scopus-registry-chart-link",
+            "scopus-registry-chart-hover",
+            "scopus-registry-chart-unavailable",
+        )
         for language in ("pt", "en"):
-            for key in (
-                "scopus-history-title",
-                "scopus-history-description",
-                "scopus-history-link",
-            ):
+            for key in keys:
                 self.assertTrue(catalog[language].get(key), f"{language}: {key}")
+            source = catalog[language]["scopus-registry-chart-source"].lower()
+            self.assertIn("scopus", source)
+            self.assertIn("lattes", source)
+
+        registry = json.loads((ROOT / "academic-registry.json").read_text(encoding="utf-8"))
+        expected = [
+            work for work in registry["works"]
+            if work.get("type") == "journal_article"
+            and work.get("status") == "published"
+        ]
+        self.assertEqual(len(expected), registry["summary"]["published_journal_articles"])
+        self.assertGreater(len(expected), 0)
 
         css = (ROOT / "style.css").read_text(encoding="utf-8")
-        self.assertIn(".chart-container.scopus-history-note {", css)
-        self.assertIn("#index-page .stats-card .scopus-history-content p {", css)
+        self.assertIn("#scopus-chart.chart-container {", css)
+        self.assertIn("#index-page .stats-card .scopus-registry-source {", css)
 
         js = (ROOT / "utils.js").read_text(encoding="utf-8")
-        dashboard = js.split("function renderPlatform(", 1)[1].split(
-            "function updatePeriodLabels(", 1
-        )[0]
-        self.assertIn("if (platformPrefix === 'scopus') return;", dashboard)
-        self.assertNotIn("chart.textContent = '—'", dashboard)
+        self.assertIn("PortfolioPublicationHistory.byYear(window.academicRegistry)", js)
+        self.assertIn("if (platformPrefix === 'scopus') renderPortfolioPublicationChart();", js)
+        self.assertIn("if (platformPrefix === 'scopus') return;", js)
+        self.assertNotIn("chart.textContent = '—'", js)
 
     def test_visible_author_counts_link_to_scopus(self):
         markup = (ROOT / "index.html").read_text(encoding="utf-8")
