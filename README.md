@@ -117,8 +117,11 @@ instalados e autenticados (`gh auth login`), além de uma `main` local
 sincronizada com `origin/main`. Execute na raiz do repositório e na branch
 `main`. Por segurança, o modo recusará alterações de outros arquivos,
 não fará `force push` e não realizará merge se a auditoria do PR falhar.
-O PR permanecerá disponível para inspeção caso ocorra falha. **O modo
-padrão não publica nem cria PR**, inclusive quando chamado pelo GitHub Actions.
+O PR permanecerá disponível para inspeção caso ocorra falha. A espera
+pela auditoria repete consultas temporariamente indisponíveis sem aceitar
+resultados não aprovados; falhas explícitas de auditoria impedem o merge.
+**O modo padrão não publica nem cria PR**, inclusive quando chamado pelo
+GitHub Actions.
 
 O pipeline preserva a identidade canônica das publicações, reconcilia novas
 publicações verificadas e atualiza os artefatos acadêmicos de forma transacional.
@@ -133,9 +136,11 @@ Para respeitar o ruleset da `main`, o commit é enviado primeiro a uma
 branch temporária `automation/academic-refresh/<run-id>`. O workflow de
 auditoria executa nessa branch; somente depois do status obrigatório
 `audit` ser aprovado **para o mesmo commit**, o workflow envia esse
-commit à `main` sem force push. Após a tentativa, remove a branch
-temporária. Se a auditoria falhar ou a `main` avançar, a publicação
-não ocorre e a execução falha sem alterar os dados publicados.
+commit à `main` sem force push. A consulta do check possui tentativas
+adicionais contra falhas transitórias do GitHub; a branch temporária
+só é removida após publicação bem-sucedida. Se a auditoria falhar ou a
+`main` avançar, a publicação não ocorre, a branch é preservada para
+recuperação e a execução falha sem alterar os dados publicados.
 
 Configure os seguintes **Repository secrets** em
 **Settings → Secrets and variables → Actions**:
