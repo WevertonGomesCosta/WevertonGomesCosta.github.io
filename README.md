@@ -135,8 +135,7 @@ publicações verificadas e atualiza os artefatos acadêmicos de forma transacio
 
 ### Atualização automática no GitHub Actions
 
-Cada execução registra um resumo administrativo em **Actions → Update academic
- data → execução → Summary**, com situação da coleta por fonte, dados
+Cada execução registra um resumo administrativo em **Actions → Update academic data → execução → Summary**, com situação da coleta por fonte, dados
 preservados (`stale`), disponibilidade do histórico anual Scopus e
 resultados das etapas de validação, auditoria e publicação. A visão diferencia
 ausência de alteração (sem commit necessário) de erro real de publicação;
@@ -149,7 +148,6 @@ uma API que precisa produzir novos valores toda semana. Esses diagnósticos
 ficam nos registros do GitHub Actions: não são adicionados ao site público,
 não exigem serviço externo e não expõem credenciais nem resultados detalhados
 da API Scopus.
-
 
 O workflow `.github/workflows/update-academic-data.yml` executa o pipeline
 semanalmente às quartas-feiras, às 06h17 (horário de Brasília), e também pode
