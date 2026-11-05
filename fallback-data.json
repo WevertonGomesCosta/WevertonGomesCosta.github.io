@@ -8,7 +8,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-04T20:57:30Z",
+            "updated_at": "2026-11-05T11:35:38Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -22,7 +22,7 @@
             "language": "Python",
             "stargazers_count": 0,
             "forks_count": 0,
-            "updated_at": "2026-11-04T20:07:14Z",
+            "updated_at": "2026-11-05T11:25:13Z",
             "topics": [
                 "google-sheets",
                 "optimization",
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "05/11/2026 08:24",
+    "lastUpdated": "05/11/2026 08:36",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -2011,7 +2011,7 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-05T08:24:36",
+            "last_valid_at": "2026-11-05T08:36:55",
             "error_code": null
         },
         "google_scholar": {
