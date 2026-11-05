@@ -97,8 +97,11 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertIn("#scopus-refresh-status[hidden] {", css)
 
         js = (ROOT / "utils.js").read_text(encoding="utf-8")
-        self.assertIn("PortfolioPublicationHistory.byYear(window.academicRegistry)", js)
-        self.assertIn("if (platformPrefix === 'scopus') renderPortfolioPublicationChart();", js)
+        self.assertIn("PortfolioPublicationHistory.withIndependentCitations(", js)
+        self.assertIn("dashboardData.scholar?.graphData", js)
+        self.assertIn("renderDualAxisChart(container, data, 'scopus', shouldAnimate", js)
+        self.assertIn("if (platformPrefix === 'scopus') renderPortfolioPublicationChart(shouldAnimate);", js)
+        self.assertIn("scopus-registry-chart-citations", js)
         self.assertIn("if (platformPrefix === 'scopus') return;", js)
         self.assertIn("statusElement.hidden = !scopusExpired && !stale;", js)
         self.assertNotIn("Fonte: Scopus. Atualização semanal.", js)
