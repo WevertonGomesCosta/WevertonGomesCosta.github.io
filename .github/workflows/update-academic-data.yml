@@ -234,7 +234,7 @@ jobs:
             printf '| Limpeza da branch temporária | %s |\n' "$CLEANUP_OUTCOME"
             echo
             if [[ "$PUBLISH_OUTCOME" == "success" ]]; then
-              echo "**Publicação:** commit auditado enviado à `main`."
+              echo "**Publicação:** commit auditado enviado à branch main."
             elif [[ "$CANDIDATE_OUTCOME" == "success" && "$CANDIDATE_CHANGED" == "false" ]]; then
               echo "**Publicação:** nenhuma mudança relevante; novo commit desnecessário."
             else
