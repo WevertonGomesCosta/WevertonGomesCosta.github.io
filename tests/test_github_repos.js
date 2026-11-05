@@ -78,19 +78,19 @@ const sandbox = {
 };
 vm.createContext(sandbox);
 vm.runInContext(source.slice(start, end + 3) + '\nglobalThis.reposModule = GithubReposModule;', sandbox);
-const module = sandbox.reposModule;
+const reposModule = sandbox.reposModule;
 
 assert.equal(
-    module.titleCase('Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow'),
+    reposModule.titleCase('Bovine-weight-calculation-by-Mask-R-CNN-Keras-and-TensorFlow'),
     'Bovine Weight Calculation By Mask R-CNN Keras And TensorFlow'
 );
 assert.equal(
-    module.titleCase('Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava'),
+    reposModule.titleCase('Genomic-Selection-for-Drought-Tolerance-Using-Genome-Wide-SNPs-in-Casava'),
     'Genomic Selection For Drought Tolerance Using Genome Wide SNPs In Casava'
 );
-assert.equal(module.titleCase('QTL-based-RR-BLUP-GxE'), 'QTL Based RR-BLUP GxE');
+assert.equal(reposModule.titleCase('QTL-based-RR-BLUP-GxE'), 'QTL Based RR-BLUP GxE');
 
-module.init({
+reposModule.init({
     listSelector: '#list',
     metaSelector: '#meta',
     searchSelector: '#search',
@@ -102,33 +102,33 @@ module.init({
     incrementCount: 3
 });
 assert.equal(listEl.items.length, 3);
-assert.equal(module.state.showingCount, 3);
+assert.equal(reposModule.state.showingCount, 3);
 assert.equal(more.classList.hidden, false);
 assert.match(listEl.items[0].innerHTML, /<span class="topic-tag">genomic-selection<\/span>/);
 
 clickHandlers['click:more']();
 assert.equal(listEl.items.length, 6);
-assert.equal(module.state.showingCount, 6);
+assert.equal(reposModule.state.showingCount, 6);
 
 // Language switching should update labels without collapsing the expanded list.
 sandbox.currentLang = 'en';
 sandbox.window.currentLang = 'en';
 listeners.languageChanged();
 assert.equal(listEl.items.length, 6);
-assert.equal(module.state.showingCount, 6);
+assert.equal(reposModule.state.showingCount, 6);
 assert.equal(more.textContent, 'Show more');
 assert.equal(shown.textContent, 'Showing 6 of 8');
 
 // Searches and their visible results must also remain intact after switching back.
-module.state.currentFilter = 'rr-blup';
+reposModule.state.currentFilter = 'rr-blup';
 search.value = 'rr-blup';
-module.filterAndRender();
+reposModule.filterAndRender();
 assert.equal(listEl.items.length, 1);
 assert.equal(more.classList.hidden, true);
 sandbox.currentLang = 'pt';
 sandbox.window.currentLang = 'pt';
 listeners.languageChanged();
-assert.equal(module.state.currentFilter, 'rr-blup');
+assert.equal(reposModule.state.currentFilter, 'rr-blup');
 assert.equal(search.value, 'rr-blup');
 assert.equal(listEl.items.length, 1);
 assert.equal(shown.textContent, 'Exibindo 1 de 1');
