@@ -42,7 +42,6 @@ const chart = {
     }
 };
 elements['scopus-chart'] = chart;
-elements['scopus-refresh-status'] = { hidden: true, textContent: '' };
 for (const name of ['pubs', 'cit', 'h', 'i10']) {
     elements['scopus-' + name] = { textContent: '', style: {} };
     elements['scopus-' + name + '-period'] = { textContent: '', style: {} };
@@ -114,8 +113,6 @@ assert.equal(layout.xaxis.dtick, 1);
 assert.equal(config.displayModeBar, false);
 assert.equal(typeof clickHandler, 'function');
 assert.equal(elements['scopus-cit'].textContent, String(fallback.academicData.scopus.profile.cited_by.table[0].citations.all));
-assert.equal(elements['scopus-refresh-status'].hidden, false, 'Stale annual history must be disclosed');
-assert.match(elements['scopus-refresh-status'].textContent, /histórico anual preservado/);
 
 clickHandler({ points: [{ x: 2024 }] });
 assert.equal(sandbox.activeYearFilter, 2024);
@@ -131,11 +128,11 @@ assert.equal(calls[1][1][0].name, catalog.en['chart-pubs']);
 assert.equal(calls[1][1][1].name, catalog.en['chart-cits'] || 'Citations');
 assert.equal(calls[1][2].height, 260);
 assert.equal(calls[1][2].xaxis.tickangle, -45);
-assert.match(elements['scopus-refresh-status'].textContent, /earlier retrieval/);
 
+// A historical freshness marker never changes the plotted source series.
 fallback.academicData.scopus.history_status = 'current';
 sandbox.renderScopus();
-assert.equal(elements['scopus-refresh-status'].hidden, true, 'Current history needs no routine status label');
+assert.equal(calls.length, 3);
 
 fallback.sourceStates.scopus.last_valid_at = '2026-10-01T09:45:45';
 sandbox.renderScopus();
@@ -148,4 +145,4 @@ sandbox.window.currentLang = 'pt';
 sandbox.renderScopus();
 assert.equal(calls.length, 4, 'Never fall back to Scholar when the Scopus history is missing');
 
-console.log('PASS: Scopus source, shared dual-axis chart, language, stale status, year filter and privacy');
+console.log('PASS: Scopus source, shared dual-axis chart, language, expiry guard, year filter and privacy');
