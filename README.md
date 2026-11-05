@@ -127,6 +127,9 @@ Configure os seguintes **Repository secrets** em
 - `SERPAPI_API_KEY`: chave principal da SerpApi (obrigatória).
 - `SERPAPI_API_KEY2`: segunda chave SerpApi para contingência (opcional).
 - `SCOPUS_API_KEY`: chave da API Elsevier/Scopus (obrigatória).
+- `SCOPUS_INSTTOKEN`: token institucional aprovado pela Elsevier (obrigatório
+  para a execução agendada); enviado apenas em `X-ELS-Insttoken` nas
+  requisições HTTPS. Mantenha exclusivamente em Repository secrets.
 - `ACADEMIC_UPDATE_PUSH_TOKEN`: fine-grained personal access token com
   acesso **somente a este repositório**, permissão **Contents: Read and write**
   e prazo de validade acompanhado pelo proprietário. É necessário para que
@@ -135,6 +138,24 @@ Configure os seguintes **Repository secrets** em
   configurado para publicação por branch.
 
 Os identificadores públicos de perfil são lidos diretamente de `profile.json`.
+No computador, para autenticar as consultas Scopus sem gravar o insttoken em
+arquivos, configure a variável de ambiente `SCOPUS_INSTTOKEN` para a sessão
+do terminal (Git Bash: `read -rs SCOPUS_INSTTOKEN; export SCOPUS_INSTTOKEN`).
+Alternativamente, `scopus_insttoken` pode existir no `keys.json` local
+ignorado pelo Git, mas prefira o ambiente por ser uma credencial institucional
+de alto privilégio. Nunca use o token no código do site, URLs, logs ou commits.
+
+**Distribuição pública Scopus:** a busca detalhada é utilizada somente em
+memória durante a reconciliação. `fallback-data.json` expõe apenas
+indicadores agregados do autor, sem artigos individuais ou série anual de
+citações. `bibliometric-metrics.json` retém apenas referências de IDs,
+sem contagens de citações por artigo da Scopus. Os indicadores visíveis
+remetem ao perfil do autor no Scopus. A atualização do site permanece semanal.
+Se a API estiver indisponível, o estado `stale` sinaliza preservação de
+dados anteriores, que não devem ser apresentados como novas observações.
+**Atenção:** o histórico antigo do Git ainda contém versões anteriores dos
+JSONs; a limpeza desse histórico exige avaliação separada e não é realizada
+automaticamente, pois afetaria toda a história e regras da branch.
 O workflow gera `keys.json` temporariamente com permissões restritas e o apaga
 ao terminar a coleta. Não compartilhe nem registre valores de secrets no código.
 
