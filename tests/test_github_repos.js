@@ -74,7 +74,8 @@ const sandbox = {
     SiteProfile: { get() { return null; } },
     DateFormatter: { formatWithLabel(value) { return value; } },
     setTimeout,
-    clearTimeout
+    clearTimeout,
+    URL
 };
 vm.createContext(sandbox);
 vm.runInContext(source.slice(start, end + 3) + '\nglobalThis.reposModule = GithubReposModule;', sandbox);
@@ -132,6 +133,35 @@ assert.equal(reposModule.state.currentFilter, 'rr-blup');
 assert.equal(search.value, 'rr-blup');
 assert.equal(listEl.items.length, 1);
 assert.equal(shown.textContent, 'Exibindo 1 de 1');
+
+// Untrusted repository text must not execute as HTML or supply unsafe URLs.
+const malicious = {
+    ...repos[0],
+    name: '<img src=x onerror=alert(1)>',
+    description: '<svg onload=alert(1)> & "quoted"',
+    topics: ['<img src=x onerror=alert(2)>'],
+    language: '<b>Python</b>',
+    homepage: 'javascript:alert(3)',
+    html_url: 'data:text/html,<script>alert(4)</script>'
+};
+const maliciousMarkup = reposModule.createCard(malicious).innerHTML;
+assert.match(maliciousMarkup, /&lt;img/);
+assert.match(maliciousMarkup, /&lt;svg/);
+assert.match(maliciousMarkup, /&lt;b&gt;Python&lt;\/b&gt;/);
+assert.match(maliciousMarkup, /&amp; &quot;quoted&quot;/);
+assert.doesNotMatch(maliciousMarkup, /<img|<svg|<script|href="javascript:|href="data:/);
+assert.doesNotMatch(maliciousMarkup, /<a\s/);
+assert.equal(reposModule.safeHttpUrl('javascript:alert(1)'), '');
+assert.equal(reposModule.safeHttpUrl('data:text/html,test'), '');
+assert.equal(reposModule.safeHttpUrl('https://example.org/path'), 'https://example.org/path');
+
+const normalMarkup = reposModule.createCard({
+    ...repos[0],
+    homepage: 'https://example.org/project?x=1&y=2',
+    html_url: 'https://github.com/example/repo'
+}).innerHTML;
+assert.match(normalMarkup, /href="https:\/\/example.org\/project\?x=1&amp;y=2"/);
+assert.match(normalMarkup, /href="https:\/\/github.com\/example\/repo"/);
 
 // Topics are labels: no cursor or hover animation should suggest clickable behavior.
 const topicRule = css.match(/\.topic-tag\s*\{([^}]+)\}/);
