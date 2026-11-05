@@ -350,6 +350,22 @@ def build_metrics(
     for publication_id in publication_ids:
         source_metrics: dict[str, dict] = {}
         for source in SOURCES:
+            if source == "scopus" and isinstance(fallback, dict):
+                academic = fallback.get("academicData")
+                scopus = academic.get("scopus") if isinstance(academic, dict) else None
+                if (
+                    isinstance(scopus, dict)
+                    and scopus.get("distribution") == "author_summary_only"
+                ):
+                    # Public data never contains article-level Scopus citation counts.
+                    link = relationships[source].get(publication_id)
+                    source_metrics[source] = {
+                        "alias_record_ids": link["alias_record_ids"] if link else [],
+                        "citations": None,
+                        "record_id": link["record_id"] if link else None,
+                        "status": "value_unavailable" if link else "record_absent",
+                    }
+                    continue
             available, article_index = snapshot_indexes[source]
             source_metrics[source] = metric_entry(
                 source=source,
