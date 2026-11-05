@@ -51,6 +51,8 @@ def scopus_refresh_due(
     current: object,
     results: Mapping[str, object],
     transaction_time: datetime,
+    *,
+    scheduled: bool = False,
 ) -> bool:
     """Refresh a still-current author-summary cache once every six days.
 
@@ -66,6 +68,12 @@ def scopus_refresh_due(
     state = current_states.get("scopus") if isinstance(current_states, dict) else None
     if not isinstance(state, dict) or state.get("status") != "current":
         return False
+
+    # The weekly cron may run just after a local refresh. Publish its
+    # successful check anyway: otherwise the next cron would arrive after
+    # the site's seven-day cache display limit.
+    if scheduled:
+        return True
 
     old_states = old.get("sourceStates") if isinstance(old, dict) else None
     previous = old_states.get("scopus") if isinstance(old_states, dict) else None
