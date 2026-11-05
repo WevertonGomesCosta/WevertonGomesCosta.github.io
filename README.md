@@ -135,6 +135,20 @@ publicações verificadas e atualiza os artefatos acadêmicos de forma transacio
 
 ### Atualização automática no GitHub Actions
 
+Cada execução registra um resumo administrativo em **Actions → Update academic data → execução → Summary**, com situação da coleta por fonte, dados
+preservados (`stale`), disponibilidade do histórico anual Scopus e
+resultados das etapas de validação, auditoria e publicação. A visão diferencia
+ausência de alteração (sem commit necessário) de erro real de publicação;
+quando houver falha após criação do commit candidato, informa a branch
+mantida para recuperação. O campo `last_valid_at` é o registro persistido
+no snapshot e não deve ser interpretado isoladamente como a data desta
+consulta, pois pode permanecer anterior quando a coleta não mudou os dados.
+O Web of Science é alimentado por export manual e não deve ser tratado como
+uma API que precisa produzir novos valores toda semana. Esses diagnósticos
+ficam nos registros do GitHub Actions: não são adicionados ao site público,
+não exigem serviço externo e não expõem credenciais nem resultados detalhados
+da API Scopus.
+
 O workflow `.github/workflows/update-academic-data.yml` executa o pipeline
 semanalmente às quartas-feiras, às 06h17 (horário de Brasília), e também pode
 ser iniciado manualmente em **Actions → Update academic data → Run workflow**.
