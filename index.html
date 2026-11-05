@@ -118,12 +118,10 @@
                 <img src="https://avatars.githubusercontent.com/WevertonGomesCosta" alt="Avatar de Weverton" class="nav-avatar">
             </div>
 
-            <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
-
-            <label for="nav-toggle" class="nav-toggle-label">
-                <span class="hamburger"></span>
-            </label>
-            <div class="nav-col-center">
+            <button type="button" id="nav-toggle" class="nav-toggle-btn" aria-controls="site-primary-navigation" aria-expanded="false" aria-label="Menu de navegação" data-key-aria-label="nav-menu-label">
+                <span class="hamburger" aria-hidden="true"></span>
+            </button>
+            <div id="site-primary-navigation" class="nav-col-center">
                 <a href="#sobre" class="nav-link" data-key="nav-about">Sobre</a>
                 <a href="#experiencia" class="nav-link" data-key="nav-experience">Atuação</a>
                 <a href="#servicos" class="nav-link" data-key="nav-services">Serviços</a>
