@@ -839,16 +839,55 @@ const scholarScript = (function() {
 
         shouldAnimate = shouldAnimate && !MotionPreference.isReduced();
 
+        // Elsevier requires cached Scopus counts to be refreshed weekly.
+        // Never represent an expired cached value as an up-to-date metric.
+        let scopusExpired = false;
+        if (platformPrefix === 'scopus') {
+            const sourceState = window.fallbackData?.sourceStates?.scopus;
+            const rawTimestamp = sourceState?.last_valid_at || '';
+            const timestamp = /(?:Z|[+-]\\d{2}:\\d{2})$/.test(rawTimestamp)
+                ? rawTimestamp : rawTimestamp + '-03:00';
+            const observedAt = Date.parse(timestamp);
+            scopusExpired = !Number.isFinite(observedAt)
+                || sourceState.status === 'unavailable'
+                || Date.now() - observedAt > 7 * 24 * 60 * 60 * 1000;
+            const statusElement = document.getElementById('scopus-refresh-status');
+            if (statusElement) {
+                const pt = window.currentLang !== 'en';
+                statusElement.textContent = scopusExpired
+                    ? (pt ? 'Scopus: dados temporariamente indisponíveis ou com mais de sete dias.'
+                        : 'Scopus: data temporarily unavailable or older than seven days.')
+                    : sourceState.status === 'stale'
+                    ? (pt ? 'Scopus: último resultado validado preservado; nova coleta indisponível.'
+                        : 'Scopus: last validated result preserved; new retrieval unavailable.')
+                    : (pt ? 'Fonte: Scopus. Atualização semanal.'
+                        : 'Source: Scopus. Refreshed weekly.');
+            }
+        }
+
         // Animação dos Números
         ['cit', 'h', 'i10', 'pubs'].forEach(metric => {
             const el = document.getElementById(`${platformPrefix}-${metric}`);
             if(el) {
+                if (scopusExpired) {
+                    el.textContent = '—';
+                    return;
+                }
                 const val = (metric === 'pubs') ? data.metrics.pubs : data.metrics[metric].all;
                 if (shouldAnimate) animateCountUp(el, val);
                 else el.textContent = val.toLocaleString(window.currentLang === 'pt' ? 'pt-BR' : 'en-US');
             }
         });
 
+        if (scopusExpired) {
+            ['cit', 'h', 'i10'].forEach(metric => {
+                const period = document.getElementById(`scopus-${metric}-period`);
+                if (period) period.style.display = 'none';
+            });
+            const chart = document.getElementById('scopus-chart');
+            if (chart) chart.textContent = '—';
+            return;
+        }
         updatePeriodLabels(platformPrefix, data.metrics);
 
         // Renderização do Gráfico (passando shouldAnimate)
