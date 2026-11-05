@@ -55,7 +55,9 @@ def run_command(root: Path, *args: str) -> str:
             f"Comando {args[0]} {args[1] if len(args) > 1 else ''} "
             f"falhou ({result.returncode}): {details[:1200]}"
         )
-    return result.stdout.strip()
+    # Porcelain v1 encodes the working-tree status in its leading column.
+    # .strip() would remove a significant initial space from " M path".
+    return result.stdout.rstrip("\r\n")
 
 
 def _changed_paths(status: str) -> set[str]:

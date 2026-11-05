@@ -47,6 +47,32 @@ class StubRun:
 
 
 class TestLocalAcademicPublish(unittest.TestCase):
+    def test_command_preserves_leading_git_porcelain_status(self):
+        # A real subprocess returns " M file", but str.strip() changes it
+        # into "M file" and the publish gate rejects a valid change.
+        stdout = " M bibliometric-metrics.json\n M fallback-data.json\n"
+        completed = mock.Mock(returncode=0, stdout=stdout, stderr="")
+        with mock.patch.object(publish.subprocess, "run", return_value=completed):
+            result = publish.run_command(Path("."), "git", "status", "--porcelain=v1")
+        self.assertEqual(result, stdout.rstrip("\n"))
+        self.assertEqual(
+            publish._changed_paths(result),
+            {"bibliometric-metrics.json", "fallback-data.json"},
+        )
+
+    def test_porcelain_status_supports_staged_and_untracked_files(self):
+        result = (
+            "M  fallback-data.json\n"
+            "?? data/sources/web-of-science/savedrecs.txt\n"
+        )
+        self.assertEqual(
+            publish._changed_paths(result),
+            {
+                "fallback-data.json",
+                "data/sources/web-of-science/savedrecs.txt",
+            },
+        )
+
     @mock.patch.dict("os.environ", {"GITHUB_ACTIONS": ""})
     def test_reject_other_uncommitted_files(self):
         with tempfile.TemporaryDirectory() as temp:
