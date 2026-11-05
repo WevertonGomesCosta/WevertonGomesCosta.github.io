@@ -458,7 +458,7 @@ const GithubReposModule = {
         const repoName = String(repo.name ?? '');
         const baseUrl = this.safeHttpUrl(SiteProfile.get()?.person?.website_url || '');
         const fallbackSite = repo.has_pages && baseUrl && repoName
-            ? this.safeHttpUrl(`${baseUrl.replace(/\\/+$/, '')}/${encodeURIComponent(repoName)}/`)
+            ? this.safeHttpUrl(`${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/${encodeURIComponent(repoName)}/`)
             : '';
         const siteUrl = this.safeHttpUrl(repo.homepage) || fallbackSite;
         const repositoryUrl = this.safeHttpUrl(repo.html_url);
