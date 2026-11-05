@@ -1670,8 +1670,17 @@ def _audit_bibliographic_source_links(
                 )
 
         source_state = _source_update_state_status(fallback, source)
+        academic = fallback.get("academicData") if isinstance(fallback, dict) else None
+        source_payload = academic.get(source) if isinstance(academic, dict) else None
+        public_scopus_summary = (
+            source == "scopus"
+            and isinstance(source_payload, dict)
+            and source_payload.get("distribution") == "author_summary_only"
+        )
         for link in valid_links:
-            if source_state == "unavailable":
+            # Scopus source links remain frozen, but licensed source articles
+            # are deliberately not serialized into the public snapshot.
+            if source_state == "unavailable" or public_scopus_summary:
                 continue
 
             record_id = link["record_id"].strip()
@@ -2247,6 +2256,35 @@ def _audit_bibliometric_metrics(
             relationship = relationships[source].get(publication_id)
             source_available = _source_payload_available(fallback, source)
             source_state = _source_update_state_status(fallback, source)
+            academic = fallback.get("academicData") if isinstance(fallback, dict) else None
+            source_payload = academic.get(source) if isinstance(academic, dict) else None
+            public_scopus_summary = (
+                source == "scopus"
+                and isinstance(source_payload, dict)
+                and source_payload.get("distribution") == "author_summary_only"
+            )
+            if public_scopus_summary:
+                expected_record_id = (
+                    relationship["record_id"] if relationship else None
+                )
+                expected_aliases = (
+                    relationship["alias_record_ids"] if relationship else []
+                )
+                if (
+                    record_id != expected_record_id
+                    or aliases_list != expected_aliases
+                    or citations is not None
+                    or status != (
+                        "value_unavailable" if relationship else "record_absent"
+                    )
+                ):
+                    violations.append(
+                        _bibliometric_metrics_violation(
+                            subject, "Public Scopus summary must not expose "
+                            "per-publication citation counts",
+                        )
+                    )
+                continue
 
             if relationship is None:
                 if record_id is not None or aliases_list:
