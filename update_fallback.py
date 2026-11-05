@@ -94,6 +94,7 @@ def build_runtime_config(keys: dict) -> dict:
         "serpapi_keys": serpapi_keys,
         "orcid_id": keys.get("orcid_id"),
         "scopus_api_key": keys.get("scopus_api_key"),
+        "scopus_insttoken": keys.get("scopus_insttoken") or os.environ.get("SCOPUS_INSTTOKEN"),
         "scopus_author_id": keys.get("scopus_author_id"),
         "wos_api_key": keys.get("wos_api_key"),
         "wos_researcher_id": keys.get("wos_researcher_id"),
@@ -630,7 +631,7 @@ def fetch_orcid_works(orcid_id):
 # ==============================================================================
 # FUNÇÕES DE BUSCA DE DADOS – SCOPUS (Com Proteção de IP/Home Office)
 # ==============================================================================
-def fetch_scopus_data(author_id, api_key, previous_data=None):
+def fetch_scopus_data(author_id, api_key, previous_data=None, *, insttoken=None):
     """
     Busca dados do Scopus via Elsevier API.
 
@@ -648,6 +649,8 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
         "X-ELS-APIKey": api_key,
         "Accept": "application/json"
     }
+    if insttoken:
+        headers["X-ELS-Insttoken"] = insttoken
 
     cleaned_articles = []
     scopus_ids_list = []
@@ -747,6 +750,60 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
         )
     )
 
+    # Author Retrieval reports official author-level counts. In institutional
+    # mode use this source instead of aggregating Search API article counts.
+    author_metrics = None
+    if insttoken:
+        try:
+            response = requests.get(
+                f"https://api.elsevier.com/content/author/author_id/{author_id}",
+                headers=headers,
+                params={"view": "ENHANCED"},
+                timeout=20,
+            )
+            if response.status_code == 200:
+                author_response = response.json().get("author-retrieval-response", [])
+                if isinstance(author_response, list):
+                    author_response = author_response[0] if author_response else {}
+                core = author_response.get("coredata", {}) if isinstance(author_response, dict) else {}
+                def parse_nonnegative(value):
+                    if isinstance(value, bool):
+                        return None
+                    try:
+                        parsed = int(value)
+                    except (ValueError, TypeError):
+                        return None
+                    return parsed if parsed >= 0 else None
+
+                author_metrics = {
+                    "citations": parse_nonnegative(core.get("citation-count")),
+                    "documents": parse_nonnegative(core.get("document-count")),
+                    "h_index": parse_nonnegative(author_response.get("h-index")),
+                }
+                if author_metrics["citations"] is None or author_metrics["documents"] is None:
+                    logging.warning(
+                        "[Scopus] Author Retrieval retornou métricas incompletas; "
+                        "nenhum total agregado será tratado como métrica oficial."
+                    )
+                    author_metrics = None
+            else:
+                logging.warning(
+                    "[Scopus] Author Retrieval indisponível (HTTP %s); "
+                    "dados anteriores serão preservados.",
+                    response.status_code,
+                )
+        except (ValueError, TypeError, KeyError, AttributeError) as exc:
+            logging.warning(
+                "[Scopus] Resposta Author Retrieval inválida (%s).",
+                type(exc).__name__,
+            )
+        except Exception as exc:
+            logging.warning(
+                "[Scopus] Falha Author Retrieval (%s); "
+                "nenhuma credencial foi registrada.",
+                type(exc).__name__,
+            )
+
     # ==========================================================================
     # 2. HISTÓRICO DE CITAÇÕES (Bloqueado fora da Universidade)
     # ==========================================================================
@@ -807,6 +864,9 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
     # TRAVA DE SEGURANÇA (HOME OFFICE CHECK)
     # ==========================================================================
     total_cited_in_search = sum(a["cited_by"]["value"] for a in cleaned_articles)
+    if author_metrics is not None:
+        # Elsevier recommends this author-level count, not the document sum.
+        total_cited_in_search = author_metrics["citations"]
     total_cited_in_history = sum(yearly_citation_totals.values())
 
     # O Search API e o histórico são superfícies independentes. Se apenas o
@@ -826,7 +886,23 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
             isinstance(previous_profile, dict)
             and isinstance(previous_profile.get("cited_by"), dict)
         ):
-            previous_profile["total_publications"] = len(cleaned_articles)
+            previous_profile["total_publications"] = (
+                author_metrics["documents"] if author_metrics else len(cleaned_articles)
+            )
+            previous_table = previous_profile["cited_by"].get("table", [])
+            if author_metrics is not None and isinstance(previous_table, list):
+                for metric_row in previous_table:
+                    if not isinstance(metric_row, dict):
+                        continue
+                    for metric, official_value in (
+                        ("citations", author_metrics["citations"]),
+                        ("h_index", author_metrics["h_index"]),
+                    ):
+                        if (
+                            official_value is not None
+                            and isinstance(metric_row.get(metric), dict)
+                        ):
+                            metric_row[metric]["all"] = official_value
 
             previous_graph = previous_profile["cited_by"].get("graph", [])
             citations_by_year = {}
@@ -882,7 +958,11 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
     metrics_table = [
         {"citations": {"all": total_cited_in_search, "since_2021": since_2021_sum}},
         {"h_index": {
-            "all": calculate_h_index([a["cited_by"]["value"] for a in cleaned_articles]), 
+            "all": (
+                author_metrics["h_index"]
+                if author_metrics and author_metrics["h_index"] is not None
+                else calculate_h_index([a["cited_by"]["value"] for a in cleaned_articles])
+            ), 
             "since_2021": calculate_h_index(recent_cites)
         }},
         {"i10_index": {
@@ -908,7 +988,9 @@ def fetch_scopus_data(author_id, api_key, previous_data=None):
     return {
         "source_name": "Scopus",
         "profile": {
-            "total_publications": len(cleaned_articles),
+            "total_publications": (
+                author_metrics["documents"] if author_metrics else len(cleaned_articles)
+            ),
             "cited_by": {
                 "table": metrics_table,
                 "graph": graph_data
@@ -1265,6 +1347,7 @@ def collect_source_results(
             config["scopus_author_id"],
             config["scopus_api_key"],
             previous_data=previous_scopus,
+            insttoken=config.get("scopus_insttoken"),
         )
         results["scopus"] = (
             update_pipeline.SourceResult.success(scopus)
