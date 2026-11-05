@@ -157,7 +157,7 @@ def wait_for_audit(
                 "--jq",
                 AUDIT_QUERY,
             ).strip()
-        except LocalPublishError as exc:
+        except LocalPublishError:
             # An unavailable/truncated JSON response is not an audit failure.
             # The branch and PR remain intact if retries are exhausted.
             print(
