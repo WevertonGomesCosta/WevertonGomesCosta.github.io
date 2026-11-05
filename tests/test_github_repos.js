@@ -134,6 +134,22 @@ assert.equal(search.value, 'rr-blup');
 assert.equal(listEl.items.length, 1);
 assert.equal(shown.textContent, 'Exibindo 1 de 1');
 
+// Searches must match accents whether the visitor types diacritics or not.
+assert.equal(reposModule.normalizeSearchText('Análise Genômica'), 'analise genomica');
+repos[1].description = 'Análise genômica para café e seleção';
+reposModule.state.currentFilter = 'analise genomica para cafe';
+search.value = reposModule.state.currentFilter;
+reposModule.filterAndRender();
+assert.equal(listEl.items.length, 1);
+assert.match(listEl.items[0].innerHTML, /Genomic Project 2/);
+assert.equal(shown.textContent, 'Exibindo 1 de 1');
+
+reposModule.state.currentFilter = 'CAFÉ';
+search.value = reposModule.state.currentFilter;
+reposModule.filterAndRender();
+assert.equal(listEl.items.length, 1);
+assert.match(listEl.items[0].innerHTML, /Genomic Project 2/);
+
 // Untrusted repository text must not execute as HTML or supply unsafe URLs.
 const malicious = {
     ...repos[0],
