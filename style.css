@@ -1343,6 +1343,89 @@ body:not(#index-page) nav.scrolled .nav-title {
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
+/* Bibliometric coverage and accessible annual data remain on the public page,
+   without exposing administrative source-health diagnostics. */
+.bibliometric-coverage-note {
+    max-width: 900px;
+    margin: 0 auto 22px;
+    padding: 15px 18px;
+    border-left: 3px solid var(--secondary);
+    border-radius: 10px;
+    background: rgba(30, 41, 59, 0.65);
+    color: var(--text);
+    font-size: 0.91rem;
+    line-height: 1.65;
+}
+
+.bibliometric-history {
+    width: 100%;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    text-align: left;
+}
+
+.bibliometric-history summary {
+    padding: 12px 4px;
+    color: var(--text);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.bibliometric-history summary:hover,
+.bibliometric-history summary:focus-visible {
+    color: var(--primary);
+}
+
+.bibliometric-history-scroll {
+    max-height: 320px;
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+.bibliometric-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.bibliometric-history-table caption {
+    padding: 7px 4px;
+    color: var(--text-muted);
+    text-align: left;
+    caption-side: top;
+}
+
+.bibliometric-history-table th,
+.bibliometric-history-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    color: var(--text);
+}
+
+.bibliometric-history-table thead th {
+    background: var(--dark-light);
+    color: var(--text);
+    position: sticky;
+    top: 0;
+}
+
+.bibliometric-history-table th:first-child,
+.bibliometric-history-table td:first-child {
+    text-align: left;
+}
+
+.bibliometric-history-table tbody tr:nth-child(even) {
+    background: rgba(148, 163, 184, 0.06);
+}
+
+.bibliometric-history-status {
+    padding: 8px 4px;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+}
+
 /* Cabeçalho do Card (Ícone + Título) */
 .stats-header {
     display: flex;
