@@ -405,7 +405,14 @@ const ContactForm = {
 const GithubReposModule = {
     state: { allRepos: [], filteredRepos: [], showingCount: 0, currentFilter: '' },
     config: {},
-    titleCase: (str) => !str ? '' : str.replace(/[-_]/g, ' ').replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()),
+    titleCase: (str) => !str ? '' : str
+        .replace(/[-_]+/g, (separator, index, name) => {
+            const before = name.slice(0, index).match(/([A-Za-z0-9]+)$/)?.[1] || '';
+            const after = name.slice(index + separator.length).match(/^([A-Za-z0-9]+)/)?.[1] || '';
+            // Preserve technical combinations such as R-CNN, RR-BLUP and SNP-GWAS.
+            return /^[A-Z]{1,4}$/.test(before) && /^[A-Z]{2,}$/.test(after) ? '-' : ' ';
+        })
+        .replace(/(^|\s)(\p{Ll})/gu, (_, space, letter) => space + letter.toUpperCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
     
     createCard(repo) {
@@ -521,15 +528,8 @@ const GithubReposModule = {
         this.render();
     },
     reRenderWithCurrentLang() {
-        // Atualiza textos estáticos dos controles
-        const trans = (typeof translations !== 'undefined' && typeof currentLang !== 'undefined') 
-                      ? translations[currentLang] 
-                      : {};
-        if (this.config.clearBtnEl) this.config.clearBtnEl.textContent = trans['clear-btn'] || 'Limpar';
-        if (this.config.loadMoreBtnEl) this.config.loadMoreBtnEl.textContent = trans['show-more'] || 'Mostrar mais';
-        
-        // Re-renderiza a lista com base nos filtros atuais
-        this.filterAndRender(); 
+        // Re-render without resetting the search filter or expanded page size.
+        this.render();
     },
     init(userConfig) {
         const listEl = document.querySelector(userConfig.listSelector);
