@@ -1467,7 +1467,8 @@ def run_update(
         old_data, public_fallback
     )
     scopus_renewal = academic_publication_policy.scopus_refresh_due(
-        old_data, public_fallback, results, transaction_time
+        old_data, public_fallback, results, transaction_time,
+        scheduled=os.environ.get("ACADEMIC_SCHEDULED_REFRESH") == "true",
     )
     if not (meaningful_change or reconciliation.changed or scopus_renewal):
         print(comparison)
