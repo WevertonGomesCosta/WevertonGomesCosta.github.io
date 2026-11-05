@@ -37,6 +37,7 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Verify required secrets
+        id: secrets
         shell: bash
         env:
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
@@ -53,6 +54,7 @@ jobs:
           done
 
       - name: Collect and reconcile source data
+        id: collect
         shell: bash
         env:
           SERPAPI_API_KEY: ${{ secrets.SERPAPI_API_KEY }}
@@ -88,9 +90,10 @@ jobs:
               json.dumps(keys, ensure_ascii=False) + "\n", encoding="utf-8"
           )
           PY
-          python update_fallback.py
+          ACADEMIC_HEALTH_SUMMARY_PATH="$GITHUB_STEP_SUMMARY" python update_fallback.py
 
       - name: Validate generated data and repository
+        id: validation
         shell: bash
         run: |
           set -euo pipefail
@@ -132,6 +135,7 @@ jobs:
           git push origin HEAD:"refs/heads/$candidate_branch"
 
       - name: Wait for required repository audit
+        id: audit
         if: steps.candidate.outputs.changed == 'true'
         shell: bash
         env:
@@ -187,6 +191,7 @@ jobs:
           git push origin HEAD:refs/heads/main
 
       - name: Remove temporary audit branch
+        id: cleanup
         # Keep the candidate branch for recovery whenever validation/push fails.
         if: always() && steps.candidate.outputs.changed == 'true' && steps.publish.outcome == 'success'
         shell: bash
@@ -198,3 +203,48 @@ jobs:
           gh auth setup-git
           git push origin ":refs/heads/$CANDIDATE_BRANCH" || \
             echo "::warning::Could not remove the temporary audit branch."
+
+      - name: Summarize academic workflow outcome
+        if: always()
+        shell: bash
+        env:
+          SECRETS_OUTCOME: ${{ steps.secrets.outcome }}
+          COLLECTION_OUTCOME: ${{ steps.collect.outcome }}
+          VALIDATION_OUTCOME: ${{ steps.validation.outcome }}
+          CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
+          CANDIDATE_CHANGED: ${{ steps.candidate.outputs.changed }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.branch }}
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          CLEANUP_OUTCOME: ${{ steps.cleanup.outcome }}
+        run: |
+          {
+            echo "## Publicação e controles"
+            echo
+            echo "Relatório administrativo desta execução; os dados do site não incluem este resumo."
+            echo
+            echo "| Etapa | Resultado |"
+            echo "| --- | --- |"
+            printf '| Credenciais configuradas | %s |\n' "$SECRETS_OUTCOME"
+            printf '| Coleta e reconciliação | %s |\n' "$COLLECTION_OUTCOME"
+            printf '| Testes e validações locais | %s |\n' "$VALIDATION_OUTCOME"
+            printf '| Preparação da publicação | %s |\n' "$CANDIDATE_OUTCOME"
+            printf '| Auditoria obrigatória | %s |\n' "$AUDIT_OUTCOME"
+            printf '| Publicação na main | %s |\n' "$PUBLISH_OUTCOME"
+            printf '| Limpeza da branch temporária | %s |\n' "$CLEANUP_OUTCOME"
+            echo
+            if [[ "$PUBLISH_OUTCOME" == "success" ]]; then
+              echo "**Publicação:** commit auditado enviado à `main`."
+            elif [[ "$CANDIDATE_OUTCOME" == "success" && "$CANDIDATE_CHANGED" == "false" ]]; then
+              echo "**Publicação:** nenhuma mudança relevante; novo commit desnecessário."
+            else
+              echo "**Publicação não concluída:** consulte a primeira etapa com falha acima e seus logs."
+              if [[ "$CANDIDATE_CHANGED" == "true" && -n "$CANDIDATE_BRANCH" ]]; then
+                printf 'Branch candidata mantida para recuperação: `%s`.\n' "$CANDIDATE_BRANCH"
+              fi
+            fi
+            if [[ "$COLLECTION_OUTCOME" != "success" ]]; then
+              echo
+              echo "**Coleta incompleta:** não interprete o snapshot anterior como atualização desta execução."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
