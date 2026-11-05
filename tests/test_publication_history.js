@@ -258,4 +258,28 @@ assert.equal(listenerSandbox.UI.pubSearchInput.value, '');
 assert.equal(listenerSandbox.UI.pubSearchInput.focused, true);
 assert.equal(listenerSandbox.rendered, 3);
 
+// The browser's native dropdown must have a solid dark surface with
+// light text; a nonexistent CSS variable made the option background unstable.
+const stylesheet = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
+const selectCss = stylesheet.match(/\.controls select \{([^}]+)\}/);
+const optionCss = stylesheet.match(/\.controls select option \{([^}]+)\}/);
+assert.ok(selectCss && optionCss, 'Publication dropdown styles are required');
+for (const declaration of [selectCss[1], optionCss[1]]) {
+    assert.match(declaration, /background:\s*var\(--dark-light\)/);
+    assert.match(declaration, /color:\s*var\(--text\)/);
+}
+assert.match(selectCss[1], /color-scheme:\s*dark/);
+assert.doesNotMatch(optionCss[1], /var\(--bg\)/);
+const lum = hex => {
+    const values = [1, 3, 5]
+        .map(index => parseInt(hex.slice(index, index + 2), 16) / 255)
+        .map(x => x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * values[0] + 0.7152 * values[1] + 0.0722 * values[2];
+};
+const textColor = '#e2e8f0';
+const menuColor = '#1e293b';
+assert.ok((lum(textColor) + 0.05) / (lum(menuColor) + 0.05) >= 7);
+assert.match(homeHtml, /style\.css\?v=20261105-dropdown-contrast/);
+assert.match(publicationHtml, /style\.css\?v=20261105-dropdown-contrast/);
+
 console.log('PASS: Scopus source, shared dual-axis chart, language, expiry guard, year filter and privacy');
