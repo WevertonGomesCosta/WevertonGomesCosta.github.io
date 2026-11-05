@@ -430,6 +430,8 @@ const GithubReposModule = {
         })
         .replace(/(^|\s)(\p{Ll})/gu, (_, space, letter) => space + letter.toUpperCase()),
     debounce: (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; },
+    normalizeSearchText: (value) => String(value ?? '').normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase(),
     
     // Data from GitHub is untrusted and must remain text, not markup.
     escapeHtml: (value) => String(value ?? '')
@@ -544,12 +546,12 @@ const GithubReposModule = {
         }
     },
     filterAndRender() {
-        const filter = this.state.currentFilter.trim().toLowerCase();
+        const filter = this.normalizeSearchText(this.state.currentFilter.trim());
         let filtered = this.state.allRepos;
         if (filter) {
             filtered = this.state.allRepos.filter(r =>
-                r.name.toLowerCase().includes(filter) || (r.description || '').toLowerCase().includes(filter) ||
-                (r.language || '').toLowerCase().includes(filter) || r.topics.some(t => t.toLowerCase().includes(filter))
+                [r.name, r.description, r.language, ...(r.topics || [])]
+                    .some(value => this.normalizeSearchText(value).includes(filter))
             );
         }
         this.state.filteredRepos = this.sortRepos(filtered);
@@ -630,6 +632,7 @@ const scholarScript = (function() {
         pubsGrid: null,
         pubSearchInput: null, pubClearBtn: null,
         pubSortSelect: null,
+        pubYearSelect: null,
         pubTypeButtons: [],
         pubsShownCount: null, pubsLoadMoreBtn: null,
         dashboardSection: null,
@@ -683,7 +686,10 @@ const scholarScript = (function() {
     }
 
     // --- HELPERS ---
-    const normalizeTitle = (str) => str ? str.replace(/<[^>]+>/g, '').toLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "").replace(/\s\s+/g, ' ').trim() : '';
+    const normalizeTitle = (str) => str ? String(str).replace(/<[^>]+>/g, '')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase().replace(/[.,/#!$%^&*;:{}=\-_\`~()]/g, "")
+        .replace(/\s\s+/g, ' ').trim() : '';
 
     const publicationTimestamp = (work) => {
         if (work?.publicationDate) {
@@ -1132,8 +1138,7 @@ const scholarScript = (function() {
             const y = d.points[0].x;
             activeYearFilter = (activeYearFilter == y) ? null : y;
             showingPubsCount = initialPubsToShow;
-            renderPublications();
-            updateFilterUI(); // Função auxiliar para destacar o botão/filtro visualmente se existir
+            renderPublications(); // Sincroniza também o filtro por ano acessível.
         });
     }
 
@@ -1275,6 +1280,7 @@ const scholarScript = (function() {
         const visible = list.slice(0, showingPubsCount);
 
         updateCategoryFilterUI();
+        updateFilterUI();
         grid.innerHTML = '';
 
         if (!visible.length) {
@@ -1390,13 +1396,22 @@ const scholarScript = (function() {
     }
 
     function updateFilterUI() {
-        const div = document.querySelector('#publicacoes .controls');
-        let chip = document.getElementById('year-filter-chip');
-        if (activeYearFilter) {
-            if(!chip) { chip = document.createElement('div'); chip.id='year-filter-chip'; chip.style.cssText="background:var(--primary);color:#fff;padding:5px 12px;border-radius:15px;margin-top:10px;cursor:pointer;display:inline-block;"; div.appendChild(chip); }
-            chip.innerHTML = `Filtro: ${activeYearFilter} &times;`;
-            chip.onclick = () => { activeYearFilter = null; renderPublications(); updateFilterUI(); };
-        } else if(chip) chip.remove();
+        // Keep chart clicks and keyboard year selection in a single state.
+        // The native <select> is usable with keyboard and assistive technology.
+        if (!UI.pubYearSelect) return;
+        const t = window.translations?.[window.currentLang] || {};
+        const years = [...new Set(
+            getPublicationBaseList()
+                .map(work => String(work.year || ''))
+                .filter(year => /^\d{4}$/.test(year))
+        )];
+        const selectedYear = activeYearFilter == null ? '' : String(activeYearFilter);
+        if (selectedYear && !years.includes(selectedYear)) years.push(selectedYear);
+        years.sort((a, b) => Number(b) - Number(a));
+        UI.pubYearSelect.innerHTML =
+            `<option value="">${escapeHtml(t['publication-all-years'] || 'Todos os anos')}</option>`
+            + years.map(year => `<option value="${year}">${year}</option>`).join('');
+        UI.pubYearSelect.value = selectedYear;
     }
 
     // --- INIT ---
@@ -1417,6 +1432,7 @@ const scholarScript = (function() {
         UI.pubSearchInput = document.getElementById('publication-search');
         UI.pubClearBtn = document.getElementById('publication-clear-btn');
         UI.pubSortSelect = document.getElementById('publication-sort');
+        UI.pubYearSelect = document.getElementById('publication-year');
         UI.pubTypeButtons = Array.from(document.querySelectorAll('[data-publication-filter]'));
         UI.pubsShownCount = document.getElementById('pubs-shown-count');
         UI.pubsLoadMoreBtn = document.getElementById('pubs-toggle-more');
@@ -1479,9 +1495,12 @@ const scholarScript = (function() {
 
         if(UI.pubClearBtn) {
             UI.pubClearBtn.addEventListener('click', () => {
-                UI.pubSearchInput.value = '';
+                if (UI.pubSearchInput) UI.pubSearchInput.value = '';
+                activeYearFilter = null;
+                activePublicationCategory = 'articles';
                 showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
                 renderPublications();
+                UI.pubSearchInput?.focus();
             });
         }
 
@@ -1500,9 +1519,17 @@ const scholarScript = (function() {
                 activeYearFilter = null;
                 showingPubsCount = allWorks.length;
                 renderPublications();
-                updateFilterUI();
             });
         });
+
+        if (UI.pubYearSelect) {
+            UI.pubYearSelect.addEventListener('change', () => {
+                activeYearFilter = UI.pubYearSelect.value
+                    ? Number(UI.pubYearSelect.value) : null;
+                showingPubsCount = isPublicationsPage ? allWorks.length : initialPubsToShow;
+                renderPublications();
+            });
+        }
 
         if(UI.pubsLoadMoreBtn) UI.pubsLoadMoreBtn.addEventListener('click', () => { showingPubsCount += pubsPerLoad; renderPublications(); });
         if(UI.exportBtn) UI.exportBtn.addEventListener('click', generateBibTeX);
@@ -2346,7 +2373,7 @@ const LanguageManager = {
             window.fallbackData = fallbackData;
 
             // 1. Define o idioma inicial (dispara evento 'languageChanged')
-            this.setLanguage(this.currentLang);
+            this.setLanguage(this.getPreferredLanguage());
 
             // 2. Inicializa apenas os componentes pertinentes à página atual
             initializePageComponents();
@@ -2366,13 +2393,26 @@ const LanguageManager = {
         isDeleting: false,
     },
 
+    getPreferredLanguage() {
+        try {
+            return window.localStorage?.getItem('portfolio-language') === 'en' ? 'en' : 'pt';
+        } catch {
+            return 'pt'; // Storage blocked (privacy mode): keep the default.
+        }
+    },
+
     toggleLanguage() {
         const newLang = this.currentLang === 'pt' ? 'en' : 'pt';
         this.setLanguage(newLang);
     },
 
     setLanguage(lang) {
-        if (!translations[lang]) return;
+        if (!['pt', 'en'].includes(lang) || !translations[lang]) return;
+        try {
+            window.localStorage?.setItem('portfolio-language', lang);
+        } catch {
+            // A blocked storage API must not prevent language switching.
+        }
 
         // 1. Define o estado global e o atributo da página
         this.currentLang = lang;
