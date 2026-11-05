@@ -279,8 +279,8 @@ const lum = hex => {
 const textColor = '#e2e8f0';
 const menuColor = '#1e293b';
 assert.ok((lum(textColor) + 0.05) / (lum(menuColor) + 0.05) >= 7);
-assert.match(homeHtml, /style\.css\?v=20261105-dropdown-contrast/);
-assert.match(publicationHtml, /style\.css\?v=20261105-dropdown-contrast/);
+assert.match(homeHtml, /style\.css\?v=20261105-bibliometric-lot2/);
+assert.match(publicationHtml, /style\.css\?v=20261105-bibliometric-lot2/);
 
 
 // Lot 2: per-work citation counts must not confuse unavailable with observed zero.
