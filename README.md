@@ -161,14 +161,23 @@ Alternativamente, `scopus_insttoken` pode existir no `keys.json` local
 ignorado pelo Git, mas prefira o ambiente por ser uma credencial institucional
 de alto privilégio. Nunca use o token no código do site, URLs, logs ou commits.
 
-**Distribuição pública Scopus:** a busca detalhada é utilizada somente em
-memória durante a reconciliação. `fallback-data.json` expõe apenas
-indicadores agregados do autor, sem artigos individuais ou série anual de
-citações. `bibliometric-metrics.json` retém apenas referências de IDs,
-sem contagens de citações por artigo da Scopus. Os indicadores visíveis
-remetem ao perfil do autor no Scopus. A atualização do site permanece semanal.
-Se a API estiver indisponível, o estado `stale` sinaliza preservação de
-dados anteriores, que não devem ser apresentados como novas observações.
+**Distribuição pública Scopus:** conforme a autorização de exibição da série
+anual agregada informada pelo titular, a busca detalhada continua restrita à
+memória durante a reconciliação. `fallback-data.json` contém indicadores
+agregados do autor e o histórico **anual agregado de publicações e citações
+Scopus** (somente `year`, `publications` e `citations`), sem registros
+individuais de artigos. `bibliometric-metrics.json` mantém vínculos de IDs,
+sem contagens de citações Scopus por artigo. Os indicadores continuam ligados
+ao perfil Scopus e o pipeline permanece semanal.
+
+A série anual só é substituída quando **todos os lotes** do Citation Overview
+forem recebidos com sucesso. Quando a coleta histórica falha, a última série
+completa permanece publicada com `history_status=stale`, sem preencher anos
+desconhecidos com zeros. O estado da coleta do autor é independente do estado
+da série anual; os valores podem ter datas de validação distintas. Essa
+publicação pressupõe que a autorização Elsevier informada abrange divulgação
+pública e atualização da série anual agregada; revisar o alcance caso as
+condições da autorização institucional mudem.
 **Atenção:** o histórico antigo do Git ainda contém versões anteriores dos
 JSONs; a limpeza desse histórico exige avaliação separada e não é realizada
 automaticamente, pois afetaria toda a história e regras da branch.
