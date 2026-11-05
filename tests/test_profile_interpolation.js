@@ -62,4 +62,52 @@ assert.throws(
     /Expected exactly one profile\.education record for phd-genetics-breeding/
 );
 
+// Language choice is persisted across pages, but must work without storage.
+const vm = require('node:vm');
+const siteCode = fs.readFileSync(path.join(root, 'utils.js'), 'utf8');
+const languageStart = siteCode.indexOf('const LanguageManager = {');
+const languageEnd = siteCode.indexOf('\n};', languageStart);
+assert.ok(languageStart >= 0 && languageEnd > languageStart);
+assert.match(
+    siteCode.slice(languageStart, languageEnd),
+    /this\.setLanguage\(this\.getPreferredLanguage\(\)\)/
+);
+const stored = { 'portfolio-language': 'en' };
+const storage = {
+    getItem(key) { return stored[key] ?? null; },
+    setItem(key, value) { stored[key] = value; }
+};
+const browser = {
+    window: { localStorage: storage },
+    document: { documentElement: { lang: 'pt-BR' } },
+    translations: resolved
+};
+vm.createContext(browser);
+vm.runInContext(
+    siteCode.slice(languageStart, languageEnd + 3)
+        + '\nglobalThis.languageManager = LanguageManager;',
+    browser
+);
+const manager = browser.languageManager;
+for (const method of [
+    '_updatePageTitles', '_updateTextContent', '_updateLanguageSwitcherUI',
+    '_restartSubtitleAnimation', '_notifyOtherScripts'
+]) manager[method] = () => {};
+assert.equal(manager.getPreferredLanguage(), 'en');
+manager.setLanguage(manager.getPreferredLanguage());
+assert.equal(browser.document.documentElement.lang, 'en');
+assert.equal(browser.window.currentLang, 'en');
+manager.toggleLanguage();
+assert.equal(browser.document.documentElement.lang, 'pt-BR');
+assert.equal(stored['portfolio-language'], 'pt');
+manager.setLanguage('en');
+assert.equal(stored['portfolio-language'], 'en');
+manager.setLanguage('fr');
+assert.equal(stored['portfolio-language'], 'en', 'Unknown languages must be ignored');
+storage.getItem = () => { throw Error('Storage disabled'); };
+storage.setItem = () => { throw Error('Storage disabled'); };
+assert.equal(manager.getPreferredLanguage(), 'pt');
+assert.doesNotThrow(() => manager.setLanguage('pt'));
+assert.equal(browser.document.documentElement.lang, 'pt-BR');
+
 console.log('profile translation interpolation: PASS');
