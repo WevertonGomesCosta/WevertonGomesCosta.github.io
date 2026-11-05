@@ -61,22 +61,18 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertIn('role="img"', card)
         self.assertIn('data-key-aria-label="scopus-registry-chart-aria"', card)
         self.assertIn('aria-describedby="scopus-registry-source"', card)
-        for key in (
-            "scopus-registry-chart-title",
-            "scopus-registry-chart-source",
-            "scopus-registry-chart-link",
-        ):
-            self.assertIn(f'data-key="{key}"', card)
-        self.assertIn('href="publicacoes.html"', card)
-        self.assertNotIn("Histórico anual não exibido", card)
+        self.assertIn('data-key="scopus-registry-chart-source"', card)
+        self.assertIn('id="scopus-refresh-status"', card)
+        self.assertIn('aria-live="polite" hidden', card)
+        self.assertNotIn("Fonte: Scopus. Atualização semanal.", card)
+        self.assertNotIn("Artigos publicados por ano</h4>", card)
+        self.assertNotIn('class="scopus-registry-link"', card)
 
         catalog = json.loads((ROOT / "translations.json").read_text(encoding="utf-8"))
         keys = (
-            "scopus-registry-chart-title",
             "scopus-registry-chart-source",
             "scopus-registry-chart-aria",
-            "scopus-registry-chart-link",
-            "scopus-registry-chart-hover",
+            "scopus-registry-chart-legend",
             "scopus-registry-chart-unavailable",
         )
         for language in ("pt", "en"):
@@ -96,13 +92,17 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertGreater(len(expected), 0)
 
         css = (ROOT / "style.css").read_text(encoding="utf-8")
-        self.assertIn("#scopus-chart.chart-container {", css)
+        self.assertNotIn("#scopus-chart.chart-container {", css)
         self.assertIn("#index-page .stats-card .scopus-registry-source {", css)
+        self.assertIn("#scopus-refresh-status[hidden] {", css)
 
         js = (ROOT / "utils.js").read_text(encoding="utf-8")
         self.assertIn("PortfolioPublicationHistory.byYear(window.academicRegistry)", js)
         self.assertIn("if (platformPrefix === 'scopus') renderPortfolioPublicationChart();", js)
         self.assertIn("if (platformPrefix === 'scopus') return;", js)
+        self.assertIn("statusElement.hidden = !scopusExpired && !stale;", js)
+        self.assertNotIn("Fonte: Scopus. Atualização semanal.", js)
+        self.assertNotIn("Source: Scopus. Refreshed weekly.", js)
         self.assertNotIn("chart.textContent = '—'", js)
 
     def test_visible_author_counts_link_to_scopus(self):
