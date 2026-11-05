@@ -98,8 +98,7 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertNotIn("Google Scholar", card)
         self.assertNotIn("Lattes", card)
         self.assertNotIn("scopus-registry-source", card)
-        self.assertIn('id="scopus-refresh-status"', card)
-        self.assertIn('aria-live="polite" hidden', card)
+        self.assertNotIn('id="scopus-refresh-status"', card)
 
         catalog = json.loads((ROOT / "translations.json").read_text(encoding="utf-8"))
         self.assertTrue(catalog["pt"]["scopus-chart-aria"])
@@ -110,8 +109,10 @@ class TestScopusPublicBoundary(unittest.TestCase):
         self.assertNotIn("PortfolioPublicationHistory", js)
         self.assertNotIn("renderPortfolioPublicationChart", js)
         self.assertIn("renderDualAxisChart(chartDiv, data.graphData, platformPrefix, shouldAnimate)", js)
-        self.assertIn("history_status === 'stale'", js)
-        self.assertIn("statusElement.hidden = !scopusExpired && !stale && !historyStale;", js)
+        self.assertNotIn("histórico anual preservado", js)
+        self.assertNotIn("annual history retained from an earlier retrieval", js)
+        self.assertNotIn("scopus-refresh-status", js)
+        self.assertIn("scopusExpired", js)
         self.assertNotIn("Source: Scopus. Refreshed weekly.", js)
 
     def test_visible_author_counts_link_to_scopus(self):
