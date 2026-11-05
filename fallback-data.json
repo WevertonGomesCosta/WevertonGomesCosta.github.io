@@ -8,7 +8,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-05T11:35:38Z",
+            "updated_at": "2026-11-05T12:21:50Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "05/11/2026 08:36",
+    "lastUpdated": "05/11/2026 09:36",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -1072,14 +1072,15 @@
         },
         "scopus": {
             "source_name": "Scopus",
+            "distribution": "author_summary_only",
             "profile": {
                 "total_publications": 24,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 132,
-                                "since_2021": 130
+                                "all": 140,
+                                "since_2021": 138
                             }
                         },
                         {
@@ -1099,8 +1100,7 @@
                 }
             },
             "articles": [],
-            "history_status": "stale",
-            "distribution": "author_summary_only"
+            "history_status": "current"
         },
         "web_of_science": {
             "profile": {
@@ -1682,7 +1682,7 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-05T08:36:55",
+            "last_valid_at": "2026-11-05T09:36:24",
             "error_code": null
         },
         "google_scholar": {
@@ -1691,9 +1691,9 @@
             "error_code": null
         },
         "scopus": {
-            "status": "stale",
-            "last_valid_at": "2026-11-04T15:40:58",
-            "error_code": "fetch_failed"
+            "status": "current",
+            "last_valid_at": "2026-11-05T09:36:24",
+            "error_code": null
         },
         "web_of_science": {
             "status": "current",
