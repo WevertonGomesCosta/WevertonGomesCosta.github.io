@@ -95,6 +95,13 @@ Para atualizar o Web of Science, substitua
 `data/sources/web-of-science/savedrecs.txt` pelo novo export antes da
 execução. **`--publish` inclui esse arquivo no mesmo PR dos quatro JSONs**,
 de modo que a atualização do WoS não seja perdida na próxima coleta agendada.
+O arquivo deve incluir título, autores, ano de publicação, total de citações
+e **colunas de citações por ano**; o pipeline rejeita campos numéricos
+inválidos, linhas truncadas, DOIs duplicados e divergência entre o total e
+a soma anual de cada publicação. Um export inválido não pode ser enviado
+por `--publish`: a validação ocorre antes da coleta por API e da criação
+de PR. No agendamento automático, falhas de leitura preservam a última
+coleta válida em vez de publicar zeros.
 
 **Política de publicação:** a coleta e o relatório comparativo sempre são
 executados, mas `--publish` só abre PR quando houver alteração relevante
