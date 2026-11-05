@@ -60,6 +60,7 @@ jobs:
           SCOPUS_API_KEY: ${{ secrets.SCOPUS_API_KEY }}
           SCOPUS_INSTTOKEN: ${{ secrets.SCOPUS_INSTTOKEN }}
           GH_API_TOKEN: ${{ github.token }}
+          ACADEMIC_SCHEDULED_REFRESH: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
         run: |
           set -euo pipefail
           trap 'rm -f keys.json' EXIT
