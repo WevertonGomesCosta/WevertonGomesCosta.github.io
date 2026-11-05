@@ -285,7 +285,16 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
             linked = baseline.get("observed", 0) + baseline.get(
                 "value_unavailable", 0
             )
-            if state == "stale":
+            source_payload = fallback["academicData"].get(source, {})
+            if (
+                source == "scopus"
+                and source_payload.get("distribution") == "author_summary_only"
+            ):
+                expected_counts = {
+                    "value_unavailable": linked,
+                    "record_absent": baseline["record_absent"],
+                }
+            elif state == "stale":
                 expected_counts = {
                     "stale": linked,
                     "record_absent": baseline["record_absent"],
@@ -327,10 +336,31 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
             self.assertEqual(before["citations"], after["citations"])
             if before["record_id"] is not None:
                 linked_count += 1
-                self.assertEqual(after["status"], "stale")
+                self.assertEqual(after["status"], "value_unavailable")
+                self.assertIsNone(after["citations"])
             else:
                 self.assertEqual(after["status"], "record_absent")
         self.assertEqual(linked_count, 24)
+
+    def test_public_scopus_summary_excludes_document_citations(self):
+        from scripts import scopus_public_data
+
+        fallback = json.loads(
+            (ROOT / "fallback-data.json").read_text(encoding="utf-8")
+        )
+        sanitized = scopus_public_data.sanitize_fallback(fallback)
+        scopus = sanitized["academicData"]["scopus"]
+        self.assertEqual(scopus["distribution"], "author_summary_only")
+        self.assertEqual(scopus["articles"], [])
+        self.assertEqual(scopus["profile"]["cited_by"]["graph"], [])
+        publications = builder.build_metrics(
+            json.loads((ROOT / "academic-registry.json").read_text(encoding="utf-8")),
+            json.loads((ROOT / "bibliographic-source-links.json").read_text(encoding="utf-8")),
+            sanitized,
+        )["publications"]
+        self.assertTrue(all(
+            p["scopus"]["citations"] is None for p in publications.values()
+        ))
 
     def test_check_output_detects_drift(self):
         with tempfile.TemporaryDirectory() as tmp:

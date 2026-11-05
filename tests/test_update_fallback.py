@@ -185,8 +185,71 @@ class TestUpdateFallbackImportAndFetchSemantics(unittest.TestCase):
         signature = inspect.signature(update_fallback.fetch_scopus_data)
         self.assertEqual(
             list(signature.parameters),
-            ["author_id", "api_key", "previous_data"],
+            ["author_id", "api_key", "previous_data", "insttoken"],
         )
+
+    def test_scopus_insttoken_header_and_official_author_totals(self):
+        search = FakeResponse({
+            "search-results": {
+                "opensearch:totalResults": "1",
+                "entry": [{
+                    "dc:identifier": "SCOPUS_ID:999",
+                    "dc:title": "Test article",
+                    "prism:coverDate": "2026-01-01",
+                    "citedby-count": "5",
+                }],
+            }
+        })
+        author = FakeResponse({
+            "author-retrieval-response": [{
+                "coredata": {
+                    "document-count": "1",
+                    "citation-count": "8",
+                },
+                "h-index": "2",
+            }]
+        })
+        history = FakeResponse({}, status_code=401)
+        calls = []
+
+        def fake_get(url, **kwargs):
+            calls.append((url, kwargs))
+            return [search, author, history][len(calls) - 1]
+
+        previous = {
+            "profile": {
+                "total_publications": 1,
+                "cited_by": {
+                    "table": [
+                        {"citations": {"all": 4, "since_2021": 4}},
+                        {"h_index": {"all": 1, "since_2021": 1}},
+                        {"i10_index": {"all": 0, "since_2021": 0}},
+                    ],
+                    "graph": [],
+                },
+            },
+            "articles": [],
+        }
+        with mock.patch.object(
+            update_fallback, "requests", mock.Mock(get=fake_get)
+        ):
+            result = update_fallback.fetch_scopus_data(
+                "Author", "api-key", previous_data=previous,
+                insttoken="example-insttoken",
+            )
+        self.assertEqual(result["history_status"], "stale")
+        table = result["profile"]["cited_by"]["table"]
+        self.assertEqual(table[0]["citations"]["all"], 8)
+        self.assertEqual(table[1]["h_index"]["all"], 2)
+        self.assertEqual(result["profile"]["total_publications"], 1)
+        self.assertEqual(len(calls), 3)
+        for url, kwargs in calls:
+            self.assertTrue(url.startswith("https://api.elsevier.com/"))
+            self.assertNotIn("example-insttoken", url)
+            self.assertEqual(kwargs["headers"]["X-ELS-Insttoken"], "example-insttoken")
+            self.assertEqual(kwargs["headers"]["X-ELS-APIKey"], "api-key")
+            self.assertNotIn("insttoken", kwargs.get("params", {}))
+            self.assertNotIn("apiKey", kwargs.get("params", {}))
 
     def test_scopus_history_failure_keeps_current_search_article_list(self):
         search = FakeResponse(
