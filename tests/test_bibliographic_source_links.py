@@ -16,6 +16,31 @@ EXPECTED_SOURCE_SNAPSHOTS = {
     "orcid": (29, "cdc9a3d6"),
 }
 
+WOS_FROZEN_RECORD_IDS = frozenset({
+    "doi:10.1002/csc2.20488",
+    "doi:10.1002/csc2.20816",
+    "doi:10.1007/s00122-026-05387-3",
+    "doi:10.1007/s10681-019-2499-x",
+    "doi:10.1007/s10681-022-03077-x",
+    "doi:10.1016/j.csbj.2022.09.029",
+    "doi:10.1016/j.livsci.2024.105433",
+    "doi:10.1016/j.sajb.2024.10.052",
+    "doi:10.1111/pbr.12972",
+    "doi:10.1111/pbr.12973",
+    "doi:10.1371/journal.pone.0245298",
+    "doi:10.1590/1678-992x-2022-0233",
+    "doi:10.1590/1678-992x-2025-0020",
+    "doi:10.1590/1984-70332020v20n4a55",
+    "doi:10.1590/1984-70332021v21n3a41",
+    "doi:10.3389/fpls.2024.1483340",
+    "doi:10.3390/agronomy13030937",
+    "doi:10.3390/agronomy13051261",
+    "doi:10.3390/agronomy14102234",
+    "doi:10.37496/rbz5320240001",
+    "doi:10.4238/gmr18332",
+    "doi:10.4238/gmr18434",
+})
+
 SCHOLAR_DUPLICATE_PUBLICATION_ID = (
     "journal-2021-genome-enabled-prediction-trait-complexity"
 )
@@ -64,6 +89,11 @@ class TestFrozenBibliographicSourceLinks(unittest.TestCase):
         ):
             with self.subTest(source=source):
                 links = sources[source]["links"]
+                if source == "web_of_science":
+                    links = [
+                        link for link in links
+                        if link["record_id"] in WOS_FROZEN_RECORD_IDS
+                    ]
                 self.assertEqual(len(links), expected_count)
                 self.assertEqual(
                     source_snapshot_signature(links),

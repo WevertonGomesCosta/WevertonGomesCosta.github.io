@@ -1,6 +1,49 @@
 {
     "githubRepos": [
         {
+            "name": "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
+            "html_url": "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
+            "homepage": "https://wevertongomescosta.github.io/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks/",
+            "description": "Reproducible genomic prediction study comparing L1/L2-regularized artificial neural networks with GBLUP-ADE under a frozen cross-validation design, using canonical simulated-data workflows, workflowr, and renv.",
+            "language": "R",
+            "stargazers_count": 0,
+            "forks_count": 0,
+            "updated_at": "2026-09-08T18:20:16Z",
+            "topics": [
+                "animal-breeding",
+                "artificial-neural-networks-ann",
+                "bioinformatics-pipeline",
+                "computational-biology-datasets",
+                "cross-validation",
+                "gblup",
+                "gebvs",
+                "genomic-prediction",
+                "genomic-selection",
+                "l1-regularization",
+                "l2-regularization",
+                "machine-learning-algorithms",
+                "overfitting-reduced",
+                "plant-breeding-data",
+                "quantitative-genetics",
+                "regularization-methods",
+                "reproducible-research",
+                "rstats",
+                "statistical-genetics",
+                "workflowr"
+            ]
+        },
+        {
+            "name": "Bayesian-ridge-regression-papaya",
+            "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
+            "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
+            "description": "Genomic prediction and selection in papaya using Bayesian regression, RR-BLUP, and GBLUP",
+            "language": "R",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2026-11-06T23:31:57Z",
+            "topics": []
+        },
+        {
             "name": "WevertonGomesCosta.github.io",
             "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
             "homepage": "https://wevertongomescosta.github.io",
@@ -8,7 +51,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-05T15:47:49Z",
+            "updated_at": "2026-11-05T18:32:04Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -78,17 +121,6 @@
             "topics": []
         },
         {
-            "name": "Bayesian-ridge-regression-papaya",
-            "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
-            "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
-            "description": "Genomic prediction and selection in papaya using Bayesian regression, RR-BLUP, and GBLUP",
-            "language": "R",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2026-09-30T01:53:12Z",
-            "topics": []
-        },
-        {
             "name": "Robustez-Predicao-Genomica-n-p",
             "html_url": "https://github.com/WevertonGomesCosta/Robustez-Predicao-Genomica-n-p",
             "homepage": null,
@@ -98,38 +130,6 @@
             "forks_count": 0,
             "updated_at": "2026-09-10T17:04:39Z",
             "topics": []
-        },
-        {
-            "name": "Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
-            "html_url": "https://github.com/WevertonGomesCosta/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks",
-            "homepage": "https://wevertongomescosta.github.io/Genomic-Prediction-using-Regularized-Artificial-Neural-Networks/",
-            "description": "Reproducible genomic prediction study comparing L1/L2-regularized artificial neural networks with GBLUP-ADE under a frozen cross-validation design, using canonical simulated-data workflows, workflowr, and renv.",
-            "language": "R",
-            "stargazers_count": 0,
-            "forks_count": 0,
-            "updated_at": "2026-09-08T18:20:16Z",
-            "topics": [
-                "animal-breeding",
-                "artificial-neural-networks-ann",
-                "bioinformatics-pipeline",
-                "computational-biology-datasets",
-                "cross-validation",
-                "gblup",
-                "gebvs",
-                "genomic-prediction",
-                "genomic-selection",
-                "l1-regularization",
-                "l2-regularization",
-                "machine-learning-algorithms",
-                "overfitting-reduced",
-                "plant-breeding-data",
-                "quantitative-genetics",
-                "regularization-methods",
-                "reproducible-research",
-                "rstats",
-                "statistical-genetics",
-                "workflowr"
-            ]
         },
         {
             "name": "genomic-prediction-data-augmentation",
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "05/11/2026 13:13",
+    "lastUpdated": "09/11/2026 09:22",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -590,7 +590,7 @@
                         },
                         {
                             "year": 2023,
-                            "citations": 25,
+                            "citations": 27,
                             "publications": 3
                         },
                         {
@@ -605,7 +605,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 50,
+                            "citations": 48,
                             "publications": 5
                         }
                     ]
@@ -1079,8 +1079,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 140,
-                                "since_2021": 138
+                                "all": 141,
+                                "since_2021": 139
                             }
                         },
                         {
@@ -1134,7 +1134,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 35,
+                            "citations": 36,
                             "publications": 3
                         }
                     ]
@@ -1146,13 +1146,13 @@
         "web_of_science": {
             "profile": {
                 "source_name": "Web of Science",
-                "total_publications": 22,
+                "total_publications": 23,
                 "cited_by": {
                     "table": [
                         {
                             "citations": {
-                                "all": 119,
-                                "since_2021": 117
+                                "all": 120,
+                                "since_2021": 118
                             }
                         },
                         {
@@ -1206,8 +1206,8 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 30,
-                            "publications": 1
+                            "citations": 31,
+                            "publications": 2
                         }
                     ]
                 }
@@ -1344,6 +1344,16 @@
                     "source": "Web of Science"
                 },
                 {
+                    "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
+                    "year": "2022",
+                    "doi": "10.1002/csc2.20816",
+                    "link": "https://doi.org/10.1002/csc2.20816",
+                    "cited_by": {
+                        "value": 3
+                    },
+                    "source": "Web of Science"
+                },
+                {
                     "title": "Performance of a breeding program for irrigated rice in Southeast Brazil",
                     "year": "2019",
                     "doi": "10.4238/gmr18332",
@@ -1364,22 +1374,22 @@
                     "source": "Web of Science"
                 },
                 {
-                    "title": "Genetic diversity and interaction between the maintainers of commercial soybean cultivars using self-organizing maps",
-                    "year": "2022",
-                    "doi": "10.1002/csc2.20816",
-                    "link": "https://doi.org/10.1002/csc2.20816",
-                    "cited_by": {
-                        "value": 2
-                    },
-                    "source": "Web of Science"
-                },
-                {
                     "title": "Dynamics, diversity and experimental precision in final irrigated rice testing: a time meta-analysis",
                     "year": "2020",
                     "doi": "10.1590/1984-70332020v20n4a55",
                     "link": "https://doi.org/10.1590/1984-70332020v20n4a55",
                     "cited_by": {
                         "value": 2
+                    },
+                    "source": "Web of Science"
+                },
+                {
+                    "title": "Complex and Non-Linear Modeling of Genotype × Environment Interaction via Tree-Based Learning Algorithms and Shapley Decomposition",
+                    "year": "2026",
+                    "doi": "10.3390/agriculture16202290",
+                    "link": "https://doi.org/10.3390/agriculture16202290",
+                    "cited_by": {
+                        "value": 0
                     },
                     "source": "Web of Science"
                 },
@@ -1723,22 +1733,22 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-05T13:13:59",
+            "last_valid_at": "2026-11-09T09:22:23",
             "error_code": null
         },
         "google_scholar": {
             "status": "current",
-            "last_valid_at": "2026-11-03T16:55:56",
+            "last_valid_at": "2026-11-09T09:22:23",
             "error_code": null
         },
         "scopus": {
             "status": "current",
-            "last_valid_at": "2026-11-05T13:13:59",
+            "last_valid_at": "2026-11-09T09:22:23",
             "error_code": null
         },
         "web_of_science": {
             "status": "current",
-            "last_valid_at": "2026-11-03T16:55:56",
+            "last_valid_at": "2026-11-09T09:22:23",
             "error_code": null
         },
         "orcid": {

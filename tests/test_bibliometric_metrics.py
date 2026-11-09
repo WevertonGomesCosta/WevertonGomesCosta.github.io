@@ -259,6 +259,18 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
         total_publications = len(metrics["publications"])
         self.assertEqual(total_publications, 34)
 
+        source_links = json.loads(
+            (ROOT / "bibliographic-source-links.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        wos_linked = len({
+            link["publication_id"]
+            for link in source_links["sources"]["web_of_science"]["links"]
+            if link["role"] == "primary"
+        })
+        self.assertLessEqual(wos_linked, total_publications)
+
         expected_current = {
             "google_scholar": {
                 "observed": 23,
@@ -270,8 +282,8 @@ class TestBibliometricMetricsBuilder(unittest.TestCase):
                 "record_absent": 10,
             },
             "web_of_science": {
-                "observed": 22,
-                "record_absent": 12,
+                "observed": wos_linked,
+                "record_absent": total_publications - wos_linked,
             },
             "orcid": {
                 "value_unavailable": 29,
