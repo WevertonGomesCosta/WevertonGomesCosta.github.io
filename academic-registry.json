@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-11-04",
+  "updated_at": "2026-11-09",
   "source_basis": {
     "lattes_generated_at": "2026-09-23T11:20:32-03:00",
     "note": "Canonical bibliography reconciled from the updated Lattes export and the repository bibliometric fallback sources. Bibliographic identity is kept separate from citation metrics."
@@ -1079,7 +1079,7 @@
         "orcid": true,
         "google_scholar": true,
         "scopus": true,
-        "web_of_science": false
+        "web_of_science": true
       },
       "relations": [],
       "source_notes": [

@@ -470,6 +470,12 @@
           "publication_id": "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield",
           "role": "primary",
           "match_basis": "doi"
+        },
+        {
+          "record_id": "doi:10.3390/agriculture16202290",
+          "publication_id": "journal-2026-complex-and-non-linear-modeling-of-genotype-environment-interaction-via",
+          "role": "primary",
+          "match_basis": "doi"
         }
       ]
     },

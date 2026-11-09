@@ -439,7 +439,7 @@
       },
       "web_of_science": {
         "alias_record_ids": [],
-        "citations": 2,
+        "citations": 3,
         "record_id": "doi:10.1002/csc2.20816",
         "status": "observed"
       }
@@ -803,9 +803,9 @@
       },
       "web_of_science": {
         "alias_record_ids": [],
-        "citations": null,
-        "record_id": null,
-        "status": "record_absent"
+        "citations": 0,
+        "record_id": "doi:10.3390/agriculture16202290",
+        "status": "observed"
       }
     },
     "journal-2026-non-linear-kernel-methods-for-genomic-prediction-of-soybean-yield": {
@@ -889,8 +889,8 @@
   },
   "schema_version": "1.0.0",
   "source_snapshot": {
-    "fallback_last_updated": "05/11/2026 13:13",
-    "registry_updated_at": "2026-11-04",
+    "fallback_last_updated": "09/11/2026 09:22",
+    "registry_updated_at": "2026-11-09",
     "source_links_schema_version": "1.0.0"
   }
 }
