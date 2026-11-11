@@ -629,7 +629,7 @@
     "journal-2024-pig-body-weight-computer-vision": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 21,
+        "citations": 22,
         "record_id": "eJNKcHsAAAAJ:M3ejUd6NZC8C",
         "status": "observed"
       },
@@ -889,7 +889,7 @@
   },
   "schema_version": "1.0.0",
   "source_snapshot": {
-    "fallback_last_updated": "09/11/2026 09:22",
+    "fallback_last_updated": "11/11/2026 14:12",
     "registry_updated_at": "2026-11-09",
     "source_links_schema_version": "1.0.0"
   }

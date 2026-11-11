@@ -33,6 +33,20 @@
             ]
         },
         {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "Python",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2026-11-09T13:53:35Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
+        {
             "name": "Bayesian-ridge-regression-papaya",
             "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
             "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
@@ -42,20 +56,6 @@
             "forks_count": 0,
             "updated_at": "2026-11-06T23:31:57Z",
             "topics": []
-        },
-        {
-            "name": "WevertonGomesCosta.github.io",
-            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
-            "homepage": "https://wevertongomescosta.github.io",
-            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "Python",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2026-11-05T18:32:04Z",
-            "topics": [
-                "pessoal",
-                "site"
-            ]
         },
         {
             "name": "sorteador-pelada",
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "09/11/2026 09:22",
+    "lastUpdated": "11/11/2026 14:12",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -540,8 +540,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 207,
-                                "since_2021": 198
+                                "all": 208,
+                                "since_2021": 199
                             }
                         },
                         {
@@ -605,7 +605,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 48,
+                            "citations": 49,
                             "publications": 5
                         }
                     ]
@@ -642,7 +642,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
                     "journalTitle": "Livestock Science 282, 105433, 2024",
                     "cited_by": {
-                        "value": 21
+                        "value": 22
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -1733,17 +1733,17 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-09T09:22:23",
+            "last_valid_at": "2026-11-11T14:12:29",
             "error_code": null
         },
         "google_scholar": {
             "status": "current",
-            "last_valid_at": "2026-11-09T09:22:23",
+            "last_valid_at": "2026-11-11T14:12:29",
             "error_code": null
         },
         "scopus": {
             "status": "current",
-            "last_valid_at": "2026-11-09T09:22:23",
+            "last_valid_at": "2026-11-11T14:12:29",
             "error_code": null
         },
         "web_of_science": {
