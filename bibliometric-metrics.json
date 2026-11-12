@@ -369,7 +369,7 @@
     "journal-2022-genomic-prediction-ml-nn-epistasis": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 26,
+        "citations": 27,
         "record_id": "eJNKcHsAAAAJ:UebtZRa9Y70C",
         "status": "observed"
       },
@@ -889,7 +889,7 @@
   },
   "schema_version": "1.0.0",
   "source_snapshot": {
-    "fallback_last_updated": "11/11/2026 14:12",
+    "fallback_last_updated": "12/11/2026 11:43",
     "registry_updated_at": "2026-11-09",
     "source_links_schema_version": "1.0.0"
   }

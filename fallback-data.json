@@ -40,7 +40,7 @@
             "language": "Python",
             "stargazers_count": 1,
             "forks_count": 0,
-            "updated_at": "2026-11-09T13:53:35Z",
+            "updated_at": "2026-11-11T18:13:07Z",
             "topics": [
                 "pessoal",
                 "site"
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "11/11/2026 14:12",
+    "lastUpdated": "12/11/2026 11:43",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -540,8 +540,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 208,
-                                "since_2021": 199
+                                "all": 209,
+                                "since_2021": 200
                             }
                         },
                         {
@@ -605,7 +605,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 49,
+                            "citations": 50,
                             "publications": 5
                         }
                     ]
@@ -630,7 +630,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:UebtZRa9Y70C",
                     "journalTitle": "N/A",
                     "cited_by": {
-                        "value": 26
+                        "value": 27
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -1733,17 +1733,17 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-11T14:12:29",
+            "last_valid_at": "2026-11-12T11:43:01",
             "error_code": null
         },
         "google_scholar": {
             "status": "current",
-            "last_valid_at": "2026-11-11T14:12:29",
+            "last_valid_at": "2026-11-12T11:43:01",
             "error_code": null
         },
         "scopus": {
             "status": "current",
-            "last_valid_at": "2026-11-11T14:12:29",
+            "last_valid_at": "2026-11-12T11:43:01",
             "error_code": null
         },
         "web_of_science": {
