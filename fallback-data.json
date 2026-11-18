@@ -33,31 +33,6 @@
             ]
         },
         {
-            "name": "WevertonGomesCosta.github.io",
-            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
-            "homepage": "https://wevertongomescosta.github.io",
-            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
-            "language": "Python",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2026-11-11T18:13:07Z",
-            "topics": [
-                "pessoal",
-                "site"
-            ]
-        },
-        {
-            "name": "Bayesian-ridge-regression-papaya",
-            "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
-            "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
-            "description": "Genomic prediction and selection in papaya using Bayesian regression, RR-BLUP, and GBLUP",
-            "language": "R",
-            "stargazers_count": 1,
-            "forks_count": 0,
-            "updated_at": "2026-11-06T23:31:57Z",
-            "topics": []
-        },
-        {
             "name": "sorteador-pelada",
             "html_url": "https://github.com/WevertonGomesCosta/sorteador-pelada",
             "homepage": "https://sorteador-pelada.streamlit.app/",
@@ -78,6 +53,31 @@
                 "team-generator",
                 "web-app"
             ]
+        },
+        {
+            "name": "WevertonGomesCosta.github.io",
+            "html_url": "https://github.com/WevertonGomesCosta/WevertonGomesCosta.github.io",
+            "homepage": "https://wevertongomescosta.github.io",
+            "description": "Desenvolvi este site do zero como um hub central para minha atuação (CEO, Pesquisador, Cientista de Dados), focado em automação, reprodutibilidade e clareza.  Configurei rotinas em R e Python que consomem as APIs do GitHub e Google Scholar, atualizando automaticamente minhas listas de projetos e publicações.  Implementei suporte multilíngue.",
+            "language": "Python",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2026-11-12T15:43:40Z",
+            "topics": [
+                "pessoal",
+                "site"
+            ]
+        },
+        {
+            "name": "Bayesian-ridge-regression-papaya",
+            "html_url": "https://github.com/WevertonGomesCosta/Bayesian-ridge-regression-papaya",
+            "homepage": "https://wevertongomescosta.github.io/Bayesian-ridge-regression-papaya/",
+            "description": "Genomic prediction and selection in papaya using Bayesian regression, RR-BLUP, and GBLUP",
+            "language": "R",
+            "stargazers_count": 1,
+            "forks_count": 0,
+            "updated_at": "2026-11-06T23:31:57Z",
+            "topics": []
         },
         {
             "name": "Integrating-nir-genomic-kernel",
@@ -529,7 +529,7 @@
             "topics": []
         }
     ],
-    "lastUpdated": "12/11/2026 11:43",
+    "lastUpdated": "18/11/2026 15:07",
     "academicData": {
         "google_scholar": {
             "profile": {
@@ -540,8 +540,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 209,
-                                "since_2021": 200
+                                "all": 213,
+                                "since_2021": 204
                             }
                         },
                         {
@@ -605,7 +605,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 50,
+                            "citations": 54,
                             "publications": 5
                         }
                     ]
@@ -618,7 +618,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:9yKSN-GCB0IC",
                     "journalTitle": "Euphytica 215 (10), 178, 2019",
                     "cited_by": {
-                        "value": 34
+                        "value": 35
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -642,7 +642,7 @@
                     "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:M3ejUd6NZC8C",
                     "journalTitle": "Livestock Science 282, 105433, 2024",
                     "cited_by": {
-                        "value": 22
+                        "value": 23
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -655,6 +655,18 @@
                     "journalTitle": "Crop Science 61 (3), 1890-1902, 2021",
                     "cited_by": {
                         "value": 18
+                    },
+                    "source": "Google Scholar",
+                    "doi": null,
+                    "doiLink": null
+                },
+                {
+                    "title": "Optimizing drought tolerance in cassava through genomic selection",
+                    "year": "2024",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
+                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
+                    "cited_by": {
+                        "value": 12
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -679,18 +691,6 @@
                     "journalTitle": "N/A",
                     "cited_by": {
                         "value": 12
-                    },
-                    "source": "Google Scholar",
-                    "doi": null,
-                    "doiLink": null
-                },
-                {
-                    "title": "Optimizing drought tolerance in cassava through genomic selection",
-                    "year": "2024",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:Wp0gIr-vW9MC",
-                    "journalTitle": "Frontiers in Plant Science 15, 1483340, 2024",
-                    "cited_by": {
-                        "value": 11
                     },
                     "source": "Google Scholar",
                     "doi": null,
@@ -745,22 +745,22 @@
                     "doiLink": null
                 },
                 {
-                    "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
-                    "year": "2023",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:5nxA0vEk-isC",
-                    "journalTitle": "Agronomy Science and Biotechnology 9, 1-24, 2023",
+                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
+                    "year": "2021",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YsMSGLbcyi4C",
+                    "journalTitle": "Plant Breeding 140 (6), 1002-1010, 2021",
                     "cited_by": {
-                        "value": 6
+                        "value": 7
                     },
                     "source": "Google Scholar",
                     "doi": null,
                     "doiLink": null
                 },
                 {
-                    "title": "Application of fuzzy logic for adaptability and stability studies in flood-irrigated rice (Oryza sativa)",
-                    "year": "2021",
-                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:YsMSGLbcyi4C",
-                    "journalTitle": "Plant Breeding 140 (6), 1002-1010, 2021",
+                    "title": "Prediction and importance of predictors in approaches based on computational intelligence and machine learning",
+                    "year": "2023",
+                    "link": "https://scholar.google.com/citations?view_op=view_citation&hl=pt-BR&user=eJNKcHsAAAAJ&pagesize=100&citation_for_view=eJNKcHsAAAAJ:5nxA0vEk-isC",
+                    "journalTitle": "Agronomy Science and Biotechnology 9, 1-24, 2023",
                     "cited_by": {
                         "value": 6
                     },
@@ -1079,8 +1079,8 @@
                     "table": [
                         {
                             "citations": {
-                                "all": 141,
-                                "since_2021": 139
+                                "all": 142,
+                                "since_2021": 140
                             }
                         },
                         {
@@ -1134,7 +1134,7 @@
                         },
                         {
                             "year": 2026,
-                            "citations": 36,
+                            "citations": 37,
                             "publications": 3
                         }
                     ]
@@ -1733,17 +1733,17 @@
     "sourceStates": {
         "github": {
             "status": "current",
-            "last_valid_at": "2026-11-12T11:43:01",
+            "last_valid_at": "2026-11-18T15:07:43",
             "error_code": null
         },
         "google_scholar": {
             "status": "current",
-            "last_valid_at": "2026-11-12T11:43:01",
+            "last_valid_at": "2026-11-18T15:07:43",
             "error_code": null
         },
         "scopus": {
             "status": "current",
-            "last_valid_at": "2026-11-12T11:43:01",
+            "last_valid_at": "2026-11-18T15:07:43",
             "error_code": null
         },
         "web_of_science": {

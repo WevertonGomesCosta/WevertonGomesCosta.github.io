@@ -107,7 +107,7 @@
     "journal-2019-coffee-factor-analysis": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 34,
+        "citations": 35,
         "record_id": "eJNKcHsAAAAJ:9yKSN-GCB0IC",
         "status": "observed"
       },
@@ -237,7 +237,7 @@
     "journal-2021-fuzzy-adaptability-flooded-rice": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 6,
+        "citations": 7,
         "record_id": "eJNKcHsAAAAJ:YsMSGLbcyi4C",
         "status": "observed"
       },
@@ -551,7 +551,7 @@
     "journal-2024-cassava-drought-genomic-selection": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 11,
+        "citations": 12,
         "record_id": "eJNKcHsAAAAJ:Wp0gIr-vW9MC",
         "status": "observed"
       },
@@ -629,7 +629,7 @@
     "journal-2024-pig-body-weight-computer-vision": {
       "google_scholar": {
         "alias_record_ids": [],
-        "citations": 22,
+        "citations": 23,
         "record_id": "eJNKcHsAAAAJ:M3ejUd6NZC8C",
         "status": "observed"
       },
@@ -889,7 +889,7 @@
   },
   "schema_version": "1.0.0",
   "source_snapshot": {
-    "fallback_last_updated": "12/11/2026 11:43",
+    "fallback_last_updated": "18/11/2026 15:07",
     "registry_updated_at": "2026-11-09",
     "source_links_schema_version": "1.0.0"
   }
